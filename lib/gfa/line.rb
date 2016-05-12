@@ -12,13 +12,13 @@ class GFA::Line
     }
 
   def self.validate_record_type!(rtype)
-    if !GFA::Line::RecordTypes.include?(rtype)
+    if !GFA::Line::RecordTypes.has_key?(rtype)
       raise ArgumentError,
         "Record type unknown: '#{rtype}'"
     end
   end
 
-  def initialize(fields, required_definitions, opfield_predefined_types)
+  def initialize(fields, required_definitions, optfield_predefined_types)
     handle_required_fields(fields, required_definitions)
     handle_optional_fields(fields, optfield_predefined_types)
   end

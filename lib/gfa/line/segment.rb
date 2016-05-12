@@ -2,7 +2,7 @@ class GFA::Line::Segment < GFA::Line
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#segment-line
   FieldRegexp = [
-     [:record_type, /C/],
+     [:record_type, /S/],
      [:name,        /[!-)+-<>-~][!-~]*/], # Segment name
      [:sequence,    /\*|[A-Za-z=.]+/]     # The nucleotide sequence
     ]
