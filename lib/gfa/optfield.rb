@@ -1,5 +1,7 @@
 class GFA::Optfield
 
+  attr_reader :tag, :type, :value
+
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#optional-fields
   TagRegexp = /[A-Za-z][A-Za-z0-9]/
   TypeRegexp =
@@ -12,6 +14,7 @@ class GFA::Optfield
       "B" => /[cCsSiIf](,[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)+/
                              # Integer or numeric array
     }
+  Separator = ":"
 
   def initialize(tag, type, value)
     @tag = tag
@@ -21,7 +24,7 @@ class GFA::Optfield
   end
 
   def to_s
-    "#@tag:#@type:#@value"
+    "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Opfield::Separator}#@value"
   end
 
   private
@@ -37,6 +40,19 @@ class GFA::Optfield
       raise GFA::Optfield::ValueError,
         "Value invalid for type #@type: '#@value'"
     end
+  end
+
+end
+
+class String
+
+  def to_gfa_optfield
+    components = split(GFA::Optfield::Separator)
+    if components.size != 3
+      raise TypeError, "String does not represent a "+
+        "GFA optional field: '#{self}'"
+    end
+    GFA::Optfield.new(*components)
   end
 
 end
