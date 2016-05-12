@@ -18,9 +18,9 @@ class GFA::Line
     end
   end
 
-  def initialize(fields, required_definitions)
+  def initialize(fields, required_definitions, opfield_predefined_types)
     handle_required_fields(fields, required_definitions)
-    handle_optional_fields(fields)
+    handle_optional_fields(fields, optfield_predefined_types)
   end
 
   def to_specific_class
@@ -63,9 +63,16 @@ class GFA::Line
     end
   end
 
-  def handle_optional_fields(fields)
+  def handle_optional_fields(fields, optfield_predefined_types)
     fields[@n_required..-1].each do |f|
       optfield = f.to_gfa_optfield
+      if optfield_predefined_types
+        type = optfield_predefined_types[optfield.tag]
+        if !type.nil? and type != optfield.type
+          raise TypeError,
+            "Optional field #{optfield.tag} must be of type #{type}"
+        end
+      end
       if respond_to?(optfield.tag.to_sym)
         raise ArgumentError,
           "Tag '#{optfield.tag}' existed already"

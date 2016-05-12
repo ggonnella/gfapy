@@ -1,24 +1,25 @@
-class GFA::Line::Containment < GFA::Line
+class GFA::Line::Link < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#containment-line
+  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#link-line
   FieldRegexp = [
-     [:record_type, /C/],
+     [:record_type, /L/],
      [:from,        /[!-)+-<>-~][!-~]*/], # name of segment
      [:from_orient, /\+|-/],              # orientation of From segment
      [:to,          /[!-)+-<>-~][!-~]*/], # name of segment
      [:to_orient,   /\+|-/],              # orientation of To segment
-     [:pos,         /[0-9]*/],            #  0-based start of contained segment
      [:overlap,     /\*|([0-9]+[MIDNSHPX=])+/] # CIGAR string describing overlap
     ]
 
   OptfieldTypes = {
-     "RC" => "i", # Read Coverage
-     "NM" => "i", # Number of mismatches/gaps
+     "MQ" => "i", # Mapping quality
+     "NM" => "i", # # mismatches/gaps
+     "RC" => "i", # Read count
+     "FC" => "i", # Fragment count
+     "KC" => "i"  # k-mer count
     }
 
   def initialize(fields)
-    super(fields, GFA::Line::Containment::FieldRegexp,
-          GFA::Line::Containment::OptfieldTypes)
+    super(fields, GFA::Line::Link::FieldRegexp, GFA::Line::Link::OptfieldTypes)
   end
 
 end
