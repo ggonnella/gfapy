@@ -14,3 +14,4 @@ class GFA
 end
 
 require "./gfa/optfield.rb"
+require "./gfa/line.rb"
