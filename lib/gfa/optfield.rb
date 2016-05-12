@@ -24,7 +24,7 @@ class GFA::Optfield
   end
 
   def to_s
-    "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Opfield::Separator}#@value"
+    "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Optfield::Separator}#@value"
   end
 
   private
@@ -44,6 +44,10 @@ class GFA::Optfield
 
 end
 
+class GFA::Optfield::TagError < ArgumentError; end
+class GFA::Optfield::TypeError < ArgumentError; end
+class GFA::Optfield::ValueError < ArgumentError; end
+
 class String
 
   def to_gfa_optfield
@@ -56,7 +60,3 @@ class String
   end
 
 end
-
-require "./gfa/optfield/tag_error.rb"
-require "./gfa/optfield/type_error.rb"
-require "./gfa/optfield/value_error.rb"
