@@ -18,4 +18,19 @@ class GFA::Line::Path < GFA::Line
           GFA::Line::Path::OptfieldTypes)
   end
 
+  def split_segment_names
+    path_segments = gfa_line.segment_name.split(",")
+    if path_segments.size == 1
+      raise TypeError, "Path contains only one segment:\n#{gfa_line}"
+    end
+    retval = []
+    path_segments.each do |elem|
+      elem =~ /(.*)([\+-])/
+      if $1.nil?
+        raise TypeError, "Segment name list format error:\n#{gfa_line}"
+      end
+      retval << [$1, $2]
+    end
+    return retval
+  end
 end
