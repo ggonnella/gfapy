@@ -1,6 +1,7 @@
 class GFA::Line::Path < GFA::Line
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#path-line
+  # note: the field names were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type,  /P/],
      [:from,         /[!-)+-<>-~][!-~]*/], # Path name

@@ -1,6 +1,7 @@
 class GFA::Line::Link < GFA::Line
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#link-line
+  # note: the field names were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /L/],
      [:from,        /[!-)+-<>-~][!-~]*/], # name of segment
