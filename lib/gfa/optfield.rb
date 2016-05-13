@@ -27,16 +27,25 @@ class GFA::Optfield
     "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Optfield::Separator}#@value"
   end
 
+  def value=(v)
+    @value = v
+    validate_value!
+  end
+
   private
 
   def validate!
-    if @tag !~ TagRegexp
+    if @tag !~ /^#{TagRegexp}$/
       raise GFA::Optfield::TagError, "Tag name invalid: '#@tag'"
     end
     if !TypeRegexp.keys.include?(@type)
       raise GFA::Optfield::TypeError, "Type unknown: '#@type'"
     end
-    if @value !~ TypeRegexp[@type]
+    validate_value!
+  end
+
+  def validate_value!
+    if @value !~ /^#{TypeRegexp[@type]}$/
       raise GFA::Optfield::ValueError,
         "Value invalid for type #@type: '#@value'"
     end
