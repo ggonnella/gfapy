@@ -151,4 +151,23 @@ class TestGFALine < Test::Unit::TestCase
     assert_raise(NoMethodError) { l.ZZ="1" }
   end
 
+  def test_to_gfa_line
+    l = "H\tVN:Z:1.0".to_gfa_line
+    assert_equal(GFA::Line::Header, l.class)
+    assert_equal(GFA::Line::Header, l.to_gfa_line.class)
+  end
+
+  def test_clone
+    l = "H\tVN:Z:1.0".to_gfa_line
+    l1 = l
+    l2 = l.clone
+    assert_equal(GFA::Line::Header, l.class)
+    assert_equal(GFA::Line::Header, l2.class)
+    l2.VN="2.0"
+    assert_equal("2.0", l2.VN)
+    assert_equal("1.0", l.VN)
+    l1.VN="2.0"
+    assert_equal("2.0", l.VN)
+  end
+
 end

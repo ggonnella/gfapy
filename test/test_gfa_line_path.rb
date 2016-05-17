@@ -9,7 +9,7 @@ class TestGFALinePath < Test::Unit::TestCase
     assert_nothing_raised { str.to_gfa_line }
     assert_equal(GFA::Line::Path, str.to_gfa_line.class)
     assert_equal(fields[0], str.to_gfa_line.record_type)
-    assert_equal(fields[1], str.to_gfa_line.from)
+    assert_equal(fields[1], str.to_gfa_line.path_name)
     assert_equal(fields[2], str.to_gfa_line.segment_name(false))
     assert_equal([["1","+"],["2","-"],["3","+"]], str.to_gfa_line.segment_name)
     assert_equal(fields[3], str.to_gfa_line.cigar(false))

@@ -54,6 +54,14 @@ class GFA::Optfield
     end
   end
 
+  def to_gfa_optfield
+    self
+  end
+
+  def clone
+    self.class.new(@tag.clone, @type.clone, @value.clone)
+  end
+
   private
 
   def validate!

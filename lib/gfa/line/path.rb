@@ -4,7 +4,7 @@ class GFA::Line::Path < GFA::Line
   # note: the field names were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type,  /P/],
-     [:from,         /[!-)+-<>-~][!-~]*/], # Path name
+     [:path_name,    /[!-)+-<>-~][!-~]*/], # Path name
      # note: the cigar and segment_name regexps were changed to better
      #       implement what written in the commentaries
      #       (i.e. a comma-separated list
@@ -48,4 +48,5 @@ class GFA::Line::Path < GFA::Line
     end
     return retval
   end
+
 end

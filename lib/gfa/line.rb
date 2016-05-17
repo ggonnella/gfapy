@@ -58,6 +58,15 @@ class GFA::Line
     self.class.validate_record_type!(self.record_type)
   end
 
+  def clone
+    if self.class === GFA::Line
+      self.class.new(@fields.clone.map{|e|e.clone}, @reqfield_definitions.clone,
+                     @optfield_types.clone, @reqfield_cast.clone)
+    else
+      self.class.new(@fields.clone.map{|e|e.clone})
+    end
+  end
+
   # allow to access the required fields only
   def reqfields
     @fields[0..@required_fieldnames.size-1]
@@ -128,6 +137,10 @@ class GFA::Line
       end
     end
     super
+  end
+
+  def to_gfa_line
+    self
   end
 
   private
