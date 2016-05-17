@@ -125,7 +125,7 @@ class TestGFALine < Test::Unit::TestCase
 
     assert_equal("H", l.record_type)
     assert_equal("12", l.from)
-    assert_equal("13", l.xx)
+    assert_equal(13, l.xx)
     assert_equal("HI", l.XY)
     assert_raise(NoMethodError) { l.ZZ }
   end
@@ -141,9 +141,9 @@ class TestGFALine < Test::Unit::TestCase
     assert_raise(GFA::Line::RequiredFieldTypeError) { l.from = "A" }
     l.from = "14"
     assert_equal("14", l.from)
-    assert_equal("13", l.xx)
-    l.xx = "15"
-    assert_equal("15", l.xx)
+    assert_equal(13, l.xx)
+    l.xx = 15
+    assert_equal(15, l.xx)
     assert_raise(GFA::Optfield::ValueError) { l.xx = "1A" }
     assert_equal("HI", l.XY)
     l.XY = "HO"

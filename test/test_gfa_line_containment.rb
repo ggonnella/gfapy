@@ -15,8 +15,8 @@ class TestGFALineContainment < Test::Unit::TestCase
     assert_equal(fields[4], str.to_gfa_line.to_orient)
     assert_equal(fields[5], str.to_gfa_line.pos)
     assert_equal(fields[6], str.to_gfa_line.overlap)
-    assert_equal("1232", str.to_gfa_line.RC)
-    assert_equal("3", str.to_gfa_line.NM)
+    assert_equal(1232, str.to_gfa_line.RC)
+    assert_equal(3, str.to_gfa_line.NM)
     assert_equal("abcd", str.to_gfa_line.ab)
     assert_raises(TypeError) { (str+"\tH1").to_gfa_line }
     assert_raises(GFA::Line::RequiredFieldMissingError) { "C\tH".to_gfa_line }

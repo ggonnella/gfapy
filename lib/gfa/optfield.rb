@@ -1,6 +1,6 @@
 class GFA::Optfield
 
-  attr_reader :tag, :type, :value
+  attr_reader :tag, :type
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#optional-fields
   TagRegexp = /[A-Za-z][A-Za-z0-9]/
@@ -28,8 +28,30 @@ class GFA::Optfield
   end
 
   def value=(v)
-    @value = v
+    @value = v.to_s
     validate_value!
+  end
+
+  def value(cast = true)
+    return @value if !cast
+    case @type
+    when "i"
+      return @value.to_i
+    when "f"
+      return @value.to_f
+    when "H"
+      return @value.to_i(16)
+    when "B"
+      elems = @value.split(",")
+      etype = elems.shift
+      if etype == "f"
+        return elems.map{|e|e.to_f}
+      else
+        return elems.map{|e|e.to_i}
+      end
+    else
+      return @value
+    end
   end
 
   private

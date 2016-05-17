@@ -15,14 +15,14 @@ class TestGFALineLink < Test::Unit::TestCase
     assert_equal(fields[3], str.to_gfa_line.to)
     assert_equal(fields[4], str.to_gfa_line.to_orient)
     assert_equal(fields[5], str.to_gfa_line.overlap)
-    assert_equal("1232", str.to_gfa_line.RC)
-    assert_equal("3", str.to_gfa_line.NM)
-    assert_equal("2321", str.to_gfa_line.FC)
-    assert_equal("1212", str.to_gfa_line.KC)
-    assert_equal("40", str.to_gfa_line.MQ)
+    assert_equal(1232, str.to_gfa_line.RC)
+    assert_equal(3, str.to_gfa_line.NM)
+    assert_equal(2321, str.to_gfa_line.FC)
+    assert_equal(1212, str.to_gfa_line.KC)
+    assert_equal(40, str.to_gfa_line.MQ)
     assert_equal("abcd", str.to_gfa_line.ab)
     assert_raises(TypeError) { (str+"\tH1").to_gfa_line }
-    assert_raises(GFA::Line::RequiredFieldMissingError) { "C\tH".to_gfa_line }
+    assert_raises(GFA::Line::RequiredFieldMissingError) { "L\tH".to_gfa_line }
     assert_raises(GFA::Line::RequiredFieldTypeError) do
       f=fields.dup; f[2]="x"; f.join("\t").to_gfa_line
     end
