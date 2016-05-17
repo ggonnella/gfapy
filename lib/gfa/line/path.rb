@@ -16,24 +16,29 @@ class GFA::Line::Path < GFA::Line
                                    # A comma-separated list of CIGAR strings
     ]
 
+  FieldCast =
+    { :segment_name => lambda {|e| split_segment_name(e) },
+      :cigar        => lambda {|e| split_cigar(e) } }
+
   OptfieldTypes = {}
 
   def initialize(fields)
     super(fields, GFA::Line::Path::FieldRegexp,
-          GFA::Line::Path::OptfieldTypes)
-  end
-
-  def split_segment_names
-    split_comma_separated(self.segment_name, /(.*)([\+-])/)
-  end
-
-  def split_cigar
-    split_comma_separated(self.cigar, /([0-9]+)([MIDNSHPX=])/)
+          GFA::Line::Path::OptfieldTypes,
+          GFA::Line::Path::FieldCast)
   end
 
   private
 
-  def split_comma_separated(str_to_split, elems_regex)
+  def self.split_segment_name(sn)
+    split_comma_separated(sn, /(.*)([\+-])/)
+  end
+
+  def self.split_cigar(c)
+    split_comma_separated(c, /([0-9]+)([MIDNSHPX=])/)
+  end
+
+  def self.split_comma_separated(str_to_split, elems_regex)
     elems = str_to_split.split(",")
     retval = []
     elems.each do |elem|

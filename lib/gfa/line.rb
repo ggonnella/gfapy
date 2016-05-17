@@ -38,13 +38,18 @@ class GFA::Line
   # the field name will be used as method name; the regular expression
   # will be used to validate the content of the field
   #
-  # <optfield_types> is an hash of optfield_tag to optfield_type
+  # <optfield_types> is a (possibly empty) hash of optfield_tag to optfield_type
   # pairs; if an instance of the predefined optfield_tag is specified in a
   # record, it will be required to be of type optfield_type
   #
-  def initialize(fields, reqfield_definitions, optfield_types)
+  # <reqfield_cast> is a (possibly empty) hash of field name to lambda,
+  # where the lambda defines a conversion of the value of the field
+  # which is performed when the field name getter method is called
+  def initialize(fields, reqfield_definitions, optfield_types,
+                 reqfield_cast = {})
     @reqfield_definitions = reqfield_definitions
     @optfield_types = optfield_types
+    @reqfield_cast = reqfield_cast
     @fields = fields
     @fieldnames = []
     validate_field_definitions!
@@ -108,8 +113,12 @@ class GFA::Line
   def method_missing(m, *args, &block)
     i = @fieldnames.index(m)
     if !i.nil?
-      raise ArgumentError, "#{m} requires no argument" if args.size != 0
-      return self[i]
+      raise ArgumentError, "#{m} takes at most 1 argument" if args.size > 1
+      if @reqfield_cast[m] and (args[0] or args.size == 0)
+        return @reqfield_cast[m].call(self[i])
+      else
+        return self[i]
+      end
     end
     if m.to_s =~ /(.*)=/
       i = @fieldnames.index($1.to_sym)

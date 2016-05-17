@@ -13,7 +13,7 @@ class TestGFALineContainment < Test::Unit::TestCase
     assert_equal(fields[2], str.to_gfa_line.from_orient)
     assert_equal(fields[3], str.to_gfa_line.to)
     assert_equal(fields[4], str.to_gfa_line.to_orient)
-    assert_equal(fields[5], str.to_gfa_line.pos)
+    assert_equal(12, str.to_gfa_line.pos)
     assert_equal(fields[6], str.to_gfa_line.overlap)
     assert_equal(1232, str.to_gfa_line.RC)
     assert_equal(3, str.to_gfa_line.NM)

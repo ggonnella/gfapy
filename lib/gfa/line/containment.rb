@@ -12,6 +12,9 @@ class GFA::Line::Containment < GFA::Line
      [:overlap,     /\*|([0-9]+[MIDNSHPX=])+/] # CIGAR string describing overlap
     ]
 
+  FieldCast =
+    { :pos => lambda {|e| e.to_i} }
+
   OptfieldTypes = {
      "RC" => "i", # Read Coverage
      "NM" => "i", # Number of mismatches/gaps
@@ -19,7 +22,8 @@ class GFA::Line::Containment < GFA::Line
 
   def initialize(fields)
     super(fields, GFA::Line::Containment::FieldRegexp,
-          GFA::Line::Containment::OptfieldTypes)
+          GFA::Line::Containment::OptfieldTypes,
+          GFA::Line::Containment::FieldCast)
   end
 
 end
