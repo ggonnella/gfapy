@@ -103,7 +103,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_raises(ArgumentError) { gfa.merge_unbranched_segpath("0","3") }
+    assert_raises(ArgumentError) { gfa.merge_unbranched_segpath!("0","3") }
     s = ["S\t0\tACGA",
          "S\t1\tACGA",
          "S\t2\tACGT",
@@ -114,7 +114,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    gfa.merge_unbranched_segpath("0","3")
+    assert_nothing_raised { gfa.merge_unbranched_segpath!("0","3") }
     assert_raises(RuntimeError) {gfa.segment!("0")}
     assert_raises(RuntimeError) {gfa.segment!("1")}
     assert_raises(RuntimeError) {gfa.segment!("2")}

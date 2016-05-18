@@ -19,36 +19,24 @@ class GFA
     @path_names = []
   end
 
-  def <<(gfa_line)
-    gfa_line = gfa_line.to_gfa_line
-    rt = gfa_line.record_type
-    i = @lines[rt].size
-    @lines[rt] << gfa_line
-    case rt
-    when "S"
-      validate_segment_and_path_name_unique!(gfa_line.name)
-      @segment_names << gfa_line.name
-    when "L", "C"
-      [:from,:to].each do |e|
-        sn = gfa_line.send(e)
-        validate_segment_name_exists!(sn)
-        @connect[rt][e][sn] ||= []
-        @connect[rt][e][sn] << i
-      end
-    when "P"
-      validate_segment_and_path_name_unique!(gfa_line.path_name)
-      @path_names << gfa_line.path_name
-      gfa_line.segment_name.each do |sn, o|
-        validate_segment_name_exists!(sn)
-        @paths_with[sn] ||= []
-        @paths_with[sn] << i
-      end
-    end
-  end
-
   def segment(segment_name)
     i = @segment_names.index(segment_name)
     i.nil? ? nil : @lines["S"][i]
+  end
+
+  def unbranched_segpath(from, to)
+    segpath = [from]
+    last_orient = nil
+    while segpath.last != to
+      from_list = links_from(segpath.last)
+      return nil if from_list.size != 1
+      if !last_orient.nil? and from_list[0].from_orient != last_orient
+        return nil
+      end
+      last_orient = from_list[0].to_orient
+      segpath << from_list[0].to
+    end
+    return segpath
   end
 
   def segment!(segment_name)
@@ -144,18 +132,6 @@ class GFA
   end
 
   private
-
-  def validate_segment_and_path_name_unique!(sn)
-    if @segment_names.include?(sn) or @path_names.include?(sn)
-      raise ArgumentError, "Segment or path name not unique '#{sn}'"
-    end
-  end
-
-  def validate_segment_name_exists!(sn)
-    if !@segment_names.include?(sn)
-      raise ArgumentError, "Link line refer to unknown segment '#{sn}'"
-    end
-  end
 
   def link_or_containment(rt, from, from_orient, to, to_orient, pos)
     @connect[rt][:from].fetch(from,[]).each do |li|
