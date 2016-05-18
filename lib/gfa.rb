@@ -51,7 +51,7 @@ class GFA
   #   - if a segpath exists -> an array of segment names
   #   - otherwise -> +nil+
   def unbranched_segpath(from, to)
-    @marks["S"] = []
+    @mark["S"] = []
     segpaths = traverse_unbranched(from, true, store_path: true)
     return segpaths.last == to ? segpaths : nil
   end
@@ -290,6 +290,14 @@ class GFA
   GFA::Line::RecordTypes.each do |rt, klass|
     klass =~ /GFA::Line::(.*)/
     define_method(:"#{$1.downcase}s") { lines(rt) }
+  end
+
+  def segment_names
+    @segment_names.compact
+  end
+
+  def path_names
+    @path_names.compact
   end
 
   def to_s

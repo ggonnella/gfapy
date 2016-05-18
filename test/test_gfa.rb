@@ -38,11 +38,11 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << l1 }
     assert_equal([l1], gfa.lines("L"))
     assert_equal([l1], gfa.links)
-    assert_equal(l1, gfa.link("1", "+", "2", "+"))
-    assert_equal(l1, gfa.link("1", nil, "2", nil))
-    assert_equal(nil, gfa.link("1", "-", "2", nil))
-    assert_nothing_raised {gfa.link!("1", nil, "2", nil)}
-    assert_raises(RuntimeError) {gfa.link!("1", "-", "2", nil)}
+    assert_equal(l1, gfa.link("1", "2", :from_orient => "+", :to_orient => "+"))
+    assert_equal(l1, gfa.link("1", "2"))
+    assert_equal(nil, gfa.link("1", "2", :from_orient => "-"))
+    assert_nothing_raised {gfa.link!("1", "2")}
+    assert_raises(RuntimeError) {gfa.link!("1", "2", :from_orient => "-")}
     l2 = "L\t1\t+\t3\t+\t12M"
     assert_raises(ArgumentError) { gfa << l2 }
   end
@@ -56,11 +56,14 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << c1 }
     assert_equal([c1], gfa.lines("C"))
     assert_equal([c1], gfa.containments)
-    assert_equal(c1, gfa.containment("1", "+", "2", "+", "12"))
-    assert_equal(c1, gfa.containment("1", nil, "2", nil, nil))
-    assert_equal(nil, gfa.containment("1", "+", "2", "+", "10"))
-    assert_nothing_raised {gfa.containment!("1", nil, "2", nil, nil)}
-    assert_raises(RuntimeError) {gfa.containment!("1", "+", "2", "+", "10")}
+    assert_equal(c1, gfa.containment("1", "2", :from_orient => "+",
+                                     :to_orient => "+", :pos => "12"))
+    assert_equal(c1, gfa.containment("1", "2"))
+    assert_equal(nil, gfa.containment("1", "2", :from_orient => "+",
+                                     :to_orient => "+", :pos => "10"))
+    assert_nothing_raised {gfa.containment!("1",  "2")}
+    assert_raises(RuntimeError) {gfa.containment!("1", "2", :from_orient => "+",
+                                     :to_orient => "+", :pos => "10")}
     c2 = "C\t1\t+\t3\t+\t12\t12M"
     assert_raises(ArgumentError) { gfa << c2 }
   end

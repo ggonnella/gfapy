@@ -144,6 +144,7 @@ module GFA::Edit
                                              @lines["P"][li].path_name }
     to_rm.each {|pt| delete_path!(pt)}
     @lines["S"][i] = nil
+    @segment_names[i] = nil
     return self
   end
 
@@ -155,12 +156,12 @@ module GFA::Edit
     return self
   end
 
-  def delete_link!(from, from_orient, to, to_orient)
+  def delete_link!(from, to, from_orient: nil, to_orient: nil)
     delete_containments_or_links("L", from, from_orient, to,
                                  to_orient, nil, true)
   end
 
-  def delete_containment!(from, from_orient, to, to_orient, pos)
+  def delete_containment!(from, to, from_orient: nil, to_orient: nil, pos: nil)
     delete_containments_or_links("C", from, from_orient, to,
                                  to_orient, pos, true)
   end
@@ -179,7 +180,7 @@ module GFA::Edit
     segments.map do |s|
       (s.send(count_tag).to_f / s.LN) < mincov ? s.name : nil
     end.compact.each do |sn|
-      gfa.delete_segment!(sn)
+      delete_segment!(sn)
     end
   end
 
@@ -225,7 +226,7 @@ module GFA::Edit
     (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
-      l = link!(a, nil, b, nil)
+      l = link!(a, b)
       a = segment!(a)
       b = segment!(b)
       return "*" if a.sequence == "*" or b.sequence == "*"
