@@ -109,26 +109,27 @@ class GFA::Line
   end
 
   def [](i)
-    if  i >= @fieldnames.size
+    get_field(i, true)
+  end
+
+  def get_field(i, autocast = true)
+    if i >= @fieldnames.size
       raise ArgumentError, "Line does not have a field number #{i}"
     end
     if i < @required_fieldnames.size
-      return @fields[i]
+      if autocast and @reqfield_cast.has_key?(@fieldnames[i])
+        return @reqfield_cast[@fieldnames[i]].call(@fields[i])
+      else
+        return @fields[i]
+      end
     else
-      return @fields[i].value
+      return @fields[i].value(autocast)
     end
   end
 
   def method_missing(m, *args, &block)
     i = @fieldnames.index(m)
-    if !i.nil?
-      raise ArgumentError, "#{m} takes at most 1 argument" if args.size > 1
-      if @reqfield_cast[m] and (args[0] or args.size == 0)
-        return @reqfield_cast[m].call(self[i])
-      else
-        return self[i]
-      end
-    end
+    return get_field(i, *args) if !i.nil?
     if m.to_s =~ /(.*)=/
       i = @fieldnames.index($1.to_sym)
       if !i.nil?
