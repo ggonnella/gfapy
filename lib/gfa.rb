@@ -49,17 +49,41 @@ class GFA
     i.nil? ? nil : @lines["S"][i]
   end
 
+  def segment!(segment_name)
+    s = segment(segment_name)
+    raise "No segment has name #{segment_name}" if s.nil?
+    s
+  end
+
   def path(path_name)
     i = @path_names.index(path_name)
     i.nil? ? nil : @lines["P"][i]
+  end
+
+  def path!(path_name)
+    pt = path(path_name)
+    raise "No path has name #{path_name}" if pt.nil?
+    pt
   end
 
   def link(from, from_orient, to, to_orient)
     link_or_containment("L", from, from_orient, to, to_orient, nil)
   end
 
+  def link!(from, from_orient, to, to_orient)
+    l = link(from, from_orient, to, to_orient)
+    raise "No link found" if l.nil?
+    l
+  end
+
   def containment(from, from_orient, to, to_orient, pos)
     link_or_containment("C", from, from_orient, to, to_orient, pos)
+  end
+
+  def containment!(from, from_orient, to, to_orient, pos)
+    c = containment(from, from_orient, to, to_orient, pos)
+    raise "No containment found" if c.nil?
+    c
   end
 
   ["links", "containments"].each do |c|

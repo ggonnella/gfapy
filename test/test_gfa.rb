@@ -23,6 +23,9 @@ class TestGFA < Test::Unit::TestCase
     assert_equal([s1, s2], gfa.lines("S"))
     assert_equal([s1, s2], gfa.segments)
     assert_equal(s1, gfa.segment("1"))
+    assert_equal(nil, gfa.segment("0"))
+    assert_nothing_raised { gfa.segment!("1") }
+    assert_raises(RuntimeError) { gfa.segment!("0") }
     assert_raises(ArgumentError) { gfa << s2 }
   end
 
@@ -38,6 +41,8 @@ class TestGFA < Test::Unit::TestCase
     assert_equal(l1, gfa.link("1", "+", "2", "+"))
     assert_equal(l1, gfa.link("1", nil, "2", nil))
     assert_equal(nil, gfa.link("1", "-", "2", nil))
+    assert_nothing_raised {gfa.link!("1", nil, "2", nil)}
+    assert_raises(RuntimeError) {gfa.link!("1", "-", "2", nil)}
     l2 = "L\t1\t+\t3\t+\t12M"
     assert_raises(ArgumentError) { gfa << l2 }
   end
@@ -54,6 +59,8 @@ class TestGFA < Test::Unit::TestCase
     assert_equal(c1, gfa.containment("1", "+", "2", "+", "12"))
     assert_equal(c1, gfa.containment("1", nil, "2", nil, nil))
     assert_equal(nil, gfa.containment("1", "+", "2", "+", "10"))
+    assert_nothing_raised {gfa.containment!("1", nil, "2", nil, nil)}
+    assert_raises(RuntimeError) {gfa.containment!("1", "+", "2", "+", "10")}
     c2 = "C\t1\t+\t3\t+\t12\t12M"
     assert_raises(ArgumentError) { gfa << c2 }
   end
@@ -69,6 +76,8 @@ class TestGFA < Test::Unit::TestCase
     assert_equal([p1], gfa.paths)
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
+    assert_nothing_raised {gfa.path!("4")}
+    assert_raises(RuntimeError) {gfa.path!("5")}
     p2 = "P\t1\t1+,2+\t122M,120M"
     p3 = "P\t5\t1+,3+\t122M,120M"
     assert_raises(ArgumentError) { gfa << p2 }
