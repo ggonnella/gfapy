@@ -108,6 +108,27 @@ module GFA::Edit
     self
   end
 
+  def merge_all_unbranched_segpaths!
+    @mark["S"] = []
+    pairs = []
+    @segment_names.each_with_index do |sn, i|
+      next if @mark["S"][i] == :visited
+      from_sn = @connect["L"][:from].fetch(sn,[])
+      to_sn = @connect["L"][:to].fetch(sn,[])
+      if from_sn.size == 1 and to_sn.size == 1 and
+          @lines["L"][to_sn[0]].to_orient ==
+          @lines["L"][from_sn[0]].from_orient
+        @mark["S"][i] = :visited
+        end1 = traverse_unbranched(sn, false)
+        end2 = traverse_unbranched(sn, true)
+        pairs << [end1, end2] if end1 != end2
+      end
+    end
+    pairs.each {|end1, end2| merge_unbranched_segpath!(end1, end2)}
+    @mark["S"] = []
+    self
+  end
+
   def delete_segment!(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?

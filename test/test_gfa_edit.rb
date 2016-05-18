@@ -124,8 +124,40 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_raises(RuntimeError) {gfa.segment!("2")}
     assert_raises(RuntimeError) {gfa.segment!("3")}
     assert_nothing_raised {gfa.segment!("0_1_2_3")}
-    assert_equal([],gfa.links)
-    assert_equal("ACGACGACGTCGA",gfa.segment("0_1_2_3").sequence)
+    assert_equal([], gfa.links)
+    assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)
+  end
+
+  def test_unbranched_path_merge_all
+    s = ["S\t0\t*",
+         "S\t1\t*",
+         "S\t2\t*",
+         "S\t3\t*"]
+    l = ["L\t0\t+\t1\t+\t1M",
+         "L\t1\t+\t2\t-\t1M",
+         "L\t2\t-\t3\t+\t1M"]
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    (s + l).each {|line| gfa << line }
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_equal(1, gfa.segments.size)
+    assert_equal("0_1_2_3", gfa.segments[0].name)
+    assert_equal([], gfa.links)
+    s = ["S\t0\t*",
+         "S\t1\t*",
+         "S\t2\t*",
+         "S\t3\t*"]
+    l = ["L\t0\t+\t1\t+\t1M",
+         "L\t0\t+\t2\t+\t1M",
+         "L\t1\t+\t2\t-\t1M",
+         "L\t2\t-\t3\t+\t1M"].map(&:to_gfa_line)
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    (s + l).each {|line| gfa << line }
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_equal(4, gfa.segments.size)
+    assert_equal(["0","1","2","3"], gfa.segments.map(&:name))
+    assert_equal(l, gfa.links)
   end
 
 end
