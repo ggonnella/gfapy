@@ -3,6 +3,7 @@ require_relative "./gfa/optfield.rb"
 require_relative "./gfa/line.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/cigar.rb"
+require_relative "./gfa/sequence.rb"
 
 class GFA
 

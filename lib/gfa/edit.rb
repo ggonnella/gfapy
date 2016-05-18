@@ -1,3 +1,6 @@
+#
+# Methods for the GFA class, which allow to change the content of the graph
+#
 module GFA::Edit
 
   def multiply_segment!(segment_name, copy_names)
@@ -43,6 +46,58 @@ module GFA::Edit
 
   def duplicate_segment!(segment_name, copy_name)
     multiply_segment!(segment_name, [copy_name])
+  end
+
+  # limitations:
+  # - all containments und paths involving merged segments are deleted
+  def merge_unbranched_segpath(first_segment, last_segment)
+    segpath = unbranched_segpath(first_segment, last_segment)
+    if segpath.nil?
+      raise ArgumentError,
+        "No unbranched segments path from #{first_segment} to #{last_segment}"
+    end
+    merged = first_segment.clone
+    merged.name = segpath.join("_")
+    merged.sequence = joined_sequences(segpath)
+    sum_of_counts(segpath).each do |count_tag, count|
+      merged.send(:"#{count_tag}=", count)
+    end
+    first_reversed = (links_from(first_segment)[0].from_orient == "+")
+    last_reversed = (links_to(last_segment)[0].to_orient == "+")
+    self << merged
+    links_to(from_segment).each do |l|
+      l2 = l.clone
+      l2.to = merged.name
+      if first_reversed
+        l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+      end
+      self << l2
+    end
+    links_from(last_segment).each do |l|
+      l2 = l.clone
+      l2.from = merged.name
+      if last_reversed
+        l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+      end
+      self << l2
+    end
+    segpath.each {|sn| delete_segment!(sn)}
+    self
+  end
+
+  def unbranched_segpath(from, to)
+    segpath = [from]
+    last_orient = nil
+    while segpath.last != to
+      from_list = links_from(segpath.last)
+      return nil if from_list.size != 1
+      if !last_orient.nil? and from_list[0].from_orient != last_orient
+        return nil
+      end
+      last_orient = from_list[0].to_orient
+      segpath << from_list[0].to
+    end
+    return segpath
   end
 
   def delete_segment!(segment_name)
@@ -100,6 +155,46 @@ module GFA::Edit
         gfa_line.send(:"#{count_tag}=", value.to_i.to_s)
       end
     end
+  end
+
+  def sum_of_counts(segnames)
+    retval = {}
+    segs = segnames.map {|sn|segment(sn)}
+    [:KC, :RC, :FC].each do |count_tag|
+      segs.each do |s|
+        if s.optional_fieldnames.include?(count_tag)
+          retval[count_tag] ||= 0
+          retval[count_tag] += s.send(count_tag)
+        end
+      end
+    end
+    return retval
+  end
+
+  def joined_sequences(segnames)
+    retval = ""
+    (seqnames.size-1).times do |i|
+      a = segnames[i]
+      b = segnames[i+1]
+      l = link!(a, nil, b, nil)
+      return "*" if a.sequence == "*" or b.sequence == "*"
+      if l.overlap == "*"
+        cut = 0
+      elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
+        cut = l.overlap[0][0]
+      else
+        raise "Overlaps contaning other operations than M are not supported"
+      end
+      if retval.empty?
+        retval << (l.from_orient == "+" ? a.sequence : a.sequence.revcompl)
+      end
+      seq = (l.to_orient == "+" ? b.sequence : b.sequence.revcompl)
+      if cut > 0
+        raise "Inconsistent overlap" if retval[(-cut)..-1] != seq[0..(cut-1)]
+      end
+      retval << seq[cut..-1]
+    end
+    return retval
   end
 
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,

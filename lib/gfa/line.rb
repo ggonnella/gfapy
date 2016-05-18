@@ -144,6 +144,11 @@ class GFA::Line
     self
   end
 
+  def self.other_orientation(orientation)
+    raise "Unknown orientation" if !["+","-"].include?(orientation)
+    return orientation == "+" ? "-" : "+"
+  end
+
   private
 
   def validate_field_definitions!
