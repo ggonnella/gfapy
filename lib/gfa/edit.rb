@@ -78,11 +78,7 @@ module GFA::Edit
   # limitations:
   # - all containments und paths involving merged segments are deleted
   def merge_unbranched_segpath!(first_segment, last_segment)
-    segpath = unbranched_segpath(first_segment, last_segment)
-    if segpath.nil?
-      raise ArgumentError,
-        "No unbranched segments path from #{first_segment} to #{last_segment}"
-    end
+    segpath = unbranched_segpath!(first_segment, last_segment)
     merged = segment(first_segment).clone
     merged.name = segpath.join("_")
     merged.sequence = joined_sequences(segpath)

@@ -19,11 +19,6 @@ class GFA
     @path_names = []
   end
 
-  def segment(segment_name)
-    i = @segment_names.index(segment_name)
-    i.nil? ? nil : @lines["S"][i]
-  end
-
   def unbranched_segpath(from, to)
     segpath = [from]
     last_orient = nil
@@ -37,6 +32,17 @@ class GFA
       segpath << from_list[0].to
     end
     return segpath
+  end
+
+  def unbranched_segpath!(from, to)
+    usp = unbranched_segpath(from, to)
+    raise "No unbranched segment path exists from #{from} to #{to}" if usp.nil?
+    return usp
+  end
+
+  def segment(segment_name)
+    i = @segment_names.index(segment_name)
+    i.nil? ? nil : @lines["S"][i]
   end
 
   def segment!(segment_name)
