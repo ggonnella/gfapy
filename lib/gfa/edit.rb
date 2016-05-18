@@ -175,6 +175,14 @@ module GFA::Edit
     return self
   end
 
+  def delete_low_coverage_segments!(mincov, count_tag: :RC)
+    segments.map do |s|
+      (s.send(count_tag).to_f / s.LN) < mincov ? s.name : nil
+    end.compact.each do |sn|
+      gfa.delete_segment!(sn)
+    end
+  end
+
   private
 
   def validate_segment_and_path_name_unique!(sn)
