@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.author = 'Giorgio Gonnella'
   s.email = 'gonnella@zbh.uni-hamburg.de'
   s.files = ['lib/gfa.rb', 'lib/gfa/edit.rb', 'lib/gfa/line.rb',
+             'lib/gfa/cigar.rb', 'lib/gfa/sequence.rb',
              'lib/gfa/optfield.rb', 'lib/gfa/line/header.rb',
              'lib/gfa/line/containment.rb', 'lib/gfa/line/link.rb',
              'lib/gfa/line/segment.rb', 'lib/gfa/line/path.rb']
