@@ -44,18 +44,18 @@ class GFA
     end
   end
 
-  def get_segment(segment_name)
+  def segment(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     @lines["S"][i]
   end
 
-  def get_link(from, from_orient, to, to_orient)
-    get_link_or_containment("L", from, from_orient, to, to_orient, nil)
+  def link(from, from_orient, to, to_orient)
+    link_or_containment("L", from, from_orient, to, to_orient, nil)
   end
 
-  def get_containment(from, from_orient, to, to_orient, pos)
-    get_link_or_containment("C", from, from_orient, to, to_orient, pos)
+  def containment(from, from_orient, to, to_orient, pos)
+    link_or_containment("C", from, from_orient, to, to_orient, pos)
   end
 
   def each(record_type)
@@ -115,7 +115,7 @@ class GFA
     end
   end
 
-  def get_link_or_containment(rt, from, from_orient, to, to_orient, pos)
+  def link_or_containment(rt, from, from_orient, to, to_orient, pos)
     @connect[rt][:from].fetch(from,[]).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and

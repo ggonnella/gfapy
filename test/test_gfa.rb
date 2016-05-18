@@ -22,7 +22,7 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << s2 }
     assert_equal([s1, s2], gfa.lines("S"))
     assert_equal([s1, s2], gfa.segments)
-    assert_equal(s1, gfa.get_segment("1"))
+    assert_equal(s1, gfa.segment("1"))
     assert_raises(ArgumentError) { gfa << s2 }
   end
 
@@ -35,9 +35,9 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << l1 }
     assert_equal([l1], gfa.lines("L"))
     assert_equal([l1], gfa.links)
-    assert_equal(l1, gfa.get_link("1", "+", "2", "+"))
-    assert_equal(l1, gfa.get_link("1", nil, "2", nil))
-    assert_equal(nil, gfa.get_link("1", "-", "2", nil))
+    assert_equal(l1, gfa.link("1", "+", "2", "+"))
+    assert_equal(l1, gfa.link("1", nil, "2", nil))
+    assert_equal(nil, gfa.link("1", "-", "2", nil))
     l2 = "L\t1\t+\t3\t+\t12M"
     assert_raises(ArgumentError) { gfa << l2 }
   end
@@ -51,9 +51,9 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << c1 }
     assert_equal([c1], gfa.lines("C"))
     assert_equal([c1], gfa.containments)
-    assert_equal(c1, gfa.get_containment("1", "+", "2", "+", "12"))
-    assert_equal(c1, gfa.get_containment("1", nil, "2", nil, nil))
-    assert_equal(nil, gfa.get_containment("1", "+", "2", "+", "10"))
+    assert_equal(c1, gfa.containment("1", "+", "2", "+", "12"))
+    assert_equal(c1, gfa.containment("1", nil, "2", nil, nil))
+    assert_equal(nil, gfa.containment("1", "+", "2", "+", "10"))
     c2 = "C\t1\t+\t3\t+\t12\t12M"
     assert_raises(ArgumentError) { gfa << c2 }
   end
@@ -82,15 +82,15 @@ class TestGFA < Test::Unit::TestCase
     p = "P\t4\t2+,0-\t12M,12M".to_gfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal([l], gfa.links)
-    assert_equal(l, gfa.get_link("1", "+", "2", "+"))
+    assert_equal(l, gfa.link("1", "+", "2", "+"))
     gfa.delete_link!("1","+","2","+")
     assert_equal([], gfa.links)
-    assert_equal(nil, gfa.get_link("1", "+", "2", "+"))
+    assert_equal(nil, gfa.link("1", "+", "2", "+"))
     assert_equal([c], gfa.containments)
-    assert_equal(c, gfa.get_containment("1", "+", "0", "+", "12"))
+    assert_equal(c, gfa.containment("1", "+", "0", "+", "12"))
     gfa.delete_containment!("1", "+", "0", "+", "12")
     assert_equal([], gfa.containments)
-    assert_equal(nil, gfa.get_containment("1", "+", "0", "+","12"))
+    assert_equal(nil, gfa.containment("1", "+", "0", "+","12"))
     gfa << l
     assert_equal([l], gfa.links)
     gfa << c
@@ -136,30 +136,30 @@ class TestGFA < Test::Unit::TestCase
     assert_equal(s, gfa.segments)
     assert_equal([l], gfa.links)
     assert_equal([c], gfa.containments)
-    assert_equal(l, gfa.get_link("1", nil, "2", nil))
-    assert_equal(c, gfa.get_containment("1", nil, "0", nil, nil))
-    assert_equal(nil, gfa.get_link("5", nil, "2", nil))
-    assert_equal(nil, gfa.get_containment("5", nil, "0", nil, nil))
-    assert_equal(6000, gfa.get_segment("1").RC)
+    assert_equal(l, gfa.link("1", nil, "2", nil))
+    assert_equal(c, gfa.containment("1", nil, "0", nil, nil))
+    assert_equal(nil, gfa.link("5", nil, "2", nil))
+    assert_equal(nil, gfa.containment("5", nil, "0", nil, nil))
+    assert_equal(6000, gfa.segment("1").RC)
     gfa.duplicate_segment!("1","5")
-    assert_equal(l, gfa.get_link("1", nil, "2", nil))
-    assert_equal(c, gfa.get_containment("1", nil, "0", nil, nil))
-    assert_not_equal(nil, gfa.get_link("5", nil, "2", nil))
-    assert_not_equal(nil, gfa.get_containment("5", nil, "0", nil, nil))
-    assert_equal(3000, gfa.get_segment("1").RC)
-    assert_equal(3000, gfa.get_segment("5").RC)
+    assert_equal(l, gfa.link("1", nil, "2", nil))
+    assert_equal(c, gfa.containment("1", nil, "0", nil, nil))
+    assert_not_equal(nil, gfa.link("5", nil, "2", nil))
+    assert_not_equal(nil, gfa.containment("5", nil, "0", nil, nil))
+    assert_equal(3000, gfa.segment("1").RC)
+    assert_equal(3000, gfa.segment("5").RC)
     gfa.multiply_segment!("5",["6","7"])
-    assert_equal(l, gfa.get_link("1", nil, "2", nil))
-    assert_not_equal(nil, gfa.get_link("5", nil, "2", nil))
-    assert_not_equal(nil, gfa.get_link("6", nil, "2", nil))
-    assert_not_equal(nil, gfa.get_link("7", nil, "2", nil))
-    assert_not_equal(nil, gfa.get_containment("5", nil, "0", nil, nil))
-    assert_not_equal(nil, gfa.get_containment("6", nil, "0", nil, nil))
-    assert_not_equal(nil, gfa.get_containment("7", nil, "0", nil, nil))
-    assert_equal(3000, gfa.get_segment("1").RC)
-    assert_equal(1000, gfa.get_segment("5").RC)
-    assert_equal(1000, gfa.get_segment("6").RC)
-    assert_equal(1000, gfa.get_segment("7").RC)
+    assert_equal(l, gfa.link("1", nil, "2", nil))
+    assert_not_equal(nil, gfa.link("5", nil, "2", nil))
+    assert_not_equal(nil, gfa.link("6", nil, "2", nil))
+    assert_not_equal(nil, gfa.link("7", nil, "2", nil))
+    assert_not_equal(nil, gfa.containment("5", nil, "0", nil, nil))
+    assert_not_equal(nil, gfa.containment("6", nil, "0", nil, nil))
+    assert_not_equal(nil, gfa.containment("7", nil, "0", nil, nil))
+    assert_equal(3000, gfa.segment("1").RC)
+    assert_equal(1000, gfa.segment("5").RC)
+    assert_equal(1000, gfa.segment("6").RC)
+    assert_equal(1000, gfa.segment("7").RC)
   end
 
 end
