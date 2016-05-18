@@ -5,6 +5,7 @@ module GFA::CIGAR
 
   def cigar_operations
     return "*" if self == "*"
+    raise TypeError if self !~ /^([0-9]+[MIDNSHPX=])+$/
     scan(/[0-9]+[MIDNSHPX=]/).map do |op|
       oplen = op[0..-2].to_i
       opcode = op[-1..-1]

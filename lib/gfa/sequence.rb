@@ -8,16 +8,29 @@ module GFA::Sequence
   # * *Args* :
   #   - +tolerant+ -> if true, anything non-sequence is complemented to itself;
   #                   otherwise an exception is raised
+  #   - +forcerna+ -> if true, any A and a is complemented into u and U
   # * *Raises* :
   #   - +RuntimeError+ if +!tolerant+ and the string contains a character with
   #                    no defined Watson-Crick complement
+  #   - +RuntimeError+ if sequence contains both U and T
   # * *Returns* :
   #   - if the string consist of only "*", then "*" is returned
   #   - otherwise: a string containing the reverse complement
   #                and without newlines and spaces
-  def rc(tolerant=false)
+  def rc(tolerant = false, rnasequence = false)
     return "*" if self == "*"
-    each_char.map{|c|c.wcc(tolerant)}.reverse.join
+    retval = each_char.map do |c|
+      if c == "U" or c == "u"
+        rnasequence = true
+      elsif rnasequence and (c == "T" or c == "t")
+        raise "String contains both U/u and T/t"
+      end
+      c.wcc(tolerant)
+    end.reverse.join
+    if rnasequence
+      retval.tr!("tT","uU")
+    end
+    retval
   end
 
   WCC = {"a"=>"t","t"=>"a","A"=>"T","T"=>"A",
@@ -27,10 +40,9 @@ module GFA::Sequence
          "R"=>"Y","Y"=>"R","r"=>"y","y"=>"r",
          "K"=>"M","M"=>"K","k"=>"m","m"=>"k",
          "S"=>"S","s"=>"s","w"=>"w","W"=>"W",
-         "n"=>"n","N"=>"N","-"=>"-","."=>".",
-         "="=>"="," "=>"","\n"=>""}
-
-  private
+         "n"=>"n","N"=>"N","u"=>"a","U"=>"A",
+         "-"=>"-","."=>".","="=>"=",
+         " "=>"","\n"=>""}
 
   # Watson-Crick complement of base (single-character string)
   #

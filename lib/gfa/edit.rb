@@ -56,7 +56,7 @@ module GFA::Edit
       raise ArgumentError,
         "No unbranched segments path from #{first_segment} to #{last_segment}"
     end
-    merged = first_segment.clone
+    merged = segment(first_segment).clone
     merged.name = segpath.join("_")
     merged.sequence = joined_sequences(segpath)
     sum_of_counts(segpath).each do |count_tag, count|
@@ -65,7 +65,7 @@ module GFA::Edit
     first_reversed = (links_from(first_segment)[0].from_orient == "+")
     last_reversed = (links_to(last_segment)[0].to_orient == "+")
     self << merged
-    links_to(from_segment).each do |l|
+    links_to(first_segment).each do |l|
       l2 = l.clone
       l2.to = merged.name
       if first_reversed
@@ -173,10 +173,12 @@ module GFA::Edit
 
   def joined_sequences(segnames)
     retval = ""
-    (seqnames.size-1).times do |i|
+    (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
       l = link!(a, nil, b, nil)
+      a = segment!(a)
+      b = segment!(b)
       return "*" if a.sequence == "*" or b.sequence == "*"
       if l.overlap == "*"
         cut = 0
@@ -186,9 +188,9 @@ module GFA::Edit
         raise "Overlaps contaning other operations than M are not supported"
       end
       if retval.empty?
-        retval << (l.from_orient == "+" ? a.sequence : a.sequence.revcompl)
+        retval << (l.from_orient == "+" ? a.sequence : a.sequence.rc)
       end
-      seq = (l.to_orient == "+" ? b.sequence : b.sequence.revcompl)
+      seq = (l.to_orient == "+" ? b.sequence : b.sequence.rc)
       if cut > 0
         raise "Inconsistent overlap" if retval[(-cut)..-1] != seq[0..(cut-1)]
       end

@@ -92,4 +92,36 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(1000, gfa.segment("7").RC)
   end
 
+  def test_unbranched_path_merging
+    s = ["S\t0\tACGA",
+         "S\t1\tACGA",
+         "S\t2\tACGA",
+         "S\t3\tACGA"]
+    l = ["L\t0\t+\t1\t+\t1M",
+         "L\t1\t+\t2\t-\t1M",
+         "L\t2\t+\t3\t+\t1M"]
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    (s + l).each {|line| gfa << line }
+    assert_raises(ArgumentError) { gfa.merge_unbranched_segpath("0","3") }
+    s = ["S\t0\tACGA",
+         "S\t1\tACGA",
+         "S\t2\tACGT",
+         "S\t3\tTCGA"]
+    l = ["L\t0\t+\t1\t+\t1M",
+         "L\t1\t+\t2\t-\t1M",
+         "L\t2\t-\t3\t+\t1M"]
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    (s + l).each {|line| gfa << line }
+    gfa.merge_unbranched_segpath("0","3")
+    assert_raises(RuntimeError) {gfa.segment!("0")}
+    assert_raises(RuntimeError) {gfa.segment!("1")}
+    assert_raises(RuntimeError) {gfa.segment!("2")}
+    assert_raises(RuntimeError) {gfa.segment!("3")}
+    assert_nothing_raised {gfa.segment!("0_1_2_3")}
+    assert_equal([],gfa.links)
+    assert_equal("ACGACGACGTCGA",gfa.segment("0_1_2_3").sequence)
+  end
+
 end
