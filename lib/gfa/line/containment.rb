@@ -13,7 +13,8 @@ class GFA::Line::Containment < GFA::Line
     ]
 
   FieldCast =
-    { :pos => lambda {|e| e.to_i} }
+    { :pos => lambda {|e| e.to_i},
+      :overlap => lambda {|e| e.cigar_operations} }
 
   OptfieldTypes = {
      "RC" => "i", # Read Coverage
@@ -21,7 +22,8 @@ class GFA::Line::Containment < GFA::Line
     }
 
   def initialize(fields)
-    super(fields, GFA::Line::Containment::FieldRegexp,
+    super(fields,
+          GFA::Line::Containment::FieldRegexp,
           GFA::Line::Containment::OptfieldTypes,
           GFA::Line::Containment::FieldCast)
   end

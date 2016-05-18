@@ -11,6 +11,9 @@ class GFA::Line::Link < GFA::Line
      [:overlap,     /\*|([0-9]+[MIDNSHPX=])+/] # CIGAR string describing overlap
     ]
 
+  FieldCast =
+    { :overlap => lambda {|e| e.cigar_operations} }
+
   OptfieldTypes = {
      "MQ" => "i", # Mapping quality
      "NM" => "i", # # mismatches/gaps
@@ -20,7 +23,10 @@ class GFA::Line::Link < GFA::Line
     }
 
   def initialize(fields)
-    super(fields, GFA::Line::Link::FieldRegexp, GFA::Line::Link::OptfieldTypes)
+    super(fields,
+          GFA::Line::Link::FieldRegexp,
+          GFA::Line::Link::OptfieldTypes,
+          GFA::Line::Link::FieldCast)
   end
 
 end

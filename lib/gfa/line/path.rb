@@ -9,11 +9,11 @@ class GFA::Line::Path < GFA::Line
      #       implement what written in the commentaries
      #       (i.e. a comma-separated list
      #        for segment_name of segment names and orientations
-     #        and for cigar of CIGAR strings)
+     #        and for cigar of CIGAR strings);
      [:segment_name, /[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])*/],
                       # A comma-separated list of segment names and orientations
      [:cigar,        /\*|([0-9]+[MIDNSHPX=])+((,[0-9]+[MIDNSHPX=])+)*/]
-                                   # A comma-separated list of CIGAR strings
+                      # A comma-separated list of CIGAR strings
     ]
 
   FieldCast =
@@ -30,19 +30,14 @@ class GFA::Line::Path < GFA::Line
 
   private
 
-  def self.split_segment_name(sn)
-    split_comma_separated(sn, /(.*)([\+-])/)
-  end
-
   def self.split_cigar(c)
-    split_comma_separated(c, /([0-9]+)([MIDNSHPX=])/)
+    c.split(",").map{|str|str.cigar_operations}
   end
 
-  def self.split_comma_separated(str_to_split, elems_regex)
-    elems = str_to_split.split(",")
+  def self.split_segment_name(sn)
     retval = []
-    elems.each do |elem|
-      elem =~ elems_regex
+    sn.split(",").each do |elem|
+      elem =~ /(.*)([\+-])/
       raise TypeError if $1.nil? # this should be impossible
       retval << [$1, $2]
     end

@@ -4,7 +4,7 @@ require "test/unit"
 class TestGFALinePath < Test::Unit::TestCase
 
   def test_from_string
-    fields=["P","4","1+,2-,3+","12M,12M,12M","ab:Z:abcd"]
+    fields=["P","4","1+,2-,3+","9M2I3D1M,12M,12M","ab:Z:abcd"]
     str=fields.join("\t")
     assert_nothing_raised { str.to_gfa_line }
     assert_equal(GFA::Line::Path, str.to_gfa_line.class)
@@ -13,7 +13,7 @@ class TestGFALinePath < Test::Unit::TestCase
     assert_equal(fields[2], str.to_gfa_line.segment_name(false))
     assert_equal([["1","+"],["2","-"],["3","+"]], str.to_gfa_line.segment_name)
     assert_equal(fields[3], str.to_gfa_line.cigar(false))
-    assert_equal([["12","M"],["12","M"],["12","M"]],
+    assert_equal([[[9,"M"],[2,"I"],[3,"D"],[1,"M"]],[[12,"M"]],[[12,"M"]]],
                  str.to_gfa_line.cigar)
     assert_equal("abcd", str.to_gfa_line.ab)
     assert_raises(TypeError) { (str+"\tH1").to_gfa_line }
