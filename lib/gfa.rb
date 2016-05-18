@@ -46,8 +46,12 @@ class GFA
 
   def segment(segment_name)
     i = @segment_names.index(segment_name)
-    raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
-    @lines["S"][i]
+    i.nil? ? nil : @lines["S"][i]
+  end
+
+  def path(path_name)
+    i = @path_names.index(path_name)
+    i.nil? ? nil : @lines["P"][i]
   end
 
   def link(from, from_orient, to, to_orient)
@@ -56,6 +60,18 @@ class GFA
 
   def containment(from, from_orient, to, to_orient, pos)
     link_or_containment("C", from, from_orient, to, to_orient, pos)
+  end
+
+  ["links", "containments"].each do |c|
+    [:from, :to].each do |d|
+      define_method(:"#{c}_#{d}") do |segment_name|
+        links_or_containments_for_segment(c[0].upcase, d, segment_name)
+      end
+    end
+  end
+
+  def paths_with(segment_name)
+    @paths_with.fetch(segment_name,[]).map{|i|@lines["P"][i]}
   end
 
   def each(record_type)
@@ -126,6 +142,10 @@ class GFA
       end
     end
     return nil
+  end
+
+  def links_or_containments_for_segment(rt, direction, segment_name)
+    @connect[rt][direction].fetch(segment_name,[]).map{|i|@lines[rt][i]}
   end
 
 end

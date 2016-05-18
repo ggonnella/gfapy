@@ -67,10 +67,41 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { gfa << p1 }
     assert_equal([p1], gfa.lines("P"))
     assert_equal([p1], gfa.paths)
+    assert_equal(p1, gfa.path("4"))
+    assert_equal(nil, gfa.path("5"))
     p2 = "P\t1\t1+,2+\t122M,120M"
     p3 = "P\t5\t1+,3+\t122M,120M"
     assert_raises(ArgumentError) { gfa << p2 }
     assert_raises(ArgumentError) { gfa << p3 }
+  end
+
+  def test_links_containments_from_to_segment
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    s = (0..3).map{|i| "S\t#{i}\t*".to_gfa_line}
+    l = [[1,2],[0,1],[1,3]].map {|a,b| "L\t#{a}\t+\t#{b}\t+\t*".to_gfa_line}
+    c = "C\t1\t+\t0\t+\t0\t*".to_gfa_line
+    p = "P\t4\t2+,0-\t*".to_gfa_line
+    (s + l + [c,p]).each {|line| gfa << line }
+    assert_equal([l[0],l[2]], gfa.links_from("1"))
+    assert_equal([], gfa.links_from("3"))
+    assert_equal([l[1]], gfa.links_to("1"))
+    assert_equal([], gfa.links_to("0"))
+    assert_equal([c], gfa.containments_from("1"))
+    assert_equal([], gfa.containments_from("2"))
+    assert_equal([], gfa.containments_from("0"))
+    assert_equal([c], gfa.containments_to("0"))
+  end
+
+  def test_paths_with_segment
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    s = (0..3).map{|i| "S\t#{i}\t*".to_gfa_line}
+    p = "P\t4\t2+,0-\t*".to_gfa_line
+    (s + [p]).each {|line| gfa << line }
+    assert_equal([p], gfa.paths_with("0"))
+    assert_equal([p], gfa.paths_with("2"))
+    assert_equal([], gfa.paths_with("1"))
   end
 
 end
