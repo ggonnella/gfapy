@@ -104,9 +104,9 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_equal(nil, gfa.unbranched_segpath("0","3"))
-    assert_raises(RuntimeError) { gfa.unbranched_segpath!("0","3") }
-    assert_raises(RuntimeError) { gfa.merge_unbranched_segpath!("0","3") }
+    assert_raises(RuntimeError) do
+      gfa.merge_unbranched_segpath!(["0","1","2","3"])
+    end
     s = ["S\t0\tACGA",
          "S\t1\tACGA",
          "S\t2\tACGT",
@@ -117,9 +117,9 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_equal(["0","1","2","3"], gfa.unbranched_segpath("0","3"))
-    assert_nothing_raised { gfa.unbranched_segpath!("0","3") }
-    assert_nothing_raised { gfa.merge_unbranched_segpath!("0","3") }
+    assert_nothing_raised do
+      gfa.merge_unbranched_segpath!(["0","1","2","3"])
+    end
     assert_raises(RuntimeError) {gfa.segment!("0")}
     assert_raises(RuntimeError) {gfa.segment!("1")}
     assert_raises(RuntimeError) {gfa.segment!("2")}
@@ -140,9 +140,10 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
+    gfa.merge_all_unbranched_segpaths!
     assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_equal(["0_1_2_3"], gfa.segments.map(&:name))
     assert_equal(1, gfa.segments.size)
-    assert_equal("0_1_2_3", gfa.segments[0].name)
     assert_equal([], gfa.links)
     s = ["S\t0\t*",
          "S\t1\t*",
@@ -156,9 +157,30 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_equal(3, gfa.segments.size)
+    assert_equal(["0","3","1_2"], gfa.segments.map(&:name))
+    s = ["S\t0\t*",
+         "S\t1\t*",
+         "S\t2\t*",
+         "S\t3\t*"]
+    l = ["L\t0\t+\t1\t+\t1M",
+         "L\t0\t+\t2\t+\t1M",
+         "L\t1\t+\t2\t+\t1M",
+         "L\t2\t+\t3\t+\t1M"].map(&:to_gfa_line)
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    (s + l).each {|line| gfa << line }
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
     assert_equal(4, gfa.segments.size)
-    assert_equal(["0","1","2","3"], gfa.segments.map(&:name))
-    assert_equal(l, gfa.links)
+    assert_equal(["0", "1", "2", "3"], gfa.segments.map(&:name))
+  end
+
+  def test_unbranched_path_merge_example1
+    gfa = GFA.from_file("test/testdata/example1.gfa")
+    assert_equal([%w[18 19 1],
+                  %w[11 9 12],
+                  %w[22 16 20 21 23]],
+                 gfa.unbranched_segpaths)
   end
 
 end

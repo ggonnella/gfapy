@@ -29,4 +29,38 @@ class GFA::Line::Link < GFA::Line
           GFA::Line::Link::FieldCast)
   end
 
+  def other(segment_name)
+    if segment_name == from
+      to
+    elsif segment_name == to
+      from
+    else
+      raise "Link #{self} does not involve segment #{segment_name}"
+    end
+  end
+
+  def orient(segment_name)
+    if segment_name == from
+      from_orient
+    elsif segment_name == to
+      to_orient
+    else
+      raise "Link #{self} does not involve segment #{segment_name}"
+    end
+  end
+
+  def other_orient(segment_name)
+    orient(other(segment_name))
+  end
+
+  def end_type(segment_name)
+    if segment_name == from
+      return from_orient == "+" ? :E : :B
+    elsif segment_name == to
+      return to_orient == "+" ? :B : :E
+    else
+      raise "Link #{self} does not involve segment #{segment_name}"
+    end
+  end
+
 end

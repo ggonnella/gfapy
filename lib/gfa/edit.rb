@@ -15,9 +15,9 @@ module GFA::Edit
     when "L", "C"
       [:from,:to].each do |e|
         sn = gfa_line.send(e)
+        o = gfa_line.send(:"#{e}_orient")
         validate_segment_name_exists!(sn)
-        @connect[rt][e][sn] ||= []
-        @connect[rt][e][sn] << i
+        connect(rt,e,sn,o,i)
       end
     when "P"
       validate_segment_and_path_name_unique!(gfa_line.path_name)
@@ -30,6 +30,18 @@ module GFA::Edit
     end
   end
 
+  # Eliminate the sequences from S lines
+  def delete_sequences
+    @lines["S"].each {|l| l.sequence = "*"}
+  end
+
+  # Eliminate the CIGAR from L/C/P lines
+  def delete_alignments
+    @lines["L"].each {|l| l.overlap = "*"}
+    @lines["C"].each {|l| l.cigar = "*"}
+    @lines["P"].each {|l| l.cigar = "*"}
+  end
+
   def multiply_segment!(segment_name, copy_names)
     s = segment(segment_name)
     if copy_names.empty?
@@ -39,7 +51,7 @@ module GFA::Edit
     divide_counts(s, factor)
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
-        @connect[rt][e].fetch(s,[]).each do |i|
+        connections(rt,e,s).each do |i|
           l = @lines[rt][i]
           # circular link counts shall be divided only ones
           next if e == :to and l.from == l.to
@@ -58,7 +70,7 @@ module GFA::Edit
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         to_clone = []
-        @connect[rt][e].fetch(segment_name,[]).each {|i| to_clone << i }
+        connections(rt,e,segment_name).each {|i| to_clone << i }
         copy_names.each do |cn|
           to_clone.each do |i|
             l = @lines[rt][i].clone
@@ -77,55 +89,71 @@ module GFA::Edit
 
   # limitations:
   # - all containments und paths involving merged segments are deleted
-  def merge_unbranched_segpath!(first_segment, last_segment)
-    segpath = unbranched_segpath!(first_segment, last_segment)
-    merged = segment(first_segment).clone
-    merged.name = segpath.join("_")
-    merged.sequence = joined_sequences(segpath)
-    sum_of_counts(segpath).each do |count_tag, count|
+  def merge_unbranched_segpath!(segment_names)
+    raise if segment_names.size < 2
+    raise if segment_names[1..-2].any? do |sn|
+      segment_junction_type(sn) != :internal
+    end
+    merged = segment(segment_names[0]).clone
+    merged.name = segment_names.join("_")
+    merged.sequence = joined_sequences(segment_names)
+    sum_of_counts(segment_names).each do |count_tag, count|
       merged.send(:"#{count_tag}=", count)
     end
-    first_reversed = (links_from(first_segment)[0].from_orient == "+")
-    last_reversed = (links_to(last_segment)[0].to_orient == "+")
+    l = link(segment_names[0],segment_names[1])
+    if l
+    first_reversed = l.from_orient == "-"
+    else
+      l = link(segment_names[1],segment_names[0])
+      first_reversed = l.to_orient == "+"
+    end
+    l = link(segment_names[-2],segment_names[-1])
+    if l
+      last_reversed = l.to_orient(segment_names[-1]) == "-"
+    else
+      l = link(segment_names[-1],segment_names[-2])
+      last_reversed = l.from_orient(segment_names[-1]) == "+"
+    end
     self << merged
-    links_to(first_segment).each do |l|
-      l2 = l.clone
-      l2.to = merged.name
-      if first_reversed
-        l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+    [:B, :E].each do |endtype|
+      end_links(segment_names.first, endtype).each do |l|
+        l2 = l.clone
+        if l2.to == segment_names.first
+          l2.to = merged.name
+          if first_reversed
+            l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+          end
+        else
+          l2.from = merged.name
+          if first_reversed
+            l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+          end
+        end
+        self << l2
       end
-      self << l2
-    end
-    links_from(last_segment).each do |l|
-      l2 = l.clone
-      l2.from = merged.name
-      if last_reversed
-        l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+      end_links(segment_names.last, endtype).each do |l|
+        l2 = l.clone
+        if l2.from == segment_names.last
+          l2.from = merged.name
+          if last_reversed
+            l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+          end
+        else
+          l2.to = merged.name
+          if last_reversed
+            l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+          end
+        end
+        self << l2
       end
-      self << l2
     end
-    segpath.each {|sn| delete_segment!(sn)}
+    segment_names.each {|sn| delete_segment!(sn)}
     self
   end
 
   def merge_all_unbranched_segpaths!
-    @mark["S"] = []
-    pairs = []
-    @segment_names.each_with_index do |sn, i|
-      next if @mark["S"][i] == :visited
-      from_sn = @connect["L"][:from].fetch(sn,[])
-      to_sn = @connect["L"][:to].fetch(sn,[])
-      if from_sn.size == 1 and to_sn.size == 1 and
-          @lines["L"][to_sn[0]].to_orient ==
-          @lines["L"][from_sn[0]].from_orient
-        @mark["S"][i] = :visited
-        end1 = traverse_unbranched(sn, false)
-        end2 = traverse_unbranched(sn, true)
-        pairs << [end1, end2] if end1 != end2
-      end
-    end
-    pairs.each {|end1, end2| merge_unbranched_segpath!(end1, end2)}
-    @mark["S"] = []
+    paths = unbranched_segpaths
+    paths.each {|path| merge_unbranched_segpath!(path)}
     self
   end
 
@@ -133,10 +161,21 @@ module GFA::Edit
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
+    connected = []
+    validate_connect
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
-        @connect[rt][e].fetch(segment_name,[]).each {|li| @lines[rt][li] = nil}
-        @connect[rt][e].delete(segment_name)
+        connected +=
+          connections(rt, e, segment_name).map do |c|
+            l = @lines[rt][c]
+            l.from == segment_name ? l.to : l.from
+          end
+      end
+    end
+    connected.uniq.each {|c| unconnect_segments!(segment_name, c)}
+    ["L","C"].each do |rt|
+      [:from,:to].each do |e|
+        disconnect(rt,e,segment_name,nil,nil)
       end
     end
     to_rm = []
@@ -186,6 +225,41 @@ module GFA::Edit
 
   private
 
+  # Add values to @connect data structure
+  def connect(rt, dir, sn, o, value)
+    raise if rt != "L" and rt != "C"
+    raise if dir != :from and dir != :to
+    raise if o != "+" and o != "-"
+    @connect[rt][dir][sn]||={}
+    @connect[rt][dir][sn][o]||=[]
+    @connect[rt][dir][sn][o] << value
+    validate_connect
+  end
+
+  # Remove values from @connect data structure
+  #
+  # Usage:
+  # - disconnect(rt, dir, sn, o, value) => rm value from @connect
+  # - disconnect(rt, dir, sn, nil, nil) => rm all sn connections
+  # - disconnect(rt, dir, sn, nil, value) => rm value from both "+" and "-"
+  #                                          connections of sn
+  def disconnect(rt, dir, sn, o, value)
+    raise if rt != "L" and rt != "C"
+    raise if dir != :from and dir != :to
+    if o.nil?
+      if value.nil?
+        @connect[rt][dir].delete(sn)
+      else
+        disconnect(rt, dir, sn, "+", value)
+        disconnect(rt, dir, sn, "-", value)
+      end
+      return
+    end
+    raise if o != "+" and o != "-"
+    raise if value.nil?
+    @connect[rt][dir].fetch(sn,{}).fetch(o,[]).delete(value)
+  end
+
   def validate_segment_and_path_name_unique!(sn)
     if @segment_names.include?(sn) or @path_names.include?(sn)
       raise ArgumentError, "Segment or path name not unique '#{sn}'"
@@ -226,7 +300,8 @@ module GFA::Edit
     (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
-      l = link!(a, b)
+      l = link(a, b)
+      l ||= link!(b, a)
       a = segment!(a)
       b = segment!(b)
       return "*" if a.sequence == "*" or b.sequence == "*"
@@ -238,9 +313,9 @@ module GFA::Edit
         raise "Overlaps contaning other operations than M are not supported"
       end
       if retval.empty?
-        retval << (l.from_orient == "+" ? a.sequence : a.sequence.rc)
+        retval << (l.orient(a.name) == "+" ? a.sequence : a.sequence.rc)
       end
-      seq = (l.to_orient == "+" ? b.sequence : b.sequence.rc)
+      seq = (l.orient(b.name) == "+" ? b.sequence : b.sequence.rc)
       if cut > 0
         raise "Inconsistent overlap" if retval[(-cut)..-1] != seq[0..(cut-1)]
       end
@@ -252,7 +327,7 @@ module GFA::Edit
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
     to_rm = []
-    @connect[rt][:from].fetch(from,[]).each do |li|
+    connections(rt,:from,from).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and
          (to_orient.nil? or (l.to_orient == to_orient)) and
@@ -264,9 +339,10 @@ module GFA::Edit
     end
     to_rm.each do |li|
       @lines[rt][li] = nil
-      @connect[rt][:from].fetch(from,[]).delete(li)
-      @connect[rt][:to].fetch(to,[]).delete(li)
+      disconnect(rt,:from,from,nil,li)
+      disconnect(rt,:to,to,nil,li)
     end
+    validate_connect if $DEBUG
     return self
   end
 

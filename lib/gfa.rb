@@ -4,6 +4,7 @@ require_relative "./gfa/line.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/cigar.rb"
 require_relative "./gfa/sequence.rb"
+require "set"
 
 #
 # A representation of the GFA graph.
@@ -21,15 +22,13 @@ require_relative "./gfa/sequence.rb"
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
-# - The @mark[record_type] are arrays which allow to set a mark,
-#   e.g. "visited", which refer to the element at the same index in
-#   @lines[record_type]. Methods may generally change marks as they wish
-#   and do not expect any meaning of previous marks, unless it is stated in the
-#   function documentation.
-# - @connect["L"|"C"][:from|:to] and @paths_with are hashes of indices of
+# - @connect["L"|"C"][:from|:to][segment_name]["+"|"-"] and
+#   @paths_with[segment_name] are hashes of indices of
 #   @lines["L"|"C"|"P"] which allow to directly find the links, containments
 #   and paths involving a given segment; they must be updated if links,
 #   containments or paths are added or deleted
+# - The @connect data structure shall not be used directly, but using
+#   the methods connections(), connect() and disconnect()
 class GFA
 
   include GFA::Edit
@@ -42,32 +41,6 @@ class GFA
     @connect = {}
     ["L","C"].each {|rt| @connect[rt] = {:from => {}, :to => {}}}
     @paths_with = {}
-    @mark = {"S" => [], "L" => []}
-  end
-
-  # Searches for an unbranched_segpath from +from+ to +to+.
-  #
-  # *Returns*:
-  #   - if a segpath exists -> an array of segment names
-  #   - otherwise -> +nil+
-  def unbranched_segpath(from, to)
-    @mark["S"] = []
-    segpaths = traverse_unbranched(from, true, store_path: true)
-    return segpaths.last == to ? segpaths : nil
-  end
-
-  # Searches for an unbranched_segpath from +from+ to +to+.
-  #
-  # *Raises*
-  #   - +RuntimeError+ if no segpath exists
-  #
-  # *Returns*:
-  #   - an array of segment names
-  #
-  def unbranched_segpath!(from, to)
-    usp = unbranched_segpath(from, to)
-    raise "No unbranched segment path exists from #{from} to #{to}" if usp.nil?
-    return usp
   end
 
   # Determines the links connectivity of a segment +segment_name+
@@ -82,57 +55,9 @@ class GFA
   #   - [0,1]/[1,0]/[M,0]/[0,M] -> +:"end_#{i}#{o}"+ (e.g. +:end_01+)
   #   - [1,M]/[M,M]/[M,1] -> +:"junction_#{i}#{o}"+ (e.g. +:junction_M1+)
   #
-  def segment_junction_type(segment_name)
-    junction_type(links_to(segment_name), links_from(segment_name))
-  end
-
-  # Traverse an unbranched segments path from an internal or end segment +from+
-  #
-  # *Arguments*:
-  #   - +from+: the segment from which the traversing is started;
-  #           if the segment junction_type is not either :internal or the
-  #           appropriate one among +:end_01+ and +:end_10+
-  #           (depending on +direct_direction+),
-  #           then +nil+ or an empty path is returned
-  #   - +direct_direction+: if set, outgoing links are followed, otherwise
-  #                         incoming links are followed backwards
-  #   - +store_path+: if set, the return value is an array of segment names,
-  #                   otherwise only the last element of the path is returned
-  # *Returns*:
-  #   - if +!store_path+ and a path exists: the last segment name of the path
-  #   - if +!store_path+ and no path exists: +nil+
-  #   - if +store_path+ and a path exists: an array of segment names
-  #   - if +store_path+ and no path exists: +[]+
-  #
-  def traverse_unbranched(from, direct_direction,
-                          store_path: false)
-    list = [from] if store_path
-    prev_elem = nil
-    current_elem = from
-    loop do
-      flist = links_from(current_elem)
-      tlist = links_to(current_elem)
-      jt = junction_type(tlist, flist)
-      if jt == :internal or
-          (prev_elem == nil and
-             (direct_direction  and jt == :end_01) or
-             (!direct_direction and jt == :end_10))
-        prev_elem = current_elem
-        current_elem = direct_direction ? flist[0].to : tlist[0].from
-        if @mark["S"][@segment_names.index(current_elem)] == :visited
-          return store_path ? list : prev_elem
-        else
-          @mark["S"][@segment_names.index(current_elem)] = :visited
-          list << current_elem if store_path
-        end
-      elsif jt == :end_10 and direct_direction
-        return store_path ? list : current_elem
-      elsif jt == :end_01 and !direct_direction
-        return store_path ? list : current_elem
-      else
-        return store_path ? list[0..-2] : prev_elem
-      end
-    end
+  def segment_junction_type(segment_name, orientation = "+")
+    junction_type(end_links(segment_name,orientation == "+" ? :B : :E),
+                  end_links(segment_name,orientation == "+" ? :E : :B))
   end
 
   # Searches the segment with name equal to +segment_name+.
@@ -263,9 +188,12 @@ class GFA
   end
 
   ["links", "containments"].each do |c|
+    rt = c[0].upcase
     [:from, :to].each do |d|
-      define_method(:"#{c}_#{d}") do |segment_name|
-        links_or_containments_for_segment(c[0].upcase, d, segment_name)
+      define_method(:"#{c}_#{d}") do |segment_name, orientation = nil|
+        connections(rt, d, segment_name, orientation).map do |i|
+          @lines[rt][i]
+        end
       end
     end
   end
@@ -325,14 +253,77 @@ class GFA
     File.open(filename, "w") {|f| f.puts self}
   end
 
+  def unbranched_segpaths
+    exclude = Set.new
+    paths = []
+    @segment_names.each_with_index do |sn, i|
+      next if exclude.include?(sn)
+      jt = segment_junction_type(sn)
+      if segment_junction_type(sn) == :internal
+        exclude << sn
+        segpath = traverse_internals(sn, false, exclude).reverse +
+                  traverse_internals(sn, true, exclude)[1..-1]
+        next if segpath.size < 2
+        paths << segpath
+      elsif [:junction_M1, :end_11, :end_01].include?(jt)
+        exclude << sn
+        segpath = traverse_internals(sn, true, exclude)
+        next if segpath.size < 2
+        paths << segpath
+      elsif [:junction_1M, :end_11, :end_10].include?(jt)
+        exclude << sn
+        segpath = traverse_internals(sn, false, exclude).reverse
+        next if segpath.size < 2
+        paths << segpath
+      end
+    end
+    return paths
+  end
+
   private
+
+  # Find connections from specified end of segment
+  # (E=from+/to- connections; B=from-/to+ connections)
+  #
+  # *Note*:
+  # The specified array should only be read, as it is often a
+  # copy of the original; thus modifications must be done using
+  # +connect()+ or +disconnect()+
+  def end_links(sn, end_type)
+    if end_type == :E
+      c=connections("L",:from,sn,"+")+connections("L",:to,sn,"-")
+    elsif end_type == :B
+      c=connections("L",:to,sn,"+")+connections("L",:from,sn,"-")
+    else
+      raise "end_type unknown: #{end_type.inspect}"
+    end
+    c.map {|i| @lines['L'][i]}
+  end
+
+  # Enumerate values from @connect data structure
+  #
+  # *Usage*:
+  # +connections(rt, :from|:to, sn)+ => both orientations of +sn+
+  # +connections(rt, :from|:to, sn, :+|:-)+ => only specified orientation
+  #
+  # *Note*:
+  # The specified array should only be read, as it is often a
+  # copy of the original; thus modifications must be done using
+  # +connect()+ or +disconnect()+
+  def connections(rt, dir, sn, o = nil)
+    raise "RT invalid: #{rt.inspect}" if rt != "L" and rt != "C"
+    raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
+    return connections(rt,dir,sn,"+")+connections(rt,dir,sn,"-") if o.nil?
+    raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
+    @connect[rt][dir].fetch(sn,{}).fetch(o,[])
+  end
 
   # Searches for a link (if +rt == "L"+) or containment (if +rt == "C"+)
   # connecting segments +from+ and +to+. The orientation and starting pos
   # (the latter for containments only) must match only if not +nil+.
   # The first L or C found is returned, +nil+ if nothing matches.
   def link_or_containment(rt, from, from_orient, to, to_orient, pos)
-    @connect[rt][:from].fetch(from,[]).each do |li|
+    connections(rt, :from, from).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and
          (to_orient.nil? or (l.to_orient == to_orient)) and
@@ -344,46 +335,90 @@ class GFA
     return nil
   end
 
-  # Searches for links (if +rt == "L"+) or containments (if +rt == "C"+)
-  # involving segment +segment_name+ as to or from (depending on +direction+).
-  # Returns a possibly empty array of matching L or C.
-  def links_or_containments_for_segment(rt, direction, segment_name)
-    @connect[rt][direction].fetch(segment_name,[]).map{|i|@lines[rt][i]}
-  end
-
   # Determines the links connectivity of a segment based on the list
   # of incoming and outgoing links.
   #
   # *Returns*:
   # - see +segment_junction_type+ return value
-  def junction_type(to_list, from_list)
-    if from_list.size == 1
-      if to_list.size == 1
-        if from_list[0].from_orient == to_list[0].to_orient
+  def junction_type(b_list, e_list)
+    if e_list.size == 1
+      if b_list.size == 1
+        if e_list[0].from_orient == b_list[0].to_orient
           return :internal
         else
           return :end_11
         end
-      elsif to_list.size == 0
+      elsif b_list.size == 0
         return :end_01
       else
         return :junction_M1
       end
-    elsif from_list.size == 0
-      if to_list.size == 1
+    elsif e_list.size == 0
+      if b_list.size == 1
         return :end_10
-      elsif to_list.size == 0
+      elsif b_list.size == 0
         return :isolated
       else
         return :end_M0
       end
-    else # from_list.size > 1
-      if to_list.size == 1
+    else # e_list.size > 1
+      if b_list.size == 1
         return :junction_1M
-      elsif to_list.size == 0
+      elsif b_list.size == 0
         return :end_0M
       else
         return :junction_MM
+      end
+    end
+  end
+
+  def traverse_internals(from, direct_direction, exclude)
+    list = []
+    current_elem = from
+    original_direction = direct_direction
+    loop do
+      blist = end_links(current_elem, :B)
+      elist = end_links(current_elem, :E)
+      jt = junction_type(blist, elist)
+      if jt == :internal or list.empty?
+        list << current_elem
+        l = direct_direction ? elist.first : blist.first
+        current_elem = l.other(current_elem)
+        if (l.end_type(current_elem) == :B and !direct_direction) or
+           (l.end_type(current_elem) == :E and direct_direction)
+          direct_direction = !direct_direction
+        end
+        if exclude.include?(current_elem)
+          return list
+        end
+        exclude << current_elem
+      elsif ([:junction_M1, :end_11, :end_01].include?(jt) and
+             !direct_direction) or
+            ([:junction_1M, :end_11, :end_10].include?(jt) and
+             direct_direction)
+        list << current_elem
+        return list
+      else
+        return list
+      end
+    end
+  end
+
+  def validate_connect
+    @connect.keys.each do |rt|
+      @connect[rt].keys.each do |dir|
+        @connect[rt][dir].keys.each do |sn|
+          @connect[rt][dir][sn].keys.each do |o|
+            @connect[rt][dir][sn][o].each do |li|
+              l = @lines[rt][li]
+              if l.nil? or l.send(dir) != sn or l.send(:"#{dir}_orient") != o
+                raise "Error in connect\n"+
+                  "@connect[#{rt}][#{dir.inspect}][#{sn}][#{o}]=#{li}\n"+
+                  "@links[#{rt}][#{li}]=#{l.nil? ? l.inspect : l.to_s}"
+              end
+            end
+          end
+        end
       end
     end
   end
