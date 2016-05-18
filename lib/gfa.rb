@@ -1,4 +1,11 @@
+GFA = Class.new
+require_relative "./gfa/optfield.rb"
+require_relative "./gfa/line.rb"
+require_relative "./gfa/edit.rb"
+
 class GFA
+
+  include GFA::Edit
 
   def initialize
     @lines = {}
@@ -64,32 +71,9 @@ class GFA
     return retval
   end
 
-  def segments
-    lines("S")
-  end
-
-  def links
-    lines("L")
-  end
-
-  def paths
-    lines("P")
-  end
-
-  def containments
-    lines("C")
-  end
-
-  def headers
-    lines("H")
-  end
-
-  def self.from_file(filename)
-    gfa = GFA.new
-    f = File.new(filename)
-    f.each {|line| gfa << line.chomp.to_gfa_line}
-    f.close
-    return gfa
+  GFA::Line::RecordTypes.each do |rt, klass|
+    klass =~ /GFA::Line::(.*)/
+    define_method(:"#{$1.downcase}s") { lines(rt) }
   end
 
   def to_s
@@ -103,10 +87,18 @@ class GFA
     return s
   end
 
+  def to_gfa
+    self
+  end
+
+  def self.from_file(filename)
+    gfa = GFA.new
+    File.foreach(filename) {|line| gfa << line.chomp}
+    return gfa
+  end
+
   def to_file(filename)
-    f = File.new(filename, "w")
-    f.puts self
-    f.close
+    File.open(filename, "w") {|f| f.puts self}
   end
 
   private
@@ -138,6 +130,13 @@ class GFA
 
 end
 
-require_relative "./gfa_edit.rb"
-require_relative "./gfa/optfield.rb"
-require_relative "./gfa/line.rb"
+class String
+
+  def to_gfa
+    gfa = GFA.new
+    split("\n").each {|line| gfa << line}
+    return gfa
+  end
+
+end
+

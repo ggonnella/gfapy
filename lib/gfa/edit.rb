@@ -1,4 +1,4 @@
-class GFA
+module GFA::Edit
 
   def multiply_segment!(segment_name, copy_names)
     s = get_segment(segment_name)
