@@ -80,12 +80,11 @@ module GFA::Traverse
     end
     merged = segment(segment_names[0]).clone
     merged.name = segment_names.join("_")
-    merged.sequence = joined_sequences(segment_names)
-    sum_of_counts(segment_names).each do |count_tag, count|
+    s, ln, cut = joined_sequences(segment_names)
+    merged.sequence = s
+    merged.LN = ln if merged.optional_fieldnames.include?(:LN)
+    sum_of_counts(segment_names, ln.to_f/(cut+ln)).each do |count_tag, count|
       merged.send(:"#{count_tag}=", count)
-    end
-    if merged.sequence != "*" and merged.respond_to?(:LN)
-      merged.LN = merged.sequence.size
     end
     l = link(segment_names[0],nil,segment_names[1],nil)
     first_reversed = (l.end_type(segment_names[0]) == :B)
@@ -188,29 +187,38 @@ module GFA::Traverse
     end
   end
 
-  def sum_of_counts(segnames)
+  def sum_of_counts(segnames, multfactor = 1)
     retval = {}
     segs = segnames.map {|sn|segment(sn)}
-    [:LN, :KC, :RC, :FC].each do |count_tag|
+    [:KC, :RC, :FC].each do |count_tag|
       segs.each do |s|
         if s.optional_fieldnames.include?(count_tag)
           retval[count_tag] ||= 0
           retval[count_tag] += s.send(count_tag)
         end
       end
+      if retval[count_tag]
+        retval[count_tag] = (retval[count_tag] * multfactor).to_i
+      end
     end
     return retval
   end
 
   def joined_sequences(segnames)
-    retval = ""
+    sequence = ""
+    ln = 0
+    total_cut = 0
     (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
       l = link!(a, nil, b, nil)
       a = segment!(a)
       b = segment!(b)
-      return "*" if a.sequence == "*" or b.sequence == "*"
+      if i == 0
+        sequence = (l.end_type(a.name) == :E ? a.sequence : a.sequence.rc)
+        ln = a.optional_fieldnames.include?(:LN) ? a.LN : nil
+      end
+      sequence = "*" if b.sequence == "*"
       if l.overlap == "*"
         cut = 0
       elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
@@ -218,16 +226,23 @@ module GFA::Traverse
       else
         raise "Overlaps contaning other operations than M are not supported"
       end
-      if retval.empty?
-        retval << (l.end_type(a.name) == :E ? a.sequence : a.sequence.rc)
+      total_cut += cut
+      if b.optional_fieldnames.include?(:LN) and !ln.nil?
+        ln += (b.LN - cut)
       end
-      seq = (l.end_type(b.name) == :B ? b.sequence : b.sequence.rc)
-      if cut > 0
-        raise "Inconsistent overlap" if retval[(-cut)..-1] != seq[0..(cut-1)]
+      bseq = (l.end_type(b.name) == :B ? b.sequence : b.sequence.rc)
+      if sequence != "*"
+        if cut > 0 and sequence[(-cut)..-1] != bseq[0..(cut-1)]
+          raise "Inconsistent overlap"
+        end
+        sequence << bseq[cut..-1]
       end
-      retval << seq[cut..-1]
     end
-    return retval
+    if !ln.nil? and ln != sequence.length
+      raise "Computed sequence length and computed LN differ"
+    end
+    ln = sequence.length if ln.nil?
+    return sequence, ln, total_cut
   end
 
 end
