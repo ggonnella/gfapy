@@ -43,21 +43,27 @@ class GFA
     @paths_with = {}
   end
 
-  # Determines the links connectivity of a segment +segment_name+
+  # Assigns a segment to a connectivity class depending on the number of links
+  # to the beginning and to the end of its sequence.
+  #
+  # *Arguments*:
+  #   - +segment_name+: name of the segment
   #
   # *Returns*:
-  #   Let i be the number of incoming links (0,1 or M=multiple)
-  #   and o the number of outgoing links (0,1,M).
-  #   Then according to [i,o]:
-  #   - [0,0] -> +:isolated+
-  #   - [1,1] -> +:internal+ if the orientations of the segment in the incoming
-  #           and outgoing link are equal; otherwise +:end_11+
-  #   - [0,1]/[1,0]/[M,0]/[0,M] -> +:"end_#{i}#{o}"+ (e.g. +:end_01+)
-  #   - [1,M]/[M,M]/[M,1] -> +:"junction_#{i}#{o}"+ (e.g. +:junction_M1+)
+  #   (bn = number of links to the beginning of the sequence;
+  #    en = number of links to the end of the sequence;
+  #    b = "M" if bn > 1, otherwise bn;
+  #    e = "M" if en > 1, otherwise en)
+  #   - +:isolated+            if: bn == 0, en == 0
+  #   - +:end_#{b}#{e}>+       if: bn or en == 0, other > 0
+  #   - +:internal+            if: bn == 1, en == 1
+  #   - +:junction_#{b}#{e}>+  if: bn or en == 1, other > 1
   #
-  def segment_junction_type(segment_name, orientation = "+")
-    junction_type(end_links(segment_name,orientation == "+" ? :B : :E),
-                  end_links(segment_name,orientation == "+" ? :E : :B))
+  def segment_junction_type(segment_name, reverse_complement = false)
+    ends = [:B, :E]
+    ends.reverse! if reverse_complement
+    junction_type(end_links(segment_name, ends.first).size,
+                  end_links(segment_name, ends.last).size)
   end
 
   # Searches the segment with name equal to +segment_name+.
@@ -265,12 +271,12 @@ class GFA
                   traverse_internals(sn, true, exclude)[1..-1]
         next if segpath.size < 2
         paths << segpath
-      elsif [:junction_M1, :end_11, :end_01].include?(jt)
+      elsif [:junction_M1, :end_01].include?(jt)
         exclude << sn
         segpath = traverse_internals(sn, true, exclude)
         next if segpath.size < 2
         paths << segpath
-      elsif [:junction_1M, :end_11, :end_10].include?(jt)
+      elsif [:junction_1M, :end_10].include?(jt)
         exclude << sn
         segpath = traverse_internals(sn, false, exclude).reverse
         next if segpath.size < 2
@@ -335,51 +341,24 @@ class GFA
     return nil
   end
 
-  # Determines the links connectivity of a segment based on the list
-  # of incoming and outgoing links.
-  #
-  # *Returns*:
-  # - see +segment_junction_type+ return value
-  def junction_type(b_list, e_list)
-    if e_list.size == 1
-      if b_list.size == 1
-        if e_list[0].from_orient == b_list[0].to_orient
-          return :internal
-        else
-          return :end_11
-        end
-      elsif b_list.size == 0
-        return :end_01
-      else
-        return :junction_M1
-      end
-    elsif e_list.size == 0
-      if b_list.size == 1
-        return :end_10
-      elsif b_list.size == 0
-        return :isolated
-      else
-        return :end_M0
-      end
-    else # e_list.size > 1
-      if b_list.size == 1
-        return :junction_1M
-      elsif b_list.size == 0
-        return :end_0M
-      else
-        return :junction_MM
-      end
+  # See +segment_junction_type+
+  def junction_type(b_list_size, e_list_size)
+    b = b_list_size > 1 ? "M" : b_list_size
+    e = e_list_size > 1 ? "M" : e_list_size
+    if b == e and b != "M"
+      return (b == 0) ? :isolated : :internal
+    else
+      return :"#{(b == 0 or e == 0) ? 'end' : 'junction'}_#{b}#{e}"
     end
   end
 
   def traverse_internals(from, direct_direction, exclude)
     list = []
     current_elem = from
-    original_direction = direct_direction
     loop do
       blist = end_links(current_elem, :B)
       elist = end_links(current_elem, :E)
-      jt = junction_type(blist, elist)
+      jt = junction_type(blist.size, elist.size)
       if jt == :internal or list.empty?
         list << current_elem
         l = direct_direction ? elist.first : blist.first
@@ -388,14 +367,10 @@ class GFA
            (l.end_type(current_elem) == :E and direct_direction)
           direct_direction = !direct_direction
         end
-        if exclude.include?(current_elem)
-          return list
-        end
+        return list if exclude.include?(current_elem)
         exclude << current_elem
-      elsif ([:junction_M1, :end_11, :end_01].include?(jt) and
-             !direct_direction) or
-            ([:junction_1M, :end_11, :end_10].include?(jt) and
-             direct_direction)
+      elsif ([:junction_M1, :end_01].include?(jt) and !direct_direction) or
+            ([:junction_1M, :end_10].include?(jt) and direct_direction)
         list << current_elem
         return list
       else
