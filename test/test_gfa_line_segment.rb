@@ -25,6 +25,12 @@ class TestGFALineSegment < Test::Unit::TestCase
     assert_raises(GFA::Line::PredefinedOptfieldTypeError) do
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_gfa_line
     end
+    f=["S","2","ACGTCACANNN","LN:i:3"]
+    assert_raises(RuntimeError) { f.join("\t").to_gfa_line }
+    f=["S","2","ACGTCACANNN","LN:i:11"]
+    assert_nothing_raised { f.join("\t").to_gfa_line }
+    f=["S","2","*","LN:i:3"]
+    assert_nothing_raised { f.join("\t").to_gfa_line }
   end
 
 end
