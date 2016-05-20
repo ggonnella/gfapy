@@ -87,6 +87,19 @@ module GFA::Edit
     multiply_segment!(segment_name, [copy_name])
   end
 
+=begin comment
+  def merge_unbranched_segpath!(segment_names)
+    (segment_names.size - 1).times do |i|
+      current = segment_names[i]
+      after_links = link(current, other)
+      raise if after_links.size != 1
+      after_l = after_links.first
+      after = after_l.other(current)
+    end
+  end
+
+=end commment
+
   # limitations:
   # - all containments und paths involving merged segments are deleted
   def merge_unbranched_segpath!(segment_names)
@@ -116,7 +129,7 @@ module GFA::Edit
     end
     self << merged
     [:B, :E].each do |endtype|
-      end_links(segment_names.first, endtype).each do |l|
+      links_of_segment_end(segment_names.first, endtype).each do |l|
         l2 = l.clone
         if l2.to == segment_names.first
           l2.to = merged.name
@@ -131,7 +144,7 @@ module GFA::Edit
         end
         self << l2
       end
-      end_links(segment_names.last, endtype).each do |l|
+      links_of_segment_end(segment_names.last, endtype).each do |l|
         l2 = l.clone
         if l2.from == segment_names.last
           l2.from = merged.name

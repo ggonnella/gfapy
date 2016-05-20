@@ -63,4 +63,8 @@ class GFA::Line::Link < GFA::Line
     end
   end
 
+  def other_end_type(segment_name)
+    end_type(other(segment_name))
+  end
+
 end
