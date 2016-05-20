@@ -84,6 +84,9 @@ module GFA::Traverse
     sum_of_counts(segment_names).each do |count_tag, count|
       merged.send(:"#{count_tag}=", count)
     end
+    if merged.sequence != "*" and merged.respond_to?(:LN)
+      merged.LN = merged.sequence.size
+    end
     l = link(segment_names[0],nil,segment_names[1],nil)
     first_reversed = (l.end_type(segment_names[0]) == :B)
     l = link(segment_names[-2],nil,segment_names[-1],nil)
@@ -188,7 +191,7 @@ module GFA::Traverse
   def sum_of_counts(segnames)
     retval = {}
     segs = segnames.map {|sn|segment(sn)}
-    [:KC, :RC, :FC].each do |count_tag|
+    [:LN, :KC, :RC, :FC].each do |count_tag|
       segs.each do |s|
         if s.optional_fieldnames.include?(count_tag)
           retval[count_tag] ||= 0
