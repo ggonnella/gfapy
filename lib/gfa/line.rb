@@ -82,9 +82,12 @@ class GFA::Line
   end
 
   def <<(optfield)
-    if !optfield.kind_of?(GFA::Optfield)
-      raise ArgumentError, "<< argument must be a GFA::Optfield instance"
+    if !optfield.respond_to?(:to_gfa_optfield)
+      raise ArgumentError,
+        "The << argument must be a string representing "+
+        "an optional field or an GFA::Optfield instance"
     end
+    optfield = optfield.to_gfa_optfield
     sym = optfield.tag.to_sym
     if @optional_fieldnames.include?(sym)
       raise GFA::Line::DuplicateOptfieldNameError,
@@ -130,10 +133,17 @@ class GFA::Line
   def method_missing(m, *args, &block)
     i = @fieldnames.index(m)
     return get_field(i, *args) if !i.nil?
-    if m.to_s =~ /(.*)=/
+    return nil if m =~ /^#{GFA::Optfield::TagRegexp}$/
+    if m.to_s =~ /^(.*)=$/
+      if args.size != 1
+        raise ArgumentError, "Method #{m} requires 1 argument"
+      end
       i = @fieldnames.index($1.to_sym)
-      if !i.nil?
-        raise ArgumentError, "#{m} requires 1 argument" if args.size != 1
+      if i.nil?
+        if m.to_s =~ /^(#{GFA::Optfield::TagRegexp})=$/
+          return auto_create_optfield($1, args[0])
+        end
+      else
         return (self[i] = args[0])
       end
     end
@@ -150,6 +160,26 @@ class GFA::Line
   end
 
   private
+
+  def auto_create_optfield(tagname, value)
+    type = "Z"
+    if value.kind_of? Integer
+      type = "i"
+    elsif value.kind_of? Float
+      type = "f"
+    elsif value.kind_of? Array
+      type = "B"
+      if value.all?{|i|i.kind_of? Integer}
+        value.unshift("i")
+      elsif value.all?{|i|i.kind_of? Float}
+        value.unshift("f")
+      else
+        type = "Z"
+      end
+      value = value.join(",")
+    end
+    self << GFA::Optfield.new(tagname, type, value.to_s)
+  end
 
   def validate_field_definitions!
     if !@reqfield_definitions.kind_of?(Array)
