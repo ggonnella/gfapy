@@ -267,18 +267,18 @@ class GFA
       jt = segment_junction_type(sn)
       if segment_junction_type(sn) == :internal
         exclude << sn
-        segpath = traverse_internals(sn, false, exclude).reverse +
-                  traverse_internals(sn, true, exclude)[1..-1]
+        segpath = traverse_unbranched(sn, false, exclude).reverse +
+                  traverse_unbranched(sn, true, exclude)[1..-1]
         next if segpath.size < 2
         paths << segpath
       elsif [:junction_M1, :end_01].include?(jt)
         exclude << sn
-        segpath = traverse_internals(sn, true, exclude)
+        segpath = traverse_unbranched(sn, true, exclude)
         next if segpath.size < 2
         paths << segpath
       elsif [:junction_1M, :end_10].include?(jt)
         exclude << sn
-        segpath = traverse_internals(sn, false, exclude).reverse
+        segpath = traverse_unbranched(sn, false, exclude).reverse
         next if segpath.size < 2
         paths << segpath
       end
@@ -352,22 +352,18 @@ class GFA
     end
   end
 
-  def traverse_internals(from, direct_direction, exclude)
+  def traverse_unbranched(from, traverse_from_E_end, exclude)
     list = []
     current_elem = from
     loop do
-      blist = end_links(current_elem, :B)
-      elist = end_links(current_elem, :E)
-      jt = direct_direction ? junction_type(blist.size, elist.size)
-                            : junction_type(elist.size, blist.size)
+      after  = end_links(current_elem, traverse_from_E_end ? :E : :B)
+      before = end_links(current_elem, traverse_from_E_end ? :B : :E)
+      jt = junction_type(before.size, after.size)
       if jt == :internal or list.empty?
         list << current_elem
-        l = direct_direction ? elist.first : blist.first
+        l = after.first
         current_elem = l.other(current_elem)
-        if (l.end_type(current_elem) == :B and !direct_direction) or
-           (l.end_type(current_elem) == :E and direct_direction)
-          direct_direction = !direct_direction
-        end
+        traverse_from_E_end = (l.end_type(current_elem) == :B)
         return list if exclude.include?(current_elem)
         exclude << current_elem
       elsif [:junction_1M, :end_10].include?(jt)
