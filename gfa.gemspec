@@ -19,7 +19,9 @@ Gem::Specification.new do |s|
   EOF
   s.author = 'Giorgio Gonnella'
   s.email = 'gonnella@zbh.uni-hamburg.de'
-  s.files = ['lib/gfa.rb', 'lib/gfa/edit.rb', 'lib/gfa/line.rb',
+  s.files = ['lib/gfa.rb', 'lib/gfa/edit.rb', 'lib/gfa/line_getters.rb',
+             'lib/gfa/line_setters.rb', 'lib/gfa/traverse.rb',
+             'lib/gfa/connect.rb', 'lib/gfa/line.rb',
              'lib/gfa/cigar.rb', 'lib/gfa/sequence.rb',
              'lib/gfa/optfield.rb', 'lib/gfa/line/header.rb',
              'lib/gfa/line/containment.rb', 'lib/gfa/line/link.rb',
