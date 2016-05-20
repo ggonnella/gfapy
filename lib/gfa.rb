@@ -43,6 +43,11 @@ class GFA
     @paths_with = {}
   end
 
+  # List all names of segments in the graph
+  def segment_names
+    @segment_names.compact
+  end
+
   # Searches the segment with name equal to +segment_name+.
   #
   # *Returns*:
@@ -58,6 +63,11 @@ class GFA
     s = segment(segment_name)
     raise "No segment has name #{segment_name}" if s.nil?
     s
+  end
+
+  # List all names of path lines in the graph
+  def path_names
+    @path_names.compact
   end
 
   # Searches the path with name equal to +path_name+.
@@ -77,128 +87,116 @@ class GFA
     pt
   end
 
-  # TODO: as link and containment are low level, from_orient/to_orient/pos
-  #       should be mandatory and the return value should be an array
-  #       of all elements satisfying the conditions
-
-  # Searches a link with from segment name +from+ and to segment name +to+.
-  #
-  # *Arguments*:
-  #   - +from+/+to+: the segment names
-  #   - +from_orient+/+to_orient+: optional, the orientation;
-  #                                if not specified, then any orientation
-  #                                is accepted
-  #
-  # *Returns*:
-  #   - nil if the desired link does not exist
-  #   - a GFA::Line::Link instance otherwise
-  #   - if multiple links satisfy the conditions, the first one found is
-  #     returned
-  def link(from, to, from_orient: nil, to_orient: nil)
-    link_or_containment("L", from, from_orient, to, to_orient, nil)
-  end
-
-  # Calls +link+ and raises a +RuntimeError+ if no path was found.
-  def link!(from, to, from_orient: nil, to_orient: nil)
-    l = link(from, to, from_orient: from_orient, to_orient: to_orient)
-    raise "No link found" if l.nil?
-    l
-  end
-
-  # Searches a containment of +to+ into +from+.
-  #
-  # *Arguments*:
-  #   - +from+/+to+: the segment names
-  #   - +from_orient+/+to_orient+: optional, the orientation;
-  #                                if not specified, then any orientation
-  #                                is accepted
-  #   - +pos+: optional, the starting position;
-  #            if not specified, then any position is accepted
-  #
-  # *Returns*:
-  #   - nil if the desired containment does not exist
-  #   - a GFA::Line::Containment instance otherwise
-  #   - if multiple containments satisfy the conditions, the first one found is
-  #     returned
-  def containment(from, to, from_orient: nil, to_orient: nil, pos: nil)
-    link_or_containment("C", from, from_orient, to, to_orient, pos)
-  end
-
-  # Calls +containment+ and raises a +RuntimeError+ if no path was found.
-  def containment!(from, to, from_orient: nil, to_orient: nil, pos: nil)
-    c = containment(from, to, from_orient: from_orient, to_orient: to_orient,
-                    pos: pos)
-    raise "No containment found" if c.nil?
-    c
-  end
-
-  # TODO: delete these methods
-  ["links", "containments"].each do |c|
-    rt = c[0].upcase
-    [:from, :to].each do |d|
-      define_method(:"#{c}_#{d}") do |segment_name, orientation = nil|
-        connections(rt, d, segment_name, orientation).map do |i|
-          @lines[rt][i]
-        end
-      end
-    end
-  end
-
-  # TODO: make this method private
-  def lines(record_type)
-    retval = []
-    each(record_type) {|l| retval << l}
-    return retval
-  end
-
+  # Find path lines whose +segment_names+ include segment +segment_name+
   def paths_with(segment_name)
     @paths_with.fetch(segment_name,[]).map{|i|@lines["P"][i]}
   end
 
-  GFA::Line::RecordTypes.each do |rt, klass|
-    klass =~ /GFA::Line::(.*)/
-    define_method(:"#{$1.downcase}s") { lines(rt) }
-    define_method(:"each_#{$1.downcase}") { each(rt) }
+  # Find containment lines whose +from+ segment name is +segment_name+
+  def contained_in(segment_name)
+    connection_lines("C", :from, segment_name)
   end
 
-  def segment_names
-    @segment_names.compact
+  # Find containment lines whose +to+ segment name is +segment_name+
+  def containing(segment_name)
+    connection_lines("C", :to, segment_name)
   end
 
-  def path_names
-    @path_names.compact
+  # Searches all containments of +contained+ in +container+.
+  #
+  # Returns a possibly empty array of containments.
+  def containments_between(container, contained)
+    contained_in(container).select {|l| l.to == contained }
   end
 
-  def to_s
-    s = ""
-    GFA::Line::RecordTypes.keys.each do |rt|
-      @lines[rt].each do |line|
-        next if line.nil?
-        s << "#{line}\n"
-      end
+  # Searches a containment of +contained+ in +container+.
+  #
+  # Returns the first containment found or nil if none found.
+  def containment(container, contained)
+    contained_in(container).each {|l| return l if l.to == contained }
+    return nil
+  end
+
+  # Calls +containment+ and raises a +RuntimeError+ if no containment was found.
+  def containment!(container, contained)
+    c = containment(container, contained)
+    raise "No containment was found" if c.nil?
+    c
+  end
+
+  # Find links of the specified end of segment
+  #
+  # *Returns*
+  #   - An array of GFA::Line::Link containing:
+  #     - if end_type == :E
+  #       links from sn with from_orient +
+  #       links to   sn with to_orient   -
+  #     - if end_type == :B
+  #       links to   sn with to_orient   +
+  #       links from sn with from_orient -
+  #     - if end_type == nil
+  #       all links of sn
+  #
+  # *Note*:
+  #   - To add or remove links, use +connect()+ or +disconnect()+;
+  #     adding or removing links from the returned array will not work
+  def links_of(sn, end_type)
+    case end_type
+    when :E
+      o = ["+","-"]
+    when :B
+      o = ["-","+"]
+    when nil
+      return links_of(sn, :B) + links_of(sn, :E)
+    else
+      raise "end_type unknown: #{end_type.inspect}"
     end
-    return s
+    connection_lines("L",:from,sn,o[0]) + connection_lines("L",:to,sn,o[1])
   end
 
-  def to_gfa
-    self
+  # Searches all links between the segment +sn1+ end +end_type1+
+  # and the segment +sn2+ end +end_type2+
+  #
+  # The end_types can be set to nil, in which case both ends are searched.
+  #
+  # Returns a possibly empty array of links.
+  def links_between(sn1, end_type1, sn2, end_type2)
+    links_of(sn, end_type1).select do |l|
+      l.other(sn1) == sn2 and
+        (end_type2.nil? or l.other_end_type(sn1) == end_type2)
+    end
   end
 
-  def self.from_file(filename)
-    gfa = GFA.new
-    File.foreach(filename) {|line| gfa << line.chomp}
-    return gfa
+  # Searches a link between the segment +sn1+ end +end_type1+
+  # and the segment +sn2+ end +end_type2+
+  #
+  # The end_types can be set to nil, in which case both ends are searched.
+  #
+  # Returns the first link found or nil if none found.
+  def link(sn1, end_type1, sn2, end_type2)
+    links_of(sn1, end_type1).each do |l|
+      return l if l.other(sn1) == sn2 and
+        (end_type2.nil? or l.other_end_type(sn1) == end_type2)
+    end
+    return nil
   end
 
-  def to_file(filename)
-    File.open(filename, "w") {|f| f.puts self}
+  # Calls +link+ and raises a +RuntimeError+ if no link was found.
+  def link!(sn1, end_type1, sn2, end_type2)
+    l = link(sn1, end_type1, sn2, end_type2)
+    raise "No link was found" if l.nil?
+    l
   end
 
-  # Assigns a segment to a connectivity class depending on the number of links
-  # to the beginning and to the end of its sequence.
+  # TODO: move segment_junction_type, unbranched_segpath etc into an own module
+  #       GFA::Traverse
+
+  # Computes the connectivity class of a segment depending on the number
+  # of links to the beginning and to the end of its sequence.
   #
   # *Arguments*:
   #   - +segment_name+: name of the segment
+  #   - +reverse_complement+ use the reverse complement of the segment sequence
   #
   # *Returns*:
   #   (bn = number of links to the beginning of the sequence;
@@ -209,14 +207,24 @@ class GFA
   #   - +:end_#{b}#{e}>+       if: bn or en == 0, other > 0
   #   - +:internal+            if: bn == 1, en == 1
   #   - +:junction_#{b}#{e}>+  if: bn or en == 1, other > 1
+  #   - if +reverse_complement+ is set to true, b/e are switched
+  #     (nothing changes for :isolated/:internal)
   #
   def segment_junction_type(segment_name, reverse_complement = false)
     ends = [:B, :E]
     ends.reverse! if reverse_complement
-    junction_type(links_of_segment_end(segment_name, ends.first).size,
-                  links_of_segment_end(segment_name, ends.last).size)
+    junction_type(links_of(segment_name, ends.first).size,
+                  links_of(segment_name, ends.last).size)
   end
 
+  # Find a path without branches which includes segment +segment_name+
+  # and excludes any segment whose name is stored in +exclude+.
+  #
+  # *Side effects*:
+  #   - any segment used in the path will be added to +exclude+
+  #
+  # *Returns*:
+  #   - an array of segment names
   def unbranched_segpath(segment_name, exclude = Set.new)
     jt = segment_junction_type(segment_name)
     case jt
@@ -248,40 +256,48 @@ class GFA
     return paths.compact
   end
 
-  # Find links of the specified end of segment
-  #
-  # *Returns*
-  #   - An array of GFA::Line::Link containing:
-  #     - if end_type == :E
-  #       links from sn with to_orient +
-  #       links to sn   with to_orient -
-  #     - if end_type == :B
-  #       links to sn   with to_orient +
-  #       links from sn with to_orient -
-  #
-  # *Note*:
-  #   - To add or remove links, use +connect()+ or +disconnect()+;
-  #     adding or removing links from the returned array will not work
-  def links_of_segment_end(sn, end_type)
-    if end_type == :E
-      c=connections("L",:from,sn,"+")+connections("L",:to,sn,"-")
-    elsif end_type == :B
-      c=connections("L",:to,sn,"+")+connections("L",:from,sn,"-")
-    else
-      raise "end_type unknown: #{end_type.inspect}"
+  GFA::Line::RecordTypes.each do |rt, klass|
+    klass =~ /GFA::Line::(.*)/
+    define_method(:"#{$1.downcase}s") { lines(rt) }
+    define_method(:"each_#{$1.downcase}") { each(rt) }
+  end
+
+  # Creates a string representation of GFA conforming to the current
+  # specifications
+  def to_s
+    s = ""
+    GFA::Line::RecordTypes.keys.each do |rt|
+      @lines[rt].each do |line|
+        next if line.nil?
+        s << "#{line}\n"
+      end
     end
-    c.map {|i| @lines['L'][i]}
+    return s
   end
 
-  def link_of_segment_ends(sn1, end_type1, sn2, end_type2)
+  # Return the gfa itself
+  def to_gfa
+    self
   end
 
-  # As +link_of_segment_ends+, but raises an RuntimeError if no
-  # link could be found.
-  def link_of_segment_ends!(sn1, end_type1, sn2, end_type2)
+  # Creats a GFA instance reading from file with specified +filename+
+  def self.from_file(filename)
+    gfa = GFA.new
+    File.foreach(filename) {|line| gfa << line.chomp}
+    return gfa
+  end
+
+  # Write GFA to file with specified +filename+;
+  # overwrites it if it exists
+  def to_file(filename)
+    File.open(filename, "w") {|f| f.puts self}
   end
 
   private
+
+  def connection_lines(rt, dir, sn, o = nil)
+    connections(rt, dir, sn, o).map{|i| @lines[rt][i]}
+  end
 
   # Enumerate values from @connect data structure
   #
@@ -299,23 +315,6 @@ class GFA
     return connections(rt,dir,sn,"+")+connections(rt,dir,sn,"-") if o.nil?
     raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
     @connect[rt][dir].fetch(sn,{}).fetch(o,[])
-  end
-
-  # Searches for a link (if +rt == "L"+) or containment (if +rt == "C"+)
-  # connecting segments +from+ and +to+. The orientation and starting pos
-  # (the latter for containments only) must match only if not +nil+.
-  # The first L or C found is returned, +nil+ if nothing matches.
-  def link_or_containment(rt, from, from_orient, to, to_orient, pos)
-    connections(rt, :from, from).each do |li|
-      l = @lines[rt][li]
-      if (l.to == to) and
-         (to_orient.nil? or (l.to_orient == to_orient)) and
-         (from_orient.nil? or (l.from_orient == from_orient)) and
-         (pos.nil? or (l.pos(false) == pos.to_s))
-        return l
-      end
-    end
-    return nil
   end
 
   # See +segment_junction_type+
@@ -353,8 +352,8 @@ class GFA
     list = []
     current_elem = from
     loop do
-      after  = links_of_segment_end(current_elem, traverse_from_E_end ? :E : :B)
-      before = links_of_segment_end(current_elem, traverse_from_E_end ? :B : :E)
+      after  = links_of(current_elem, traverse_from_E_end ? :E : :B)
+      before = links_of(current_elem, traverse_from_E_end ? :B : :E)
       jt = junction_type(before.size, after.size)
       if jt == :internal or list.empty?
         list << current_elem
@@ -401,6 +400,12 @@ class GFA
       next if line.nil?
       yield line
     end
+  end
+
+  def lines(record_type)
+    retval = []
+    each(record_type) {|l| retval << l}
+    return retval
   end
 
 end

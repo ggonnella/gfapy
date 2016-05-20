@@ -113,52 +113,40 @@ module GFA::Edit
     sum_of_counts(segment_names).each do |count_tag, count|
       merged.send(:"#{count_tag}=", count)
     end
-    l = link(segment_names[0],segment_names[1])
-    if l
-    first_reversed = l.from_orient == "-"
-    else
-      l = link(segment_names[1],segment_names[0])
-      first_reversed = l.to_orient == "+"
-    end
-    l = link(segment_names[-2],segment_names[-1])
-    if l
-      last_reversed = l.to_orient(segment_names[-1]) == "-"
-    else
-      l = link(segment_names[-1],segment_names[-2])
-      last_reversed = l.from_orient(segment_names[-1]) == "+"
-    end
+    l = link(segment_names[0],nil,segment_names[1],nil)
+    first_reversed = (l.end_type(segment_names[0]) == :B)
+    l = link(segment_names[-2],nil,segment_names[-1],nil)
+    last_reversed = (l.end_type(segment_names[-1]) == :E)
     self << merged
-    [:B, :E].each do |endtype|
-      links_of_segment_end(segment_names.first, endtype).each do |l|
-        l2 = l.clone
-        if l2.to == segment_names.first
-          l2.to = merged.name
-          if first_reversed
-            l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
-          end
-        else
-          l2.from = merged.name
-          if first_reversed
-            l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
-          end
+    links_of(segment_names.first, nil).each do |l|
+      l2 = l.clone
+      if l2.to == segment_names.first
+        l2.to = merged.name
+        if first_reversed
+          l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
         end
-        self << l2
-      end
-      links_of_segment_end(segment_names.last, endtype).each do |l|
-        l2 = l.clone
-        if l2.from == segment_names.last
-          l2.from = merged.name
-          if last_reversed
-            l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
-          end
-        else
-          l2.to = merged.name
-          if last_reversed
-            l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
-          end
+      else
+        l2.from = merged.name
+        if first_reversed
+          l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
         end
-        self << l2
       end
+      self << l2
+    end
+    links_of(segment_names.last, nil).each do |l|
+      l2 = l.clone
+      if l2.from == segment_names.last
+        l2.from = merged.name
+        if last_reversed
+          l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+        end
+      else
+        l2.to = merged.name
+        if last_reversed
+          l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+        end
+      end
+      self << l2
     end
     segment_names.each {|sn| delete_segment!(sn)}
     self
@@ -313,8 +301,7 @@ module GFA::Edit
     (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
-      l = link(a, b)
-      l ||= link!(b, a)
+      l = link!(a, nil, b, nil)
       a = segment!(a)
       b = segment!(b)
       return "*" if a.sequence == "*" or b.sequence == "*"
@@ -326,9 +313,9 @@ module GFA::Edit
         raise "Overlaps contaning other operations than M are not supported"
       end
       if retval.empty?
-        retval << (l.orient(a.name) == "+" ? a.sequence : a.sequence.rc)
+        retval << (l.end_type(a.name) == :E ? a.sequence : a.sequence.rc)
       end
-      seq = (l.orient(b.name) == "+" ? b.sequence : b.sequence.rc)
+      seq = (l.end_type(b.name) == :B ? b.sequence : b.sequence.rc)
       if cut > 0
         raise "Inconsistent overlap" if retval[(-cut)..-1] != seq[0..(cut-1)]
       end
