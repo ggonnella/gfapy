@@ -358,7 +358,8 @@ class GFA
     loop do
       blist = end_links(current_elem, :B)
       elist = end_links(current_elem, :E)
-      jt = junction_type(blist.size, elist.size)
+      jt = direct_direction ? junction_type(blist.size, elist.size)
+                            : junction_type(elist.size, blist.size)
       if jt == :internal or list.empty?
         list << current_elem
         l = direct_direction ? elist.first : blist.first
@@ -369,8 +370,7 @@ class GFA
         end
         return list if exclude.include?(current_elem)
         exclude << current_elem
-      elsif ([:junction_M1, :end_01].include?(jt) and !direct_direction) or
-            ([:junction_1M, :end_10].include?(jt) and direct_direction)
+      elsif [:junction_1M, :end_10].include?(jt)
         list << current_elem
         return list
       else
