@@ -40,7 +40,7 @@ class GFA::Line::Segment < GFA::Line
   end
 
   def coverage!(count_tag: :RC)
-    c = coverage(count_tag)
+    c = coverage(count_tag: count_tag)
     if c.nil?
       [count_tag, :LN].each do |ct|
         if !optional_fieldnames.include?(ct)

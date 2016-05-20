@@ -64,9 +64,31 @@ module GFA::Edit
 
   def delete_low_coverage_segments!(mincov, count_tag: :RC)
     segments.map do |s|
-      (s.send(count_tag).to_f / s.LN) < mincov ? s.name : nil
+      cov = s.coverage!(count_tag: count_tag)
+      cov < mincov ? s.name : nil
     end.compact.each do |sn|
       delete_segment!(sn)
+    end
+  end
+
+  def mean_coverage(segment_names, count_tag: :RC)
+    count = 0
+    length = 0
+    segment_names.each do |s|
+      s = segment!(s)
+      c = s.send(count_tag)
+      raise "Tag #{count_tag} not available for segment #{s.name}" if c.nil?
+      l = s.LN
+      raise "Tag LN not available for segment #{s.name}" if l.nil?
+      count += c
+      length += l
+    end
+    count.to_f/length
+  end
+
+  def set_copy_numbers(mean_coverage, count_tag: :RC)
+    segments.each do |s|
+      s.cn = (s.coverage!(count_tag: count_tag).to_f/mean_coverage).round
     end
   end
 
