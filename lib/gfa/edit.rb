@@ -69,6 +69,7 @@ module GFA::Edit
     end.compact.each do |sn|
       delete_segment!(sn)
     end
+    self
   end
 
   def mean_coverage(segment_names, count_tag: :RC)
@@ -86,10 +87,28 @@ module GFA::Edit
     count.to_f/length
   end
 
-  def set_copy_numbers(mean_coverage, count_tag: :RC)
+  def compute_copy_numbers(single_copy_coverage, count_tag: :RC, tag: :cn)
     segments.each do |s|
-      s.cn = (s.coverage!(count_tag: count_tag).to_f/mean_coverage).round
+      s.send(:"#{tag}=", (s.coverage!(count_tag:
+               count_tag).to_f / single_copy_coverage).round)
     end
+    self
+  end
+
+  def apply_copy_numbers(tag: :cn)
+    segments.each do |s|
+      case s.cn!
+      when 0
+        delete_segment!(s.name)
+      when 1
+        next
+      else
+        new_names = ["#{s.name}_copy"]
+        (s.cn-2).times {|i| new_names << "#{s.name}_copy#{i+2}"}
+        multiply_segment!(s.name, new_names)
+      end
+    end
+    self
   end
 
   private
