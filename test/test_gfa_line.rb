@@ -126,8 +126,10 @@ class TestGFALine < Test::Unit::TestCase
     assert_equal("H", l.record_type)
     assert_equal("12", l.from)
     assert_equal(13, l.xx)
-    assert_equal("HI", l.XY)
     assert_equal(nil, l.zz)
+    assert_raise(RuntimeError) { l.zz! }
+    assert_equal("HI", l.XY)
+    assert_equal("HI", l.XY!)
     assert_raise(NoMethodError) { l.zzz }
   end
 

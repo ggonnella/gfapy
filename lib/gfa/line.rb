@@ -131,21 +131,22 @@ class GFA::Line
   end
 
   def method_missing(m, *args, &block)
-    i = @fieldnames.index(m)
-    return get_field(i, *args) if !i.nil?
-    return nil if m =~ /^#{GFA::Optfield::TagRegexp}$/
-    if m.to_s =~ /^(.*)=$/
-      if args.size != 1
-        raise ArgumentError, "Method #{m} requires 1 argument"
-      end
-      i = @fieldnames.index($1.to_sym)
-      if i.nil?
-        if m.to_s =~ /^(#{GFA::Optfield::TagRegexp})=$/
-          return auto_create_optfield($1, args[0])
-        end
-      else
-        return (self[i] = args[0])
-      end
+    ms = m.to_s
+    var = nil
+    if ms[-1] == "!"
+      var = :bang
+      ms.chop!
+    elsif ms[-1] == "="
+      raise ArgumentError, "Method #{ms} requires 1 argument" if args.size != 1
+      var = :set
+      ms.chop!
+    end
+    i = @fieldnames.index(ms.to_sym)
+    if !i.nil?
+      return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
+    elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
+      raise "No value defined for tag #{ms}" if var == :bang
+      return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
     end
     super
   end
