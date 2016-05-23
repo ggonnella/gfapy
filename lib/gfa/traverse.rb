@@ -73,7 +73,7 @@ module GFA::Traverse
 
   # limitations:
   # - all containments und paths involving merged segments are deleted
-  def merge_unbranched_segpath!(segment_names)
+  def merge_unbranched_segpath(segment_names)
     raise if segment_names.size < 2
     raise if segment_names[1..-2].any? do |sn|
       segment_junction_type(sn) != :internal
@@ -121,13 +121,13 @@ module GFA::Traverse
       end
       self << l2
     end
-    segment_names.each {|sn| delete_segment!(sn)}
+    segment_names.each {|sn| delete_segment(sn)}
     self
   end
 
-  def merge_all_unbranched_segpaths!
+  def merge_all_unbranched_segpaths
     paths = unbranched_segpaths
-    paths.each {|path| merge_unbranched_segpath!(path)}
+    paths.each {|path| merge_unbranched_segpath(path)}
     self
   end
 

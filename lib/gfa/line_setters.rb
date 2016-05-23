@@ -38,7 +38,7 @@ module GFA::LineSetters
     end
   end
 
-  def delete_segment!(segment_name)
+  def delete_segment(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
@@ -53,7 +53,7 @@ module GFA::LineSetters
           end
       end
     end
-    connected.uniq.each {|c| unconnect_segments!(segment_name, c)}
+    connected.uniq.each {|c| unconnect_segments(segment_name, c)}
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         disconnect(rt,e,segment_name,nil,nil)
@@ -62,13 +62,13 @@ module GFA::LineSetters
     to_rm = []
     @paths_with.fetch(segment_name,[]).each {|li| to_rm <<
                                              @lines["P"][li].path_name }
-    to_rm.each {|pt| delete_path!(pt)}
+    to_rm.each {|pt| delete_path(pt)}
     @lines["S"][i] = nil
     @segment_names[i] = nil
     return self
   end
 
-  def unconnect_segments!(from, to)
+  def unconnect_segments(from, to)
     delete_containments_or_links("C", from, nil, to, nil, nil, false)
     delete_containments_or_links("L", from, nil, to, nil, nil, false)
     delete_containments_or_links("C", to, nil, from, nil, nil, false)
@@ -77,19 +77,19 @@ module GFA::LineSetters
   end
 
   # TODO: the interface of link and containment is now very different to that
-  #       of delete_link! and delete_containment!; shall the latter remain so?
+  #       of delete_link and delete_containment; shall the latter remain so?
 
-  def delete_link!(from, to, from_orient: nil, to_orient: nil)
+  def delete_link(from, to, from_orient: nil, to_orient: nil)
     delete_containments_or_links("L", from, from_orient, to,
                                  to_orient, nil, true)
   end
 
-  def delete_containment!(from, to, from_orient: nil, to_orient: nil, pos: nil)
+  def delete_containment(from, to, from_orient: nil, to_orient: nil, pos: nil)
     delete_containments_or_links("C", from, from_orient, to,
                                  to_orient, pos, true)
   end
 
-  def delete_path!(path_name)
+  def delete_path(path_name)
     i = @path_names.index(path_name)
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]

@@ -15,9 +15,7 @@ module GFA::Edit
     @lines["P"].each {|l| l.cigar = "*"}
   end
 
-  # TODO: remove the ! from the editing methods
-
-  def multiply_segment!(segment_name, copy_names)
+  def multiply_segment(segment_name, copy_names)
     s = segment(segment_name)
     if copy_names.empty?
       raise ArgumentError, "multiply factor must be at least 2"
@@ -58,16 +56,16 @@ module GFA::Edit
     return self
   end
 
-  def duplicate_segment!(segment_name, copy_name)
-    multiply_segment!(segment_name, [copy_name])
+  def duplicate_segment(segment_name, copy_name)
+    multiply_segment(segment_name, [copy_name])
   end
 
-  def delete_low_coverage_segments!(mincov, count_tag: :RC)
+  def delete_low_coverage_segments(mincov, count_tag: :RC)
     segments.map do |s|
-      cov = s.coverage!(count_tag: count_tag)
+      cov = s.coverage(count_tag: count_tag)
       cov < mincov ? s.name : nil
     end.compact.each do |sn|
-      delete_segment!(sn)
+      delete_segment(sn)
     end
     self
   end
@@ -105,7 +103,7 @@ module GFA::Edit
       else
         new_names = ["#{s.name}_copy"]
         (s.cn-2).times {|i| new_names << "#{s.name}_copy#{i+2}"}
-        multiply_segment!(s.name, new_names)
+        multiply_segment(s.name, new_names)
       end
     end
     self

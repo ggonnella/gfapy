@@ -13,12 +13,12 @@ class TestGFAEdit < Test::Unit::TestCase
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal([l], gfa.links)
     assert_equal(l, gfa.link("1", :E, "2", :B))
-    gfa.delete_link!("1", "2", :from_orient => "+",:to_orient => "+")
+    gfa.delete_link("1", "2", :from_orient => "+",:to_orient => "+")
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link("1", :E, "2", :B))
     assert_equal([c], gfa.containments)
     assert_equal(c, gfa.containment("1", "0"))
-    gfa.delete_containment!("1", "0", :from_orient => "+", :to_orient => "+",
+    gfa.delete_containment("1", "0", :from_orient => "+", :to_orient => "+",
                             :pos => "12")
     assert_equal([], gfa.containments)
     assert_equal(nil, gfa.containment("1", "0"))
@@ -26,8 +26,8 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal([l], gfa.links)
     gfa << c
     assert_equal([c], gfa.containments)
-    gfa.unconnect_segments!("0", "1")
-    gfa.unconnect_segments!("2", "1")
+    gfa.unconnect_segments("0", "1")
+    gfa.unconnect_segments("2", "1")
     assert_equal([], gfa.containments)
     assert_equal([], gfa.links)
   end
@@ -44,12 +44,12 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal([l], gfa.links)
     assert_equal([c], gfa.containments)
     assert_equal([p], gfa.paths)
-    gfa.delete_segment!("0")
+    gfa.delete_segment("0")
     assert_equal([s[1],s[2]], gfa.segments)
     assert_equal([l], gfa.links)
     assert_equal([], gfa.containments)
     assert_equal([], gfa.paths)
-    gfa.delete_segment!("1")
+    gfa.delete_segment("1")
     assert_equal([s[2]], gfa.segments)
     assert_equal([], gfa.links)
   end
@@ -72,14 +72,14 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(nil, gfa.link("5", nil, "2", nil))
     assert_equal(nil, gfa.containment("5", "0"))
     assert_equal(6000, gfa.segment("1").RC)
-    gfa.duplicate_segment!("1","5")
+    gfa.duplicate_segment("1","5")
     assert_equal(l, gfa.link("1", nil, "2", nil))
     assert_equal(c, gfa.containment("1", "0"))
     assert_not_equal(nil, gfa.link("5", nil, "2", nil))
     assert_not_equal(nil, gfa.containment("5", "0"))
     assert_equal(3000, gfa.segment("1").RC)
     assert_equal(3000, gfa.segment("5").RC)
-    gfa.multiply_segment!("5",["6","7"])
+    gfa.multiply_segment("5",["6","7"])
     assert_equal(l, gfa.link("1", nil, "2", nil))
     assert_not_equal(nil, gfa.link("5", nil, "2", nil))
     assert_not_equal(nil, gfa.link("6", nil, "2", nil))
@@ -105,7 +105,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_raises(RuntimeError) do
-      gfa.merge_unbranched_segpath!(["0","1","2","3"])
+      gfa.merge_unbranched_segpath(["0","1","2","3"])
     end
     s = ["S\t0\tACGA",
          "S\t1\tACGA",
@@ -118,7 +118,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised do
-      gfa.merge_unbranched_segpath!(["0","1","2","3"])
+      gfa.merge_unbranched_segpath(["0","1","2","3"])
     end
     assert_raises(RuntimeError) {gfa.segment!("0")}
     assert_raises(RuntimeError) {gfa.segment!("1")}
@@ -140,8 +140,8 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    gfa.merge_all_unbranched_segpaths!
-    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    gfa.merge_all_unbranched_segpaths
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
     assert_equal(["0_1_2_3"], gfa.segments.map(&:name))
     assert_equal(1, gfa.segments.size)
     assert_equal([], gfa.links)
@@ -156,7 +156,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
     assert_equal(3, gfa.segments.size)
     assert_equal(["0","3","1_2"], gfa.segments.map(&:name))
     s = ["S\t0\t*",
@@ -170,7 +170,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_nothing_raised { gfa.merge_all_unbranched_segpaths! }
+    assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
     assert_equal(4, gfa.segments.size)
     assert_equal(["0", "1", "2", "3"], gfa.segments.map(&:name))
   end
