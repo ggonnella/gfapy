@@ -162,23 +162,7 @@ class GFA::Line
   private
 
   def auto_create_optfield(tagname, value)
-    type = "Z"
-    if value.kind_of? Integer
-      type = "i"
-    elsif value.kind_of? Float
-      type = "f"
-    elsif value.kind_of? Array
-      type = "B"
-      if value.all?{|i|i.kind_of? Integer}
-        value.unshift("i")
-      elsif value.all?{|i|i.kind_of? Float}
-        value.unshift("f")
-      else
-        type = "Z"
-      end
-      value = value.join(",")
-    end
-    self << GFA::Optfield.new(tagname, type, value.to_s)
+    self << GFA::Optfield.new_autotype(tagname, value)
   end
 
   def validate_field_definitions!

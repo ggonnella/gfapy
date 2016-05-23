@@ -10,7 +10,7 @@ class TestGFAOptfield < Test::Unit::TestCase
     assert_equal("A", o.value)
   end
 
-  def test_type_cast
+  def test_type_cast_by_getting_value
     o = GFA::Optfield.new("AA","A","1")
     assert_equal("1", o.value)
     assert_equal("1", o.value(false))
@@ -72,6 +72,27 @@ class TestGFAOptfield < Test::Unit::TestCase
     assert_equal("AA", o.tag)
     assert_equal("A", o.type)
     assert_equal("B", o.value)
+  end
+
+  def test_type_cast_by_setting_value
+    o = GFA::Optfield.new("AA","i","12")
+    o.value = 13
+    assert_equal(13, o.value)
+    o = GFA::Optfield.new("AA","f","1.2")
+    o.value = 1.3
+    assert_equal(1.3, o.value)
+    o = GFA::Optfield.new("AA","H","1A")
+    o.value = 27
+    assert_equal(27, o.value)
+    assert_equal("1B", o.value(false))
+    o = GFA::Optfield.new("AA","B","c,12,12")
+    o.value = [13,13,13]
+    assert_equal([13,13,13],o.value)
+    assert_equal("i,13,13,13",o.value(false))
+    o.value = [1.3,1.3,1.3]
+    assert_equal([1.3,1.3,1.3],o.value)
+    assert_equal("f,1.3,1.3,1.3",o.value(false))
+    assert_raise(GFA::Optfield::ValueError) { o.value = [13,1.3,1.3] }
   end
 
   def test_set_invalid_value

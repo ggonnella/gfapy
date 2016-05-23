@@ -39,7 +39,7 @@ class GFA::Optfield
     }
   Separator = ":"
 
-  # Creates a GFA::Optfield instance.
+  # Creates a +GFA::Optfield+ instance.
   #
   # *Raises*:
   # - +GFA::Optfield::TagError+ if the tag name is not two letters or
@@ -47,10 +47,10 @@ class GFA::Optfield
   # - +GFA::Optfield::TypeError+ if the type is not one of "AifZHB"
   # - +GFA::Optfield::ValueError+ if the value is not in accordance to the
   #                                specified type
-  def initialize(tag, type, value)
-    @tag = tag
-    @type = type
-    @value = value
+  def initialize(tag, type, v)
+    @tag = tag.to_s
+    @type = type.to_s
+    @value = value_to_optfield_s(@type, v)
     validate!
   end
 
@@ -58,17 +58,30 @@ class GFA::Optfield
     "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Optfield::Separator}#@value"
   end
 
+  # Creates a +GFA::Optfield+ instance, guessing the correct type to use
+  # from the class of +value+.
+  #
+  # *Type of returned GFA::Optfield*:
+  #   - Integer          => "i"
+  #   - Float            => "f"
+  #   - Array of Integer => "B"/"i,..."
+  #   - Array of Float   => "B"/"f,..."
+  #   - other            => "Z"
+  #
+  def self.new_autotype(tag, value)
+    self.new(tag, guess_type(value), value)
+  end
+
   # Sets the +value+ of the GFA::Optfield.
   #
   # *Arguments*:
-  #   - +v-: the value to set; the value must be a string which specifies the
-  #   value in accordance to the +type+; for "i" and "F" values, v may be,
-  #   respectively, an Integer or Float
-  # *Note*: for "H" and "B" no automatic back-conversion of +v+ to string is
-  #  done, thus +gfa.value=gfa.value+ will generally fail in these cases
-  #  (while +gfa.value=gfa.value(false)+ will not)
+  #   - +v-: the value to set; the value must be either a string which
+  #   specifies the value in accordance to the +type+, or a value of a
+  #   compatible type, e.g. Integer for "i" and "H", Float for "f", Array of
+  #   Integer or Float values for "B", String for "Z" and "A"
+  #
   def value=(v)
-    @value = v.to_s
+    @value = value_to_optfield_s(@type, v)
     validate_value!
   end
 
@@ -79,25 +92,7 @@ class GFA::Optfield
   #             their type: "i" and "H" to Integer, "f" to Float and
   #             "B" to an Array of Integer or Float elements
   def value(cast = true)
-    return @value if !cast
-    case @type
-    when "i"
-      return @value.to_i
-    when "f"
-      return @value.to_f
-    when "H"
-      return @value.to_i(16)
-    when "B"
-      elems = @value.split(",")
-      etype = elems.shift
-      if etype == "f"
-        return elems.map{|e|e.to_f}
-      else
-        return elems.map{|e|e.to_i}
-      end
-    else
-      return @value
-    end
+    cast ? value_from_optfield_s(@type, @value) : @value
   end
 
   def to_gfa_optfield
@@ -109,6 +104,65 @@ class GFA::Optfield
   end
 
   private
+
+  def self.guess_type(value)
+    type = "Z"
+    if value.kind_of? Integer
+      type = "i"
+    elsif value.kind_of? Float
+      type = "f"
+    elsif value.kind_of? Array
+      type = "B"
+      if value.all?{|i|i.kind_of? Integer}
+        value.unshift("i")
+      elsif value.all?{|i|i.kind_of? Float}
+        value.unshift("f")
+      else
+        type = "Z"
+      end
+    end
+    return type
+  end
+
+  def value_to_optfield_s(type, v)
+    if type == "H" and v.kind_of?(Integer)
+      return v.to_s(16).upcase
+    elsif type == "B" and v.kind_of?(Array)
+      if v.all?{|i|i.kind_of?(Integer)}
+        v.unshift("i")
+      elsif v.all?{|i|i.kind_of?(Float)}
+        v.unshift("f")
+      end
+      return v.join(",")
+    else
+      if v.kind_of?(Array)
+        return v.map(&:to_s).join(",")
+      else
+        return v.to_s
+      end
+    end
+  end
+
+  def value_from_optfield_s(type, v)
+    case type
+    when "i"
+      return v.to_i
+    when "f"
+      return v.to_f
+    when "H"
+      return v.to_i(16)
+    when "B"
+      elems = v.split(",")
+      etype = elems.shift
+      if etype == "f"
+        return elems.map{|e|e.to_f}
+      else
+        return elems.map{|e|e.to_i}
+      end
+    else
+      return v
+    end
+  end
 
   def validate!
     if @tag !~ /^#{TagRegexp}$/
@@ -124,6 +178,30 @@ class GFA::Optfield
     if @value !~ /^#{TypeRegexp[@type]}$/
       raise GFA::Optfield::ValueError,
         "Value invalid for type #@type: '#@value'"
+    end
+    validate_B_values_range! if @type == "B"
+  end
+
+  def validate_B_values_range!
+    values = @value.split(",")
+    subtype = values.shift
+    if subtype == "f"
+      values.each {|v| Float(v) }
+    else
+      b_value_bits = {"c" => 8, "s" => 16, "i" => 32}
+      if subtype == subtype.upcase
+        min = 0
+        max = (2**b_value_bits[subtype])-1
+      else
+        min = -(2**(b_value_bits[subtype]-1))
+        max = (2**(b_value_bits[subtype]-1))-1
+      end
+      values.each do |v|
+        v = Integer(v)
+        if v > max or v < min
+          raise "B type #{subtype} values must be in the range #{min}..#{max}"
+        end
+      end
     end
   end
 
