@@ -44,13 +44,15 @@ module GFA::Edit
     self
   end
 
-  def multiply_segment(segment_name, factor, copy_names: nil)
+  def multiply_segment(segment_name, factor, copy_names: nil,
+                       distribute_links: [])
     raise ArgumentError, "Factor must be >= 2: #{factor} found" if factor < 2
     if copy_names.nil?
       copy_names = ["#{segment_name}_copy"]
       (factor-2).times {|i| copy_names << "#{segment_name}_copy#{i+2}"}
     end
     s = segment(segment_name)
+    s.or = s.name if !s.or
     divide_counts(s, factor)
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
@@ -68,6 +70,7 @@ module GFA::Edit
       end
       cpy = s.clone
       cpy.name = cn
+      cpy.or = s.or
       self << cpy
     end
     ["L","C"].each do |rt|
@@ -79,6 +82,20 @@ module GFA::Edit
             l = @lines[rt][i].clone
             l.send(:"#{e}=", cn)
             self << l
+          end
+        end
+      end
+    end
+    distribute_links.each do |end_type|
+      et_links = links_of(segment_name, end_type)
+      if et_links.size != factor
+        raise "Cannote distribute #{end_type.inspect} links"
+      end
+      ([segment_name]+copy_names).each_with_index do |sn, i|
+        links_of(sn, end_type).each do |l|
+          if l.other(sn) != et_links[i].other(segment_name) or
+              l.other_end_type(sn) != et_links[i].other_end_type(segment_name)
+            delete_link_line(l)
           end
         end
       end
@@ -132,10 +149,38 @@ module GFA::Edit
       when 1
         next
       else
-        multiply_segment(s.name, s.cn)
+        if links_of(s.name, :E).size == s.cn
+          distribute = [:E]
+        elsif links_of(s.name, :B).size == s.cn
+          distribute = [:B]
+        else
+          distribute = []
+        end
+        multiply_segment(s.name, s.cn, distribute_links: distribute)
       end
     end
     self
+  end
+
+  def select_random_orientation
+    segments.each do |s|
+      if segment_same_links_both_ends?(s.name)
+        parts = {}
+        parts[:E] = partitioned_links_of(s.name, :E)
+        if parts[:E].size == 2
+          parts[:B] = partitioned_links_of(s.name, :B)
+          if segment_signature(parts[:B][0][0].other(s.name)) !=
+             segment_signature(parts[:E][0][0].other(s.name))
+            parts[:B].reverse!
+          end
+          [:E, :B].each_with_index do |e, i|
+            links_of(s.name, e).each do |l|
+              delete_link_line(l) if l != parts[e][i][0]
+            end
+          end
+        end
+      end
+    end
   end
 
   private
@@ -147,6 +192,54 @@ module GFA::Edit
         gfa_line.send(:"#{count_tag}=", value.to_i.to_s)
       end
     end
+  end
+
+  def link_targets_for_cmp(segment_name, end_type)
+    links_of(segment_name, end_type).map do |l|
+      l.other(segment_name)+l.other_end_type(segment_name).to_s
+    end.sort
+  end
+
+  def segment_same_links_both_ends?(segment_name)
+    e_links = link_targets_for_cmp(segment_name, :E)
+    b_links = link_targets_for_cmp(segment_name, :B)
+    return e_links == b_links
+  end
+
+  def segments_same_links?(segment_names)
+    raise if segment_names.size < 2
+    e_links_first = link_targets_for_cmp(segment_names.first, :E)
+    b_links_first = link_targets_for_cmp(segment_names.first, :B)
+    return segment_names[1..-1].all? do |sn|
+      (link_targets_for_cmp(sn, :E) == e_links_first) and
+      (link_targets_for_cmp(sn, :B) == b_links_first)
+    end
+  end
+
+  def segment_signature(segment_name)
+    s = segment!(segment_name)
+    link_targets_for_cmp(segment_name, :B).join(",")+"\t"+
+    link_targets_for_cmp(segment_name, :E).join(",")+"\t"+
+    [:or, :coverage].map do |field|
+      s.send(field)
+    end.join("\t")
+  end
+
+  def segments_equivalent?(segment_names)
+    raise if segment_names.size < 2
+    segments = segment_names.map{|sn|segment!(sn)}
+    [:or, :coverage].each do |field|
+      if segments.any?{|s|s.send(field) != segments.first.send(field)}
+        return false
+      end
+    end
+    return segment_same_links?(segment_names)
+  end
+
+  def partitioned_links_of(segment_name, end_type)
+    links_of(segment_name, end_type).group_by do |l|
+      segment_signature(l.other(segment_name))
+    end.map {|sig, par| par}
   end
 
 end
