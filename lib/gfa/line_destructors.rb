@@ -41,15 +41,12 @@ module GFA::LineDestructors
     return self
   end
 
-  # TODO: the interface of link and containment is now very different to that
-  #       of delete_link and delete_containment; shall the latter remain so?
-
-  def delete_link(from, to, from_orient: nil, to_orient: nil)
+  def delete_link(from, from_orient, to, to_orient)
     delete_containments_or_links("L", from, from_orient, to,
                                  to_orient, nil, true)
   end
 
-  def delete_containment(from, to, from_orient: nil, to_orient: nil, pos: nil)
+  def delete_containment(from, from_orient, to, to_orient, pos)
     delete_containments_or_links("C", from, from_orient, to,
                                  to_orient, pos, true)
   end

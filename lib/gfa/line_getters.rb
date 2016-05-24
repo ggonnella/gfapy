@@ -159,5 +159,4 @@ module GFA::LineGetters
     return retval
   end
 
-
 end

@@ -13,13 +13,12 @@ class TestGFADeleteLines < Test::Unit::TestCase
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal([l], gfa.links)
     assert_equal(l, gfa.link("1", :E, "2", :B))
-    gfa.delete_link("1", "2", :from_orient => "+",:to_orient => "+")
+    gfa.delete_link("1", "+", "2", "+")
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link("1", :E, "2", :B))
     assert_equal([c], gfa.containments)
     assert_equal(c, gfa.containment("1", "0"))
-    gfa.delete_containment("1", "0", :from_orient => "+", :to_orient => "+",
-                            :pos => "12")
+    gfa.delete_containment("1", "+", "0", "+", 12)
     assert_equal([], gfa.containments)
     assert_equal(nil, gfa.containment("1", "0"))
     gfa << l
