@@ -88,15 +88,15 @@ module GFA::Edit
     end
     distribute_links.each do |end_type|
       et_links = links_of(segment_name, end_type)
-      if et_links.size != factor
-        raise "Cannote distribute #{end_type.inspect} links"
+      diff = [et_links.size - factor, 0].max
+      links_signatures = et_links.map do |l|
+        l.other(segment_name) + l.other_end_type(segment_name).to_s
       end
       ([segment_name]+copy_names).each_with_index do |sn, i|
         links_of(sn, end_type).each do |l|
-          if l.other(sn) != et_links[i].other(segment_name) or
-              l.other_end_type(sn) != et_links[i].other_end_type(segment_name)
-            delete_link_line(l)
-          end
+          l_sig = l.other(sn)+l.other_end_type(sn).to_s
+          to_save = links_signatures[i..i+diff].to_a
+          delete_link_line(l) unless to_save.include?(l_sig)
         end
       end
     end
