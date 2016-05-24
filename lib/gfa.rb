@@ -106,6 +106,57 @@ class GFA
     File.open(filename, "w") {|f| f.puts self}
   end
 
+  def info
+    q, n50, tlen = lenstats
+    retval = []
+    retval << "Node count:               #{segments.size}"
+    retval << "Edge count:               #{links.size}"
+    retval << "Total length (bp):        #{tlen}"
+    nde = n_dead_ends()
+    pde = "%.2f%%" % ((nde.to_f*100) / (segments.size*2))
+    retval << "Dead ends:                #{nde}"
+    retval << "Percentage dead ends:     #{pde}"
+    cc = connected_components()
+    retval << "Connected components:     #{cc.size}"
+    cc.map!{|c|c.map{|sn|segment!(sn).LN!}.inject(:+)}
+    retval << "Largest component (bp):   #{cc.last}"
+    retval << "N50 (bp):                 #{n50}"
+    retval << "Shortest node (bp):       #{q[0]}"
+    retval << "Lower quartile node (bp): #{q[1]}"
+    retval << "Median node (bp):         #{q[2]}"
+    retval << "Upper quartile node (bp): #{q[3]}"
+    retval << "Longest node (bp):        #{q[4]}"
+    return retval
+  end
+
+  private
+
+  def n_dead_ends
+    segments.inject(0) do |n, s|
+      [:E, :B].each do |e|
+        n+=1 if links_of(s.name, e) == 0
+      end
+      n
+    end
+  end
+
+  def lenstats
+    sln = segments.map(&:LN!).sort
+    n = sln.size
+    tlen = sln.inject(:+)
+    n50 = nil
+    sum = 0
+    sln.reverse.each do |l|
+      sum += l
+      if sum >= tlen/2
+        n50 = l
+        break
+      end
+    end
+    q = [sln[0], sln[(n/4)-1], sln[(n/2)-1], sln[((n*3)/4)-1], sln[-1]]
+    return q, n50, tlen
+  end
+
 end
 
 class String

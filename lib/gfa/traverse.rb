@@ -131,7 +131,38 @@ module GFA::Traverse
     self
   end
 
+  def connected_components
+    visited = Set.new
+    components = []
+    segments.map(&:name).each do |sn|
+      if visited.include?(sn)
+        next
+      else
+        visited << sn
+        c = [sn]
+        traverse_component(sn, :B, c, visited)
+        traverse_component(sn, :E, c, visited)
+        components << c
+      end
+    end
+    return components
+  end
+
   private
+
+  def traverse_component(segment_name, end_type, c, visited)
+    links_of(segment_name, end_type).each do |l|
+      sn = l.other(segment_name)
+      if visited.include?(sn)
+        next
+      else
+        visited << sn
+        c << sn
+        traverse_component(sn, :B, c, visited)
+        traverse_component(sn, :E, c, visited)
+      end
+    end
+  end
 
   # See +segment_junction_type+
   def junction_type(b_list_size, e_list_size)
