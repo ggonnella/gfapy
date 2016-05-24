@@ -24,6 +24,24 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(["*"], gfa.paths[0].cigars)
   end
 
+  def test_rename_segment
+    gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t0\t+\t2\t+\t12M",
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
+    gfa.rename_segment("0", "X")
+    assert_equal(["X", "1", "2"], gfa.segment_names)
+    assert_equal("L\tX\t+\t2\t+\t12M", gfa.links[0].to_s)
+    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
+    assert_equal("P\t4\t2+,X-\t12M,12M", gfa.paths[0].to_s)
+    assert_nothing_raised { gfa.send(:validate_connect) }
+    assert_equal([], gfa.links_of("0", nil))
+    assert_equal("L\tX\t+\t2\t+\t12M", gfa.links_of("X", nil)[0].to_s)
+    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.contained_in("1")[0].to_s)
+    assert_equal([], gfa.containing("0"))
+    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containing("X")[0].to_s)
+    assert_equal([], gfa.paths_with("0"))
+    assert_equal("P\t4\t2+,X-\t12M,12M", gfa.paths_with("X")[0].to_s)
+  end
+
   def test_multiply_segment
     gfa = GFA.new
     gfa << "H\tVN:Z:1.0"
@@ -43,6 +61,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(nil, gfa.containment("5", "0"))
     assert_equal(6000, gfa.segment("1").RC)
     gfa.duplicate_segment("1")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link("1", nil, "2", nil))
     assert_equal(c, gfa.containment("1", "0"))
     assert_not_equal(nil, gfa.link("1_copy", nil, "2", nil))
@@ -50,6 +69,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(3000, gfa.segment("1").RC)
     assert_equal(3000, gfa.segment("1_copy").RC)
     gfa.multiply_segment("1_copy", 3 , copy_names:["6","7"])
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link("1", nil, "2", nil))
     assert_not_equal(nil, gfa.link("1_copy", nil, "2", nil))
     assert_not_equal(nil, gfa.link("6", nil, "2", nil))
@@ -70,10 +90,13 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(["0","1","2"], gfa.segment_names)
     gfa.delete_low_coverage_segments(10)
     assert_equal(["1","2"], gfa.segment_names)
+    assert_nothing_raised { gfa.send(:validate_connect) }
     gfa.delete_low_coverage_segments(100)
     assert_equal(["2"], gfa.segment_names)
+    assert_nothing_raised { gfa.send(:validate_connect) }
     gfa.delete_low_coverage_segments(1000)
     assert_equal([], gfa.segment_names)
+    assert_nothing_raised { gfa.send(:validate_connect) }
   end
 
   def test_mean_coverage
@@ -109,6 +132,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(["1","2","3","2_copy","3_copy","3_copy2"], gfa.segment_names)
     gfa.compute_copy_numbers(9)
     assert(gfa.segments.map(&:cn).all?{|cn|cn == 1})
+    assert_nothing_raised { gfa.send(:validate_connect) }
   end
 
 end

@@ -6,6 +6,7 @@ module GFA::Edit
   # Eliminate the sequences from S lines
   def delete_sequences
     @lines["S"].each {|l| l.sequence = "*"}
+    self
   end
 
   # Eliminate the CIGAR from L/C/P lines
@@ -13,6 +14,34 @@ module GFA::Edit
     @lines["L"].each {|l| l.overlap = "*"}
     @lines["C"].each {|l| l.overlap = "*"}
     @lines["P"].each {|l| l.cigars = "*"}
+    self
+  end
+
+  def rename_segment(segment_name, new_name)
+    validate_segment_and_path_name_unique!(new_name)
+    s = segment!(segment_name)
+    s.name = new_name
+    i = @segment_names.index(segment_name)
+    @segment_names[i] = new_name
+    ["L","C"].each do |rt|
+      [:from,:to].each do |dir|
+        connection_lines(rt, dir, segment_name).each do |l|
+          l.send(:"#{dir}=", new_name)
+        end
+      end
+    end
+    connect_rename_segment(segment_name, new_name)
+    if @paths_with.has_key?(segment_name)
+      paths_with(segment_name).each do |l|
+        l.segment_names = l.segment_names.map do |sn, o|
+          sn = new_name if sn == segment_name
+          [sn, o].join("")
+        end.join(",")
+      end
+      @paths_with[new_name] = @paths_with[segment_name]
+      @paths_with.delete(segment_name)
+    end
+    self
   end
 
   def multiply_segment(segment_name, factor, copy_names: nil)

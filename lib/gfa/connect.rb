@@ -14,7 +14,19 @@ module GFA::Connect
     @connect[rt][dir][sn]||={}
     @connect[rt][dir][sn][o]||=[]
     @connect[rt][dir][sn][o] << value
-    validate_connect
+    validate_connect if $DEBUG
+  end
+
+  def connect_rename_segment(sn, new_sn)
+    ["L", "C"].each do |rt|
+      [:from, :to].each do |dir|
+        if @connect[rt][dir].has_key?(sn)
+          @connect[rt][dir][new_sn] = @connect[rt][dir][sn]
+          @connect[rt][dir].delete(sn)
+        end
+      end
+    end
+    validate_connect if $DEBUG
   end
 
   # Remove values from @connect data structure
@@ -39,13 +51,14 @@ module GFA::Connect
     raise if o != "+" and o != "-"
     raise if value.nil?
     @connect[rt][dir].fetch(sn,{}).fetch(o,[]).delete(value)
+    validate_connect if $DEBUG
   end
 
   def connection_lines(rt, dir, sn, o = nil)
     connections(rt, dir, sn, o).map{|i| @lines[rt][i]}
   end
 
-  # Enumerate values from @connect data structure
+  # Find relevant values from @connect data structure
   #
   # *Usage*:
   # +connections(rt, :from|:to, sn)+ => both orientations of +sn+
