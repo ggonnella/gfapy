@@ -46,7 +46,11 @@ module GFA::Edit
 
   def multiply_segment(segment_name, factor, copy_names: nil,
                        distribute_links: [])
-    raise ArgumentError, "Factor must be >= 2: #{factor} found" if factor < 2
+    if factor == 1
+      return self
+    elsif factor == 0
+      return delete_segment(segment_name)
+    end
     if copy_names.nil?
       copy_names = ["#{segment_name}_copy"]
       (factor-2).times {|i| copy_names << "#{segment_name}_copy#{i+2}"}
@@ -141,34 +145,11 @@ module GFA::Edit
     self
   end
 
-  def apply_copy_numbers(tag: :cn)
-    segments.sort_by{|s|s.cn}.each do |s|
-      case s.cn!
-      when 0
-        delete_segment(s.name)
-      when 1
-        next
-      else
-        esize = links_of(s.name, :E).size
-        bsize = links_of(s.name, :B).size
-        if esize == s.cn
-          distribute = [:E]
-        elsif bsize == s.cn
-          distribute = [:B]
-        elsif esize == 0
-          distribute = (bsize == 0) ? [] : [:B]
-        elsif bsize == 0
-          distribute = [:E]
-        elsif esize < s.cn
-          distribute = (bsize <= esize) ? [:E] :
-             ((bsize < cn) ? [:B] : [:E])
-        elsif bsize < s.cn
-          distribute = [:B]
-        else
-          distribute = (bsize <= esize) ? [:B] : [:E]
-        end
-        multiply_segment(s.name, s.cn, distribute_links: distribute)
-      end
+  def apply_copy_numbers(tag: :cn, distribute_links: true)
+    segments.sort_by{|s|s.send(:"#{tag}!")}.each do |s|
+      multiply_segment(s.name, s.send(tag),
+                       distribute_links: (distribute_links ?
+                                            select_distribute_end(s, tag) : []))
     end
     self
   end
@@ -202,6 +183,28 @@ module GFA::Edit
         value = (gfa_line.send(count_tag).to_f / factor)
         gfa_line.send(:"#{count_tag}=", value.to_i.to_s)
       end
+    end
+  end
+
+  def select_distribute_end(segment, cntag)
+    esize = links_of(segment.name, :E).size
+    bsize = links_of(segment.name, :B).size
+    cn = segment.send(cntag)
+    if esize == cn
+      return [:E]
+    elsif bsize == cn
+      return [:B]
+    elsif esize == 0
+      return (bsize == 0) ? [] : [:B]
+    elsif bsize == 0
+      return [:E]
+    elsif esize < cn
+      return ((bsize <= esize) ? [:E] :
+        ((bsize < cn) ? [:B] : [:E]))
+    elsif bsize < cn
+      return [:B]
+    else
+      return ((bsize <= esize) ? [:B] : [:E])
     end
   end
 
