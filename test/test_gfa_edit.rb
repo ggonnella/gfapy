@@ -64,21 +64,21 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link("1", nil, "2", nil))
     assert_equal(c, gfa.containment("1", "0"))
-    assert_not_equal(nil, gfa.link("1_copy", nil, "2", nil))
-    assert_not_equal(nil, gfa.containment("1_copy", "0"))
+    assert_not_equal(nil, gfa.link("1a", nil, "2", nil))
+    assert_not_equal(nil, gfa.containment("1a", "0"))
     assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(3000, gfa.segment("1_copy").RC)
-    gfa.multiply_segment("1_copy", 3 , copy_names:["6","7"])
+    assert_equal(3000, gfa.segment("1a").RC)
+    gfa.multiply_segment("1a", 3 , copy_names:["6","7"])
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link("1", nil, "2", nil))
-    assert_not_equal(nil, gfa.link("1_copy", nil, "2", nil))
+    assert_not_equal(nil, gfa.link("1a", nil, "2", nil))
     assert_not_equal(nil, gfa.link("6", nil, "2", nil))
     assert_not_equal(nil, gfa.link("7", nil, "2", nil))
-    assert_not_equal(nil, gfa.containment("1_copy", "0"))
+    assert_not_equal(nil, gfa.containment("1a", "0"))
     assert_not_equal(nil, gfa.containment("6", "0"))
     assert_not_equal(nil, gfa.containment("7", "0"))
     assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(1000, gfa.segment("1_copy").RC)
+    assert_equal(1000, gfa.segment("1a").RC)
     assert_equal(1000, gfa.segment("6").RC)
     assert_equal(1000, gfa.segment("7").RC)
   end
@@ -129,7 +129,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(["0","1","2","3"], gfa.segment_names)
     gfa.compute_copy_numbers(9)
     gfa.apply_copy_numbers
-    assert_equal(["1","2","3","2_copy","3_copy","3_copy2"], gfa.segment_names)
+    assert_equal(["1","2","3","2a","3a","3b"], gfa.segment_names)
     gfa.compute_copy_numbers(9)
     assert(gfa.segments.map(&:cn).all?{|cn|cn == 1})
     assert_nothing_raised { gfa.send(:validate_connect) }

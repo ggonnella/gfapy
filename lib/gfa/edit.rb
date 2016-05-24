@@ -51,10 +51,7 @@ module GFA::Edit
     elsif factor == 0
       return delete_segment(segment_name)
     end
-    if copy_names.nil?
-      copy_names = ["#{segment_name}_copy"]
-      (factor-2).times {|i| copy_names << "#{segment_name}_copy#{i+2}"}
-    end
+    copy_names = auto_copy_names(segment_name, factor) if copy_names.nil?
     s = segment(segment_name)
     s.or = s.name if !s.or
     divide_counts(s, factor)
@@ -176,6 +173,19 @@ module GFA::Edit
   end
 
   private
+
+  def auto_copy_names(segment_name, factor)
+    copy_names = []
+    next_name = "#{segment_name}a"
+    while copy_names.size < (factor-1)
+      while copy_names.include?(next_name) or
+            @segment_names.include?(next_name)
+        next_name = next_name.next
+      end
+      copy_names << next_name
+    end
+    return copy_names
+  end
 
   def divide_counts(gfa_line, factor)
     [:KC, :RC, :FC].each do |count_tag|
