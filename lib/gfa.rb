@@ -88,11 +88,15 @@ class GFA
     self
   end
 
+  def clone
+    to_s.to_gfa(validate: false)
+  end
+
   # Creats a GFA instance reading from file with specified +filename+
-  def self.from_file(filename)
+  def self.from_file(filename, validate: true)
     gfa = GFA.new
     File.foreach(filename) {|line| gfa << line.chomp}
-    gfa.validate!
+    gfa.validate! if validate
     return gfa
   end
 
@@ -108,10 +112,10 @@ class String
 
   # Converts a +String+ into a +GFA+ instance. Each line of the string is added
   # separately to the gfa.
-  def to_gfa
+  def to_gfa(validate: true)
     gfa = GFA.new
     split("\n").each {|line| gfa << line}
-    gfa.validate!
+    gfa.validate! if validate
     return gfa
   end
 
@@ -121,10 +125,10 @@ class Array
 
   # Converts an +Array+ of strings or GFA::Line instances
   # into a +GFA+ instance.
-  def to_gfa
+  def to_gfa(validate: true)
     gfa = GFA.new
     each {|line| gfa << line}
-    gfa.validate!
+    gfa.validate! if validate
     return gfa
   end
 
