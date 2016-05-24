@@ -22,7 +22,7 @@ module GFA::LineSetters
     when "P"
       validate_segment_and_path_name_unique!(gfa_line.path_name)
       @path_names << gfa_line.path_name
-      gfa_line.segment_name.each do |sn, o|
+      gfa_line.segment_names.each do |sn, o|
         segment!(sn) if @segments_first_order
         @paths_with[sn] ||= []
         @paths_with[sn] << i
@@ -34,7 +34,7 @@ module GFA::LineSetters
     ["L", "C"].each do |rt|
       @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
     end
-    @lines["P"].each {|l| l.segment_name.each {|sn, o| segment!(sn)}}
+    @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
   end
 
   def delete_segment(segment_name)
@@ -92,7 +92,7 @@ module GFA::LineSetters
     i = @path_names.index(path_name)
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]
-    pt.segment_name.each {|sn, o| @paths_with[sn].delete(i)}
+    pt.segment_names.each {|sn, o| @paths_with[sn].delete(i)}
     @lines["P"][i] = nil
     @path_names[i] = nil
     return self

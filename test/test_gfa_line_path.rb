@@ -10,11 +10,11 @@ class TestGFALinePath < Test::Unit::TestCase
     assert_equal(GFA::Line::Path, str.to_gfa_line.class)
     assert_equal(fields[0], str.to_gfa_line.record_type)
     assert_equal(fields[1], str.to_gfa_line.path_name)
-    assert_equal(fields[2], str.to_gfa_line.segment_name(false))
-    assert_equal([["1","+"],["2","-"],["3","+"]], str.to_gfa_line.segment_name)
-    assert_equal(fields[3], str.to_gfa_line.cigar(false))
+    assert_equal(fields[2], str.to_gfa_line.segment_names(false))
+    assert_equal([["1","+"],["2","-"],["3","+"]], str.to_gfa_line.segment_names)
+    assert_equal(fields[3], str.to_gfa_line.cigars(false))
     assert_equal([[[9,"M"],[2,"I"],[3,"D"],[1,"M"]],[[12,"M"]],[[12,"M"]]],
-                 str.to_gfa_line.cigar)
+                 str.to_gfa_line.cigars)
     assert_equal("abcd", str.to_gfa_line.ab)
     assert_raises(TypeError) { (str+"\tH1").to_gfa_line }
     assert_raises(GFA::Line::RequiredFieldMissingError) { "P\tH".to_gfa_line }
