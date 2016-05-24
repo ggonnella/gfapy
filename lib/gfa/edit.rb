@@ -15,12 +15,13 @@ module GFA::Edit
     @lines["P"].each {|l| l.cigars = "*"}
   end
 
-  def multiply_segment(segment_name, copy_names)
-    s = segment(segment_name)
-    if copy_names.empty?
-      raise ArgumentError, "multiply factor must be at least 2"
+  def multiply_segment(segment_name, factor, copy_names: nil)
+    raise ArgumentError, "Factor must be >= 2: #{factor} found" if factor < 2
+    if copy_names.nil?
+      copy_names = ["#{segment_name}_copy"]
+      (factor-2).times {|i| copy_names << "#{segment_name}_copy#{i+2}"}
     end
-    factor = 1 + copy_names.size
+    s = segment(segment_name)
     divide_counts(s, factor)
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
@@ -56,8 +57,9 @@ module GFA::Edit
     return self
   end
 
-  def duplicate_segment(segment_name, copy_name)
-    multiply_segment(segment_name, [copy_name])
+  def duplicate_segment(segment_name, copy_name: nil)
+    multiply_segment(segment_name, 2,
+                     copy_names: copy_name.nil? ? nil : [copy_name])
   end
 
   def delete_low_coverage_segments(mincov, count_tag: :RC)
@@ -94,16 +96,14 @@ module GFA::Edit
   end
 
   def apply_copy_numbers(tag: :cn)
-    segments.each do |s|
+    segments.sort_by{|s|s.cn}.each do |s|
       case s.cn!
       when 0
         delete_segment(s.name)
       when 1
         next
       else
-        new_names = ["#{s.name}_copy"]
-        (s.cn-2).times {|i| new_names << "#{s.name}_copy#{i+2}"}
-        multiply_segment(s.name, new_names)
+        multiply_segment(s.name, s.cn)
       end
     end
     self
