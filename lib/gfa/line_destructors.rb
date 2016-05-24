@@ -61,6 +61,38 @@ module GFA::LineDestructors
     return self
   end
 
+  def delete_headers
+    @lines["H"] = ""
+  end
+
+  def delete_segment_line(segment_line)
+    delete_segment(segment_line.name)
+  end
+
+  def delete_path_line(path_line)
+    delete_path(path_line.name)
+  end
+
+  def delete_link_line(link_line)
+    delete_containments_or_links("L",
+                                 link_line.from,
+                                 link_line.from_orient,
+                                 link_line.to,
+                                 link_line.to_orient,
+                                 nil,
+                                 true)
+  end
+
+  def delete_containment_line(containment_line)
+    delete_containments_or_links("C",
+                                 containment_line.from,
+                                 containment_line.from_orient,
+                                 containment_line.to,
+                                 containment_line.to_orient,
+                                 containment_line.pos,
+                                 true)
+  end
+
   private
 
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
