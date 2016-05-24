@@ -30,13 +30,6 @@ module GFA::LineSetters
     end
   end
 
-  def validate!
-    ["L", "C"].each do |rt|
-      @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
-    end
-    @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
-  end
-
   def delete_segment(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?

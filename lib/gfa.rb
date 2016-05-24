@@ -61,6 +61,13 @@ class GFA
     @path_names.compact
   end
 
+  def validate!
+    ["L", "C"].each do |rt|
+      @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
+    end
+    @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+  end
+
   # Creates a string representation of GFA conforming to the current
   # specifications
   def to_s
