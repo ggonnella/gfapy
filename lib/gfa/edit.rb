@@ -11,8 +11,8 @@ module GFA::Edit
   # Eliminate the CIGAR from L/C/P lines
   def delete_alignments
     @lines["L"].each {|l| l.overlap = "*"}
-    @lines["C"].each {|l| l.cigar = "*"}
-    @lines["P"].each {|l| l.cigar = "*"}
+    @lines["C"].each {|l| l.overlap = "*"}
+    @lines["P"].each {|l| l.cigars = "*"}
   end
 
   def multiply_segment(segment_name, copy_names)
@@ -97,7 +97,7 @@ module GFA::Edit
     segments.each do |s|
       case s.cn!
       when 0
-        delete_segment!(s.name)
+        delete_segment(s.name)
       when 1
         next
       else

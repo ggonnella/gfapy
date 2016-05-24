@@ -44,7 +44,7 @@ class GFA::Line::Segment < GFA::Line
     if c.nil?
       [count_tag, :LN].each do |ct|
         if !optional_fieldnames.include?(ct)
-          return "Tag #{ct} undefined for segment #{name}"
+          raise "Tag #{ct} undefined for segment #{name}"
         end
       end
     else

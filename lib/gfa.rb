@@ -104,7 +104,7 @@ end
 
 class String
 
-  # Converts a string into a +GFA+ instance. Each line of the string is added
+  # Converts a +String+ into a +GFA+ instance. Each line of the string is added
   # separately to the gfa.
   def to_gfa
     gfa = GFA.new
@@ -115,3 +115,15 @@ class String
 
 end
 
+class Array
+
+  # Converts an +Array+ of strings or GFA::Line instances
+  # into a +GFA+ instance.
+  def to_gfa
+    gfa = GFA.new
+    each {|line| gfa << line}
+    gfa.validate!
+    return gfa
+  end
+
+end

@@ -33,4 +33,21 @@ class TestGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { f.join("\t").to_gfa_line }
   end
 
+  def test_coverage
+    l = "S\t0\t*\tRC:i:600\tLN:i:100".to_gfa_line
+    assert_equal(6, l.coverage)
+    assert_equal(6, l.coverage!)
+    l = "S\t0\t*\tRC:i:600".to_gfa_line
+    assert_equal(nil, l.coverage)
+    assert_raises(RuntimeError) {l.coverage!}
+    l = "S\t0\t*\tLN:i:100".to_gfa_line
+    assert_equal(nil, l.coverage)
+    assert_raises(RuntimeError) {l.coverage!}
+    l = "S\t0\t*\tFC:i:600\tLN:i:100".to_gfa_line
+    assert_equal(nil, l.coverage)
+    assert_raises(RuntimeError) {l.coverage!}
+    assert_equal(6, l.coverage(count_tag: :FC))
+    assert_equal(6, l.coverage!(count_tag: :FC))
+  end
+
 end

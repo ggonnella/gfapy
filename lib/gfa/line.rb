@@ -28,8 +28,6 @@ class GFA::Line
     end
   end
 
-  attr_reader :fields, :fieldnames, :required_fieldnames, :optional_fieldnames
-
   #
   # <fields> is an array of strings, the content of a line
   #
@@ -45,17 +43,29 @@ class GFA::Line
   # <reqfield_cast> is a (possibly empty) hash of field name to lambda,
   # where the lambda defines a conversion of the value of the field
   # which is performed when the field name getter method is called
-  def initialize(fields, reqfield_definitions, optfield_types,
+  def initialize(fields,
+                 reqfield_definitions,
+                 optfield_types,
                  reqfield_cast = {})
     @reqfield_definitions = reqfield_definitions
     @optfield_types = optfield_types
     @reqfield_cast = reqfield_cast
     @fields = fields
     @fieldnames = []
-    validate_field_definitions!
-    validate_required_fields!
-    validate_optional_fields!
+    initialize_required_fields
     self.class.validate_record_type!(self.record_type)
+    initialize_optional_fields
+  end
+
+  attr_reader :fieldnames
+
+  def required_fieldnames
+    @fieldnames[0..(n_required_fields-1)]
+  end
+
+  def optional_fieldnames
+    @fieldnames.size > n_required_fields ?
+      @fieldnames[n_required_fields..-1] : []
   end
 
   def clone
@@ -67,43 +77,36 @@ class GFA::Line
     end
   end
 
-  # allow to access the required fields only
-  def reqfields
-    @fields[0..@required_fieldnames.size-1]
-  end
-
-  # allow to access the optional fields only
-  def optfields
-    @fields[@required_fieldname.size..-1]
-  end
-
   def to_s
     @fields.join(GFA::Line::Separator)
   end
 
-  def <<(optfield)
+  def add_optfield(optfield)
     if !optfield.respond_to?(:to_gfa_optfield)
       raise ArgumentError,
-        "The << argument must be a string representing "+
+        "The argument must be a string representing "+
         "an optional field or an GFA::Optfield instance"
     end
     optfield = optfield.to_gfa_optfield
     sym = optfield.tag.to_sym
-    if @optional_fieldnames.include?(sym)
+    if @fieldnames[n_required_fields..-1].include?(sym)
       raise GFA::Line::DuplicateOptfieldNameError,
-        "Optional tag '#{optfield.tag}' specified more than once"
+        "Optional tag '#{optfield.tag}' exists more than once"
     end
     validate_optional_field!(optfield)
     @fields << optfield
-    @optional_fieldnames << sym
     @fieldnames << sym
   end
 
-  def []=(i, value)
+  def <<(optfield)
+    add_optfield(optfield)
+  end
+
+  def set_field(i, value)
     if  i >= @fieldnames.size
       raise ArgumentError, "Line does not have a field number #{i}"
     end
-    if i < @required_fieldnames.size
+    if i < n_required_fields
       @fields[i] = value
       validate_required_field!(i)
     else
@@ -111,15 +114,11 @@ class GFA::Line
     end
   end
 
-  def [](i)
-    get_field(i, true)
-  end
-
   def get_field(i, autocast = true)
     if i >= @fieldnames.size
       raise ArgumentError, "Line does not have a field number #{i}"
     end
-    if i < @required_fieldnames.size
+    if i < n_required_fields
       if autocast and @reqfield_cast.has_key?(@fieldnames[i])
         return @reqfield_cast[@fieldnames[i]].call(@fields[i])
       else
@@ -130,18 +129,16 @@ class GFA::Line
     end
   end
 
+  def []=(i, value)
+    set_field(i, value)
+  end
+
+  def [](i)
+    get_field(i, true)
+  end
+
   def method_missing(m, *args, &block)
-    ms = m.to_s
-    var = nil
-    if ms[-1] == "!"
-      var = :bang
-      ms.chop!
-    elsif ms[-1] == "="
-      raise ArgumentError, "Method #{ms} requires 1 argument" if args.size != 1
-      var = :set
-      ms.chop!
-    end
-    i = @fieldnames.index(ms.to_sym)
+    ms, var, i = process_unknown_method(m)
     if !i.nil?
       return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
     elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
@@ -151,8 +148,22 @@ class GFA::Line
     super
   end
 
+  def respond_to?(m, include_all=false)
+    retval = super
+    if !retval
+      ms, var, i = process_unknown_method(m)
+      return (!i.nil? or ms =~ /^#{GFA::Optfield::TagRegexp}$/)
+    end
+    return retval
+  end
+
   def to_gfa_line
     self
+  end
+
+  def ==(o)
+    (o.fieldnames == self.fieldnames) and
+      (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
   end
 
   def self.other_orientation(orientation)
@@ -160,22 +171,58 @@ class GFA::Line
     return orientation == "+" ? "-" : "+"
   end
 
+  def validate!
+    validate_required_fields!
+    validate_optional_fields!
+    self.class.validate_record_type!(self.record_type)
+  end
+
   private
+
+  def n_required_fields
+    @reqfield_definitions.size
+  end
+
+  def initialize_required_fields
+    validate_reqfield_definitions!
+    @fieldnames += @reqfield_definitions.map{|name,re| name.to_sym}
+    validate_required_fields!
+  end
+
+  def initialize_optional_fields
+    validate_optfield_types!
+    if @fields.size > n_required_fields
+      optfields = @fields[n_required_fields..-1].dup
+      @fields = @fields[0..(n_required_fields-1)]
+      optfields.each { |f| self << f.to_gfa_optfield }
+    end
+  end
+
+  def process_unknown_method(m)
+    ms = m.to_s
+    var = nil
+    if ms[-1] == "!"
+      var = :bang
+      ms.chop!
+    elsif ms[-1] == "="
+      var = :set
+      ms.chop!
+    end
+    i = @fieldnames.index(ms.to_sym)
+    return ms, var, i
+  end
 
   def auto_create_optfield(tagname, value)
     self << GFA::Optfield.new_autotype(tagname, value)
   end
 
-  def validate_field_definitions!
+  def validate_reqfield_definitions!
     if !@reqfield_definitions.kind_of?(Array)
       raise ArgumentError, "Argument 'reqfield_definitions' must be an Array"
     end
-    if !@optfield_types.kind_of?(Hash)
-      raise ArgumentError, "Argument 'optfield_types' must be a Hash"
-    end
     names = []
     @reqfield_definitions.each do |name, regexp|
-      if respond_to?(name.to_sym)
+      if (self.methods+self.private_methods).include?(name.to_sym)
         raise GFA::Line::InvalidFieldNameError,
           "Invalid name of required field, '#{name}' is a method of GFA::Line"
       end
@@ -185,12 +232,18 @@ class GFA::Line
       end
       names << name.to_sym
     end
+  end
+
+  def validate_optfield_types!
+    if !@optfield_types.kind_of?(Hash)
+      raise ArgumentError, "Argument 'optfield_types' must be a Hash"
+    end
     @optfield_types.each do |name, type|
-      if respond_to?(name.to_sym)
+      if (self.methods+self.private_methods).include?(name.to_sym)
         raise GFA::Line::InvalidFieldNameError,
           "Invalid name of optional field, '#{name}' is a method of GFA::Line"
       end
-      if names.include?(name.to_sym)
+      if required_fieldnames.include?(name.to_sym)
         raise ArgumentError,
           "The names of optional fields cannot be "+
           "identical to a required field name ('#{name}' found twice)"
@@ -207,6 +260,15 @@ class GFA::Line
     end
   end
 
+  def validate_required_fields!
+    if @fields.size < n_required_fields
+      raise GFA::Line::RequiredFieldMissingError,
+        "#{n_required_fields} required fields, #{@fields.size}) found\n"+
+        "#{@fields.inspect}"
+    end
+    n_required_fields.times {|i| validate_required_field!(i)}
+  end
+
   def validate_optional_field!(f)
     predefopt = @optfield_types.keys
     if predefopt.include?(f.tag)
@@ -221,33 +283,28 @@ class GFA::Line
         "'#{f.tag}' is now in lower case"
       end
     end
-    if @required_fieldnames.include?(f.tag.to_sym)
+    if required_fieldnames.include?(f.tag.to_sym)
       raise GFA::Line::CustomOptfieldNameError,
         "Invalid name of custom-defined optional field, "+
         "'#{f.tag}' is a required field name"
-    elsif respond_to?(f.tag.to_sym)
+    elsif (self.methods+self.private_methods).include?(f.tag.to_sym)
       raise GFA::Line::CustomOptfieldNameError,
         "Invalid name of custom-defined optional field, "+
         "'#{f.tag}' is a method of GFA::Line"
     end
   end
 
-  def validate_required_fields!
-    n_required = @reqfield_definitions.size
-    @required_fieldnames = @reqfield_definitions.map{|name,re| name.to_sym}
-    @fieldnames = @required_fieldnames.dup
-    if @fields.size < n_required
-      raise GFA::Line::RequiredFieldMissingError,
-        "#{n_required} required fields, #{@fields.size}) found"
-    end
-    n_required.times {|i| validate_required_field!(i)}
-  end
-
   def validate_optional_fields!
-    @optional_fieldnames = []
-    optfields = @fields[@required_fieldnames.size..-1].dup
-    @fields = @fields[0..@required_fieldnames.size-1]
-    optfields.each { |f| self << f.to_gfa_optfield }
+    found = []
+    @fields[n_required_fields..-1].each do |optfield|
+      validate_optional_field!(optfield)
+      sym = optfield.tag.to_sym
+      if found.include?(sym)
+        raise GFA::Line::DuplicateOptfieldNameError,
+          "Optional tag '#{optfield.tag}' exists more than once"
+      end
+      found << sym
+    end
   end
 
 end

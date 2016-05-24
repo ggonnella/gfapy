@@ -5,7 +5,6 @@ class TestGFAAddLines < Test::Unit::TestCase
 
   def test_add_headers
     gfa = GFA.new
-    assert(gfa)
     h = "H\tVN:Z:1.0".to_gfa_line
     assert_nothing_raised { gfa << h }
     assert_equal([h], gfa.headers)
@@ -18,6 +17,7 @@ class TestGFAAddLines < Test::Unit::TestCase
     assert_nothing_raised { gfa << s1 }
     assert_nothing_raised { gfa << s2 }
     assert_equal([s1, s2], gfa.segments)
+    assert_equal(["1", "2"], gfa.segment_names)
     assert_equal(s1, gfa.segment("1"))
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
@@ -79,6 +79,7 @@ class TestGFAAddLines < Test::Unit::TestCase
     gfa << s2
     assert_nothing_raised { gfa << p1 }
     assert_equal([p1], gfa.paths)
+    assert_equal(["4"], gfa.path_names)
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}

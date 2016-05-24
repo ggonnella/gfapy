@@ -3,6 +3,12 @@
 #
 module GFA::LineGetters
 
+  GFA::Line::RecordTypes.each do |rt, klass|
+    klass =~ /GFA::Line::(.*)/
+    define_method(:"#{$1.downcase}s") { lines(rt) }
+    define_method(:"each_#{$1.downcase}") { |&block| each(rt, &block) }
+  end
+
   # Searches the segment with name equal to +segment_name+.
   #
   # *Returns*:
@@ -111,7 +117,7 @@ module GFA::LineGetters
   #
   # Returns a possibly empty array of links.
   def links_between(sn1, end_type1, sn2, end_type2)
-    links_of(sn, end_type1).select do |l|
+    links_of(sn1, end_type1).select do |l|
       l.other(sn1) == sn2 and
         (end_type2.nil? or l.other_end_type(sn1) == end_type2)
     end
@@ -138,15 +144,9 @@ module GFA::LineGetters
     l
   end
 
-  GFA::Line::RecordTypes.each do |rt, klass|
-    klass =~ /GFA::Line::(.*)/
-    define_method(:"#{$1.downcase}s") { lines(rt) }
-    define_method(:"each_#{$1.downcase}") { each(rt) }
-  end
-
   private
 
-  def each(record_type)
+  def each(record_type, &block)
     @lines[record_type].each do |line|
       next if line.nil?
       yield line
