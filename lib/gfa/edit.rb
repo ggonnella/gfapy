@@ -149,12 +149,23 @@ module GFA::Edit
       when 1
         next
       else
-        if links_of(s.name, :E).size == s.cn
+        esize = links_of(s.name, :E).size
+        bsize = links_of(s.name, :B).size
+        if esize == s.cn
           distribute = [:E]
-        elsif links_of(s.name, :B).size == s.cn
+        elsif bsize == s.cn
+          distribute = [:B]
+        elsif esize == 0
+          distribute = (bsize == 0) ? [] : [:B]
+        elsif bsize == 0
+          distribute = [:E]
+        elsif esize < s.cn
+          distribute = (bsize <= esize) ? [:E] :
+             ((bsize < cn) ? [:B] : [:E])
+        elsif bsize < s.cn
           distribute = [:B]
         else
-          distribute = []
+          distribute = (bsize <= esize) ? [:B] : [:E]
         end
         multiply_segment(s.name, s.cn, distribute_links: distribute)
       end
