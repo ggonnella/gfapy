@@ -24,4 +24,8 @@ module GFA::SegmentReferences
     orient(other(segment_name))
   end
 
+  def circular?
+    from == to
+  end
+
 end
