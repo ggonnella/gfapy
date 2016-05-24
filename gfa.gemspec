@@ -19,13 +19,25 @@ Gem::Specification.new do |s|
   EOF
   s.author = 'Giorgio Gonnella'
   s.email = 'gonnella@zbh.uni-hamburg.de'
-  s.files = ['lib/gfa.rb', 'lib/gfa/edit.rb', 'lib/gfa/line_getters.rb',
-             'lib/gfa/line_setters.rb', 'lib/gfa/traverse.rb',
-             'lib/gfa/connect.rb', 'lib/gfa/line.rb',
-             'lib/gfa/cigar.rb', 'lib/gfa/sequence.rb',
-             'lib/gfa/optfield.rb', 'lib/gfa/line/header.rb',
-             'lib/gfa/line/containment.rb', 'lib/gfa/line/link.rb',
-             'lib/gfa/line/segment.rb', 'lib/gfa/line/path.rb']
+  s.files = [
+              'lib/gfa.rb',
+              'lib/gfa/cigar.rb',
+              'lib/gfa/connect.rb',
+              'lib/gfa/edit.rb',
+              'lib/gfa/line_creators.rb',
+              'lib/gfa/line_destructors.rb',
+              'lib/gfa/line_getters.rb',
+              'lib/gfa/line.rb',
+              'lib/gfa/optfield.rb',
+              'lib/gfa/segment_references.rb',
+              'lib/gfa/sequence.rb',
+              'lib/gfa/traverse.rb',
+              'lib/gfa/line/containment.rb',
+              'lib/gfa/line/header.rb',
+              'lib/gfa/line/link.rb',
+              'lib/gfa/line/path.rb',
+              'lib/gfa/line/segment.rb',
+            ]
   s.homepage = 'http://github.com/ggonnella/ruby-gfa'
   s.license = 'CC-BY-SA'
   s.required_ruby_version = '>= 2.0'
