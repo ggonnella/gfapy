@@ -142,11 +142,13 @@ module GFA::Edit
     self
   end
 
-  def apply_copy_numbers(tag: :cn, distribute_links: true)
+  def apply_copy_numbers(tag: :cn, distribute_links: true,
+                         distribute_equal_only: false)
     segments.sort_by{|s|s.send(:"#{tag}!")}.each do |s|
       multiply_segment(s.name, s.send(tag),
                        distribute_links: (distribute_links ?
-                                            select_distribute_end(s, tag) : []))
+                         select_distribute_end(s, tag,
+                           distribute_equal_only: distribute_equal_only) : []))
     end
     self
   end
@@ -196,7 +198,7 @@ module GFA::Edit
     end
   end
 
-  def select_distribute_end(segment, cntag)
+  def select_distribute_end(segment, cntag, distribute_equal_only: false)
     esize = links_of(segment.name, :E).size
     bsize = links_of(segment.name, :B).size
     cn = segment.send(cntag)
@@ -204,6 +206,8 @@ module GFA::Edit
       return [:E]
     elsif bsize == cn
       return [:B]
+    elsif distribute_equal_only
+      return []
     elsif esize == 0
       return (bsize == 0) ? [] : [:B]
     elsif bsize == 0
