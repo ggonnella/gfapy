@@ -26,49 +26,71 @@ class TestGFA < Test::Unit::TestCase
   end
 
   def test_add_links
-    gfa = GFA.new
-    gfa << "S\t1\t*"
-    gfa << "S\t2\t*"
+    s1 = "S\t1\t*"
+    s2 = "S\t2\t*"
     l1 = "L\t1\t+\t2\t+\t12M".to_gfa_line
+    l2 = "L\t1\t+\t3\t+\t12M"
+    gfa = GFA.new
+    gfa << s1
+    gfa << s2
     assert_nothing_raised { gfa << l1 }
     assert_equal([l1], gfa.links)
     assert_equal(l1, gfa.link("1", nil, "2", nil))
     assert_equal(nil, gfa.link("2", :E, "1", :B))
     assert_nothing_raised {gfa.link!("1", nil, "2", nil)}
     assert_raises(RuntimeError) {gfa.link!("2", :E, "1", :B)}
-    l2 = "L\t1\t+\t3\t+\t12M"
-    assert_raises(ArgumentError) { gfa << l2 }
+    assert_nothing_raised { gfa << l2 }
+    gfa = GFA.new(segments_first_order: true)
+    gfa << s1
+    gfa << s2
+    assert_nothing_raised { gfa << l1 }
+    assert_raises(RuntimeError) { gfa << l2 }
   end
 
   def test_add_containments
-    gfa = GFA.new
-    gfa << "S\t1\t*"
-    gfa << "S\t2\t*"
+    s1 = "S\t1\t*"
+    s2 = "S\t2\t*"
     c1 = "C\t1\t+\t2\t+\t12\t12M".to_gfa_line
+    c2 = "C\t1\t+\t3\t+\t12\t12M"
+    gfa = GFA.new
+    gfa << s1
+    gfa << s2
     assert_nothing_raised { gfa << c1 }
     assert_equal([c1], gfa.containments)
     assert_equal(c1, gfa.containment("1", "2"))
     assert_nothing_raised {gfa.containment!("1",  "2")}
     assert_raises(RuntimeError) {gfa.containment!("2", "1")}
-    c2 = "C\t1\t+\t3\t+\t12\t12M"
-    assert_raises(ArgumentError) { gfa << c2 }
+    assert_nothing_raised { gfa << c2 }
+    gfa = GFA.new(segments_first_order: true)
+    gfa << s1
+    gfa << s2
+    assert_nothing_raised { gfa << c1 }
+    assert_raises(RuntimeError) { gfa << c2 }
   end
 
   def test_add_paths
-    gfa = GFA.new
-    gfa << "S\t1\t*"
-    gfa << "S\t2\t*"
+    s1 = "S\t1\t*"
+    s2 = "S\t2\t*"
     p1 = "P\t4\t1+,2+\t122M,120M".to_gfa_line
+    p2 = "P\t1\t1+,2+\t122M,120M"
+    p3 = "P\t5\t1+,3+\t122M,120M"
+    gfa = GFA.new
+    gfa << s1
+    gfa << s2
     assert_nothing_raised { gfa << p1 }
     assert_equal([p1], gfa.paths)
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}
     assert_raises(RuntimeError) {gfa.path!("5")}
-    p2 = "P\t1\t1+,2+\t122M,120M"
-    p3 = "P\t5\t1+,3+\t122M,120M"
     assert_raises(ArgumentError) { gfa << p2 }
-    assert_raises(ArgumentError) { gfa << p3 }
+    assert_nothing_raised { gfa << p3 }
+    gfa = GFA.new(segments_first_order: true)
+    gfa << s1
+    gfa << s2
+    assert_nothing_raised { gfa << p1 }
+    assert_raises(ArgumentError) { gfa << p2 }
+    assert_raises(RuntimeError) { gfa << p3 }
   end
 
   def test_links_of_segment_end

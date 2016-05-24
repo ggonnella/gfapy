@@ -3,14 +3,6 @@
 #
 module GFA::LineSetters
 
-  # TODO: the validation of segment_names in paths must be turned off by default
-  # and an option must be created in initialize to turn it on; this because
-  # the specification currently does not require a particular order of the
-  # lines; a validate! method must be then be provided that validates all
-  # segment names included in links, containments and paths after construction;
-  # validate! wil be called automatically from the .to_gfa method of String and
-  # from the .from_file method.
-
   def <<(gfa_line)
     gfa_line = gfa_line.to_gfa_line
     rt = gfa_line.record_type
@@ -24,18 +16,25 @@ module GFA::LineSetters
       [:from,:to].each do |e|
         sn = gfa_line.send(e)
         o = gfa_line.send(:"#{e}_orient")
-        validate_segment_name_exists!(sn)
+        segment!(sn) if @segments_first_order
         connect(rt,e,sn,o,i)
       end
     when "P"
       validate_segment_and_path_name_unique!(gfa_line.path_name)
       @path_names << gfa_line.path_name
       gfa_line.segment_name.each do |sn, o|
-        validate_segment_name_exists!(sn)
+        segment!(sn) if @segments_first_order
         @paths_with[sn] ||= []
         @paths_with[sn] << i
       end
     end
+  end
+
+  def validate!
+    ["L", "C"].each do |rt|
+      @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
+    end
+    @lines["P"].each {|l| l.segment_name.each {|sn, o| segment!(sn)}}
   end
 
   def delete_segment(segment_name)
@@ -104,12 +103,6 @@ module GFA::LineSetters
   def validate_segment_and_path_name_unique!(sn)
     if @segment_names.include?(sn) or @path_names.include?(sn)
       raise ArgumentError, "Segment or path name not unique '#{sn}'"
-    end
-  end
-
-  def validate_segment_name_exists!(sn)
-    if !@segment_names.include?(sn)
-      raise ArgumentError, "Link line refer to unknown segment '#{sn}'"
     end
   end
 

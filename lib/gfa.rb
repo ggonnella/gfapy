@@ -40,7 +40,7 @@ class GFA
   include GFA::Edit
   include GFA::Traverse
 
-  def initialize
+  def initialize(segments_first_order: false)
     @lines = {}
     GFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
     @segment_names = []
@@ -48,6 +48,7 @@ class GFA
     @connect = {}
     ["L","C"].each {|rt| @connect[rt] = {:from => {}, :to => {}}}
     @paths_with = {}
+    @segments_first_order = segments_first_order
   end
 
   # List all names of segments in the graph
@@ -82,6 +83,7 @@ class GFA
   def self.from_file(filename)
     gfa = GFA.new
     File.foreach(filename) {|line| gfa << line.chomp}
+    gfa.validate!
     return gfa
   end
 
@@ -100,6 +102,7 @@ class String
   def to_gfa
     gfa = GFA.new
     split("\n").each {|line| gfa << line}
+    gfa.validate!
     return gfa
   end
 
