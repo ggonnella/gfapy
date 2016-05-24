@@ -14,11 +14,13 @@ class TestGFADeleteLines < Test::Unit::TestCase
     assert_equal([l], gfa.links)
     assert_equal(l, gfa.link("1", :E, "2", :B))
     gfa.delete_link("1", "+", "2", "+")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link("1", :E, "2", :B))
     assert_equal([c], gfa.containments)
     assert_equal(c, gfa.containment("1", "0"))
     gfa.delete_containment("1", "+", "0", "+", 12)
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([], gfa.containments)
     assert_equal(nil, gfa.containment("1", "0"))
     gfa << l
@@ -26,7 +28,9 @@ class TestGFADeleteLines < Test::Unit::TestCase
     gfa << c
     assert_equal([c], gfa.containments)
     gfa.unconnect_segments("0", "1")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     gfa.unconnect_segments("2", "1")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([], gfa.containments)
     assert_equal([], gfa.links)
   end
@@ -46,6 +50,7 @@ class TestGFADeleteLines < Test::Unit::TestCase
     assert_equal([p], gfa.paths)
     assert_equal(["4"], gfa.path_names)
     gfa.delete_segment("0")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([s[1],s[2]], gfa.segments)
     assert_equal(["1", "2"], gfa.segment_names)
     assert_equal([l], gfa.links)
@@ -53,6 +58,7 @@ class TestGFADeleteLines < Test::Unit::TestCase
     assert_equal([], gfa.paths)
     assert_equal([], gfa.path_names)
     gfa.delete_segment("1")
+    assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([s[2]], gfa.segments)
     assert_equal([], gfa.links)
   end
