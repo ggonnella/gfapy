@@ -1,7 +1,7 @@
 require_relative "../lib/gfa.rb"
 require "test/unit"
 
-class TestGFAAddLines < Test::Unit::TestCase
+class TestGFALineCreators < Test::Unit::TestCase
 
   def test_add_headers
     gfa = GFA.new

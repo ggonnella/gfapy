@@ -5,7 +5,8 @@ require_relative "./gfa/cigar.rb"
 require_relative "./gfa/sequence.rb"
 require_relative "./gfa/connect.rb"
 require_relative "./gfa/line_getters.rb"
-require_relative "./gfa/line_setters.rb"
+require_relative "./gfa/line_creators.rb"
+require_relative "./gfa/line_destructors.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/traverse.rb"
 
@@ -35,7 +36,8 @@ require_relative "./gfa/traverse.rb"
 class GFA
 
   include GFA::LineGetters
-  include GFA::LineSetters
+  include GFA::LineCreators
+  include GFA::LineDestructors
   include GFA::Connect
   include GFA::Edit
   include GFA::Traverse

@@ -1,41 +1,14 @@
 #
-# Methods for the GFA class, which allow to add or delete single lines.
+# Methods for the GFA class, which allow to delete lines.
 #
-module GFA::LineSetters
-
-  def <<(gfa_line)
-    gfa_line = gfa_line.to_gfa_line
-    rt = gfa_line.record_type
-    i = @lines[rt].size
-    @lines[rt] << gfa_line
-    case rt
-    when "S"
-      validate_segment_and_path_name_unique!(gfa_line.name)
-      @segment_names << gfa_line.name
-    when "L", "C"
-      [:from,:to].each do |e|
-        sn = gfa_line.send(e)
-        o = gfa_line.send(:"#{e}_orient")
-        segment!(sn) if @segments_first_order
-        connect(rt,e,sn,o,i)
-      end
-    when "P"
-      validate_segment_and_path_name_unique!(gfa_line.path_name)
-      @path_names << gfa_line.path_name
-      gfa_line.segment_names.each do |sn, o|
-        segment!(sn) if @segments_first_order
-        @paths_with[sn] ||= []
-        @paths_with[sn] << i
-      end
-    end
-  end
+module GFA::LineDestructors
 
   def delete_segment(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
     connected = []
-    validate_connect
+    validate_connect if $DEBUG
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         connected +=
@@ -92,12 +65,6 @@ module GFA::LineSetters
   end
 
   private
-
-  def validate_segment_and_path_name_unique!(sn)
-    if @segment_names.include?(sn) or @path_names.include?(sn)
-      raise ArgumentError, "Segment or path name not unique '#{sn}'"
-    end
-  end
 
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
