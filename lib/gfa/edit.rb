@@ -25,22 +25,18 @@ module GFA::Edit
     @segment_names[i] = new_name
     ["L","C"].each do |rt|
       [:from,:to].each do |dir|
-        @c.lines(rt, dir, segment_name).each do |l|
+        @c.lines(rt, segment_name, dir).each do |l|
           l.send(:"#{dir}=", new_name)
         end
       end
     end
-    @c.rename_segment(segment_name, new_name)
-    if @paths_with.has_key?(segment_name)
-      paths_with(segment_name).each do |l|
-        l.segment_names = l.segment_names.map do |sn, o|
-          sn = new_name if sn == segment_name
-          [sn, o].join("")
-        end.join(",")
-      end
-      @paths_with[new_name] = @paths_with[segment_name]
-      @paths_with.delete(segment_name)
+    paths_with(segment_name).each do |l|
+      l.segment_names = l.segment_names.map do |sn, o|
+        sn = new_name if sn == segment_name
+        [sn, o].join("")
+      end.join(",")
     end
+    @c.rename_segment(segment_name, new_name)
     self
   end
 
@@ -57,7 +53,7 @@ module GFA::Edit
     divide_counts(s, factor)
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
-        @c.find(rt,e,s).each do |i|
+        @c.find(rt,segment_name,e).each do |i|
           l = @lines[rt][i]
           # circular link counts shall be divided only ones
           next if e == :to and l.from == l.to
@@ -77,7 +73,7 @@ module GFA::Edit
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         to_clone = []
-        @c.find(rt,e,segment_name).each {|i| to_clone << i }
+        @c.find(rt,segment_name,e).each {|i| to_clone << i }
         copy_names.each do |cn|
           to_clone.each do |i|
             l = @lines[rt][i].clone

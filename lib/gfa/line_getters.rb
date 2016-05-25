@@ -45,17 +45,17 @@ module GFA::LineGetters
 
   # Find path lines whose +segment_names+ include segment +segment_name+
   def paths_with(segment_name)
-    @paths_with.fetch(segment_name,[]).map{|i|@lines["P"][i]}
+    @c.lines("P",segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
   def contained_in(segment_name)
-    @c.lines("C", :from, segment_name)
+    @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
   def containing(segment_name)
-    @c.lines("C", :to, segment_name)
+    @c.lines("C", segment_name, :to)
   end
 
   # Searches all containments of +contained+ in +container+.
@@ -107,7 +107,7 @@ module GFA::LineGetters
     else
       raise "end_type unknown: #{end_type.inspect}"
     end
-    @c.lines("L",:from,sn,o[0]) + @c.lines("L",:to,sn,o[1])
+    @c.lines("L",sn,:from,o[0]) + @c.lines("L",sn,:to,o[1])
   end
 
   # Searches all links between the segment +sn1+ end +end_type1+

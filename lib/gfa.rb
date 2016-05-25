@@ -26,6 +26,9 @@ require_relative "./gfa/traverse.rb"
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
+# - @c contains array of indices of @lines["L"|"C"|"P"] which allow to directly
+#   find the links, containments and paths involving a given segment; @c must
+#   be updated if links, containments or paths are added or deleted
 class GFA
 
   include GFA::LineGetters
@@ -40,7 +43,6 @@ class GFA
     @segment_names = []
     @path_names = []
     @c = GFA::ConnectionInfo.new(@lines)
-    @paths_with = {}
     @segments_first_order = segments_first_order
   end
 

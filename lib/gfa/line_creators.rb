@@ -38,7 +38,7 @@ module GFA::LineCreators
       sn = gfa_line.send(e)
       o = gfa_line.send(:"#{e}_orient")
       segment!(sn) if @segments_first_order
-      @c.add(rt,e,sn,o,@lines[rt].size-1)
+      @c.add(rt,@lines[rt].size-1,sn,e,o)
     end
   end
 
@@ -48,8 +48,7 @@ module GFA::LineCreators
     @path_names << gfa_line.path_name
     gfa_line.segment_names.each do |sn, o|
       segment!(sn) if @segments_first_order
-      @paths_with[sn] ||= []
-      @paths_with[sn] << (@lines["P"].size-1)
+      @c.add("P",@lines["P"].size-1,sn)
     end
   end
 

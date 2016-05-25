@@ -8,22 +8,15 @@ module GFA::LineDestructors
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
     connected = []
-    @c.validate if $DEBUG
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         connected +=
-          @c.find(rt, e, segment_name).map do |c|
-            l = @lines[rt][c]
-            l.from == segment_name ? l.to : l.from
-          end
+          @c.lines(rt,segment_name,e).map {|l| l.other(segment_name)}
       end
     end
     connected.uniq.each {|c| unconnect_segments(segment_name, c)}
+    @c.lines("P",segment_name).each {|pt| delete_path(pt.path_name)}
     @c.delete_segment(segment_name)
-    to_rm = []
-    @paths_with.fetch(segment_name,[]).each {|li| to_rm <<
-                                             @lines["P"][li].path_name }
-    to_rm.each {|pt| delete_path(pt)}
     @lines["S"][i] = nil
     @segment_names[i] = nil
     return self
@@ -51,7 +44,7 @@ module GFA::LineDestructors
     i = @path_names.index(path_name)
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]
-    pt.segment_names.each {|sn, o| @paths_with[sn].delete(i)}
+    pt.segment_names.each {|sn, o| @c.delete("P",i,sn)}
     @lines["P"][i] = nil
     @path_names[i] = nil
     return self
@@ -94,7 +87,7 @@ module GFA::LineDestructors
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
     to_rm = []
-    @c.find(rt,:from,from).each do |li|
+    @c.find(rt,from,:from).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and
          (to_orient.nil? or (l.to_orient == to_orient)) and
@@ -106,8 +99,8 @@ module GFA::LineDestructors
     end
     to_rm.each do |li|
       @lines[rt][li] = nil
-      @c.delete(rt,:from,from,nil,li)
-      @c.delete(rt,:to,to,nil,li)
+      @c.delete(rt,li,from,:from,nil)
+      @c.delete(rt,li,to,:to,nil)
     end
     validate_connect if $DEBUG
     return self
