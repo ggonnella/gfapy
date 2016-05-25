@@ -8,22 +8,18 @@ module GFA::LineDestructors
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
     connected = []
-    validate_connect if $DEBUG
+    @c.validate if $DEBUG
     ["L","C"].each do |rt|
       [:from,:to].each do |e|
         connected +=
-          connections(rt, e, segment_name).map do |c|
+          @c.find(rt, e, segment_name).map do |c|
             l = @lines[rt][c]
             l.from == segment_name ? l.to : l.from
           end
       end
     end
     connected.uniq.each {|c| unconnect_segments(segment_name, c)}
-    ["L","C"].each do |rt|
-      [:from,:to].each do |e|
-        disconnect(rt,e,segment_name,nil,nil)
-      end
-    end
+    @c.delete_segment(segment_name)
     to_rm = []
     @paths_with.fetch(segment_name,[]).each {|li| to_rm <<
                                              @lines["P"][li].path_name }
@@ -98,7 +94,7 @@ module GFA::LineDestructors
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
     to_rm = []
-    connections(rt,:from,from).each do |li|
+    @c.find(rt,:from,from).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and
          (to_orient.nil? or (l.to_orient == to_orient)) and
@@ -110,8 +106,8 @@ module GFA::LineDestructors
     end
     to_rm.each do |li|
       @lines[rt][li] = nil
-      disconnect(rt,:from,from,nil,li)
-      disconnect(rt,:to,to,nil,li)
+      @c.delete(rt,:from,from,nil,li)
+      @c.delete(rt,:to,to,nil,li)
     end
     validate_connect if $DEBUG
     return self

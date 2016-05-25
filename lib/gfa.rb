@@ -3,7 +3,7 @@ require_relative "./gfa/optfield.rb"
 require_relative "./gfa/line.rb"
 require_relative "./gfa/cigar.rb"
 require_relative "./gfa/sequence.rb"
-require_relative "./gfa/connect.rb"
+require_relative "./gfa/connection_info.rb"
 require_relative "./gfa/line_getters.rb"
 require_relative "./gfa/line_creators.rb"
 require_relative "./gfa/line_destructors.rb"
@@ -26,19 +26,11 @@ require_relative "./gfa/traverse.rb"
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
-# - @connect["L"|"C"][:from|:to][segment_name]["+"|"-"] and
-#   @paths_with[segment_name] are hashes of indices of
-#   @lines["L"|"C"|"P"] which allow to directly find the links, containments
-#   and paths involving a given segment; they must be updated if links,
-#   containments or paths are added or deleted
-# - The @connect data structure shall not be used directly, but using
-#   the methods connections(), connect() and disconnect()
 class GFA
 
   include GFA::LineGetters
   include GFA::LineCreators
   include GFA::LineDestructors
-  include GFA::Connect
   include GFA::Edit
   include GFA::Traverse
 
@@ -47,8 +39,7 @@ class GFA
     GFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
     @segment_names = []
     @path_names = []
-    @connect = {}
-    ["L","C"].each {|rt| @connect[rt] = {:from => {}, :to => {}}}
+    @c = GFA::ConnectionInfo.new(@lines)
     @paths_with = {}
     @segments_first_order = segments_first_order
   end
@@ -155,6 +146,11 @@ class GFA
     end
     q = [sln[0], sln[(n/4)-1], sln[(n/2)-1], sln[((n*3)/4)-1], sln[-1]]
     return q, n50, tlen
+  end
+
+  # for tests
+  def validate_connect
+    @c.validate!
   end
 
 end

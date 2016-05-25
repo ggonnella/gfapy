@@ -1,23 +1,50 @@
-#
-# Private methods for the GFA class, which interrogates and updates the @connect
-# data structure.
-#
-module GFA::Connect
+# @connect["L"|"C"][:from|:to][segment_name]["+"|"-"] and
+# @paths_with[segment_name] are hashes of indices of
+# @lines["L"|"C"|"P"] which allow to directly find the links, containments
+# and paths involving a given segment; they must be updated if links,
+# containments or paths are added or deleted
+class GFA::ConnectionInfo
 
-  private
+  def initialize(lines)
+    @lines = lines
+    @connect = {}
+    ["L","C"].each {|rt| @connect[rt] = {:from => {}, :to => {}}}
+  end
 
-  # Add values to @connect data structure
-  def connect(rt, dir, sn, o, value)
+  # Add values to connection infos
+  def add(rt, dir, sn, o, value)
     raise if rt != "L" and rt != "C"
     raise if dir != :from and dir != :to
     raise if o != "+" and o != "-"
     @connect[rt][dir][sn]||={}
     @connect[rt][dir][sn][o]||=[]
     @connect[rt][dir][sn][o] << value
-    validate_connect if $DEBUG
+    validate! if $DEBUG
+    self
   end
 
-  def connect_rename_segment(sn, new_sn)
+  # Remove values from connection infos
+  #
+  # Usage:
+  # - delete(rt, dir, sn, o, value) => rm value from @connect
+  # - delete(rt, dir, sn, nil, value) => rm value from both "+" and "-"
+  #                                          connections of sn
+  def delete(rt, dir, sn, o, value)
+    raise if value.nil?
+    raise if rt != "L" and rt != "C"
+    raise if dir != :from and dir != :to
+    if o.nil?
+      delete(rt, dir, sn, "+", value)
+      delete(rt, dir, sn, "-", value)
+      return
+    end
+    raise if o != "+" and o != "-"
+    @connect[rt][dir].fetch(sn,{}).fetch(o,[]).delete(value)
+    validate! if $DEBUG
+    self
+  end
+
+  def rename_segment(sn, new_sn)
     ["L", "C"].each do |rt|
       [:from, :to].each do |dir|
         if @connect[rt][dir].has_key?(sn)
@@ -26,52 +53,37 @@ module GFA::Connect
         end
       end
     end
-    validate_connect if $DEBUG
+    validate! if $DEBUG
+    self
   end
 
-  # Remove values from @connect data structure
-  #
-  # Usage:
-  # - disconnect(rt, dir, sn, o, value) => rm value from @connect
-  # - disconnect(rt, dir, sn, nil, nil) => rm all sn connections
-  # - disconnect(rt, dir, sn, nil, value) => rm value from both "+" and "-"
-  #                                          connections of sn
-  def disconnect(rt, dir, sn, o, value)
-    raise if rt != "L" and rt != "C"
-    raise if dir != :from and dir != :to
-    if o.nil?
-      if value.nil?
+  def delete_segment(sn)
+    ["L", "C"].each do |rt|
+      [:from, :to].each do |dir|
         @connect[rt][dir].delete(sn)
-      else
-        disconnect(rt, dir, sn, "+", value)
-        disconnect(rt, dir, sn, "-", value)
       end
-      return
     end
-    raise if o != "+" and o != "-"
-    raise if value.nil?
-    @connect[rt][dir].fetch(sn,{}).fetch(o,[]).delete(value)
-    validate_connect if $DEBUG
+    self
   end
 
-  def connection_lines(rt, dir, sn, o = nil)
-    connections(rt, dir, sn, o).map{|i| @lines[rt][i]}
+  def lines(rt, dir, sn, o = nil)
+    find(rt, dir, sn, o).map{|i| @lines[rt][i]}
   end
 
-  # Find relevant values from @connect data structure
+  # Find values from connection infos
   #
   # *Usage*:
-  # +connections(rt, :from|:to, sn)+ => both orientations of +sn+
-  # +connections(rt, :from|:to, sn, :+|:-)+ => only specified orientation
+  # +find(rt, :from|:to, sn)+ => both orientations of +sn+
+  # +find(rt, :from|:to, sn, :+|:-)+ => only specified orientation
   #
   # *Note*:
   # The specified array should only be read, as it is often a
   # copy of the original; thus modifications must be done using
-  # +connect()+ or +disconnect()+
-  def connections(rt, dir, sn, o = nil)
+  # +add()+ or +delete()+
+  def find(rt, dir, sn, o = nil)
     raise "RT invalid: #{rt.inspect}" if rt != "L" and rt != "C"
     raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
-    return connections(rt,dir,sn,"+")+connections(rt,dir,sn,"-") if o.nil?
+    return find(rt,dir,sn,"+")+find(rt,dir,sn,"-") if o.nil?
     raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
     @connect[rt][dir].fetch(sn,{}).fetch(o,[])
   end
@@ -81,7 +93,7 @@ module GFA::Connect
   # have the expected values.
   #
   # Method useful for debugging.
-  def validate_connect
+  def validate!
     @connect.keys.each do |rt|
       @connect[rt].keys.each do |dir|
         @connect[rt][dir].keys.each do |sn|

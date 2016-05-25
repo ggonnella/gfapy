@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.files = [
               'lib/gfa.rb',
               'lib/gfa/cigar.rb',
-              'lib/gfa/connect.rb',
+              'lib/gfa/connection_info.rb',
               'lib/gfa/edit.rb',
               'lib/gfa/line_creators.rb',
               'lib/gfa/line_destructors.rb',

@@ -38,7 +38,7 @@ module GFA::LineCreators
       sn = gfa_line.send(e)
       o = gfa_line.send(:"#{e}_orient")
       segment!(sn) if @segments_first_order
-      connect(rt,e,sn,o,@lines[rt].size-1)
+      @c.add(rt,e,sn,o,@lines[rt].size-1)
     end
   end
 

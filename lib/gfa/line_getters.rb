@@ -50,12 +50,12 @@ module GFA::LineGetters
 
   # Find containment lines whose +from+ segment name is +segment_name+
   def contained_in(segment_name)
-    connection_lines("C", :from, segment_name)
+    @c.lines("C", :from, segment_name)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
   def containing(segment_name)
-    connection_lines("C", :to, segment_name)
+    @c.lines("C", :to, segment_name)
   end
 
   # Searches all containments of +contained+ in +container+.
@@ -107,7 +107,7 @@ module GFA::LineGetters
     else
       raise "end_type unknown: #{end_type.inspect}"
     end
-    connection_lines("L",:from,sn,o[0]) + connection_lines("L",:to,sn,o[1])
+    @c.lines("L",:from,sn,o[0]) + @c.lines("L",:to,sn,o[1])
   end
 
   # Searches all links between the segment +sn1+ end +end_type1+
