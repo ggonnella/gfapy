@@ -143,8 +143,13 @@ module GFA::Edit
       if segment_same_links_both_ends?(s.name)
         parts = {}
         parts[:E] = partitioned_links_of(s.name, :E)
+        divide_ends = false
+        if parts[:E].size != 2
+          divide_ends = true
+          parts[:E] = partitioned_links_of(s.name, :E, divide_ends: true)
+        end
         if parts[:E].size == 2
-          parts[:B] = partitioned_links_of(s.name, :B)
+          parts[:B] = partitioned_links_of(s.name, :B, divide_ends: divide_ends)
           if segment_signature(parts[:B][0][0].other(s.name)) !=
              segment_signature(parts[:E][0][0].other(s.name))
             parts[:B].reverse!
@@ -162,10 +167,12 @@ module GFA::Edit
   def enforce_internal_links_connection
     segments.each do |s|
       if segment_junction_type(s.name) == :internal
+        l = {:B => links_of(s.name, :B)[0],
+             :E => links_of(s.name, :E)[0]}
+        next if l[:B].other(s.name) == l[:E].other(s.name)
         [:B, :E].each do |et|
-          sl = links_of(s.name, et)[0]
-          lo = sl.other(s.name)
-          links_of(lo, sl.other_end_type(s.name)).each do |l|
+          lo = l[et].other(s.name)
+          links_of(lo, l[et].other_end_type(s.name)).each do |l|
             if l.other(lo) != s.name or l.other_end_type(lo) != et
               delete_link_line(l)
             end
@@ -266,9 +273,11 @@ module GFA::Edit
     return segment_same_links?(segment_names)
   end
 
-  def partitioned_links_of(segment_name, end_type)
+  def partitioned_links_of(segment_name, end_type, divide_ends: false)
     links_of(segment_name, end_type).group_by do |l|
-      segment_signature(l.other(segment_name))
+      sig = segment_signature(l.other(segment_name))
+      sig += "\t#{l.other_end_type(segment_name)}" if divide_ends
+      sig
     end.map {|sig, par| par}
   end
 
