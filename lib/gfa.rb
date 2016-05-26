@@ -125,10 +125,8 @@ class GFA
   private
 
   def n_dead_ends
-    segments.inject(0) do |n, s|
-      [:E, :B].each do |e|
-        n+=1 if links_of(s.name, e) == 0
-      end
+    segments.inject(0) do |n,s|
+      [:E, :B].each {|e| n+= 1 if links_of(s.name, e).empty?}
       n
     end
   end
