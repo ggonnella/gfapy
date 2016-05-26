@@ -99,19 +99,27 @@ class GFA
     File.open(filename, "w") {|f| f.puts self}
   end
 
-  def info
+  def info(short = false)
     q, n50, tlen = lenstats
+    nde = n_dead_ends()
+    pde = "%.2f%%" % ((nde.to_f*100) / (segments.size*2))
+    cc = connected_components()
+    cc.map!{|c|c.map{|sn|segment!(sn).LN!}.inject(:+)}
+    if short
+      return "n=#{segments.size}\t"+
+             "e=#{links.size}\t"+
+             "cc=#{cc.size}\t"+
+             "de=#{nde}\t"+
+             "tln=#{tlen}\t"+
+             "n50=#{n50}"
+    end
     retval = []
     retval << "Node count:               #{segments.size}"
     retval << "Edge count:               #{links.size}"
     retval << "Total length (bp):        #{tlen}"
-    nde = n_dead_ends()
-    pde = "%.2f%%" % ((nde.to_f*100) / (segments.size*2))
     retval << "Dead ends:                #{nde}"
     retval << "Percentage dead ends:     #{pde}"
-    cc = connected_components()
     retval << "Connected components:     #{cc.size}"
-    cc.map!{|c|c.map{|sn|segment!(sn).LN!}.inject(:+)}
     retval << "Largest component (bp):   #{cc.last}"
     retval << "N50 (bp):                 #{n50}"
     retval << "Shortest node (bp):       #{q[0]}"
