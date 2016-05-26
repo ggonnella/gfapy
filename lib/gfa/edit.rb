@@ -159,6 +159,22 @@ module GFA::Edit
     end
   end
 
+  def enforce_internal_links_connection
+    segments.each do |s|
+      if segment_junction_type(s.name) == :internal
+        [:B, :E].each do |et|
+          sl = links_of(s.name, et)[0]
+          lo = sl.other(s.name)
+          links_of(lo, sl.other_end_type(s.name)).each do |l|
+            if l.other(lo) != s.name or l.other_end_type(lo) != et
+              delete_link_line(l)
+            end
+          end
+        end
+      end
+    end
+  end
+
   private
 
   def auto_copy_names(segment_name, factor)
