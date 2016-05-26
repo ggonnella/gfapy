@@ -84,18 +84,7 @@ module GFA::Edit
       end
     end
     distribute_links.each do |end_type|
-      et_links = links_of(segment_name, end_type)
-      diff = [et_links.size - factor, 0].max
-      links_signatures = et_links.map do |l|
-        l.other(segment_name) + l.other_end_type(segment_name).to_s
-      end
-      ([segment_name]+copy_names).each_with_index do |sn, i|
-        links_of(sn, end_type).each do |l|
-          l_sig = l.other(sn)+l.other_end_type(sn).to_s
-          to_save = links_signatures[i..i+diff].to_a
-          delete_link_line(l) unless to_save.include?(l_sig)
-        end
-      end
+      distribute_links_among_copies(end_type, segment_name, copy_names, factor)
     end
     return self
   end
@@ -194,7 +183,8 @@ module GFA::Edit
     end
   end
 
-  def select_distribute_end(segment, cntag, distribute_equal_only: false)
+  def select_distribute_end(segment, cntag,
+                            distribute_equal_only: false)
     esize = links_of(segment.name, :E).size
     bsize = links_of(segment.name, :B).size
     cn = segment.send(cntag)
@@ -204,9 +194,9 @@ module GFA::Edit
       return [:B]
     elsif distribute_equal_only
       return []
-    elsif esize == 0
-      return (bsize == 0) ? [] : [:B]
-    elsif bsize == 0
+    elsif esize < 2
+      return (bsize < 2) ? [] : [:B]
+    elsif bsize < 2
       return [:E]
     elsif esize < cn
       return ((bsize <= esize) ? [:E] :
@@ -264,6 +254,21 @@ module GFA::Edit
     links_of(segment_name, end_type).group_by do |l|
       segment_signature(l.other(segment_name))
     end.map {|sig, par| par}
+  end
+
+  def distribute_links_among_copies(end_type, segment_name, copy_names, factor)
+      et_links = links_of(segment_name, end_type)
+      diff = [et_links.size - factor, 0].max
+      links_signatures = et_links.map do |l|
+        l.other(segment_name) + l.other_end_type(segment_name).to_s
+      end
+      ([segment_name]+copy_names).each_with_index do |sn, i|
+        links_of(sn, end_type).each do |l|
+          l_sig = l.other(sn)+l.other_end_type(sn).to_s
+          to_save = links_signatures[i..i+diff].to_a
+          delete_link_line(l) unless to_save.include?(l_sig)
+        end
+      end
   end
 
 end
