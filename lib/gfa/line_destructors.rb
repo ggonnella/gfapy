@@ -72,6 +72,12 @@ module GFA::LineDestructors
                                  true)
   end
 
+  def delete_other_links(segment_end, other_end)
+    links_of(*segment_end).each do |l|
+      delete_link_line(l) if l.other_end(segment_end[0]) != other_end
+    end
+  end
+
   def delete_containment_line(containment_line)
     delete_containments_or_links("C",
                                  containment_line.from,
