@@ -171,6 +171,11 @@ class GFA::Line
     return orientation == "+" ? "-" : "+"
   end
 
+  def self.other_end_type(end_type)
+    raise "Unknown end_type" if ![:B,:E].include?(end_type)
+    return end_type == :B ? :E : :B
+  end
+
   def validate!
     validate_required_fields!
     validate_optional_fields!
