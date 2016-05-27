@@ -166,7 +166,7 @@ module GFA::Edit
 
   def enforce_internal_links_connection
     segments.each do |s|
-      if segment_junction_type(s.name) == :internal
+      if connectivity(s.name) == [1,1]
         l = {:B => links_of(s.name, :B)[0],
              :E => links_of(s.name, :E)[0]}
         next if l[:B].other(s.name) == l[:E].other(s.name)
