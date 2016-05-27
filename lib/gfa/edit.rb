@@ -168,18 +168,16 @@ module GFA::Edit
   def enforce_internal_links_connection
     segments.each do |s|
       if connectivity(s.name) == [1,1]
-        l = {:B => links_of([s.name, :B])[0],
-             :E => links_of([s.name, :E])[0]}
-        next if l[:B].other(s.name) == l[:E].other(s.name)
+        oe = {}
+        se = {}
+        l = {}
         [:B, :E].each do |et|
-          te = [s.name, et]
-          oe = l[et].other_end(te)
-          links_of(oe).each do |l|
-            if l.other_end(oe) != te
-              delete_link_line(l)
-            end
-          end
+          se[et] = [s.name, et]
+          l[et] = links_of(se[et])[0]
+          oe[et] = l[et].other_end(se[et])
         end
+        next if oe[:B] == oe[:E]
+        [:B, :E].each {|et| delete_other_links(oe[et], se[et])}
       end
     end
   end
