@@ -22,8 +22,8 @@ module GFA::Traverse
   def connectivity(segment_name, reverse_complement = false)
     ends = [:B, :E]
     ends.reverse! if reverse_complement
-    connectivity_symbols(links_of(segment_name, ends.first).size,
-                         links_of(segment_name, ends.last).size)
+    connectivity_symbols(links_of([segment_name, ends.first]).size,
+                         links_of([segment_name, ends.last]).size)
   end
 
   # Find a path without branches which includes segment +segment_name+
@@ -39,14 +39,16 @@ module GFA::Traverse
     case cs
     when [1,1]
       exclude << segment_name
-      segpath = traverse_unbranched(segment_name, false, exclude).reverse +
-                traverse_unbranched(segment_name, true, exclude)[1..-1]
+      segpath = reverse_segpath(traverse_unbranched([segment_name, :B],
+                                                    exclude)) +
+                traverse_unbranched([segment_name, :E], exclude)[1..-1]
     when [:M, 1], [0, 1]
       exclude << segment_name
-      segpath = traverse_unbranched(segment_name, true, exclude)
+      segpath = traverse_unbranched([segment_name, :E], exclude)
     when [1, :M], [1, 0]
       exclude << segment_name
-      segpath = traverse_unbranched(segment_name, false, exclude).reverse
+      segpath = reverse_segpath(traverse_unbranched([segment_name, :B],
+                                                    exclude))
     else
       return nil
     end
@@ -67,25 +69,24 @@ module GFA::Traverse
 
   # limitations:
   # - all containments und paths involving merged segments are deleted
-  def merge_unbranched_segpath(segment_names)
-    raise if segment_names.size < 2
-    raise if segment_names[1..-2].any? {|sn| connectivity(sn) != [1,1]}
-    merged = segment(segment_names[0]).clone
-    s, ln, cut, merged_name = joined_sequences(segment_names)
+  def merge_unbranched_segpath(segpath)
+    raise if segpath.size < 2
+    raise if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
+    s, ln, cut, merged_name, first_reversed, last_reversed =
+      joined_sequences(segpath)
+    first_sn = segpath.first.first
+    last_sn = segpath.last.first
+    merged = segment!(first_sn).clone
     merged.name = merged_name
     merged.sequence = s
     merged.LN = ln if merged.optional_fieldnames.include?(:LN)
-    sum_of_counts(segment_names, ln.to_f/(cut+ln)).each do |count_tag, count|
+    sum_of_counts(segpath, ln.to_f/(cut+ln)).each do |count_tag, count|
       merged.send(:"#{count_tag}=", count)
     end
-    l = link(segment_names[0],nil,segment_names[1],nil)
-    first_reversed = (l.end_type(segment_names[0]) == :B)
-    l = link(segment_names[-2],nil,segment_names[-1],nil)
-    last_reversed = (l.end_type(segment_names[-1]) == :E)
     self << merged
-    links_of(segment_names.first, nil).each do |l|
+    links_of(other_segment_end(segpath.first)).each do |l|
       l2 = l.clone
-      if l2.to == segment_names.first
+      if l2.to == first_sn
         l2.to = merged.name
         if first_reversed
           l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
@@ -98,22 +99,22 @@ module GFA::Traverse
       end
       self << l2
     end
-    links_of(segment_names.last, nil).each do |l|
+    links_of(segpath.last).each do |l|
       l2 = l.clone
-      if l2.from == segment_names.last
-        l2.from = merged.name
-        if last_reversed
-          l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
-        end
-      else
+      if l2.to == last_sn
         l2.to = merged.name
         if last_reversed
           l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
         end
+      else
+        l2.from = merged.name
+        if last_reversed
+          l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+        end
       end
       self << l2
     end
-    segment_names.each {|sn| delete_segment(sn)}
+    segpath.each {|sn, et| delete_segment(sn)}
     self
   end
 
@@ -132,8 +133,8 @@ module GFA::Traverse
       else
         visited << sn
         c = [sn]
-        traverse_component(sn, :B, c, visited)
-        traverse_component(sn, :E, c, visited)
+        traverse_component([sn, :B], c, visited)
+        traverse_component([sn, :E], c, visited)
         components << c
       end
     end
@@ -142,16 +143,17 @@ module GFA::Traverse
 
   private
 
-  def traverse_component(segment_name, end_type, c, visited)
-    links_of(segment_name, end_type).each do |l|
-      sn = l.other(segment_name)
+  def traverse_component(segment_end, c, visited)
+    links_of(segment_end).each do |l|
+      oe = l.other_end(segment_end)
+      sn = oe[0]
       if visited.include?(sn)
         next
       else
         visited << sn
         c << sn
-        traverse_component(sn, :B, c, visited)
-        traverse_component(sn, :E, c, visited)
+        traverse_component([sn, :B], c, visited)
+        traverse_component([sn, :E], c, visited)
       end
     end
   end
@@ -184,22 +186,21 @@ module GFA::Traverse
   #     If +from+ is not an element of an unbranched path then [].
   #     Otherwise the first (and possibly only) element is +from+.
   #     All elements in the index range 1..-2 are :internal.
-  def traverse_unbranched(from, traverse_from_E_end, exclude)
+  def traverse_unbranched(segment_end, exclude)
     list = []
-    current_elem = from
+    current = segment_end
     loop do
-      after  = links_of(current_elem, traverse_from_E_end ? :E : :B)
-      before = links_of(current_elem, traverse_from_E_end ? :B : :E)
+      after  = links_of(current)
+      before = links_of(other_segment_end(current))
       cs = connectivity_symbols(before.size, after.size)
       if cs == [1,1] or list.empty?
-        list << current_elem
+        list << current
         l = after.first
-        current_elem = l.other(current_elem)
-        traverse_from_E_end = (l.end_type(current_elem) == :B)
-        return list if exclude.include?(current_elem)
-        exclude << current_elem
+        current = other_segment_end(l.other_end(current))
+        return list if exclude.include?(current[0])
+        exclude << current[0]
       elsif cs[0] == 1
-        list << current_elem
+        list << current
         return list
       else
         return list
@@ -207,9 +208,9 @@ module GFA::Traverse
     end
   end
 
-  def sum_of_counts(segnames, multfactor = 1)
+  def sum_of_counts(segpath, multfactor = 1)
     retval = {}
-    segs = segnames.map {|sn|segment(sn)}
+    segs = segpath.map {|sn,et|segment!(sn)}
     [:KC, :RC, :FC].each do |count_tag|
       segs.each do |s|
         if s.optional_fieldnames.include?(count_tag)
@@ -224,28 +225,31 @@ module GFA::Traverse
     return retval
   end
 
-  def joined_sequences(segnames)
+  def joined_sequences(segpath)
     sequence = ""
     ln = 0
     total_cut = 0
     merged_name = ""
-    (segnames.size-1).times do |i|
-      a = segnames[i]
-      b = segnames[i+1]
-      l = link!(a, nil, b, nil)
-      a = segment!(a)
-      b = segment!(b)
+    first_reversed = false
+    last_reversed = false
+    (segpath.size-1).times do |i|
+      a = segpath[i]
+      b = other_segment_end(segpath[i+1])
+      l = link!(a, b)
+      a_seg = segment!(a[0])
+      b_seg = segment!(b[0])
       if i == 0
-        if l.end_type(a.name) == :E
-          sequence = a.sequence
-          merged_name = "#{a.name}"
+        merged_name += a_seg.name
+        if a[1] == :E
+          sequence += a_seg.sequence
         else
-          sequence = a.sequence.rc
-          merged_name = "#{a.name}R"
+          sequence += a_seg.sequence.rc
+          merged_name += "R"
+          first_reversed = true
         end
-        ln = a.optional_fieldnames.include?(:LN) ? a.LN : nil
+        ln = a_seg.optional_fieldnames.include?(:LN) ? a_seg.LN : nil
       end
-      sequence = "*" if b.sequence == "*"
+      sequence = "*" if b_seg.sequence == "*"
       if l.overlap == "*"
         cut = 0
       elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
@@ -254,15 +258,17 @@ module GFA::Traverse
         raise "Overlaps contaning other operations than M are not supported"
       end
       total_cut += cut
-      if b.optional_fieldnames.include?(:LN) and !ln.nil?
-        ln += (b.LN - cut)
-      end
-      if l.end_type(b.name) == :B
-        bseq = b.sequence
-        merged_name += "_#{b.name}"
+      merged_name += "_#{b_seg.name}"
+      if b[1] == :B
+        bseq = b_seg.sequence
+        last_reversed = false
       else
-        bseq = b.sequence.rc
-        merged_name += "_#{b.name}R"
+        bseq = b_seg.sequence.rc
+        merged_name += "R"
+        last_reversed = true
+      end
+      if b_seg.optional_fieldnames.include?(:LN) and !ln.nil?
+        ln += (b_seg.LN - cut)
       end
       if sequence != "*"
         if cut > 0 and sequence[(-cut)..-1] != bseq[0..(cut-1)]
@@ -275,7 +281,15 @@ module GFA::Traverse
       raise "Computed sequence length and computed LN differ"
     end
     ln = sequence.length if ln.nil?
-    return sequence, ln, total_cut, merged_name
+    return sequence, ln, total_cut, merged_name, first_reversed, last_reversed
+  end
+
+  def reverse_segpath(segpath)
+    segpath.reverse.map {|segment_end| other_segment_end(segment_end)}
+  end
+
+  def other_segment_end(segment_end)
+    [segment_end[0], segment_end[1] == :B ? :E : :B]
   end
 
 end

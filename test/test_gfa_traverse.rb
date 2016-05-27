@@ -15,7 +15,7 @@ class TestGFATraverse < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_raises(RuntimeError) do
-      gfa.merge_unbranched_segpath(["0","1","2","3"])
+      gfa.merge_unbranched_segpath([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
     s = ["S\t0\tACGA",
          "S\t1\tACGA",
@@ -28,7 +28,7 @@ class TestGFATraverse < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised do
-      gfa.merge_unbranched_segpath(["0","1","2","3"])
+      gfa.merge_unbranched_segpath([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
     assert_raises(RuntimeError) {gfa.segment!("0")}
     assert_raises(RuntimeError) {gfa.segment!("1")}
@@ -52,7 +52,7 @@ class TestGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     gfa.merge_all_unbranched_segpaths
     assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
-    assert_equal(["0_1_2R_3"], gfa.segments.map(&:name))
+    assert_equal(["0_1_2R_3"], gfa.segment_names)
     assert_equal(1, gfa.segments.size)
     assert_equal([], gfa.links)
     s = ["S\t0\t*",
@@ -90,7 +90,7 @@ class TestGFATraverse < Test::Unit::TestCase
     assert_equal([%w[18 19 1],
                   %w[11 9 12],
                   %w[22 16 20 21 23]],
-                 gfa.unbranched_segpaths)
+                 gfa.unbranched_segpaths.map{|sp|sp.map{|sn,et|sn}})
   end
 
 end

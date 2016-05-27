@@ -33,23 +33,25 @@ class GFA::Line::Link < GFA::Line
 
   include GFA::SegmentReferences
 
-  def end_type(segment_name)
-    if segment_name == from
-      return from_orient == "+" ? :E : :B
-    elsif segment_name == to
-      return to_orient == "+" ? :B : :E
-    else
-      raise "Link #{self} does not involve segment #{segment_name}"
+  def from_end
+    [from, from_orient == "+" ? :E : :B]
+  end
+
+  def to_end
+    [to, to_orient == "+" ? :B : :E]
+  end
+
+  def other_end(segment_end)
+    if segment_end.size != 2 and ![:B, :E].include?(segment_end[1])
+      raise "This is not a segment end #{segment_end.inspect}"
     end
-  end
-
-  def other_end_type(segment_name)
-    end_type(other(segment_name))
-  end
-
-  def other_end(segment_name)
-    o = other(segment_name)
-    [o, end_type(o)]
+    if (from_end == segment_end)
+      return to_end
+    elsif (to_end == segment_end)
+      return from_end
+    else
+      raise "Segment end '#{segment_end.inspect}' not found"
+    end
   end
 
 end

@@ -7,14 +7,9 @@ module GFA::LineDestructors
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     s = @lines["S"][i]
-    connected = []
-    ["L","C"].each do |rt|
-      [:from,:to].each do |e|
-        connected +=
-          @c.lines(rt,segment_name,e).map {|l| l.other(segment_name)}
-      end
+    connected_segments(segment_name).each do |c|
+      unconnect_segments(segment_name, c)
     end
-    connected.uniq.each {|c| unconnect_segments(segment_name, c)}
     @c.lines("P",segment_name).each {|pt| delete_path(pt.path_name)}
     @c.delete_segment(segment_name)
     @lines["S"][i] = nil
@@ -73,8 +68,8 @@ module GFA::LineDestructors
   end
 
   def delete_other_links(segment_end, other_end)
-    links_of(*segment_end).each do |l|
-      delete_link_line(l) if l.other_end(segment_end[0]) != other_end
+    links_of(segment_end).each do |l|
+      delete_link_line(l) if l.other_end(segment_end) != other_end
     end
   end
 

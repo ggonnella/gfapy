@@ -181,35 +181,27 @@ class TestGFALineGetters < Test::Unit::TestCase
     l0 = "L\t1\t+\t2\t+\t*".to_gfa_line; gfa << l0
     l1 = "L\t0\t+\t1\t+\t*".to_gfa_line; gfa << l1
     l2 = "L\t1\t+\t3\t+\t*".to_gfa_line; gfa << l2
-    assert_equal([],         gfa.links_of("0", :B))
-    assert_equal([l1],       gfa.links_of("0", :E))
-    assert_equal([l1],       gfa.links_of("0", nil))
-    assert_equal([l1],       gfa.links_of("1", :B))
-    assert_equal([l0,l2],    gfa.links_of("1", :E))
-    assert_equal([l1,l0,l2], gfa.links_of("1", nil))
-    assert_equal([l0],       gfa.links_of("2", :B))
-    assert_equal([],         gfa.links_of("2", :E))
-    assert_equal([l0],       gfa.links_of("2", nil))
-    assert_equal([l2],       gfa.links_of("3", :B))
-    assert_equal([],         gfa.links_of("3", :E))
-    assert_equal([l2],       gfa.links_of("3", nil))
+    assert_equal([],         gfa.links_of(["0", :B]))
+    assert_equal([l1],       gfa.links_of(["0", :E]))
+    assert_equal([l1],       gfa.links_of(["1", :B]))
+    assert_equal([l0,l2],    gfa.links_of(["1", :E]))
+    assert_equal([l0],       gfa.links_of(["2", :B]))
+    assert_equal([],         gfa.links_of(["2", :E]))
+    assert_equal([l2],       gfa.links_of(["3", :B]))
+    assert_equal([],         gfa.links_of(["3", :E]))
     gfa = GFA.new
     (0..3).each{|i| gfa << "S\t#{i}\t*"}
     l0 = "L\t1\t+\t2\t-\t*".to_gfa_line; gfa << l0
     l1 = "L\t0\t+\t1\t-\t*".to_gfa_line; gfa << l1
     l2 = "L\t1\t-\t3\t+\t*".to_gfa_line; gfa << l2
-    assert_equal([],         gfa.links_of("0", :B))
-    assert_equal([l1],       gfa.links_of("0", :E))
-    assert_equal([l1],       gfa.links_of("0", nil))
-    assert_equal([l2],       gfa.links_of("1", :B))
-    assert_equal([l0,l1],    gfa.links_of("1", :E))
-    assert_equal([l2,l0,l1], gfa.links_of("1", nil))
-    assert_equal([],         gfa.links_of("2", :B))
-    assert_equal([l0],       gfa.links_of("2", :E))
-    assert_equal([l0],       gfa.links_of("2", nil))
-    assert_equal([l2],       gfa.links_of("3", :B))
-    assert_equal([],         gfa.links_of("3", :E))
-    assert_equal([l2],       gfa.links_of("3", nil))
+    assert_equal([],         gfa.links_of(["0", :B]))
+    assert_equal([l1],       gfa.links_of(["0", :E]))
+    assert_equal([l2],       gfa.links_of(["1", :B]))
+    assert_equal([l0,l1],    gfa.links_of(["1", :E]))
+    assert_equal([],         gfa.links_of(["2", :B]))
+    assert_equal([l0],       gfa.links_of(["2", :E]))
+    assert_equal([l2],       gfa.links_of(["3", :B]))
+    assert_equal([],         gfa.links_of(["3", :E]))
   end
 
   def test_links_between
@@ -218,9 +210,8 @@ class TestGFALineGetters < Test::Unit::TestCase
     l0 = "L\t1\t+\t2\t+\t11M1D3M".to_gfa_line; gfa << l0
     l1 = "L\t1\t+\t2\t+\t10M2D3M".to_gfa_line; gfa << l1
     l2 = "L\t1\t+\t3\t+\t*".to_gfa_line; gfa << l2
-    assert_equal([l0, l1], gfa.links_between("1", :E, "2", :B))
-    assert_equal([l0, l1], gfa.links_between("1", nil, "2", nil))
-    assert_equal([], gfa.links_between("1", nil, "2", :E))
+    assert_equal([l0, l1], gfa.links_between(["1", :E], ["2", :B]))
+    assert_equal([], gfa.links_between(["1", :E], ["2", :E]))
   end
 
   def test_link
@@ -229,12 +220,10 @@ class TestGFALineGetters < Test::Unit::TestCase
     l0 = "L\t1\t+\t2\t+\t11M1D3M".to_gfa_line; gfa << l0
     l1 = "L\t1\t+\t2\t+\t10M2D3M".to_gfa_line; gfa << l1
     l2 = "L\t1\t+\t3\t+\t*".to_gfa_line; gfa << l2
-    assert_equal(l0, gfa.link("1", nil, "2", nil))
-    assert_equal(l0, gfa.link!("1", nil, "2", nil))
-    assert_equal(l0, gfa.link("1", :E, "2", :B))
-    assert_equal(l0, gfa.link!("1", :E, "2", :B))
-    assert_equal(nil, gfa.link("1", :E, "2", :E))
-    assert_raise(RuntimeError) { gfa.link!("1", :E, "2", :E) }
+    assert_equal(l0, gfa.link(["1", :E], ["2", :B]))
+    assert_equal(l0, gfa.link!(["1", :E], ["2", :B]))
+    assert_equal(nil, gfa.link(["1", :E], ["2", :E]))
+    assert_raise(RuntimeError) { gfa.link!(["1", :E], ["2", :E]) }
   end
 
 end

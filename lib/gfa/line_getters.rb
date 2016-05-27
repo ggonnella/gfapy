@@ -84,68 +84,62 @@ module GFA::LineGetters
   #
   # *Returns*
   #   - An array of GFA::Line::Link containing:
-  #     - if end_type == :E
+  #     - if segment_end[1] == :E
   #       links from sn with from_orient +
   #       links to   sn with to_orient   -
-  #     - if end_type == :B
+  #     - if segment_end[1] == :B
   #       links to   sn with to_orient   +
   #       links from sn with from_orient -
-  #     - if end_type == nil
-  #       all links of sn
   #
   # *Note*:
   #   - To add or remove links, use +connect()+ or +disconnect()+;
   #     adding or removing links from the returned array will not work
-  def links_of(sn, end_type)
-    case end_type
+  def links_of(segment_end)
+    case segment_end[1]
     when :E
       o = ["+","-"]
     when :B
       o = ["-","+"]
-    when nil
-      return links_of(sn, :B) + links_of(sn, :E)
     else
-      raise "end_type unknown: #{end_type.inspect}"
+      raise "end_type unknown: #{segment_end[1].inspect}"
     end
-    @c.lines("L",sn,:from,o[0]) + @c.lines("L",sn,:to,o[1])
+    @c.lines("L",segment_end[0],:from,o[0]) +
+      @c.lines("L",segment_end[0],:to,o[1])
   end
 
-  def neighbours(segment_name, end_type)
-    links_of(segment_name, end_type).map do |l|
-      [l.other(segment_name), l.other_end_type(segment_name)]
-    end
+  def neighbours(segment_end)
+    links_of(segment_end).map {|l| l.other_end(segment_end) }
   end
 
-  # Searches all links between the segment +sn1+ end +end_type1+
-  # and the segment +sn2+ end +end_type2+
-  #
-  # The end_types can be set to nil, in which case both ends are searched.
+  def connected_segments(segment_name)
+    (neighbours([segment_name, :B]).map{|s, e| s} +
+      neighbours([segment_name, :E]).map{|s, e| s} +
+        contained_in(segment_name).map{|c| c.to} +
+          containing(segment_name).map{|c| c.from}).uniq
+  end
+
+  # Searches all links between +segment_end1+ and +segment_end2+
   #
   # Returns a possibly empty array of links.
-  def links_between(sn1, end_type1, sn2, end_type2)
-    links_of(sn1, end_type1).select do |l|
-      l.other(sn1) == sn2 and
-        (end_type2.nil? or l.other_end_type(sn1) == end_type2)
+  def links_between(segment_end1, segment_end2)
+    links_of(segment_end1).select do |l|
+      l.other_end(segment_end1) == segment_end2
     end
   end
 
-  # Searches a link between the segment +sn1+ end +end_type1+
-  # and the segment +sn2+ end +end_type2+
-  #
-  # The end_types can be set to nil, in which case both ends are searched.
+  # Searches a link between +segment_end1+ and +segment_end2+
   #
   # Returns the first link found or nil if none found.
-  def link(sn1, end_type1, sn2, end_type2)
-    links_of(sn1, end_type1).each do |l|
-      return l if l.other(sn1) == sn2 and
-        (end_type2.nil? or l.other_end_type(sn1) == end_type2)
+  def link(segment_end1, segment_end2)
+    links_of(segment_end1).each do |l|
+      return l if l.other_end(segment_end1) == segment_end2
     end
     return nil
   end
 
   # Calls +link+ and raises a +RuntimeError+ if no link was found.
-  def link!(sn1, end_type1, sn2, end_type2)
-    l = link(sn1, end_type1, sn2, end_type2)
+  def link!(segment_end1, segment_end2)
+    l = link(segment_end1, segment_end2)
     raise "No link was found" if l.nil?
     l
   end

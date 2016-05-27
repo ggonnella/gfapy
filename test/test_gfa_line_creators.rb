@@ -36,10 +36,11 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_nothing_raised { gfa << l1 }
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([l1], gfa.links)
-    assert_equal(l1, gfa.link("1", nil, "2", nil))
-    assert_equal(nil, gfa.link("2", :E, "1", :B))
-    assert_nothing_raised {gfa.link!("1", nil, "2", nil)}
-    assert_raises(RuntimeError) {gfa.link!("2", :E, "1", :B)}
+    assert_equal(l1, gfa.link(["1", :E], ["2", :B]))
+    assert_equal(l1, gfa.link(["2", :B], ["1", :E]))
+    assert_equal(nil, gfa.link(["2", :E], ["1", :B]))
+    assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
+    assert_raises(RuntimeError) {gfa.link!(["2", :E], ["1", :B])}
     assert_nothing_raised { gfa << l2 }
     gfa = GFA.new(segments_first_order: true)
     gfa << s1
