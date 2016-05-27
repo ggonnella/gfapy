@@ -110,6 +110,12 @@ module GFA::LineGetters
     @c.lines("L",sn,:from,o[0]) + @c.lines("L",sn,:to,o[1])
   end
 
+  def neighbours(segment_name, end_type)
+    links_of(segment_name, end_type).map do |l|
+      [l.other(segment_name), l.other_end_type(segment_name)]
+    end
+  end
+
   # Searches all links between the segment +sn1+ end +end_type1+
   # and the segment +sn2+ end +end_type2+
   #
