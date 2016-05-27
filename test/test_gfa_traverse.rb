@@ -34,9 +34,9 @@ class TestGFATraverse < Test::Unit::TestCase
     assert_raises(RuntimeError) {gfa.segment!("1")}
     assert_raises(RuntimeError) {gfa.segment!("2")}
     assert_raises(RuntimeError) {gfa.segment!("3")}
-    assert_nothing_raised {gfa.segment!("0_1_2_3")}
+    assert_nothing_raised {gfa.segment!("0_1_2R_3")}
     assert_equal([], gfa.links)
-    assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)
+    assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2R_3").sequence)
   end
 
   def test_unbranched_path_merge_all
@@ -52,7 +52,7 @@ class TestGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     gfa.merge_all_unbranched_segpaths
     assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
-    assert_equal(["0_1_2_3"], gfa.segments.map(&:name))
+    assert_equal(["0_1_2R_3"], gfa.segments.map(&:name))
     assert_equal(1, gfa.segments.size)
     assert_equal([], gfa.links)
     s = ["S\t0\t*",
@@ -68,7 +68,7 @@ class TestGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_all_unbranched_segpaths }
     assert_equal(3, gfa.segments.size)
-    assert_equal(["0","3","1_2"], gfa.segments.map(&:name))
+    assert_equal(["0","3","1_2R"], gfa.segments.map(&:name))
     s = ["S\t0\t*",
          "S\t1\t*",
          "S\t2\t*",

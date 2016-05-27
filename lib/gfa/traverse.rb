@@ -79,8 +79,8 @@ module GFA::Traverse
       segment_junction_type(sn) != :internal
     end
     merged = segment(segment_names[0]).clone
-    merged.name = segment_names.join("_")
-    s, ln, cut = joined_sequences(segment_names)
+    s, ln, cut, merged_name = joined_sequences(segment_names)
+    merged.name = merged_name
     merged.sequence = s
     merged.LN = ln if merged.optional_fieldnames.include?(:LN)
     sum_of_counts(segment_names, ln.to_f/(cut+ln)).each do |count_tag, count|
@@ -239,6 +239,7 @@ module GFA::Traverse
     sequence = ""
     ln = 0
     total_cut = 0
+    merged_name = ""
     (segnames.size-1).times do |i|
       a = segnames[i]
       b = segnames[i+1]
@@ -246,7 +247,13 @@ module GFA::Traverse
       a = segment!(a)
       b = segment!(b)
       if i == 0
-        sequence = (l.end_type(a.name) == :E ? a.sequence : a.sequence.rc)
+        if l.end_type(a.name) == :E
+          sequence = a.sequence
+          merged_name = "#{a.name}"
+        else
+          sequence = a.sequence.rc
+          merged_name = "#{a.name}R"
+        end
         ln = a.optional_fieldnames.include?(:LN) ? a.LN : nil
       end
       sequence = "*" if b.sequence == "*"
@@ -261,7 +268,13 @@ module GFA::Traverse
       if b.optional_fieldnames.include?(:LN) and !ln.nil?
         ln += (b.LN - cut)
       end
-      bseq = (l.end_type(b.name) == :B ? b.sequence : b.sequence.rc)
+      if l.end_type(b.name) == :B
+        bseq = b.sequence
+        merged_name += "_#{b.name}"
+      else
+        bseq = b.sequence.rc
+        merged_name += "_#{b.name}R"
+      end
       if sequence != "*"
         if cut > 0 and sequence[(-cut)..-1] != bseq[0..(cut-1)]
           raise "Inconsistent overlap"
@@ -273,7 +286,7 @@ module GFA::Traverse
       raise "Computed sequence length and computed LN differ"
     end
     ln = sequence.length if ln.nil?
-    return sequence, ln, total_cut
+    return sequence, ln, total_cut, merged_name
   end
 
 end
