@@ -165,19 +165,26 @@ module GFA::Edit
     end
   end
 
-  def enforce_internal_links_connection
+  def enforce_single_edges
     segments.each do |s|
-      if connectivity(s.name) == [1,1]
+      se = {}
+      l = {}
+      [:B, :E].each do |et|
+        se[et] = [s.name, et]
+        l[et] = links_of(se[et])
+      end
+      cs = connectivity_symbols(l[:B].size, l[:E].size)
+      if cs == [1, 1]
         oe = {}
-        se = {}
-        l = {}
-        [:B, :E].each do |et|
-          se[et] = [s.name, et]
-          l[et] = links_of(se[et])[0]
-          oe[et] = l[et].other_end(se[et])
-        end
+        [:B, :E].each {|et| oe[et] = l[et][0].other_end(se[et])}
         next if oe[:B] == oe[:E]
         [:B, :E].each {|et| delete_other_links(oe[et], se[et])}
+      else
+        i = cs.index(1)
+        next if i.nil?
+        et = [:B, :E][i]
+        oe = l[et][0].other_end(se[et])
+        delete_other_links(oe, se[et])
       end
     end
   end
