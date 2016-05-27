@@ -6,30 +6,24 @@ module GFA::Traverse
 
   require "set"
 
-  # Computes the connectivity class of a segment depending on the number
-  # of links to the beginning and to the end of its sequence.
+  # Computes the connectivity of a segment from its number of links.
   #
   # *Arguments*:
   #   - +segment_name+: name of the segment
   #   - +reverse_complement+ use the reverse complement of the segment sequence
   #
   # *Returns*:
-  #   (bn = number of links to the beginning of the sequence;
-  #    en = number of links to the end of the sequence;
-  #    b = "M" if bn > 1, otherwise bn;
-  #    e = "M" if en > 1, otherwise en)
-  #   - +:isolated+            if: bn == 0, en == 0
-  #   - +:end_#{b}#{e}>+       if: bn or en == 0, other > 0
-  #   - +:internal+            if: bn == 1, en == 1
-  #   - +:junction_#{b}#{e}>+  if: bn or en == 1, other > 1
-  #   - if +reverse_complement+ is set to true, b/e are switched
-  #     (nothing changes for :isolated/:internal)
+  #   - [b, e], where:
+  #      - bn is the number of links to the beginning of the sequence
+  #      - en is the number of links to the end of the sequence
+  #      - b = :M if bn > 1, otherwise bn
+  #      - e = :M if en > 1, otherwise en
   #
-  def segment_junction_type(segment_name, reverse_complement = false)
+  def connectivity(segment_name, reverse_complement)
     ends = [:B, :E]
     ends.reverse! if reverse_complement
-    junction_type(links_of(segment_name, ends.first).size,
-                  links_of(segment_name, ends.last).size)
+    connectivity_symbols(links_of(segment_name, ends.first).size,
+                         links_of(segment_name, ends.last).size)
   end
 
   # Find a path without branches which includes segment +segment_name+
@@ -41,16 +35,16 @@ module GFA::Traverse
   # *Returns*:
   #   - an array of segment names
   def unbranched_segpath(segment_name, exclude = Set.new)
-    jt = segment_junction_type(segment_name)
+    jt = connectivity(segment_name)
     case jt
-    when :internal
+    when [1, 1]
       exclude << segment_name
       segpath = traverse_unbranched(segment_name, false, exclude).reverse +
                 traverse_unbranched(segment_name, true, exclude)[1..-1]
-    when :junction_M1, :end_01
+    when [:M, 1], [0, 1]
       exclude << segment_name
       segpath = traverse_unbranched(segment_name, true, exclude)
-    when :junction_1M, :end_10
+    when [1, :M], [1, 0]
       exclude << segment_name
       segpath = traverse_unbranched(segment_name, false, exclude).reverse
     else
@@ -75,9 +69,7 @@ module GFA::Traverse
   # - all containments und paths involving merged segments are deleted
   def merge_unbranched_segpath(segment_names)
     raise if segment_names.size < 2
-    raise if segment_names[1..-2].any? do |sn|
-      segment_junction_type(sn) != :internal
-    end
+    raise if segment_names[1..-2].any? {|sn| connectivity(sn) != [1,1]}
     merged = segment(segment_names[0]).clone
     s, ln, cut, merged_name = joined_sequences(segment_names)
     merged.name = merged_name
@@ -164,15 +156,13 @@ module GFA::Traverse
     end
   end
 
-  # See +segment_junction_type+
-  def junction_type(b_list_size, e_list_size)
-    b = b_list_size > 1 ? "M" : b_list_size
-    e = e_list_size > 1 ? "M" : e_list_size
-    if b == e and b != "M"
-      return (b == 0) ? :isolated : :internal
-    else
-      return :"#{(b == 0 or e == 0) ? 'end' : 'junction'}_#{b}#{e}"
-    end
+  def connectivity_symbols(n,m)
+    [connectivity_symbol(n),
+     connectivity_symbol(n)]
+  end
+
+  def connectivity_symbol(n)
+    n > 1 ? :M : n
   end
 
   # Traverse the links, starting from the segment +from+ :E end if
@@ -194,22 +184,22 @@ module GFA::Traverse
   #   - An array of segment names of the unbranched path.
   #     If +from+ is not an element of an unbranched path then [].
   #     Otherwise the first (and possibly only) element is +from+.
-  #     All elements in the index range 1..-2 are :internal.
+  #     All elements in the index range 1..-2 are internal nodes.
   def traverse_unbranched(from, traverse_from_E_end, exclude)
     list = []
     current_elem = from
     loop do
       after  = links_of(current_elem, traverse_from_E_end ? :E : :B)
       before = links_of(current_elem, traverse_from_E_end ? :B : :E)
-      jt = junction_type(before.size, after.size)
-      if jt == :internal or list.empty?
+      cs = connectivity_symbols(before.size, after.size)
+      if cs == [1, 1] or list.empty?
         list << current_elem
         l = after.first
         current_elem = l.other(current_elem)
         traverse_from_E_end = (l.end_type(current_elem) == :B)
         return list if exclude.include?(current_elem)
         exclude << current_elem
-      elsif [:junction_1M, :end_10].include?(jt)
+      elsif cs[0] == 1
         list << current_elem
         return list
       else
