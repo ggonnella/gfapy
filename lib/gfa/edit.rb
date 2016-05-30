@@ -40,58 +40,30 @@ module GFA::Edit
     self
   end
 
-  def multiply_segment(segment_name, factor, copy_names: nil,
-                       distribute_links: [])
-    if factor == 1
-      return self
-    elsif factor == 0
-      return delete_segment(segment_name)
+  def multiply_segment(segment_name, factor, copy_names: :lowcase,
+                       links_distribution_policy: :auto,
+                       origin_tag: :or)
+    if factor < 2
+      return factor == 1 ? self : delete_segment(segment_name)
     end
-    copy_names = auto_copy_names(segment_name, factor) if copy_names.nil?
     s = segment(segment_name)
-    s.or = s.name if !s.or
-    divide_counts(s, factor)
-    ["L","C"].each do |rt|
-      [:from,:to].each do |e|
-        @c.find(rt,segment_name,e).each do |i|
-          l = @lines[rt][i]
-          # circular link counts shall be divided only ones
-          next if e == :to and l.from == l.to
-          divide_counts(l, factor)
-        end
-      end
-    end
-    copy_names.each do |cn|
-      if @segment_names.include?(cn)
-        raise ArgumentError, "Segment with name #{cn} already exists"
-      end
-      cpy = s.clone
-      cpy.name = cn
-      cpy.or = s.or
-      self << cpy
-    end
-    ["L","C"].each do |rt|
-      [:from,:to].each do |e|
-        to_clone = []
-        @c.find(rt,segment_name,e).each {|i| to_clone << i }
-        copy_names.each do |cn|
-          to_clone.each do |i|
-            l = @lines[rt][i].clone
-            l.send(:"#{e}=", cn)
-            self << l
-          end
-        end
-      end
-    end
-    distribute_links.each do |end_type|
-      distribute_links_among_copies(end_type, segment_name, copy_names, factor)
-    end
+    s.send(:"#{origin_tag}=", s.name) if !s.send(origin_tag)
+    divide_segment_and_connection_counts(s, factor)
+    copy_names = compute_copy_names(copy_names, segment_name, factor)
+    copy_names.each {|cn| clone_segment_and_connections(s, cn)}
+    distribute_links(links_distribution_policy, segment_name, copy_names,
+                     factor)
     return self
   end
 
-  def duplicate_segment(segment_name, copy_name: nil)
+  def duplicate_segment(segment_name, copy_name: :lowcase,
+                       links_distribution_policy: :auto,
+                       origin_tag: :or)
     multiply_segment(segment_name, 2,
-                     copy_names: copy_name.nil? ? nil : [copy_name])
+                     copy_names:
+                       copy_name.kind_of?(String) ? [copy_name] : copy_name,
+                     links_distribution_policy: links_distribution_policy,
+                     origin_tag: origin_tag)
   end
 
   def delete_low_coverage_segments(mincov, count_tag: :RC)
@@ -127,13 +99,13 @@ module GFA::Edit
     self
   end
 
-  def apply_copy_numbers(tag: :cn, distribute_links: true,
-                         distribute_equal_only: false)
+  def apply_copy_numbers(tag: :cn, links_distribution_policy: :auto,
+                         copy_names_suffix: :lowcase, origin_tag: :or)
     segments.sort_by{|s|s.send(:"#{tag}!")}.each do |s|
       multiply_segment(s.name, s.send(tag),
-                       distribute_links: (distribute_links ?
-                         select_distribute_end(s, tag,
-                           distribute_equal_only: distribute_equal_only) : []))
+                       links_distribution_policy: links_distribution_policy,
+                       copy_names: copy_names_suffix,
+                       origin_tag: origin_tag)
     end
     self
   end
@@ -189,17 +161,57 @@ module GFA::Edit
 
   private
 
-  def auto_copy_names(segment_name, factor)
-    copy_names = []
-    next_name = "#{segment_name}a"
-    while copy_names.size < (factor-1)
-      while copy_names.include?(next_name) or
-            @segment_names.include?(next_name)
+  def compute_copy_names(copy_names, segment_name, factor)
+    accepted = [:lowcase, :upcase, :number, :copy]
+    if copy_names.kind_of?(Array)
+      return copy_names
+    elsif !accepted.include?(copy_names)
+      raise "copy_names shall be an array of names or one of: "+
+        accepted.inspect
+    end
+    retval = []
+    next_name = segment_name
+    case copy_names
+    when :lowcase
+      if next_name =~ /^.*[a-z]$/
+        next_name = next_name.next
+      else
+        next_name += "b"
+      end
+    when :upcase
+      if next_name =~ /^.*[A-Z]$/
+        next_name = next_name.next
+      else
+        next_name += "B"
+      end
+    when :number
+      if next_name =~ /^.*[0-9]$/
+        next_name = next_name.next
+      else
+        next_name += "2"
+      end
+    when :copy
+      if next_name =~ /^.*_copy(\d*)$/
+        next_name += "1" if $1 == ""
+        next_name = next_name.next
+        copy_names = :number
+      else
+        next_name += "_copy"
+      end
+    end
+    while retval.size < (factor-1)
+      while retval.include?(next_name) or
+            @segment_names.include?(next_name) or
+            @path_names.include?(next_name)
+        if copy_names == :copy
+          next_name += "1"
+          copy_names = :number
+        end
         next_name = next_name.next
       end
-      copy_names << next_name
+      retval << next_name
     end
-    return copy_names
+    return retval
   end
 
   def divide_counts(gfa_line, factor)
@@ -211,28 +223,82 @@ module GFA::Edit
     end
   end
 
-  def select_distribute_end(segment, cntag,
-                            distribute_equal_only: false)
-    esize = links_of([segment.name, :E]).size
-    bsize = links_of([segment.name, :B]).size
-    cn = segment.send(cntag)
-    if esize == cn
-      return [:E]
-    elsif bsize == cn
-      return [:B]
-    elsif distribute_equal_only
-      return []
+  def divide_segment_and_connection_counts(segment, factor)
+    divide_counts(segment, factor)
+    ["L","C"].each do |rt|
+      [:from,:to].each do |dir|
+        @c.lines(rt,segment.name,dir).each do |l|
+          # circular link counts shall be divided only ones
+          next if dir == :to and l.from == l.to
+          divide_counts(l, factor)
+        end
+      end
+    end
+  end
+
+  def clone_segment_and_connections(segment, clone_name)
+    cpy = segment.clone
+    cpy.name = clone_name
+    self << cpy
+    ["L","C"].each do |rt|
+      [:from,:to].each do |dir|
+        @c.lines(rt,segment.name,dir).each do |l|
+          lc = l.clone
+          lc.send(:"#{dir}=", clone_name)
+          self << lc
+        end
+      end
+    end
+  end
+
+  def select_distribute_end(links_distribution_policy, segment_name, factor)
+    accepted = [:off, :auto, :equal, :E, :B]
+    if !accepted.include?(links_distribution_policy)
+      raise "Unknown links_distribution_policy, accepted values are: "+
+        accepted.inspect
+    end
+    return nil if links_distribution_policy == :off
+    if [:B, :E].include?(links_distribution_policy)
+      return links_distribution_policy
+    end
+    esize = links_of([segment_name, :E]).size
+    bsize = links_of([segment_name, :B]).size
+    if esize == factor
+      return :E
+    elsif bsize == factor
+      return :B
+    elsif links_distribution_policy == :equal
+      return nil
     elsif esize < 2
-      return (bsize < 2) ? [] : [:B]
+      return (bsize < 2) ? nil : :B
     elsif bsize < 2
-      return [:E]
-    elsif esize < cn
-      return ((bsize <= esize) ? [:E] :
-        ((bsize < cn) ? [:B] : [:E]))
-    elsif bsize < cn
-      return [:B]
+      return :E
+    elsif esize < factor
+      return ((bsize <= esize) ? :E :
+        ((bsize < factor) ? :B : :E))
+    elsif bsize < factor
+      return :B
     else
-      return ((bsize <= esize) ? [:B] : [:E])
+      return ((bsize <= esize) ? :B : :E)
+    end
+  end
+
+  def distribute_links(links_distribution_policy, segment_name,
+                       copy_names, factor)
+    end_type = select_distribute_end(links_distribution_policy,
+                                     segment_name, factor)
+    return nil if end_type.nil?
+    et_links = links_of([segment_name, end_type])
+    diff = [et_links.size - factor, 0].max
+    links_signatures = et_links.map do |l|
+      l.other_end([segment_name, end_type]).join
+    end
+    ([segment_name]+copy_names).each_with_index do |sn, i|
+      links_of([sn, end_type]).each do |l|
+        l_sig = l.other_end([sn, end_type]).join
+        to_save = links_signatures[i..i+diff].to_a
+        delete_link_line(l) unless to_save.include?(l_sig)
+      end
     end
   end
 
@@ -282,21 +348,6 @@ module GFA::Edit
       sig = segment_signature(other_end)
       sig
     end.map {|sig, par| par}
-  end
-
-  def distribute_links_among_copies(end_type, segment_name, copy_names, factor)
-    et_links = links_of([segment_name, end_type])
-    diff = [et_links.size - factor, 0].max
-    links_signatures = et_links.map do |l|
-      l.other_end([segment_name, end_type]).join
-    end
-    ([segment_name]+copy_names).each_with_index do |sn, i|
-      links_of([sn, end_type]).each do |l|
-        l_sig = l.other_end([sn, end_type]).join
-        to_save = links_signatures[i..i+diff].to_a
-        delete_link_line(l) unless to_save.include?(l_sig)
-      end
-    end
   end
 
 end

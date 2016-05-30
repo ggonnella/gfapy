@@ -50,7 +50,7 @@ class TestGFAEdit < Test::Unit::TestCase
          "S\t2\t*\tRC:i:60000".to_gfa_line]
     l = "L\t1\t+\t2\t+\t12M".to_gfa_line
     c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
-    p = "P\t4\t2+,0-\t12M,12M".to_gfa_line
+    p = "P\t3\t2+,0-\t12M,12M".to_gfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
     assert_equal([l], gfa.links)
@@ -64,23 +64,49 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link(["1", :E], ["2", :B]))
     assert_equal(c, gfa.containment("1", "0"))
-    assert_not_equal(nil, gfa.link(["1a", :E], ["2", :B]))
-    assert_not_equal(nil, gfa.containment("1a", "0"))
+    assert_not_equal(nil, gfa.link(["1b", :E], ["2", :B]))
+    assert_not_equal(nil, gfa.containment("1b", "0"))
     assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(3000, gfa.segment("1a").RC)
-    gfa.multiply_segment("1a", 3 , copy_names:["6","7"])
+    assert_equal(3000, gfa.segment("1b").RC)
+    gfa.multiply_segment("1b", 3 , copy_names:["6","7"])
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link(["1", :E], ["2", :B]))
-    assert_not_equal(nil, gfa.link(["1a", :E], ["2", :B]))
+    assert_not_equal(nil, gfa.link(["1b", :E], ["2", :B]))
     assert_not_equal(nil, gfa.link(["6", :E], ["2", :B]))
     assert_not_equal(nil, gfa.link(["7", :E], ["2", :B]))
-    assert_not_equal(nil, gfa.containment("1a", "0"))
+    assert_not_equal(nil, gfa.containment("1b", "0"))
     assert_not_equal(nil, gfa.containment("6", "0"))
     assert_not_equal(nil, gfa.containment("7", "0"))
     assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(1000, gfa.segment("1a").RC)
+    assert_equal(1000, gfa.segment("1b").RC)
     assert_equal(1000, gfa.segment("6").RC)
     assert_equal(1000, gfa.segment("7").RC)
+    gfa.multiply_segment("2", 2, copy_names: :upcase)
+    assert_nothing_raised {gfa.segment!("2B")}
+    gfa.multiply_segment("2", 2, copy_names: :upcase)
+    assert_nothing_raised {gfa.segment!("2C")}
+    gfa.multiply_segment("2", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("2_copy")}
+    gfa.multiply_segment("2", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("2_copy2")}
+    gfa.multiply_segment("2", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("2_copy3")}
+    gfa.multiply_segment("2_copy", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("2_copy4")}
+    gfa.multiply_segment("2_copy4", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("2_copy5")}
+    gfa.multiply_segment("2", 2, copy_names: :number)
+    assert_nothing_raised {gfa.segment!("4")}
+    gfa.multiply_segment("1b", 2)
+    assert_nothing_raised {gfa.segment!("1c")}
+    gfa.multiply_segment("1b", 2, copy_names: :number)
+    assert_nothing_raised {gfa.segment!("1b2")}
+    gfa.multiply_segment("1b", 2, copy_names: :copy)
+    assert_nothing_raised {gfa.segment!("1b_copy")}
+    gfa.multiply_segment("1b_copy", 2, copy_names: :lowcase)
+    assert_nothing_raised {gfa.segment!("1b_copz")}
+    gfa.multiply_segment("1b_copy", 2, copy_names: :upcase)
+    assert_nothing_raised {gfa.segment!("1b_copyB")}
   end
 
   def test_delete_low_coverate_segments
@@ -129,7 +155,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(["0","1","2","3"], gfa.segment_names)
     gfa.compute_copy_numbers(9)
     gfa.apply_copy_numbers
-    assert_equal(["1","2","3","2a","3a","3b"], gfa.segment_names)
+    assert_equal(["1","2","3","2b","3b","3c"], gfa.segment_names)
     gfa.compute_copy_numbers(9)
     assert(gfa.segments.map(&:cn).all?{|cn|cn == 1})
     assert_nothing_raised { gfa.send(:validate_connect) }
