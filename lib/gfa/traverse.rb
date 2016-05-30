@@ -225,6 +225,16 @@ module GFA::Traverse
     return retval
   end
 
+  def reverse_segment_name(name)
+    name.split("_").map do |part|
+      if part[-1] == "^"
+        part[0..-2]
+      else
+        part + "^"
+      end
+    end.reverse.join("_")
+  end
+
   def joined_sequences(segpath)
     sequence = ""
     ln = 0
@@ -239,12 +249,12 @@ module GFA::Traverse
       a_seg = segment!(a[0])
       b_seg = segment!(b[0])
       if i == 0
-        merged_name += a_seg.name
         if a[1] == :E
+          merged_name += a_seg.name
           sequence += a_seg.sequence
         else
           sequence += a_seg.sequence.rc
-          merged_name += "R"
+          merged_name += reverse_segment_name(a_seg.name)
           first_reversed = true
         end
         ln = a_seg.optional_fieldnames.include?(:LN) ? a_seg.LN : nil
@@ -258,13 +268,14 @@ module GFA::Traverse
         raise "Overlaps contaning other operations than M are not supported"
       end
       total_cut += cut
-      merged_name += "_#{b_seg.name}"
+      merged_name += "_"
       if b[1] == :B
         bseq = b_seg.sequence
+        merged_name += b_seg.name
         last_reversed = false
       else
         bseq = b_seg.sequence.rc
-        merged_name += "R"
+        merged_name += reverse_segment_name(b_seg.name)
         last_reversed = true
       end
       if b_seg.optional_fieldnames.include?(:LN) and !ln.nil?
