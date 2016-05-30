@@ -141,26 +141,24 @@ module GFA::Edit
   def select_random_orientation
     segments.each do |s|
       if segment_same_links_both_ends?(s.name)
-        parts = {}
-        parts[:E] = partitioned_links_of([s.name, :E])
-        divide_ends = false
-        if parts[:E].size != 2
-          divide_ends = true
-          parts[:E] = partitioned_links_of([s.name, :E], divide_ends: true)
+        parts = partitioned_links_of([s.name, :E])
+        if parts.size == 2
+          tokeep1_other_end = parts[0][0].other_end([s.name, :E])
+          tokeep2_other_end = parts[1][0].other_end([s.name, :E])
+        elsif parts.size == 1 and parts[0].size == 2
+          tokeep1_other_end = parts[0][0].other_end([s.name, :E])
+          tokeep2_other_end = parts[0][1].other_end([s.name, :E])
+        else
+          next
         end
-        if parts[:E].size == 2
-          parts[:B] = partitioned_links_of([s.name, :B],
-                                           divide_ends: divide_ends)
-          if segment_signature(parts[:B][0][0].other(s.name)) !=
-             segment_signature(parts[:E][0][0].other(s.name))
-            parts[:B].reverse!
-          end
-          [:E, :B].each_with_index do |e, i|
-            links_of([s.name, e]).each do |l|
-              delete_link_line(l) if l != parts[e][i][0]
-            end
-          end
-        end
+        next if links_of(tokeep1_other_end).size < 2
+        next if links_of(tokeep2_other_end).size < 2
+        STDERR.puts "Random orientation points: "+
+          "#{tokeep2_other_end.join(":")}"+
+          "-*-B:#{s.name}:E-*-"+
+          "#{tokeep1_other_end.join(":")}"
+        delete_other_links([s.name, :E], tokeep1_other_end)
+        delete_other_links([s.name, :B], tokeep2_other_end)
       end
     end
   end
@@ -258,10 +256,10 @@ module GFA::Edit
     end
   end
 
-  def segment_signature(segment_name)
-    s = segment!(segment_name)
-    link_targets_for_cmp([segment_name, :B]).join(",")+"\t"+
-    link_targets_for_cmp([segment_name, :E]).join(",")+"\t"+
+  def segment_signature(segment_end)
+    s = segment!(segment_end[0])
+    link_targets_for_cmp(segment_end).join(",")+"\t"+
+    link_targets_for_cmp(other_segment_end(segment_end)).join(",")+"\t"+
     [:or, :coverage].map do |field|
       s.send(field)
     end.join("\t")
@@ -278,11 +276,10 @@ module GFA::Edit
     return segment_same_links?(segment_names)
   end
 
-  def partitioned_links_of(segment_end, divide_ends: false)
+  def partitioned_links_of(segment_end)
     links_of(segment_end).group_by do |l|
       other_end = l.other_end(segment_end)
-      sig = segment_signature(other_end[0])
-      sig += "\t#{other_end[1]}" if divide_ends
+      sig = segment_signature(other_end)
       sig
     end.map {|sig, par| par}
   end
