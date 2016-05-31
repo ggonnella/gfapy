@@ -99,6 +99,18 @@ module GFA::Edit
     self
   end
 
+  def apply_copy_number(segment_name, tag: :cn,
+                        links_distribution_policy: :auto,
+                        copy_names_suffix: :lowcase, origin_tag: :or)
+    s = segment!(segment_name)
+    factor = s.send(:"#{tag}!")
+    multiply_segment(segment_name, factor,
+                     links_distribution_policy: links_distribution_policy,
+                     copy_names: copy_names_suffix,
+                     origin_tag: origin_tag)
+    self
+  end
+
   def apply_copy_numbers(tag: :cn, links_distribution_policy: :auto,
                          copy_names_suffix: :lowcase, origin_tag: :or)
     segments.sort_by{|s|s.send(:"#{tag}!")}.each do |s|
@@ -110,53 +122,72 @@ module GFA::Edit
     self
   end
 
-  def select_random_orientation(tag: :rn)
-    segments.each do |s|
-      if segment_same_links_both_ends?(s.name)
-        parts = partitioned_links_of([s.name, :E])
-        if parts.size == 2
-          tokeep1_other_end = parts[0][0].other_end([s.name, :E])
-          tokeep2_other_end = parts[1][0].other_end([s.name, :E])
-        elsif parts.size == 1 and parts[0].size == 2
-          tokeep1_other_end = parts[0][0].other_end([s.name, :E])
-          tokeep2_other_end = parts[0][1].other_end([s.name, :E])
-        else
-          next
-        end
-        next if links_of(tokeep1_other_end).size < 2
-        next if links_of(tokeep2_other_end).size < 2
-        delete_other_links([s.name, :E], tokeep1_other_end)
-        delete_other_links([s.name, :B], tokeep2_other_end)
-        annotate_random_orientation(s)
+  def randomly_orient_invertible_segments
+    segment_names.each do |sn|
+      if segment_same_links_both_ends?(sn)
+        randomly_orient_proven_invertible_segment(sn)
       end
     end
+    self
   end
 
-  def enforce_single_edges
-    segments.each do |s|
-      se = {}
-      l = {}
-      [:B, :E].each do |et|
-        se[et] = [s.name, et]
-        l[et] = links_of(se[et])
-      end
-      cs = connectivity_symbols(l[:B].size, l[:E].size)
-      if cs == [1, 1]
-        oe = {}
-        [:B, :E].each {|et| oe[et] = l[et][0].other_end(se[et])}
-        next if oe[:B] == oe[:E]
-        [:B, :E].each {|et| delete_other_links(oe[et], se[et])}
-      else
-        i = cs.index(1)
-        next if i.nil?
-        et = [:B, :E][i]
-        oe = l[et][0].other_end(se[et])
-        delete_other_links(oe, se[et])
-      end
+  def randomly_orient_invertible_segment(segment_name)
+    if !segment_same_links_both_ends?(sn)
+      raise "Only segments with links to the same or equivalent segments "+
+              "at both ends can be randomly oriented"
     end
+    randomly_orient_proven_invertible_segment(segment_name)
+    self
+  end
+
+  def enforce_segment_single_edges(segment_name)
+    s = segment!(segment_name)
+    se = {}
+    l = {}
+    [:B, :E].each do |et|
+      se[et] = [s.name, et]
+      l[et] = links_of(se[et])
+    end
+    cs = connectivity_symbols(l[:B].size, l[:E].size)
+    if cs == [1, 1]
+      oe = {}
+      [:B, :E].each {|et| oe[et] = l[et][0].other_end(se[et])}
+      return if oe[:B] == oe[:E]
+      [:B, :E].each {|et| delete_other_links(oe[et], se[et])}
+    else
+      i = cs.index(1)
+      return if i.nil?
+      et = [:B, :E][i]
+      oe = l[et][0].other_end(se[et])
+      delete_other_links(oe, se[et])
+    end
+    self
+  end
+
+  def enforce_all_single_edges
+    segment_names.each {|sn| enforce_segment_single_edges(sn)}
+    self
   end
 
   private
+
+  def randomly_orient_proven_invertible_segment(segment_name)
+    parts = partitioned_links_of([segment_name, :E])
+    if parts.size == 2
+      tokeep1_other_end = parts[0][0].other_end([segment_name, :E])
+      tokeep2_other_end = parts[1][0].other_end([segment_name, :E])
+    elsif parts.size == 1 and parts[0].size == 2
+      tokeep1_other_end = parts[0][0].other_end([segment_name, :E])
+      tokeep2_other_end = parts[0][1].other_end([segment_name, :E])
+    else
+      return
+    end
+    return if links_of(tokeep1_other_end).size < 2
+    return if links_of(tokeep2_other_end).size < 2
+    delete_other_links([segment_name, :E], tokeep1_other_end)
+    delete_other_links([segment_name, :B], tokeep2_other_end)
+    annotate_random_orientation(segment_name)
+  end
 
   def compute_copy_names(copy_names, segment_name, factor)
     accepted = [:lowcase, :upcase, :number, :copy]
@@ -347,7 +378,8 @@ module GFA::Edit
     end.map {|sig, par| par}
   end
 
-  def annotate_random_orientation(segment)
+  def annotate_random_orientation(segment_name)
+    segment = segment!(segment_name)
     n = segment.name.split("_")
     pairs = 0
     pos = [1, segment.LN]
