@@ -140,7 +140,9 @@ module GFA::LineGetters
   # Calls +link+ and raises a +RuntimeError+ if no link was found.
   def link!(segment_end1, segment_end2)
     l = link(segment_end1, segment_end2)
-    raise "No link was found" if l.nil?
+    raise "No link was found: "+
+          "#{segment_end1.join(":")} -- "+
+          "#{segment_end2.join(":")}" if l.nil?
     l
   end
 
