@@ -192,17 +192,29 @@ module GFA::Traverse
     end.reverse.join("_")
   end
 
+  def reverse_segment_rn(segment)
+    return nil if segment.rn.nil?
+    l = segment.LN! + 1
+    segment.rn.map {|pos| l - pos}.reverse
+  end
+
   def add_segment_to_merged(merged, segment, reversed, cut, init)
     s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
     n = (reversed ? reverse_segment_name(segment.name) : segment.name)
+    rn = (reversed ? reverse_segment_rn(segment) : segment.rn)
     if init
       merged.sequence = s
       merged.name = n
       merged.LN = segment.LN
+      merged.rn = rn
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
       merged.name += "_#{n}"
+      if !rn.nil? and merged.LN
+        rn = rn.map {|pos| pos - cut + merged.LN}
+        merged.rn = merged.rn.nil? ? rn : merged.rn + rn
+      end
       (segment.LN and merged.LN) ? merged.LN += (segment.LN - cut)
                                  : merged.LN = nil
     end

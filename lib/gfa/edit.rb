@@ -110,7 +110,7 @@ module GFA::Edit
     self
   end
 
-  def select_random_orientation
+  def select_random_orientation(tag: :rn)
     segments.each do |s|
       if segment_same_links_both_ends?(s.name)
         parts = partitioned_links_of([s.name, :E])
@@ -128,6 +128,7 @@ module GFA::Edit
         delete_other_links([s.name, :E], tokeep1_other_end)
         delete_other_links([s.name, :B], tokeep2_other_end)
         rename_segment(s.name, "(#{s.name})")
+        annotate_random_orientation(s)
       end
     end
   end
@@ -345,6 +346,14 @@ module GFA::Edit
       sig = segment_signature(other_end)
       sig
     end.map {|sig, par| par}
+  end
+
+  def annotate_random_orientation(segment)
+    pos = [1, segment.LN]
+    rn = segment.rn
+    rn ||= []
+    rn += pos
+    segment.rn = rn
   end
 
 end
