@@ -350,6 +350,7 @@ module GFA::Edit
   def annotate_random_orientation(segment)
     n = segment.name.split("_")
     pairs = 0
+    pos = [1, segment.LN]
     if segment.or
       o = segment.or.split(",")
       if o.size > 2
@@ -359,8 +360,10 @@ module GFA::Edit
           o.shift
         end
       end
+      if segment.mp
+        pos = [segment.mp[pairs*2], segment.mp[-1-pairs*2]]
+      end
     end
-    pos = [1, segment.LN]
     rn = segment.rn
     rn ||= []
     rn += pos
