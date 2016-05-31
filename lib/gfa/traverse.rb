@@ -179,8 +179,8 @@ module GFA::Traverse
     return retval
   end
 
-  def reverse_segment_name(name)
-    name.split("_").map do |part|
+  def reverse_segment_name(name, separator)
+    name.split(separator).map do |part|
       openp = part[0] == "("
       part = part[1..-1] if openp
       closep = part[-1] == ")"
@@ -189,7 +189,7 @@ module GFA::Traverse
       part += ")" if openp
       part = "(#{part}" if closep
       part
-    end.reverse.join("_")
+    end.reverse.join(separator)
   end
 
   def reverse_segment_rn(segment)
@@ -200,13 +200,19 @@ module GFA::Traverse
 
   def add_segment_to_merged(merged, segment, reversed, cut, init)
     s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
-    n = (reversed ? reverse_segment_name(segment.name) : segment.name)
+    n = (reversed ? reverse_segment_name(segment.name, "_") : segment.name)
     rn = (reversed ? reverse_segment_rn(segment) : segment.rn)
+    if segment.or.nil?
+      o = n
+    else
+      o = (reversed ? reverse_segment_name(segment.or, ",") : segment.or)
+    end
     if init
       merged.sequence = s
       merged.name = n
       merged.LN = segment.LN
       merged.rn = rn
+      merged.or = o
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
@@ -217,6 +223,7 @@ module GFA::Traverse
       end
       (segment.LN and merged.LN) ? merged.LN += (segment.LN - cut)
                                  : merged.LN = nil
+      merged.or = merged.or.nil? ? o : "#{merged.or},#{o}"
     end
   end
 
