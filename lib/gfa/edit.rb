@@ -127,7 +127,6 @@ module GFA::Edit
         next if links_of(tokeep2_other_end).size < 2
         delete_other_links([s.name, :E], tokeep1_other_end)
         delete_other_links([s.name, :B], tokeep2_other_end)
-        rename_segment(s.name, "(#{s.name})")
         annotate_random_orientation(s)
       end
     end
@@ -349,11 +348,26 @@ module GFA::Edit
   end
 
   def annotate_random_orientation(segment)
+    n = segment.name.split("_")
+    pairs = 0
+    if segment.or
+      o = segment.or.split(",")
+      if o.size > 2
+        while o.last == o.first + "^" or o.last + "^" == o.first
+          pairs += 1
+          o.pop
+          o.shift
+        end
+      end
+    end
     pos = [1, segment.LN]
     rn = segment.rn
     rn ||= []
     rn += pos
     segment.rn = rn
+    n[pairs] = "(" + n[pairs]
+    n[-1-pairs] = n[-1-pairs] + ")"
+    rename_segment(segment.name, n.join("_"))
   end
 
 end
