@@ -125,12 +125,9 @@ module GFA::Edit
         end
         next if links_of(tokeep1_other_end).size < 2
         next if links_of(tokeep2_other_end).size < 2
-        STDERR.puts "Random orientation points: "+
-          "#{tokeep2_other_end.join(":")}"+
-          "-*-B:#{s.name}:E-*-"+
-          "#{tokeep1_other_end.join(":")}"
         delete_other_links([s.name, :E], tokeep1_other_end)
         delete_other_links([s.name, :B], tokeep2_other_end)
+        rename_segment(s.name, "(#{s.name})")
       end
     end
   end

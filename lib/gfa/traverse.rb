@@ -227,11 +227,14 @@ module GFA::Traverse
 
   def reverse_segment_name(name)
     name.split("_").map do |part|
-      if part[-1] == "^"
-        part[0..-2]
-      else
-        part + "^"
-      end
+      openp = part[0] == "("
+      part = part[1..-1] if openp
+      closep = part[-1] == ")"
+      part = part[0..-2] if closep
+      part = (part[-1] == "^") ? part[0..-2] : part+"^"
+      part += ")" if openp
+      part = "(#{part}" if closep
+      part
     end.reverse.join("_")
   end
 
