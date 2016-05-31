@@ -192,32 +192,32 @@ module GFA::Traverse
     end.reverse.join("_")
   end
 
+  def add_segment_to_merged(merged, segment, reversed, cut, init)
+    s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
+    n = (reversed ? reverse_segment_name(segment.name) : segment.name)
+    if init
+      merged.sequence = s
+      merged.name = n
+      merged.LN = segment.LN
+    else
+      (segment.sequence == "*") ? (merged.sequence = "*")
+                                : (merged.sequence += s)
+      merged.name += "_#{n}"
+      (segment.LN and merged.LN) ? merged.LN += (segment.LN - cut)
+                                 : merged.LN = nil
+    end
+  end
+
   def create_merged_segment(segpath)
     merged = segment!(segpath.first.first).clone
-    sequence = ""
-    ln = 0
     total_cut = 0
-    merged_name = ""
-    first_reversed = false
-    last_reversed = false
+    a = segpath[0]
+    first_reversed = (a[1] == :B)
+    last_reversed = nil
+    add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true)
     (segpath.size-1).times do |i|
-      a = segpath[i]
       b = other_segment_end(segpath[i+1])
       l = link!(a, b)
-      a_seg = segment!(a[0])
-      b_seg = segment!(b[0])
-      if i == 0
-        if a[1] == :E
-          merged_name += a_seg.name
-          sequence += a_seg.sequence
-        else
-          sequence += a_seg.sequence.rc
-          merged_name += reverse_segment_name(a_seg.name)
-          first_reversed = true
-        end
-        ln = a_seg.optional_fieldnames.include?(:LN) ? a_seg.LN : nil
-      end
-      sequence = "*" if b_seg.sequence == "*"
       if l.overlap == "*"
         cut = 0
       elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
@@ -226,35 +226,25 @@ module GFA::Traverse
         raise "Overlaps contaning other operations than M are not supported"
       end
       total_cut += cut
-      merged_name += "_"
-      if b[1] == :B
-        bseq = b_seg.sequence
-        merged_name += b_seg.name
-        last_reversed = false
-      else
-        bseq = b_seg.sequence.rc
-        merged_name += reverse_segment_name(b_seg.name)
-        last_reversed = true
-      end
-      if b_seg.optional_fieldnames.include?(:LN) and !ln.nil?
-        ln += (b_seg.LN - cut)
-      end
-      if sequence != "*"
-        if cut > 0 and sequence[(-cut)..-1] != bseq[0..(cut-1)]
-          raise "Inconsistent overlap"
-        end
-        sequence << bseq[cut..-1]
+      last_reversed = (b[1] == :E)
+      add_segment_to_merged(merged, segment!(b[0]), last_reversed, cut, false)
+      a = other_segment_end(b)
+    end
+    if merged.sequence != "*"
+      if merged.LN.nil?
+        merged.LN = merged.sequence.length
+      elsif merged.LN != merged.sequence.length
+        raise "Computed sequence length #{merged.sequence.length} "+
+              "and computed LN #{merged.LN} differ"
       end
     end
-    if !ln.nil? and ln != sequence.length
-      raise "Computed sequence length and computed LN differ"
-    end
-    ln = sequence.length if ln.nil?
-    merged.name = merged_name
-    merged.sequence = sequence
-    merged.LN = ln if merged.optional_fieldnames.include?(:LN)
-    sum_of_counts(segpath, ln.to_f/(total_cut+ln)).each do |count_tag, count|
-      merged.send(:"#{count_tag}=", count)
+    if merged.LN.nil?
+      [:KC, :RC, :FC].each {|count_tag| merged.send(:"#{count_tag}=", nil)}
+    else
+      sum_of_counts(segpath, merged.LN.to_f / (total_cut+merged.LN)).
+          each do |count_tag, count|
+        merged.send(:"#{count_tag}=", count)
+      end
     end
     return merged, first_reversed, last_reversed
   end
