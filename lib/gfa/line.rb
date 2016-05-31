@@ -96,6 +96,17 @@ class GFA::Line
     validate_optional_field!(optfield)
     @fields << optfield
     @fieldnames << sym
+    self
+  end
+
+  def rm_optfield(optfield_tag)
+    i = optional_fieldnames.index(optfield_tag.to_sym)
+    if !i.nil?
+      i += n_required_fields
+      @fieldnames.delete_at(i)
+      @fields.delete_at(i)
+    end
+    self
   end
 
   def <<(optfield)
@@ -103,14 +114,18 @@ class GFA::Line
   end
 
   def set_field(i, value)
-    if  i >= @fieldnames.size
+    if i >= @fieldnames.size
       raise ArgumentError, "Line does not have a field number #{i}"
     end
     if i < n_required_fields
       @fields[i] = value
       validate_required_field!(i)
     else
-      @fields[i].value = value
+      if value.nil?
+        rm_optfield(@fieldnames[i])
+      else
+        @fields[i].value = value
+      end
     end
   end
 
@@ -218,6 +233,7 @@ class GFA::Line
   end
 
   def auto_create_optfield(tagname, value)
+    return self if value.nil?
     self << GFA::Optfield.new_autotype(tagname, value)
   end
 
