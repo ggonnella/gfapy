@@ -192,16 +192,17 @@ module GFA::Traverse
     end.reverse.join(separator)
   end
 
-  def reverse_segment_rn(segment)
-    return nil if segment.rn.nil?
-    l = segment.LN! + 1
-    segment.rn.map {|pos| l - pos}.reverse
+  def reverse_pos_array(pos_array, lastpos)
+    return nil if pos_array.nil? or lastpos.nil?
+    pos_array.map {|pos| lastpos - pos + 1}.reverse
   end
 
   def add_segment_to_merged(merged, segment, reversed, cut, init)
     s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
     n = (reversed ? reverse_segment_name(segment.name, "_") : segment.name)
-    rn = (reversed ? reverse_segment_rn(segment) : segment.rn)
+    rn = (reversed ? reverse_pos_array(segment.rn, segment.LN) : segment.rn)
+    mp = (reversed ? reverse_pos_array(segment.mp, segment.LN) : segment.mp)
+    mp = [1, segment.LN] if mp.nil? and segment.LN
     if segment.or.nil?
       o = n
     else
@@ -213,16 +214,24 @@ module GFA::Traverse
       merged.LN = segment.LN
       merged.rn = rn
       merged.or = o
+      merged.mp = mp
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
       merged.name += "_#{n}"
-      if !rn.nil? and merged.LN
-        rn = rn.map {|pos| pos - cut + merged.LN}
-        merged.rn = merged.rn.nil? ? rn : merged.rn + rn
+      if merged.LN
+        if rn
+          rn = rn.map {|pos| pos - cut + merged.LN}
+          merged.rn = merged.rn.nil? ? rn : merged.rn + rn
+        end
+        if mp and merged.mp
+          merged.mp += mp.map {|pos| pos - cut + merged.LN}
+        end
+        segment.LN ? merged.LN += (segment.LN - cut)
+                   : merged.LN = nil
+      else
+        merged.mp = nil
       end
-      (segment.LN and merged.LN) ? merged.LN += (segment.LN - cut)
-                                 : merged.LN = nil
       merged.or = merged.or.nil? ? o : "#{merged.or},#{o}"
     end
   end
