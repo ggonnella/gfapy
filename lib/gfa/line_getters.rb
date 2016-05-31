@@ -111,6 +111,10 @@ module GFA::LineGetters
     links_of(segment_end).map {|l| l.other_end(segment_end) }
   end
 
+  def other_segment_end(segment_end)
+    [segment_end[0], segment_end[1] == :B ? :E : :B]
+  end
+
   def connected_segments(segment_name)
     (neighbours([segment_name, :B]).map{|s, e| s} +
       neighbours([segment_name, :E]).map{|s, e| s} +

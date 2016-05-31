@@ -281,10 +281,6 @@ module GFA::Traverse
     segpath.reverse.map {|segment_end| other_segment_end(segment_end)}
   end
 
-  def other_segment_end(segment_end)
-    [segment_end[0], segment_end[1] == :B ? :E : :B]
-  end
-
   def link_merged(merged_name, segment_end, reversed)
     links_of(segment_end).each do |l|
       l2 = l.clone
