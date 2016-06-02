@@ -106,27 +106,27 @@ class GFA
     cc = connected_components()
     cc.map!{|c|c.map{|sn|segment!(sn).LN!}.inject(:+)}
     if short
-      return "n=#{segments.size}\t"+
-             "e=#{links.size}\t"+
+      return "ns=#{segments.size}\t"+
+             "nl=#{links.size}\t"+
              "cc=#{cc.size}\t"+
              "de=#{nde}\t"+
-             "tln=#{tlen}\t"+
-             "n50=#{n50}"
+             "tl=#{tlen}\t"+
+             "50=#{n50}"
     end
     retval = []
-    retval << "Node count:               #{segments.size}"
-    retval << "Edge count:               #{links.size}"
-    retval << "Total length (bp):        #{tlen}"
-    retval << "Dead ends:                #{nde}"
-    retval << "Percentage dead ends:     #{pde}"
-    retval << "Connected components:     #{cc.size}"
-    retval << "Largest component (bp):   #{cc.last}"
-    retval << "N50 (bp):                 #{n50}"
-    retval << "Shortest node (bp):       #{q[0]}"
-    retval << "Lower quartile node (bp): #{q[1]}"
-    retval << "Median node (bp):         #{q[2]}"
-    retval << "Upper quartile node (bp): #{q[3]}"
-    retval << "Longest node (bp):        #{q[4]}"
+    retval << "Segment count:               #{segments.size}"
+    retval << "Links count:                 #{links.size}"
+    retval << "Total length (bp):           #{tlen}"
+    retval << "Dead ends:                   #{nde}"
+    retval << "Percentage dead ends:        #{pde}"
+    retval << "Connected components:        #{cc.size}"
+    retval << "Largest component (bp):      #{cc.last}"
+    retval << "N50 (bp):                    #{n50}"
+    retval << "Shortest segment (bp):       #{q[0]}"
+    retval << "Lower quartile segment (bp): #{q[1]}"
+    retval << "Median segment (bp):         #{q[2]}"
+    retval << "Upper quartile segment (bp): #{q[3]}"
+    retval << "Longest segment (bp):        #{q[4]}"
     return retval
   end
 
