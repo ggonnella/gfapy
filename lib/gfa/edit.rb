@@ -91,10 +91,19 @@ module GFA::Edit
     count.to_f/length
   end
 
-  def compute_copy_numbers(single_copy_coverage, count_tag: :RC, tag: :cn)
+  def compute_copy_numbers(single_copy_coverage,
+                           mincov: single_copy_coverage * 0.25,
+                           count_tag: :RC, tag: :cn)
     segments.each do |s|
-      s.send(:"#{tag}=", (s.coverage!(count_tag:
-               count_tag).to_f / single_copy_coverage).round)
+      cov = s.coverage!(count_tag: count_tag).to_f
+      if cov < mincov
+        cn = 0
+      elsif cov < single_copy_coverage
+        cn = 1
+      else
+        cn = (cov / single_copy_coverage).round
+      end
+      s.send(:"#{tag}=", cn)
     end
     self
   end
