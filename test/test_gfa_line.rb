@@ -214,16 +214,25 @@ class TestGFALine < Test::Unit::TestCase
                        {"XY"=>"Z"})
     assert_nothing_raised { l.zz="1" }
     assert_equal("1", l.zz)
+    assert_equal("Z", l.optfield(:zz).type)
     assert_nothing_raised { l.zi=1 }
     assert_equal(1, l.zi)
+    assert_equal("i", l.optfield(:zi).type)
     assert_nothing_raised { l.zf=1.0 }
     assert_equal(1.0, l.zf)
+    assert_equal("f", l.optfield(:zf).type)
     assert_nothing_raised { l.bf=[1.0,1.0] }
     assert_equal([1.0,1.0], l.bf)
+    assert_equal("B", l.optfield(:bf).type)
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
+    assert_equal("B", l.optfield(:bi).type)
     assert_nothing_raised { l.bz=[1.0,1] }
     assert_equal([1.0,1], l.bz)
+    assert_equal("J", l.optfield(:bz).type)
+    assert_nothing_raised { l.bh={:a => 1.0, :b => 1} }
+    assert_equal({"a"=>1.0,"b"=>1}, l.bh)
+    assert_equal("J", l.optfield(:bh).type)
     assert_raise(NoMethodError) { l.zzz="1" }
   end
 

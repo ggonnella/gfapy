@@ -109,6 +109,11 @@ class GFA::Line
     self
   end
 
+  def optfield(optfield_tag)
+    i = optional_fieldnames.index(optfield_tag.to_sym)
+    return i.nil? ? nil : @fields[i + n_required_fields]
+  end
+
   def <<(optfield)
     add_optfield(optfield)
   end
