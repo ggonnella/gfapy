@@ -3,14 +3,16 @@
 #
 module GFA::LineDestructors
 
-  def delete_segment(segment_name)
+  def delete_segment(segment_name, cascade=true)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
-    connected_segments(segment_name).each do |c|
-      unconnect_segments(segment_name, c)
+    if cascade
+      connected_segments(segment_name).each do |c|
+        unconnect_segments(segment_name, c)
+      end
+      @c.lines("P",segment_name).each {|pt| delete_path(pt.path_name)}
+      @c.delete_segment(segment_name)
     end
-    @c.lines("P",segment_name).each {|pt| delete_path(pt.path_name)}
-    @c.delete_segment(segment_name)
     @lines["S"][i] = nil
     @segment_names[i] = nil
     return self
