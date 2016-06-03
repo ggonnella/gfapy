@@ -19,7 +19,7 @@ class GFA::Line::Containment < GFA::Line
       :overlap => lambda {|e| e.cigar_operations} }
 
   OptfieldTypes = {
-     "RC" => "i", # Read Coverage
+     "MQ" => "i", # Mapping quality
      "NM" => "i", # Number of mismatches/gaps
     }
 
