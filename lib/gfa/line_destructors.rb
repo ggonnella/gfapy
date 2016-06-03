@@ -6,7 +6,6 @@ module GFA::LineDestructors
   def delete_segment(segment_name)
     i = @segment_names.index(segment_name)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
-    s = @lines["S"][i]
     connected_segments(segment_name).each do |c|
       unconnect_segments(segment_name, c)
     end
