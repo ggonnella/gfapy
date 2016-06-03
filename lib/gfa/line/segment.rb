@@ -30,6 +30,22 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
+  def length
+    if self.LN
+      self.LN
+    elsif sequence != "*"
+      sequence.length
+    else
+      nil
+    end
+  end
+
+  def length!
+    l = self.length()
+    raise "No length information available" if l.nil?
+    return l
+  end
+
   def coverage(count_tag: :RC)
     if optional_fieldnames.include?(count_tag) and
         optional_fieldnames.include?(:LN)
