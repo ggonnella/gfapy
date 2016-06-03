@@ -69,6 +69,8 @@ class GFA::Optfield
   #   - Float            => "f"
   #   - Array of Integer => "B"/"i,..."
   #   - Array of Float   => "B"/"f,..."
+  #   - other Array      => "J"
+  #   - Hash             => "J"
   #   - other            => "Z"
   #
   def self.new_autotype(tag, value)
@@ -81,7 +83,7 @@ class GFA::Optfield
   #   - +v-: the value to set; the value must be either a string which
   #   specifies the value in accordance to the +type+, or a value of a
   #   compatible type, e.g. Integer for "i" and "H", Float for "f", Array of
-  #   Integer or Float values for "B", String for "Z" and "A"
+  #   Integer or Float values for "B", String for "Z" and "A", Hash for "J"
   #
   def value=(v)
     @value = value_to_optfield_s(@type, v)
@@ -94,7 +96,7 @@ class GFA::Optfield
   #   - +cast+, if true, values are casted according to
   #             their type: "i" and "H" to Integer, "f" to Float,
   #             "B" to an Array of Integer or Float elements,
-  #             "Z" and "A" to strings, "J" are parsed using JSON::parse()
+  #             "Z" and "A" to strings, "J" are interpreted by JSON.parse()
   def value(cast = true)
     cast ? value_from_optfield_s(@type, @value) : @value
   end
@@ -123,14 +125,16 @@ class GFA::Optfield
     elsif value.kind_of? Array and value.all?{|i|i.kind_of? Float}
       type = "B"
       value.unshift("f")
-    elsif value.respond_to?(:to_json)
+    elsif value.kind_of? Array or value.kind_of? Hash
       type = "J"
     end
     return type
   end
 
   def value_to_optfield_s(type, v)
-    if type == "J"
+    if type == "J" and v.kind_of?(Hash)
+      return v.to_json
+    elsif type == "J" and v.kind_of?(Array)
       return v.to_json
     elsif type == "H" and v.kind_of?(Integer)
       return v.to_s(16).upcase

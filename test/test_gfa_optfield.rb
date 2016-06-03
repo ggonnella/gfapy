@@ -32,6 +32,9 @@ class TestGFAOptfield < Test::Unit::TestCase
     o = GFA::Optfield.new("AA","B","f,1.2,1.2,1.2")
     assert_equal([1.2,1.2,1.2], o.value)
     assert_equal("f,1.2,1.2,1.2", o.value(false))
+    o = GFA::Optfield.new("AA","J","{\"1\":2}")
+    assert_equal({"1" => 2}, o.value)
+    assert_equal("{\"1\":2}", o.value(false))
   end
 
   def test_from_s
@@ -86,13 +89,17 @@ class TestGFAOptfield < Test::Unit::TestCase
     assert_equal(27, o.value)
     assert_equal("1B", o.value(false))
     o = GFA::Optfield.new("AA","B","c,12,12")
-    o.value = [13,13,13]
+    assert_nothing_raised { o.value = [13,13,13] }
     assert_equal([13,13,13],o.value)
     assert_equal("i,13,13,13",o.value(false))
-    o.value = [1.3,1.3,1.3]
+    assert_nothing_raised { o.value = [1.3,1.3,1.3] }
     assert_equal([1.3,1.3,1.3],o.value)
     assert_equal("f,1.3,1.3,1.3",o.value(false))
     assert_raise(GFA::Optfield::ValueError) { o.value = [13,1.3,1.3] }
+    o = GFA::Optfield.new("AA","J","{\"A\":12}")
+    assert_nothing_raised { o.value = {} }
+    assert_equal({}, o.value)
+    assert_equal("{}", o.value(false))
   end
 
   def test_set_invalid_value

@@ -227,9 +227,9 @@ class TestGFALine < Test::Unit::TestCase
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
     assert_equal("B", l.optfield(:bi).type)
-    assert_nothing_raised { l.bz=[1.0,1] }
-    assert_equal([1.0,1], l.bz)
-    assert_equal("J", l.optfield(:bz).type)
+    assert_nothing_raised { l.ba=[1.0,1] }
+    assert_equal([1.0,1], l.ba)
+    assert_equal("J", l.optfield(:ba).type)
     assert_nothing_raised { l.bh={:a => 1.0, :b => 1} }
     assert_equal({"a"=>1.0,"b"=>1}, l.bh)
     assert_equal("J", l.optfield(:bh).type)
