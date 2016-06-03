@@ -23,6 +23,8 @@
 #
 class GFA::Optfield
 
+  require "json"
+
   attr_reader :tag, :type
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#optional-fields
@@ -89,9 +91,10 @@ class GFA::Optfield
   # Get the +value+ of the GFA::Optfield.
   #
   # *Arguments*:
-  #   - +cast+, if true, non "Z" and "A" values are casted according to
-  #             their type: "i" and "H" to Integer, "f" to Float and
-  #             "B" to an Array of Integer or Float elements
+  #   - +cast+, if true, values are casted according to
+  #             their type: "i" and "H" to Integer, "f" to Float,
+  #             "B" to an Array of Integer or Float elements,
+  #             "Z" and "A" to strings, "J" are parsed using JSON::parse()
   def value(cast = true)
     cast ? value_from_optfield_s(@type, @value) : @value
   end
@@ -112,21 +115,24 @@ class GFA::Optfield
       type = "i"
     elsif value.kind_of? Float
       type = "f"
-    elsif value.kind_of? Array
+    elsif value.kind_of? String or value.kind_of? Symbol
+      type = "Z"
+    elsif value.kind_of? Array and value.all?{|i|i.kind_of? Integer}
       type = "B"
-      if value.all?{|i|i.kind_of? Integer}
-        value.unshift("i")
-      elsif value.all?{|i|i.kind_of? Float}
-        value.unshift("f")
-      else
-        type = "Z"
-      end
+      value.unshift("i")
+    elsif value.kind_of? Array and value.all?{|i|i.kind_of? Float}
+      type = "B"
+      value.unshift("f")
+    elsif value.respond_to?(:to_json)
+      type = "J"
     end
     return type
   end
 
   def value_to_optfield_s(type, v)
-    if type == "H" and v.kind_of?(Integer)
+    if type == "J"
+      return v.to_json
+    elsif type == "H" and v.kind_of?(Integer)
       return v.to_s(16).upcase
     elsif type == "B" and v.kind_of?(Array)
       if v.all?{|i|i.kind_of?(Integer)}
@@ -152,6 +158,8 @@ class GFA::Optfield
       return v.to_f
     when "H"
       return v.to_i(16)
+    when "J"
+      return JSON.parse(v)
     when "B"
       elems = v.split(",")
       etype = elems.shift
@@ -181,6 +189,7 @@ class GFA::Optfield
         "Value invalid for type #@type: '#@value'"
     end
     validate_B_values_range! if @type == "B"
+    validate_json! if @type == "J"
   end
 
   def validate_B_values_range!
@@ -204,6 +213,10 @@ class GFA::Optfield
         end
       end
     end
+  end
+
+  def validate_json!
+    JSON.parse(@value)
   end
 
 end

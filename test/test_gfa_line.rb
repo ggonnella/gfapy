@@ -223,7 +223,7 @@ class TestGFALine < Test::Unit::TestCase
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
     assert_nothing_raised { l.bz=[1.0,1] }
-    assert_equal("1.0,1", l.bz)
+    assert_equal([1.0,1], l.bz)
     assert_raise(NoMethodError) { l.zzz="1" }
   end
 
