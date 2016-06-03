@@ -199,40 +199,18 @@ module GFA::Traverse
 
   def add_segment_to_merged(merged, segment, reversed, cut, init)
     s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
-    n = (reversed ? reverse_segment_name(segment.name, "_") : segment.name)
-    rn = (reversed ? reverse_pos_array(segment.rn, segment.LN) : segment.rn)
-    mp = (reversed ? reverse_pos_array(segment.mp, segment.LN) : segment.mp)
-    mp = [1, segment.LN] if mp.nil? and segment.LN
-    if segment.or.nil?
-      o = n
-    else
-      o = (reversed ? reverse_segment_name(segment.or, ",") : segment.or)
-    end
     if init
       merged.sequence = s
-      merged.name = n
+      merged.name = segment.name
       merged.LN = segment.LN
-      merged.rn = rn
-      merged.or = o
-      merged.mp = mp
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
-      merged.name += "_#{n}"
+      merged.name += "_#{segment.name}"
       if merged.LN
-        if rn
-          rn = rn.map {|pos| pos - cut + merged.LN}
-          merged.rn = merged.rn.nil? ? rn : merged.rn + rn
-        end
-        if mp and merged.mp
-          merged.mp += mp.map {|pos| pos - cut + merged.LN}
-        end
         segment.LN ? merged.LN += (segment.LN - cut)
                    : merged.LN = nil
-      else
-        merged.mp = nil
       end
-      merged.or = merged.or.nil? ? o : "#{merged.or},#{o}"
     end
   end
 

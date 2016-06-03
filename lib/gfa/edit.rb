@@ -40,30 +40,20 @@ module GFA::Edit
     self
   end
 
-  def multiply_segment(segment_name, factor, copy_names: :lowcase,
-                       links_distribution_policy: :auto,
-                       origin_tag: :or)
+  def multiply_segment(segment_name, factor, copy_names: :lowcase)
     if factor < 2
       return factor == 1 ? self : delete_segment(segment_name)
     end
     s = segment(segment_name)
-    s.send(:"#{origin_tag}=", s.name) if !s.send(origin_tag)
     divide_segment_and_connection_counts(s, factor)
     copy_names = compute_copy_names(copy_names, segment_name, factor)
     copy_names.each {|cn| clone_segment_and_connections(s, cn)}
-    distribute_links(links_distribution_policy, segment_name, copy_names,
-                     factor)
     return self
   end
 
-  def duplicate_segment(segment_name, copy_name: :lowcase,
-                       links_distribution_policy: :auto,
-                       origin_tag: :or)
+  def duplicate_segment(segment_name, copy_name: :lowcase)
     multiply_segment(segment_name, 2,
-                     copy_names:
-                       copy_name.kind_of?(String) ? [copy_name] : copy_name,
-                     links_distribution_policy: links_distribution_policy,
-                     origin_tag: origin_tag)
+             copy_names: copy_name.kind_of?(String) ? [copy_name] : copy_name)
   end
 
   def mean_coverage(segment_names, count_tag: :RC)
@@ -74,7 +64,14 @@ module GFA::Edit
       c = s.send(count_tag)
       raise "Tag #{count_tag} not available for segment #{s.name}" if c.nil?
       l = s.LN
-      raise "Tag LN not available for segment #{s.name}" if l.nil?
+      if l.nil?
+        if s.sequence != "*"
+          l = s.sequence.size
+        else
+          raise "Sequence is empty and tag LN is not available:\n"+
+            "Cannot compute coverage for segment #{s.name}"
+        end
+      end
       count += c
       length += l
     end
@@ -84,6 +81,7 @@ module GFA::Edit
   private
 
   def compute_copy_names(copy_names, segment_name, factor)
+    return nil if factor < 2
     accepted = [:lowcase, :upcase, :number, :copy]
     if copy_names.kind_of?(Array)
       return copy_names
@@ -169,57 +167,6 @@ module GFA::Edit
           lc.send(:"#{dir}=", clone_name)
           self << lc
         end
-      end
-    end
-  end
-
-  def select_distribute_end(links_distribution_policy, segment_name, factor)
-    accepted = [:off, :auto, :equal, :E, :B]
-    if !accepted.include?(links_distribution_policy)
-      raise "Unknown links_distribution_policy, accepted values are: "+
-        accepted.inspect
-    end
-    return nil if links_distribution_policy == :off
-    if [:B, :E].include?(links_distribution_policy)
-      return links_distribution_policy
-    end
-    esize = links_of([segment_name, :E]).size
-    bsize = links_of([segment_name, :B]).size
-    if esize == factor
-      return :E
-    elsif bsize == factor
-      return :B
-    elsif links_distribution_policy == :equal
-      return nil
-    elsif esize < 2
-      return (bsize < 2) ? nil : :B
-    elsif bsize < 2
-      return :E
-    elsif esize < factor
-      return ((bsize <= esize) ? :E :
-        ((bsize < factor) ? :B : :E))
-    elsif bsize < factor
-      return :B
-    else
-      return ((bsize <= esize) ? :B : :E)
-    end
-  end
-
-  def distribute_links(links_distribution_policy, segment_name,
-                       copy_names, factor)
-    end_type = select_distribute_end(links_distribution_policy,
-                                     segment_name, factor)
-    return nil if end_type.nil?
-    et_links = links_of([segment_name, end_type])
-    diff = [et_links.size - factor, 0].max
-    links_signatures = et_links.map do |l|
-      l.other_end([segment_name, end_type]).join
-    end
-    ([segment_name]+copy_names).each_with_index do |sn, i|
-      links_of([sn, end_type]).each do |l|
-        l_sig = l.other_end([sn, end_type]).join
-        to_save = links_signatures[i..i+diff].to_a
-        delete_link_line(l) unless to_save.include?(l_sig)
       end
     end
   end
