@@ -17,26 +17,38 @@ module GFA::Edit
     self
   end
 
-  def rename_segment(segment_name, new_name)
+  def rename(old_name, new_name)
     validate_segment_and_path_name_unique!(new_name)
-    s = segment!(segment_name)
-    s.name = new_name
-    i = @segment_names.index(segment_name)
-    @segment_names[i] = new_name
-    ["L","C"].each do |rt|
-      [:from,:to].each do |dir|
-        @c.lines(rt, segment_name, dir).each do |l|
-          l.send(:"#{dir}=", new_name)
+    is_path = @path_names.include?(old_name)
+    is_segment = @segment_names.include?(old_name)
+    if !is_path and !is_segment
+      raise "#{old_name} is not a path or segment name"
+    end
+    if is_segment
+      s = segment!(old_name)
+      s.name = new_name
+      i = @segment_names.index(old_name)
+      @segment_names[i] = new_name
+      ["L","C"].each do |rt|
+        [:from,:to].each do |dir|
+          @c.lines(rt, old_name, dir).each do |l|
+            l.send(:"#{dir}=", new_name)
+          end
         end
       end
+      paths_with(old_name).each do |l|
+        l.segment_names = l.segment_names.map do |sn, o|
+          sn = new_name if sn == old_name
+          [sn, o].join("")
+        end.join(",")
+      end
+      @c.rename_segment(old_name, new_name)
+    else
+      pt = path!(old_name)
+      i = @path_names.index(old_name)
+      pt.name = new_name
+      @path_names[i] = new_name
     end
-    paths_with(segment_name).each do |l|
-      l.segment_names = l.segment_names.map do |sn, o|
-        sn = new_name if sn == segment_name
-        [sn, o].join("")
-      end.join(",")
-    end
-    @c.rename_segment(segment_name, new_name)
     self
   end
 
