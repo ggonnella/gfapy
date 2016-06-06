@@ -18,6 +18,55 @@ module GFA::LineDestructors
     return self
   end
 
+  def rm(x, *args)
+    if x.kind_of?(GFA::Line)
+      raise "One argument required if first GFA::Line" if !args.empty?
+      case x.record_type
+      when "H" then raise "Cannot remove single header lines"
+      when "S" then delete_segment_line(x)
+      when "L" then delete_link_line(x)
+      when "P" then delete_path_line(x)
+      when "C" then delete_containment_line(x)
+      end
+    elsif x.kind_of?(Symbol)
+      case x
+      when :sequences
+        raise "One argument required if first #{x.inspect}" if !args.empty?
+        delete_sequences
+      when :headers
+        raise "One argument required if first #{x.inspect}" if !args.empty?
+        delete_headers
+      when :alignments
+        raise "One argument required if first #{x.inspect}" if !args.empty?
+        delete_alignments
+      else
+        if gfa.respond_to?(x)
+          gfa.rm(gfa.send(x, *args))
+        else
+          raise "Cannot remove #{x.inspect}"
+        end
+      end
+    elsif x.kind_of?(String) and @segment_names.include(x)
+      if args.empty?
+        delete_segment(x)
+      elsif args.size != 3
+        raise "1 or 3 arguments required if first segment name"
+      else
+        delete_containments_or_links("C", x, args[0], args[1], args[2],
+                                     nil, false)
+        delete_containments_or_links("L", x, args[0], args[1], args[2],
+                                     nil, false)
+      end
+    elsif x.kind_of?(String) and @path_names.include(x)
+      raise "One argument required if first path name" if !args.empty?
+      delete_path(x)
+    elsif x.kind_of?(Array)
+      x.each {|elem| gfa.rm(elem, *args)}
+    else
+      raise "Cannot remove #{x.inspect}"
+    end
+  end
+
   def unconnect_segments(from, to)
     delete_containments_or_links("C", from, nil, to, nil, nil, false)
     delete_containments_or_links("L", from, nil, to, nil, nil, false)
