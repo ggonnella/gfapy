@@ -35,7 +35,7 @@ module GFA::Traverse
   #
   # *Returns*:
   #   - an array of segment names
-  def unbranched_segpath(segment_name, exclude = Set.new)
+  def linear_path(segment_name, exclude = Set.new)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     cs = connectivity(segment_name)
     segpath = []
@@ -43,26 +43,26 @@ module GFA::Traverse
       if cs[i] == 1
         exclude << segment_name
         segpath.pop
-        segpath += traverse_unbranched([segment_name, et], exclude)
+        segpath += traverse_linear_path([segment_name, et], exclude)
       end
     end
     return (segpath.size < 2) ? nil : segpath
   end
 
   # Find all unbranched paths of segments connected by links in the graph.
-  def unbranched_segpaths
+  def linear_paths
     exclude = Set.new
     paths = []
     @segment_names.each_with_index do |sn, i|
       next if exclude.include?(sn)
-      paths << unbranched_segpath(sn, exclude)
+      paths << linear_path(sn, exclude)
     end
     return paths.compact
   end
 
   # limitations:
   # - all containments und paths involving merged segments are deleted
-  def merge_unbranched_segpath(segpath)
+  def merge_linear_path(segpath)
     raise if segpath.size < 2
     raise if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
     merged, first_reversed, last_reversed = create_merged_segment(segpath)
@@ -73,9 +73,9 @@ module GFA::Traverse
     self
   end
 
-  def merge_all_unbranched_segpaths
-    paths = unbranched_segpaths
-    paths.each {|path| merge_unbranched_segpath(path)}
+  def merge_linear_paths
+    paths = linear_paths
+    paths.each {|path| merge_linear_path(path)}
     self
   end
 
@@ -141,7 +141,7 @@ module GFA::Traverse
   #     If +from+ is not an element of an unbranched path then [].
   #     Otherwise the first (and possibly only) element is +from+.
   #     All elements in the index range 1..-2 are :internal.
-  def traverse_unbranched(segment_end, exclude)
+  def traverse_linear_path(segment_end, exclude)
     list = []
     current = segment_end
     loop do
