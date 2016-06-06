@@ -62,6 +62,8 @@ module GFA::LineDestructors
       delete_path(x)
     elsif x.kind_of?(Array)
       x.each {|elem| gfa.rm(elem, *args)}
+    elsif x.nil?
+      return nil
     else
       raise "Cannot remove #{x.inspect}"
     end
