@@ -45,16 +45,19 @@ module GFA::LineGetters
 
   # Find path lines whose +segment_names+ include segment +segment_name+
   def paths_with(segment_name)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("P",segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
   def contained_in(segment_name)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
   def containing(segment_name)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("C", segment_name, :to)
   end
 
@@ -116,6 +119,7 @@ module GFA::LineGetters
   end
 
   def connected_segments(segment_name)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     (neighbours([segment_name, :B]).map{|s, e| s} +
       neighbours([segment_name, :E]).map{|s, e| s} +
         contained_in(segment_name).map{|c| c.to} +

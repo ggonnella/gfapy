@@ -53,6 +53,7 @@ module GFA::Edit
   end
 
   def multiply(segment_name, factor, copy_names: :lowcase)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     if factor < 2
       return factor == 1 ? self : delete_segment(segment_name)
     end

@@ -20,6 +20,7 @@ module GFA::Traverse
   #      - e = :M if en > 1, otherwise en
   #
   def connectivity(segment_name, reverse_complement = false)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     ends = [:B, :E]
     ends.reverse! if reverse_complement
     connectivity_symbols(links_of([segment_name, ends.first]).size,
@@ -35,6 +36,7 @@ module GFA::Traverse
   # *Returns*:
   #   - an array of segment names
   def unbranched_segpath(segment_name, exclude = Set.new)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     cs = connectivity(segment_name)
     segpath = []
     [:B, :E].each_with_index do |et, i|
