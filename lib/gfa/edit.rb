@@ -52,19 +52,19 @@ module GFA::Edit
     self
   end
 
-  def multiply_segment(segment_name, factor, copy_names: :lowcase)
+  def multiply(segment_name, factor, copy_names: :lowcase)
     if factor < 2
       return factor == 1 ? self : delete_segment(segment_name)
     end
-    s = segment(segment_name)
+    s = segment!(segment_name)
     divide_segment_and_connection_counts(s, factor)
     copy_names = compute_copy_names(copy_names, segment_name, factor)
     copy_names.each {|cn| clone_segment_and_connections(s, cn)}
     return self
   end
 
-  def duplicate_segment(segment_name, copy_name: :lowcase)
-    multiply_segment(segment_name, 2,
+  def duplicate(segment_name, copy_name: :lowcase)
+    multiply(segment_name, 2,
              copy_names: copy_name.kind_of?(String) ? [copy_name] : copy_name)
   end
 
