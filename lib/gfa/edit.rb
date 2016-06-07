@@ -52,10 +52,13 @@ module GFA::Edit
     self
   end
 
-  def multiply(segment_name, factor, copy_names: :lowcase)
+  def multiply(segment_name, factor, copy_names: :lowcase,
+               conserve_components: true)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     if factor < 2
-      return factor == 1 ? self : delete_segment(segment_name)
+      return self if factor == 1
+      return self if cut_segment?(segment_name) and conserve_components
+      return delete_segment(segment_name)
     end
     s = segment!(segment_name)
     divide_segment_and_connection_counts(s, factor)
