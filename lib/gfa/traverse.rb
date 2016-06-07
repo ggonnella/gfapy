@@ -82,7 +82,7 @@ module GFA::Traverse
   def connected_components
     visited = Set.new
     components = []
-    segments.map(&:name).each do |sn|
+    segment_names.each do |sn|
       if visited.include?(sn)
         next
       else
@@ -94,6 +94,17 @@ module GFA::Traverse
       end
     end
     return components
+  end
+
+  def split_connected_components
+    retval = []
+    ccs = connected_components
+    ccs.each do |cc|
+      gfa2 = self.clone
+      gfa2.rm(gfa2.segment_names - cc)
+      retval << gfa2
+    end
+    return retval
   end
 
   private
