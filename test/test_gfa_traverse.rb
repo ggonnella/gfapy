@@ -81,8 +81,8 @@ class TestGFATraverse < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_linear_paths }
-    assert_equal(4, gfa.segments.size)
-    assert_equal(["0", "1", "2", "3"], gfa.segments.map(&:name))
+    assert_equal(3, gfa.segments.size)
+    assert_equal(["0", "1", "2_3"], gfa.segments.map(&:name))
   end
 
   def test_linear_path_merge_example1
