@@ -79,19 +79,35 @@ module GFA::Traverse
     self
   end
 
+  def separating?(segment_name)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+    cn = connectivity(segment_name)
+    return false if [[0,0],[0,1],[1,0]].include?(cn)
+    c = {}
+    [:B, :E].each do |et|
+      c[et] = Set.new
+      visited = Set.new
+      visited << segment_name
+      traverse_component([segment_name, et], c[et], visited)
+    end
+    return c[:B] != c[:E]
+  end
+
+  def segment_connected_component(segment_name, visited = Set.new)
+    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+    visited << segment_name
+    c = [segment_name]
+    traverse_component([segment_name, :B], c, visited)
+    traverse_component([segment_name, :E], c, visited)
+    return c
+  end
+
   def connected_components
-    visited = Set.new
     components = []
+    visited = Set.new
     segment_names.each do |sn|
-      if visited.include?(sn)
-        next
-      else
-        visited << sn
-        c = [sn]
-        traverse_component([sn, :B], c, visited)
-        traverse_component([sn, :E], c, visited)
-        components << c
-      end
+      next if visited.include?(sn)
+      components << segment_connected_component(sn, visited)
     end
     return components
   end
@@ -113,14 +129,11 @@ module GFA::Traverse
     links_of(segment_end).each do |l|
       oe = l.other_end(segment_end)
       sn = oe[0]
-      if visited.include?(sn)
-        next
-      else
-        visited << sn
-        c << sn
-        traverse_component([sn, :B], c, visited)
-        traverse_component([sn, :E], c, visited)
-      end
+      next if visited.include?(sn)
+      visited << sn
+      c << sn
+      traverse_component([sn, :B], c, visited)
+      traverse_component([sn, :E], c, visited)
     end
   end
 
