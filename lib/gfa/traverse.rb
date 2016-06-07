@@ -93,14 +93,20 @@ module GFA::Traverse
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     cn = connectivity(segment_name)
     return false if [[0,0],[0,1],[1,0]].include?(cn)
-    c = {}
+    start_points = []
     [:B, :E].each do |et|
-      c[et] = Set.new
+      start_points += links_of([segment_name, et]).map do |l|
+        l.other_end([segment_name, et])
+      end
+    end
+    cc = []
+    start_points.uniq.each do |start_point|
+      cc << Set.new
       visited = Set.new
       visited << segment_name
-      traverse_component([segment_name, et], c[et], visited)
+      traverse_component(start_point, cc.last, visited)
     end
-    return c[:B] != c[:E]
+    return cc.any?{|c|c != cc[0]}
   end
 
   def segment_connected_component(segment_name, visited = Set.new)
