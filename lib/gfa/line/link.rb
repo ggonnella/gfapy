@@ -24,11 +24,12 @@ class GFA::Line::Link < GFA::Line
      "KC" => "i"  # k-mer count
     }
 
-  def initialize(fields)
+  def initialize(fields, validate: true)
     super(fields,
           GFA::Line::Link::FieldRegexp,
           GFA::Line::Link::OptfieldTypes,
-          GFA::Line::Link::FieldCast)
+          GFA::Line::Link::FieldCast,
+          validate: validate)
   end
 
   include GFA::SegmentReferences

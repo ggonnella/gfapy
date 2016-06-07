@@ -10,9 +10,9 @@ class GFA::Line::Header < GFA::Line
      "VN" => "Z", # Version number
     }
 
-  def initialize(fields)
+  def initialize(fields, validate: true)
     super(fields, GFA::Line::Header::FieldRegexp,
-          GFA::Line::Header::OptfieldTypes)
+          GFA::Line::Header::OptfieldTypes, validate: validate)
   end
 
 end

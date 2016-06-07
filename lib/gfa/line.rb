@@ -46,14 +46,16 @@ class GFA::Line
   def initialize(fields,
                  reqfield_definitions,
                  optfield_types,
-                 reqfield_cast = {})
+                 reqfield_cast = {},
+                 validate: true)
     @reqfield_definitions = reqfield_definitions
     @optfield_types = optfield_types
     @reqfield_cast = reqfield_cast
     @fields = fields
     @fieldnames = []
+    @validate = validate
     initialize_required_fields
-    self.class.validate_record_type!(self.record_type)
+    self.class.validate_record_type!(self.record_type) if @validate
     initialize_optional_fields
   end
 
@@ -87,13 +89,13 @@ class GFA::Line
         "The argument must be a string representing "+
         "an optional field or an GFA::Optfield instance"
     end
-    optfield = optfield.to_gfa_optfield
+    optfield = optfield.to_gfa_optfield(validate: @validate)
     sym = optfield.tag.to_sym
     if @fieldnames[n_required_fields..-1].include?(sym)
       raise GFA::Line::DuplicateOptfieldNameError,
         "Optional tag '#{optfield.tag}' exists more than once"
     end
-    validate_optional_field!(optfield)
+    validate_optional_field!(optfield) if @validate
     @fields << optfield
     @fieldnames << sym
     self
@@ -124,7 +126,7 @@ class GFA::Line
     end
     if i < n_required_fields
       @fields[i] = value
-      validate_required_field!(i)
+      validate_required_field!(i) if @validate
     else
       if value.nil?
         rm_optfield(@fieldnames[i])
@@ -177,7 +179,7 @@ class GFA::Line
     return retval
   end
 
-  def to_gfa_line
+  def to_gfa_line(validate: true)
     self
   end
 
@@ -209,17 +211,17 @@ class GFA::Line
   end
 
   def initialize_required_fields
-    validate_reqfield_definitions!
+    validate_reqfield_definitions! if @validate
     @fieldnames += @reqfield_definitions.map{|name,re| name.to_sym}
-    validate_required_fields!
+    validate_required_fields! if @validate
   end
 
   def initialize_optional_fields
-    validate_optfield_types!
+    validate_optfield_types! if @validate
     if @fields.size > n_required_fields
       optfields = @fields[n_required_fields..-1].dup
       @fields = @fields[0..(n_required_fields-1)]
-      optfields.each { |f| self << f.to_gfa_optfield }
+      optfields.each { |f| self << f.to_gfa_optfield(validate: @validate) }
     end
   end
 
@@ -237,9 +239,9 @@ class GFA::Line
     return ms, var, i
   end
 
-  def auto_create_optfield(tagname, value)
+  def auto_create_optfield(tagname, value, validate: @validate)
     return self if value.nil?
-    self << GFA::Optfield.new_autotype(tagname, value)
+    self << GFA::Optfield.new_autotype(tagname, value, validate: validate)
   end
 
   def validate_reqfield_definitions!
@@ -357,11 +359,12 @@ end
 #
 class String
 
-  def to_gfa_line
+  def to_gfa_line(validate: true)
     components = split(GFA::Line::Separator)
     record_type = components[0]
-    GFA::Line.validate_record_type!(record_type)
-    eval(GFA::Line::RecordTypes[record_type]).new(split(GFA::Line::Separator))
+    GFA::Line.validate_record_type!(record_type) unless !validate
+    eval(GFA::Line::RecordTypes[record_type]).new(split(GFA::Line::Separator),
+                                                  validate: validate)
   end
 
 end

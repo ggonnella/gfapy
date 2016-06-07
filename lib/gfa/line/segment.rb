@@ -15,10 +15,10 @@ class GFA::Line::Segment < GFA::Line
      "KC" => "i", # k-mer count
     }
 
-  def initialize(fields)
+  def initialize(fields, validate: true)
     super(fields, GFA::Line::Segment::FieldRegexp,
-          GFA::Line::Segment::OptfieldTypes)
-    validate_length!
+          GFA::Line::Segment::OptfieldTypes, validate: validate)
+    validate_length! if validate
   end
 
   def validate_length!

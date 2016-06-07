@@ -4,7 +4,7 @@
 module GFA::LineCreators
 
   def <<(gfa_line)
-    gfa_line = gfa_line.to_gfa_line
+    gfa_line = gfa_line.to_gfa_line(validate: @validate)
     rt = gfa_line.record_type
     case rt
     when "H"
@@ -64,7 +64,7 @@ module GFA::LineCreators
 
   def add_segment(gfa_line)
     @lines["S"] << gfa_line
-    validate_segment_and_path_name_unique!(gfa_line.name)
+    validate_segment_and_path_name_unique!(gfa_line.name) if @validate
     @segment_names << gfa_line.name
   end
 
@@ -80,7 +80,7 @@ module GFA::LineCreators
 
   def add_path(gfa_line)
     @lines["P"] << gfa_line
-    validate_segment_and_path_name_unique!(gfa_line.path_name)
+    validate_segment_and_path_name_unique!(gfa_line.path_name) if @validate
     @path_names << gfa_line.path_name
     gfa_line.segment_names.each do |sn, o|
       segment!(sn) if @segments_first_order

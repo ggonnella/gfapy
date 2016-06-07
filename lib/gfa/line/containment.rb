@@ -23,11 +23,12 @@ class GFA::Line::Containment < GFA::Line
      "NM" => "i", # Number of mismatches/gaps
     }
 
-  def initialize(fields)
+  def initialize(fields, validate: true)
     super(fields,
           GFA::Line::Containment::FieldRegexp,
           GFA::Line::Containment::OptfieldTypes,
-          GFA::Line::Containment::FieldCast)
+          GFA::Line::Containment::FieldCast,
+          validate: validate)
   end
 
   include GFA::SegmentReferences

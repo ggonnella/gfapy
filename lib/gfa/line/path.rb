@@ -22,10 +22,11 @@ class GFA::Line::Path < GFA::Line
 
   OptfieldTypes = {}
 
-  def initialize(fields)
+  def initialize(fields, validate: true)
     super(fields, GFA::Line::Path::FieldRegexp,
           GFA::Line::Path::OptfieldTypes,
-          GFA::Line::Path::FieldCast)
+          GFA::Line::Path::FieldCast,
+          validate: validate)
   end
 
   private

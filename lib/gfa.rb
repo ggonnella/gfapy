@@ -9,6 +9,7 @@ require_relative "./gfa/line_creators.rb"
 require_relative "./gfa/line_destructors.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/traverse.rb"
+require_relative "./gfa/logger.rb"
 
 #
 # A representation of the GFA graph.
@@ -36,6 +37,7 @@ class GFA
   include GFA::LineDestructors
   include GFA::Edit
   include GFA::Traverse
+  include GFA::Logger
 
   def initialize(segments_first_order: false)
     @lines = {}
@@ -44,6 +46,8 @@ class GFA
     @path_names = []
     @c = GFA::ConnectionInfo.new(@lines)
     @segments_first_order = segments_first_order
+    @validate = true
+    @progress = false
   end
 
   # List all names of segments in the graph
@@ -54,6 +58,10 @@ class GFA
   # List all names of path lines in the graph
   def path_names
     @path_names.compact
+  end
+
+  def turn_off_validations
+    @validate = false
   end
 
   def validate!
@@ -85,11 +93,26 @@ class GFA
     to_s.to_gfa(validate: false)
   end
 
+  def read_file(filename, validate: @validate)
+    if @progress
+      linecount = `wc -l #{filename}`.strip.split(" ")[0].to_i
+      progress_log_init(:read_file, "lines", linecount,
+                        "Parse file with #{linecount} lines")
+    end
+    i = 0
+    File.foreach(filename) do |line|
+      self << line.chomp
+      progress_log(:read_file) if @progress
+      i += 1
+    end
+    validate! if validate
+    self
+  end
+
   # Creats a GFA instance reading from file with specified +filename+
   def self.from_file(filename, validate: true)
     gfa = GFA.new
-    File.foreach(filename) {|line| gfa << line.chomp}
-    gfa.validate! if validate
+    gfa.read_file(filename, validate: validate)
     return gfa
   end
 

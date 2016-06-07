@@ -50,11 +50,12 @@ class GFA::Optfield
   # - +GFA::Optfield::TypeError+ if the type is not one of "AifZHB"
   # - +GFA::Optfield::ValueError+ if the value is not in accordance to the
   #                                specified type
-  def initialize(tag, type, v)
+  def initialize(tag, type, v, validate: true)
     @tag = tag.to_s
     @type = type.to_s
     @value = value_to_optfield_s(@type, v)
-    validate!
+    @validate = validate
+    validate! if @validate
   end
 
   def to_s
@@ -73,8 +74,8 @@ class GFA::Optfield
   #   - Hash             => "J"
   #   - other            => "Z"
   #
-  def self.new_autotype(tag, value)
-    self.new(tag, guess_type(value), value)
+  def self.new_autotype(tag, value, validate: true)
+    self.new(tag, guess_type(value), value, validate: validate)
   end
 
   # Sets the +value+ of the GFA::Optfield.
@@ -87,7 +88,7 @@ class GFA::Optfield
   #
   def value=(v)
     @value = value_to_optfield_s(@type, v)
-    validate_value!
+    validate_value! if @validate
   end
 
   # Get the +value+ of the GFA::Optfield.
@@ -101,7 +102,7 @@ class GFA::Optfield
     cast ? value_from_optfield_s(@type, @value) : @value
   end
 
-  def to_gfa_optfield
+  def to_gfa_optfield(validate: true)
     self
   end
 
@@ -236,13 +237,13 @@ class String
   # *Raises*:
   #   - +TypeError+ if the String cannot be converted into an Optfield
   #   - see GFA::Optfield#new for other possible exceptions
-  def to_gfa_optfield
+  def to_gfa_optfield(validate: true)
     components = split(GFA::Optfield::Separator)
     if components.size != 3
       raise TypeError, "String does not represent a "+
         "GFA optional field: '#{self}'"
     end
-    GFA::Optfield.new(*components)
+    GFA::Optfield.new(*components, validate: validate)
   end
 
 end

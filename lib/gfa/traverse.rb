@@ -53,10 +53,15 @@ module GFA::Traverse
   def linear_paths
     exclude = Set.new
     paths = []
-    segment_names.each do |sn|
+    segnames = segment_names
+    progress_log_init(:linear_paths, "segments", segnames.size,
+      "Detect linear paths (#{segnames.size} segments)")  if @progress
+    segnames.each do |sn|
+      progress_log(:linear_paths) if @progress
       next if exclude.include?(sn)
       paths << linear_path(sn, exclude)
     end
+    progress_log_end(:linear_paths)
     return paths.compact
   end
 
@@ -69,13 +74,22 @@ module GFA::Traverse
     self << merged
     link_merged(merged.name, other_segment_end(segpath.first), first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
-    segpath.each {|sn, et| delete_segment(sn)}
+    segpath.each do |sn, et|
+      delete_segment(sn)
+      progress_log(:merge_linear_paths, 0.2) if @progress
+    end
     self
   end
 
   def merge_linear_paths
     paths = linear_paths
-    paths.each {|path| merge_linear_path(path)}
+    psize = paths.flatten.size / 2
+    progress_log_init(:merge_linear_paths, "segments", psize,
+      "Merge #{paths.size} linear paths (#{psize} segments)") if @progress
+    paths.each do |path|
+      merge_linear_path(path)
+    end
+    progress_log_end(:merge_linear_paths)
     self
   end
 
@@ -270,7 +284,9 @@ module GFA::Traverse
     first_reversed = (a[1] == :B)
     last_reversed = nil
     add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true)
+    progress_log(:merge_linear_paths, 0.8) if @progress
     (segpath.size-1).times do |i|
+      progress_log(:merge_linear_paths, 1.6*(i/(segpath.size-1))) if @progress
       b = other_segment_end(segpath[i+1])
       l = link!(a, b)
       if l.overlap == "*"
@@ -288,7 +304,7 @@ module GFA::Traverse
     if merged.sequence != "*"
       if merged.LN.nil?
         merged.LN = merged.sequence.length
-      elsif merged.LN != merged.sequence.length
+      elsif @validate and merged.LN != merged.sequence.length
         raise "Computed sequence length #{merged.sequence.length} "+
               "and computed LN #{merged.LN} differ"
       end

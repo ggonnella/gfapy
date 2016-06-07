@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
               'lib/gfa/line_destructors.rb',
               'lib/gfa/line_getters.rb',
               'lib/gfa/line.rb',
+              'lib/gfa/logger.rb',
               'lib/gfa/optfield.rb',
               'lib/gfa/segment_references.rb',
               'lib/gfa/sequence.rb',
