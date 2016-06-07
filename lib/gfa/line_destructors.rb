@@ -98,7 +98,7 @@ module GFA::LineDestructors
   end
 
   def delete_headers
-    @lines["H"] = ""
+    @lines["H"] = []
   end
 
   def delete_segment_line(segment_line)
