@@ -10,6 +10,11 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(seqs, gfa.segments.map{|s|s.sequence})
     gfa.delete_sequences
     assert_equal(["*","*","*"], gfa.segments.map{|s|s.sequence})
+    gfa = GFA.new
+    seqs = ["ACCAGCTAGCGAGC", "CGCTAGTGCTG", "GCTAGCTAG"]
+    seqs.each_with_index {|seq, i| gfa << "S\t#{i}\t#{seq}" }
+    gfa.rm(:sequences)
+    assert_equal(["*","*","*"], gfa.segments.map{|s|s.sequence})
   end
 
   def test_delete_alignments
@@ -19,6 +24,12 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal([[12,"M"]], gfa.containments[0].overlap)
     assert_equal([[[12,"M"]],[[12,"M"]]], gfa.paths[0].cigars)
     gfa.delete_alignments
+    assert_equal("*", gfa.links[0].overlap)
+    assert_equal("*", gfa.containments[0].overlap)
+    assert_equal(["*"], gfa.paths[0].cigars)
+    gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
+    gfa.rm(:alignments)
     assert_equal("*", gfa.links[0].overlap)
     assert_equal("*", gfa.containments[0].overlap)
     assert_equal(["*"], gfa.paths[0].cigars)

@@ -40,13 +40,13 @@ module GFA::LineDestructors
         raise "One argument required if first #{x.inspect}" if !args.empty?
         delete_alignments
       else
-        if gfa.respond_to?(x)
-          gfa.rm(gfa.send(x, *args))
+        if respond_to?(x)
+          rm(send(x, *args))
         else
           raise "Cannot remove #{x.inspect}"
         end
       end
-    elsif x.kind_of?(String) and @segment_names.include(x)
+    elsif x.kind_of?(String) and @segment_names.include?(x)
       if args.empty?
         delete_segment(x)
       elsif args.size != 3
@@ -57,11 +57,11 @@ module GFA::LineDestructors
         delete_containments_or_links("L", x, args[0], args[1], args[2],
                                      nil, false)
       end
-    elsif x.kind_of?(String) and @path_names.include(x)
+    elsif x.kind_of?(String) and @path_names.include?(x)
       raise "One argument required if first path name" if !args.empty?
       delete_path(x)
     elsif x.kind_of?(Array)
-      x.each {|elem| gfa.rm(elem, *args)}
+      x.each {|elem| rm(elem, *args)}
     elsif x.nil?
       return nil
     else
