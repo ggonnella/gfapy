@@ -102,7 +102,7 @@ module GFA::Traverse
     start_points = []
     [:B, :E].each do |et|
       start_points += links_of([segment_name, et]).map do |l|
-        l.other_end([segment_name, et])
+        other_segment_end(l.other_end([segment_name, et]))
       end
     end
     cc = []
