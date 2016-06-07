@@ -53,7 +53,7 @@ module GFA::Traverse
   def linear_paths
     exclude = Set.new
     paths = []
-    @segment_names.each_with_index do |sn, i|
+    segment_names.each do |sn|
       next if exclude.include?(sn)
       paths << linear_path(sn, exclude)
     end
@@ -150,12 +150,13 @@ module GFA::Traverse
       cs = connectivity_symbols(before.size, after.size)
       if cs == [1,1] or list.empty?
         list << current
+        exclude << current[0]
         l = after.first
         current = other_segment_end(l.other_end(current))
         break if exclude.include?(current[0])
-        exclude << current[0]
       elsif cs[0] == 1
         list << current
+        exclude << current[0]
         break
       else
         break
