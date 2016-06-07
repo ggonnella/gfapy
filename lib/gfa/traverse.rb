@@ -79,7 +79,17 @@ module GFA::Traverse
     self
   end
 
-  def separating?(segment_name)
+  def cut_link?(link)
+    return false if link.circular?
+    c = {}
+    [:from, :to].each do |et|
+      c[et] = Set.new
+      traverse_component(link.send(:"#{et}_end"), c[et], Set.new)
+    end
+    return c[:from] != c[:to]
+  end
+
+  def cut_segment?(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     cn = connectivity(segment_name)
     return false if [[0,0],[0,1],[1,0]].include?(cn)
