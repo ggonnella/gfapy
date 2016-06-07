@@ -97,4 +97,94 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_raises(RuntimeError) { gfa << p3 }
   end
 
+  def test_set_headers
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    gfa << "H\taa:i:12\tab:Z:test1"
+    gfa << "H\taa:i:15"
+    gfa << "H\tac:Z:test2"
+    h = gfa.headers_data
+    h[:aa] << 16
+    h.delete(:ac)
+    h[:ad] = {:a => 1, :b => 2}
+    h[:ae] = [12,14]
+    gfa.set_headers(h)
+    assert_equal(
+      [
+        "H\tVN:Z:1.0",
+        "H\taa:i:12",
+        "H\taa:i:15",
+        "H\taa:i:16",
+        "H\tab:Z:test1",
+        "H\tad:J:{\"a\":1,\"b\":2}",
+        "H\tae:B:i,12,14",
+      ],
+      gfa.headers.map(&:to_s).sort)
+  end
+
+  def test_set_header_field
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    gfa << "H\taa:i:12\tab:Z:test1"
+    gfa << "H\tac:Z:test2"
+    gfa.set_header_field(:VN, "2.0", replace: true)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:12",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+    gfa.set_header_field(:aa, 15)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:12",
+        "H\taa:i:15",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+    gfa.set_header_field(:aa, 16)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:12",
+        "H\taa:i:15",
+        "H\taa:i:16",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+    gfa.set_header_field(:aa, 16, replace: true)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:16",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+    gfa.set_header_field(:aa, 16)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:16",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+    gfa.set_header_field(:aa, 16, duplicate: true)
+    assert_equal(
+      [
+        "H\tVN:Z:2.0",
+        "H\taa:i:16",
+        "H\taa:i:16",
+        "H\tab:Z:test1",
+        "H\tac:Z:test2",
+      ],
+      gfa.headers.map(&:to_s).sort)
+  end
+
 end

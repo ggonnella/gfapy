@@ -154,6 +154,25 @@ module GFA::LineGetters
     l
   end
 
+  def headers_data
+    data = {}
+    data[:multiple_values] = []
+    headers.each do |hline|
+      hline.optional_fieldnames.each do |of|
+        if data.has_key?(of)
+          if !data[:multiple_values].include?(of)
+            data[of] = [data[of]]
+            data[:multiple_values] << of
+          end
+          data[of] << hline.send(of)
+        else
+          data[of] = hline.send(of)
+        end
+      end
+    end
+    return data
+  end
+
   private
 
   def each(record_type, &block)

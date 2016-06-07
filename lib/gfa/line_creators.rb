@@ -20,6 +20,42 @@ module GFA::LineCreators
     end
   end
 
+  def set_headers(headers_data)
+    rm(:headers)
+    multiple_values = headers_data.delete(:multiple_values)
+    multiple_values ||= []
+    headers_data.each do |of, values|
+      values = [values] if !multiple_values.include?(of)
+      if !values.kind_of?(Array)
+        raise "Field #{of} listed in multiple_values key, but is not an array"
+      end
+      values.each do |value|
+        h = "H".to_gfa_line
+        h.send(:"#{of}=", value)
+        self << h
+      end
+    end
+  end
+
+  def set_header_field(field, value, replace: false, duplicate: false)
+    h = headers_data
+    if !h.has_key?(field) or replace
+      h[field] = value
+      h[:multiple_values].delete(field)
+    else
+      if h[:multiple_values].include?(field)
+        return self if h[field].include?(value) and !duplicate
+        h[field] << value
+      else
+        return self if h[field] == value and !duplicate
+        h[field] = [h[field], value]
+        h[:multiple_values] << field
+      end
+    end
+    set_headers(h)
+    self
+  end
+
   private
 
   def add_header(gfa_line)

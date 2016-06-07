@@ -226,4 +226,16 @@ class TestGFALineGetters < Test::Unit::TestCase
     assert_raise(RuntimeError) { gfa.link!(["1", :E], ["2", :E]) }
   end
 
+  def test_headers_data
+    gfa = GFA.new
+    gfa << "H\tVN:Z:1.0"
+    gfa << "H\taa:i:12\tab:Z:test1"
+    gfa << "H\taa:i:15"
+    gfa << "H\tac:Z:test2"
+    assert_equal({:VN => "1.0", :aa => [12, 15],
+                  :ab => "test1", :ac => "test2",
+                  :multiple_values => [:aa]},
+                 gfa.headers_data)
+  end
+
 end
