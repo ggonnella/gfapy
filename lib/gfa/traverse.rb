@@ -81,10 +81,16 @@ module GFA::Traverse
 
   def cut_link?(link)
     return false if link.circular?
+    return true if links_of(other_segment_end(link.from_end)).size == 0
+    return true if links_of(other_segment_end(link.to_end)).size == 0
     c = {}
     [:from, :to].each do |et|
       c[et] = Set.new
-      traverse_component(link.send(:"#{et}_end"), c[et], Set.new)
+      visited = Set.new
+      segend = link.send(:"#{et}_end")
+      visited << segend[0]
+      visited << link.other_end(segend)[0]
+      traverse_component(segend, c[et], visited)
     end
     return c[:from] != c[:to]
   end
