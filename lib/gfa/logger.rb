@@ -36,11 +36,12 @@ module GFA::Logger
       elsif data.partsize == 0 or (data.counter / data.partsize) > data.lastpart
         data.lastpart = data.counter / data.partsize
         done = data.counter.to_f / data.total
-        elapsed = Time.now - data.starttime
-        eta = (elapsed / done) - elapsed
-        donestr = "%.1f" % (done*100)
+        t = Time.now - data.starttime
+        eta = (t / done) - t
+        tstr= ("Elapsed: %02dh %02dmin %02ds" % [t/3600, t/60%60, t%60])
         etastr = ("ETA: %02dh %02dmin %02ds" % [eta/3600, eta/60%60, eta%60])
-        str = "# #{donestr}% #{data.units} processed [#{etastr}]"
+        donestr = "%.1f" % (done*100)
+        str = "# #{donestr}% #{data.units} processed [#{tstr}; #{etastr}]"
         if str.size > data.strlen
           data.strlen = str.size
           spacediff = ""
@@ -58,7 +59,7 @@ module GFA::Logger
       data = @progress_data[symbol]
       return if data.nil?
       t = Time.now - data.starttime
-      tstr= ("Real time: %02dh %02dmin %02ds" % [t/3600, t/60%60, t%60])
+      tstr= ("Elapsed time: %02dh %02dmin %02ds" % [t/3600, t/60%60, t%60])
       str = "# 100.0% #{data.units} processed [#{tstr}]"
       spacediff = " "*([data.strlen - str.size,0].max)
       @progress_file.puts "\r#{str}#{spacediff}"
