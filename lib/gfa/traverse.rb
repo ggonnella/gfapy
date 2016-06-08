@@ -311,7 +311,7 @@ module GFA::Traverse
                             options)
       a = other_segment_end(b)
       if @progress
-        progress_log(:merge_linear_paths, 0.25+(0.7*2)*(i/(segpath.size-1)))
+        progress_log(:merge_linear_paths, 0.95)
       end
     end
     if merged.sequence != "*"
