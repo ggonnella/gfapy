@@ -3,14 +3,16 @@ class GFA::ConnectionInfo
   def initialize(lines)
     @lines = lines
     @connect = {}
-    ["L","C","P"].each {|rt| @connect[rt] = {}}
+    [:L,:C,:P].each {|rt| @connect[rt] = {}}
   end
 
   # Add values to connection infos
   def add(rt, value, sn, dir=nil, o=nil)
+    rt = rt.to_sym
+    sn = sn.to_sym
     raise if value.nil?
-    raise "RT invalid: #{rt.inspect} "if !["L", "C", "P"].include?(rt)
-    if rt == "P"
+    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    if rt == :P
       @connect[rt][sn]||=[]
       @connect[rt][sn] << value
     else
@@ -34,9 +36,11 @@ class GFA::ConnectionInfo
   #                                                 from both "+" and "-"
   #                                                 connections of sn
   def delete(rt, value, sn, dir=nil, o=nil)
+    rt = rt.to_sym
+    sn = sn.to_sym
     raise if value.nil?
-    raise "RT invalid: #{rt.inspect} "if !["L", "C", "P"].include?(rt)
-    if rt == "P"
+    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    if rt == :P
       @connect[rt].fetch(sn,[]).delete(value)
     else
       raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
@@ -53,7 +57,9 @@ class GFA::ConnectionInfo
   end
 
   def rename_segment(sn, new_sn)
-    ["P", "L", "C"].each do |rt|
+    sn = sn.to_sym
+    new_sn = new_sn.to_sym
+    [:P, :L, :C].each do |rt|
       if @connect[rt].has_key?(sn)
         @connect[rt][new_sn] = @connect[rt][sn]
         @connect[rt].delete(sn)
@@ -64,7 +70,7 @@ class GFA::ConnectionInfo
   end
 
   def delete_segment(sn)
-    ["L", "C", "P"].each {|rt| @connect[rt].delete(sn)}
+    [:P, :L, :C].each {|rt| @connect[rt].delete(sn.to_sym)}
     self
   end
 
@@ -83,8 +89,10 @@ class GFA::ConnectionInfo
   # The returned array should only be read; modifications must be done using
   # +add()+ or +delete()+
   def find(rt, sn, dir = nil, o = nil)
-    raise "RT invalid: #{rt.inspect} "if !["L", "C", "P"].include?(rt)
-    if rt == "P"
+    rt = rt.to_sym
+    sn = sn.to_sym
+    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    if rt == :P
       @connect[rt].fetch(sn,[])
     else
       raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
@@ -101,23 +109,24 @@ class GFA::ConnectionInfo
   #
   # Method useful for debugging.
   def validate!
-    @connect["P"].keys.each do |sn|
-      @connect["P"][sn].each do |li|
+    @connect[:P].keys.each do |sn|
+      @connect[:P][sn].each do |li|
         l = @lines["P"][li]
-        if l.nil? or !l.segment_names.map{|s,o|s}.include?(sn)
+        if l.nil? or !l.segment_names.map{|s,o|s.to_sym}.include?(sn)
           raise "Error in connect\n"+
             "@connect[P][#{sn}]=[#{li},..]\n"+
             "@links[P][#{li}]=#{l.nil? ? l.inspect : l.to_s}"
         end
       end
     end
-    ["L", "C"].each do |rt|
+    [:L, :C].each do |rt|
       @connect[rt].keys.each do |sn|
         @connect[rt][sn].keys.each do |dir|
           @connect[rt][sn][dir].keys.each do |o|
             @connect[rt][sn][dir][o].each do |li|
-              l = @lines[rt][li]
-              if l.nil? or l.send(dir) != sn or l.send(:"#{dir}_orient") != o
+              l = @lines[rt.to_s][li]
+              if l.nil? or l.send(dir).to_sym != sn or
+                   l.send(:"#{dir}_orient") != o
                 raise "Error in connect\n"+
                   "@connect[#{rt}][#{sn}][#{dir.inspect}][#{o}]=[#{li},..]\n"+
                   "@links[#{rt}][#{li}]=#{l.nil? ? l.inspect : l.to_s}"
