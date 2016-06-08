@@ -63,9 +63,9 @@ module GFA::LineCreators
   end
 
   def add_segment(gfa_line)
-    @lines["S"] << gfa_line
     validate_segment_and_path_name_unique!(gfa_line.name) if @validate
-    @segment_names << gfa_line.name.to_sym
+    @segment_names[gfa_line.name.to_sym] = @lines["S"].size
+    @lines["S"] << gfa_line
   end
 
   def add_link_or_containment(rt, gfa_line)
@@ -83,9 +83,9 @@ module GFA::LineCreators
   end
 
   def add_path(gfa_line)
-    @lines["P"] << gfa_line
     validate_segment_and_path_name_unique!(gfa_line.path_name) if @validate
-    @path_names << gfa_line.path_name.to_sym
+    @path_names[gfa_line.path_name.to_sym] = @lines["P"].size
+    @lines["P"] << gfa_line
     gfa_line.segment_names.each do |sn, o|
       segment!(sn) if @segments_first_order
       @c.add("P",@lines["P"].size-1,sn)
@@ -93,7 +93,7 @@ module GFA::LineCreators
   end
 
   def validate_segment_and_path_name_unique!(sn)
-    if @segment_names.include?(sn.to_sym) or @path_names.include?(sn.to_sym)
+    if @segment_names.has_key?(sn.to_sym) or @path_names.has_key?(sn.to_sym)
       raise ArgumentError, "Segment or path name not unique '#{sn}'"
     end
   end

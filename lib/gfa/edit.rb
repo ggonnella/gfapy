@@ -19,16 +19,17 @@ module GFA::Edit
 
   def rename(old_name, new_name)
     validate_segment_and_path_name_unique!(new_name)
-    is_path = @path_names.include?(old_name.to_sym)
-    is_segment = @segment_names.include?(old_name.to_sym)
+    is_path = @path_names.has_key?(old_name.to_sym)
+    is_segment = @segment_names.has_key?(old_name.to_sym)
     if !is_path and !is_segment
       raise "#{old_name} is not a path or segment name"
     end
     if is_segment
       s = segment!(old_name)
       s.name = new_name
-      i = @segment_names.index(old_name.to_sym)
-      @segment_names[i] = new_name.to_sym
+      i = @segment_names[old_name.to_sym]
+      @segment_names.delete(old_name.to_sym)
+      @segment_names[new_name.to_sym] = i
       ["L","C"].each do |rt|
         [:from,:to].each do |dir|
           @c.lines(rt, old_name, dir).each do |l|
@@ -45,9 +46,10 @@ module GFA::Edit
       @c.rename_segment(old_name, new_name)
     else
       pt = path!(old_name)
-      i = @path_names.index(old_name)
+      i = @path_names[old_name.to_sym]
       pt.name = new_name
-      @path_names[i] = new_name
+      @path_names.delete(old_name.to_sym)
+      @path_names[new_name.to_sym] = i
     end
     self
   end
@@ -137,8 +139,8 @@ module GFA::Edit
     end
     while retval.size < (factor-1)
       while retval.include?(next_name) or
-            @segment_names.include?(next_name.to_sym) or
-            @path_names.include?(next_name.to_sym)
+            @segment_names.has_key?(next_name.to_sym) or
+            @path_names.has_key?(next_name.to_sym)
         if copy_names == :copy
           next_name += "1"
           copy_names = :number

@@ -42,8 +42,8 @@ class GFA
   def initialize(segments_first_order: false)
     @lines = {}
     GFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
-    @segment_names = []
-    @path_names = []
+    @segment_names = {}
+    @path_names = {}
     @c = GFA::ConnectionInfo.new(@lines)
     @segments_first_order = segments_first_order
     @validate = true
@@ -52,12 +52,12 @@ class GFA
 
   # List all names of segments in the graph
   def segment_names
-    @segment_names.compact.map(&:to_s)
+    @segment_names.keys.compact.map(&:to_s)
   end
 
   # List all names of path lines in the graph
   def path_names
-    @path_names.compact.map(&:to_s)
+    @path_names.keys.compact.map(&:to_s)
   end
 
   def turn_off_validations

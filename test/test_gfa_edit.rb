@@ -39,7 +39,7 @@ class TestGFAEdit < Test::Unit::TestCase
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t0\t+\t2\t+\t12M",
     "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
     gfa.rename("0", "X")
-    assert_equal(["X", "1", "2"], gfa.segment_names)
+    assert_equal(["X", "1", "2"].sort, gfa.segment_names.sort)
     assert_equal("L\tX\t+\t2\t+\t12M", gfa.links[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
     assert_equal("P\t4\t2+,X-\t12M,12M", gfa.paths[0].to_s)
