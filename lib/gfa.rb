@@ -50,6 +50,14 @@ class GFA
     @progress = false
   end
 
+  def require_segments_first_order
+    @segments_first_order = true
+  end
+
+  def turn_off_validations
+    @validate = false
+  end
+
   # List all names of segments in the graph
   def segment_names
     @segment_names.keys.compact.map(&:to_s)
@@ -58,10 +66,6 @@ class GFA
   # List all names of path lines in the graph
   def path_names
     @path_names.keys.compact.map(&:to_s)
-  end
-
-  def turn_off_validations
-    @validate = false
   end
 
   def validate!
@@ -90,7 +94,11 @@ class GFA
   end
 
   def clone
-    to_s.to_gfa(validate: false)
+    cpy = to_s.to_gfa(validate: false)
+    cpy.turn_off_validations if !@validate
+    cpy.enable_progress_logging if @progress
+    cpy.require_segments_first_order if @segments_first_order
+    return cpy
   end
 
   def read_file(filename, validate: @validate)
