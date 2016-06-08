@@ -13,6 +13,18 @@ module GFA::CIGAR
     end
   end
 
+  def reverse_cigar_operations
+    return "*" if self == "*"
+    self.cigar_operations.reverse.map do |oplen, opcode|
+      if opcode == "I"
+        opcode = "D"
+      elsif opcode == "D"
+        opcode = "I"
+      end
+      [oplen, opcode]
+    end
+  end
+
 end
 
 class String

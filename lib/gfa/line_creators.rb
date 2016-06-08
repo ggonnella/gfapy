@@ -69,6 +69,10 @@ module GFA::LineCreators
   end
 
   def add_link_or_containment(rt, gfa_line)
+    if rt == "L"
+      l = link(gfa_line.from_end, gfa_line.to_end)
+      return if l == gfa_line
+    end
     @lines[rt] << gfa_line
     [:from,:to].each do |e|
       sn = gfa_line.send(e)

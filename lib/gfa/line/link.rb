@@ -34,6 +34,19 @@ class GFA::Line::Link < GFA::Line
 
   include GFA::SegmentReferences
 
+  def ==(other)
+    (from_end == other.from_end and
+      to_end == other.to_end and
+      overlap(false) == other.overlap(false)) or
+    (from_end == other.to_end and
+      to_end == other.from_end and
+      overlap == other.reverse_overlap)
+  end
+
+  def reverse_overlap
+    overlap(false).reverse_cigar_operations
+  end
+
   def from_end
     [from, from_orient == "+" ? :E : :B]
   end
