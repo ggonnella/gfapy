@@ -4,7 +4,7 @@
 module GFA::LineDestructors
 
   def delete_segment(segment_name, cascade=true)
-    i = @segment_names.index(segment_name)
+    i = @segment_names.index(segment_name.to_sym)
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     if cascade
       connected_segments(segment_name).each do |c|
@@ -46,7 +46,7 @@ module GFA::LineDestructors
           raise "Cannot remove #{x.inspect}"
         end
       end
-    elsif x.kind_of?(String) and @segment_names.include?(x)
+    elsif x.kind_of?(String) and @segment_names.include?(x.to_sym)
       if args.empty?
         delete_segment(x)
       elsif args.size != 3
@@ -57,7 +57,7 @@ module GFA::LineDestructors
         delete_containments_or_links("L", x, args[0], args[1], args[2],
                                      nil, false)
       end
-    elsif x.kind_of?(String) and @path_names.include?(x)
+    elsif x.kind_of?(String) and @path_names.include?(x.to_sym)
       raise "One argument required if first path name" if !args.empty?
       delete_path(x)
     elsif x.kind_of?(Array)
@@ -88,7 +88,7 @@ module GFA::LineDestructors
   end
 
   def delete_path(path_name)
-    i = @path_names.index(path_name)
+    i = @path_names.index(path_name.to_sym)
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]
     pt.segment_names.each {|sn, o| @c.delete("P",i,sn)}

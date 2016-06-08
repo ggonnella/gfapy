@@ -52,12 +52,12 @@ class GFA
 
   # List all names of segments in the graph
   def segment_names
-    @segment_names.compact
+    @segment_names.compact.map(&:to_s)
   end
 
   # List all names of path lines in the graph
   def path_names
-    @path_names.compact
+    @path_names.compact.map(&:to_s)
   end
 
   def turn_off_validations

@@ -15,7 +15,7 @@ module GFA::LineGetters
   #   - +nil+ if no such segment exists in the gfa
   #   - a GFA::Line::Segment instance otherwise
   def segment(segment_name)
-    i = @segment_names.index(segment_name)
+    i = @segment_names.index(segment_name.to_sym)
     i.nil? ? nil : @lines["S"][i]
   end
 
@@ -32,7 +32,7 @@ module GFA::LineGetters
   #   - +nil+ if no such path exists in the gfa
   #   - a GFA::Line::Path instance otherwise
   def path(path_name)
-    i = @path_names.index(path_name)
+    i = @path_names.index(path_name.to_sym)
     i.nil? ? nil : @lines["P"][i]
   end
 
