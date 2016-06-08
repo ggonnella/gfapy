@@ -67,27 +67,28 @@ module GFA::Traverse
 
   # limitations:
   # - all containments und paths involving merged segments are deleted
-  def merge_linear_path(segpath)
+  def merge_linear_path(segpath, **options)
     raise if segpath.size < 2
     raise if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
-    merged, first_reversed, last_reversed = create_merged_segment(segpath)
+    merged, first_reversed, last_reversed =
+                              create_merged_segment(segpath, options)
     self << merged
     link_merged(merged.name, other_segment_end(segpath.first), first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
     segpath.each do |sn, et|
       delete_segment(sn)
-      progress_log(:merge_linear_paths, 0.2) if @progress
+      progress_log(:merge_linear_paths, 0.05) if @progress
     end
     self
   end
 
-  def merge_linear_paths
+  def merge_linear_paths(**options)
     paths = linear_paths
     psize = paths.flatten.size / 2
     progress_log_init(:merge_linear_paths, "segments", psize,
       "Merge #{paths.size} linear paths (#{psize} segments)") if @progress
     paths.each do |path|
-      merge_linear_path(path)
+      merge_linear_path(path, **options)
     end
     progress_log_end(:merge_linear_paths)
     self
@@ -260,16 +261,17 @@ module GFA::Traverse
     pos_array.map {|pos| lastpos - pos + 1}.reverse
   end
 
-  def add_segment_to_merged(merged, segment, reversed, cut, init)
+  def add_segment_to_merged(merged, segment, reversed, cut, init, options)
     s = (reversed ? segment.sequence.rc[cut..-1] : segment.sequence[cut..-1])
     if init
       merged.sequence = s
-      merged.name = segment.name
+      merged.name = (options[:merged_name].nil? ?
+                     segment.name : options[:merged_name])
       merged.LN = segment.LN
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
-      merged.name += "_#{segment.name}"
+      merged.name += "_#{segment.name}" if options[:merged_name].nil?
       if merged.LN
         segment.LN ? merged.LN += (segment.LN - cut)
                    : merged.LN = nil
@@ -277,16 +279,16 @@ module GFA::Traverse
     end
   end
 
-  def create_merged_segment(segpath)
+  def create_merged_segment(segpath, options)
     merged = segment!(segpath.first.first).clone
     total_cut = 0
     a = segpath[0]
     first_reversed = (a[1] == :B)
     last_reversed = nil
-    add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true)
-    progress_log(:merge_linear_paths, 0.8) if @progress
+    add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true,
+                          options)
+    progress_log(:merge_linear_paths, 0.95) if @progress
     (segpath.size-1).times do |i|
-      progress_log(:merge_linear_paths, 1.6*(i/(segpath.size-1))) if @progress
       b = other_segment_end(segpath[i+1])
       l = link!(a, b)
       if l.overlap == "*"
@@ -298,8 +300,12 @@ module GFA::Traverse
       end
       total_cut += cut
       last_reversed = (b[1] == :E)
-      add_segment_to_merged(merged, segment!(b[0]), last_reversed, cut, false)
+      add_segment_to_merged(merged, segment!(b[0]), last_reversed, cut, false,
+                            options)
       a = other_segment_end(b)
+      if @progress
+        progress_log(:merge_linear_paths, 0.45+(i/(segpath.size-1)))
+      end
     end
     if merged.sequence != "*"
       if merged.LN.nil?
