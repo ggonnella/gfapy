@@ -285,6 +285,13 @@ module GFA::Traverse
     a = segpath[0]
     first_reversed = (a[1] == :B)
     last_reversed = nil
+    if options[:merged_name] == :short
+      forbidden = (segment_names + path_names)
+      options[:merged_name] = "merged1"
+      while forbidden.include?(options[:merged_name])
+        options[:merged_name] = options[:merged_name].next
+      end
+    end
     add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true,
                           options)
     progress_log(:merge_linear_paths, 0.95) if @progress
