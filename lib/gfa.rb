@@ -48,7 +48,7 @@ class GFA
     @segments_first_order = segments_first_order
     @validate = true
     @progress = false
-    @tags = {:count => :RC}
+    @default = {:count_tag => :RC, :unit_length => 1}
   end
 
   def require_segments_first_order
