@@ -136,7 +136,7 @@ class GFA
     nde = n_dead_ends()
     pde = "%.2f%%" % ((nde.to_f*100) / (segments.size*2))
     cc = connected_components()
-    cc.map!{|c|c.map{|sn|segment!(sn).LN!}.inject(:+)}
+    cc.map!{|c|c.map{|sn|segment!(sn).length!}.inject(:+)}
     if short
       return "ns=#{segments.size}\t"+
              "nl=#{links.size}\t"+
@@ -172,7 +172,7 @@ class GFA
   end
 
   def lenstats
-    sln = segments.map(&:LN!).sort
+    sln = segments.map(&:length!).sort
     n = sln.size
     tlen = sln.inject(:+)
     n50 = nil

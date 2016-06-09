@@ -81,15 +81,7 @@ module GFA::Edit
       s = segment!(s)
       c = s.send(count_tag)
       raise "Tag #{count_tag} not available for segment #{s.name}" if c.nil?
-      l = s.LN
-      if l.nil?
-        if s.sequence != "*"
-          l = s.sequence.size
-        else
-          raise "Sequence is empty and tag LN is not available:\n"+
-            "Cannot compute coverage for segment #{s.name}"
-        end
-      end
+      l = s.length!
       count += c
       length += l
     end
