@@ -46,16 +46,16 @@ class GFA::Line::Segment < GFA::Line
     return l
   end
 
-  def coverage(count_tag: :RC, unitlength: 1)
+  def coverage(count_tag: :RC, unit_length: 1)
     if optional_fieldnames.include?(count_tag) and self.length
-      return (self.send(count_tag).to_f)/(self.length-unitlength+1)
+      return (self.send(count_tag).to_f)/(self.length-unit_length+1)
     else
       return nil
     end
   end
 
-  def coverage!(count_tag: :RC, unitlength: 1)
-    c = coverage(count_tag: count_tag, unitlength: unitlength)
+  def coverage!(count_tag: :RC, unit_length: 1)
+    c = coverage(count_tag: count_tag, unit_length: unit_length)
     if c.nil?
       self.length!
       raise "Tag #{count_tag} undefined for segment #{name}"
