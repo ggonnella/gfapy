@@ -113,6 +113,7 @@ class GFA
       progress_log(:read_file) if @progress
       i += 1
     end
+    progress_log_end(:read_file) if @progress
     validate! if validate
     self
   end
