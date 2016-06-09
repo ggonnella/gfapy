@@ -43,8 +43,17 @@ class GFA::Line::Link < GFA::Line
       overlap == other.reverse_overlap)
   end
 
-  def reverse_overlap
-    overlap(false).reverse_cigar_operations
+  def eql?(other)
+    self == other
+  end
+
+  def hash
+    from_end.hash + to_end.hash +
+      overlap(false).hash + reverse_overlap(false).hash
+  end
+
+  def reverse_overlap(cast=true)
+    overlap(false).send((cast ? :reverse_cigar_operations : :reverse_cigar))
   end
 
   def from_end

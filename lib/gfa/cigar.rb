@@ -25,6 +25,11 @@ module GFA::CIGAR
     end
   end
 
+  def reverse_cigar
+    return "*" if self == "*"
+    reverse_cigar_operations.flatten.join
+  end
+
 end
 
 class String
