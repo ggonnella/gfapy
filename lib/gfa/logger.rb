@@ -65,7 +65,8 @@ class GFA::Logger
     if data.counter == data.total
       progress_end(symbol)
     elsif data.partsize == 0 or (data.counter / data.partsize) > data.lastpart
-      data.lastpart = data.counter / data.partsize
+      return if data.partsize == 0 and @part > 0 # this means total is very small
+      data.lastpart = data.counter / data.partsize if data.partsize > 0
       done = data.counter.to_f / data.total
       t = Time.now - data.starttime
       eta = (t / done) - t
