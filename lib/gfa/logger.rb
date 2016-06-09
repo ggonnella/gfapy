@@ -22,6 +22,10 @@ class GFA::Logger
     @data = {}
   end
 
+  def log(msg, min_verbose_level=1)
+    @channel.puts "#@pfx #{msg}" if @verbose_level >= min_verbose_level
+  end
+
   # Enable output from the Logger instance
   #
   # *Arguments*:
