@@ -37,7 +37,7 @@ class GFA
   include GFA::LineDestructors
   include GFA::Edit
   include GFA::Traverse
-  include GFA::Logger
+  include GFA::LoggerSupport
 
   def initialize(segments_first_order: false)
     @lines = {}
