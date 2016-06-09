@@ -128,14 +128,4 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_nothing_raised {gfa.segment!("1b_copyB")}
   end
 
-  def test_mean_coverage
-    gfa = ["S\t0\t*\tRC:i:1000\tLN:i:100",
-           "S\t1\t*\tRC:i:2000\tLN:i:100",
-           "S\t2\t*\tRC:i:3000\tLN:i:100",
-           "S\t3\t*\tLN:i:100"].to_gfa
-    assert_equal(20, gfa.mean_coverage(["0","1","2"]))
-    assert_raises(RuntimeError) {gfa.mean_coverage(["0","2","3"])}
-    assert_raises(RuntimeError) {gfa.mean_coverage(["0","2","4"])}
-  end
-
 end

@@ -74,20 +74,6 @@ module GFA::Edit
              copy_names: copy_name.kind_of?(String) ? [copy_name] : copy_name)
   end
 
-  def mean_coverage(segment_names, count_tag: @tags[:count])
-    count = 0
-    length = 0
-    segment_names.each do |s|
-      s = segment!(s)
-      c = s.send(count_tag)
-      raise "Tag #{count_tag} not available for segment #{s.name}" if c.nil?
-      l = s.length!
-      count += c
-      length += l
-    end
-    count.to_f/length
-  end
-
   private
 
   def compute_copy_names(copy_names, segment_name, factor)
