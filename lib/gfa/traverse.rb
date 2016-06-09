@@ -325,7 +325,8 @@ module GFA::Traverse
     if merged.LN.nil?
       [:KC, :RC, :FC].each {|count_tag| merged.send(:"#{count_tag}=", nil)}
     else
-      sum_of_counts(segpath, merged.LN.to_f / (total_cut+merged.LN)).
+      sum_of_counts(segpath, (options[:cut_counts] ?
+                              merged.LN.to_f / (total_cut+merged.LN) : 1)).
           each do |count_tag, count|
         merged.send(:"#{count_tag}=", count)
       end
