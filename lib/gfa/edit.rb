@@ -74,7 +74,7 @@ module GFA::Edit
              copy_names: copy_name.kind_of?(String) ? [copy_name] : copy_name)
   end
 
-  def mean_coverage(segment_names, count_tag: :RC)
+  def mean_coverage(segment_names, count_tag: @tags[:count])
     count = 0
     length = 0
     segment_names.each do |s|
