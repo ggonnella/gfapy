@@ -57,7 +57,7 @@ class GFA::Logger
     @channel.print str if @part != 1
   end
 
-  def progress_log(symbol, progress=1)
+  def progress_log(symbol, progress=1, **keyargs)
     return if !@progress or @part == 1
     data = @data[symbol]
     return if data.nil?
@@ -72,7 +72,10 @@ class GFA::Logger
       tstr= ("Elapsed: %02dh %02dmin %02ds" % [t/3600, t/60%60, t%60])
       etastr = ("ETA: %02dh %02dmin %02ds" % [eta/3600, eta/60%60, eta%60])
       donestr = "%.1f" % (done*100)
-      str = "#@pfx #{donestr}% #{data.units} processed [#{tstr}; #{etastr}]"
+      keystr = ""
+      keyargs.each {|k,v| keystr << "; #{k}: #{v}"}
+      str = "#@pfx #{donestr}% #{data.units} processed "+
+              "[#{tstr}; #{etastr}#{keystr}]"
       if str.size > data.strlen
         data.strlen = str.size
         spacediff = ""
@@ -84,14 +87,16 @@ class GFA::Logger
     end
   end
 
-  def progress_end(symbol)
+  def progress_end(symbol, **keyargs)
     return if !@progress
     data = @data[symbol]
     return if data.nil?
     t = Time.now - data.starttime
     tstr= ("Elapsed time: %02dh %02dmin %02ds" % [t/3600, t/60%60, t%60])
     quantity = @part == 1 ? data.total.to_s : "100.0%"
-    str = "#@pfx #{quantity} #{data.units} processed [#{tstr}]"
+    keystr = ""
+    keyargs.each {|k,v| keystr << "; #{k}: #{v}"}
+    str = "#@pfx #{quantity} #{data.units} processed [#{tstr}#{keystr}]"
     spacediff = " "*([data.strlen - str.size,0].max)
     @channel.print "\r" if @part != 1
     @channel.puts "#{str}#{spacediff}"
