@@ -21,3 +21,14 @@ desc "Rm files created by rake build"
 task :clean do
   system("rm -f gfa-*.gem")
 end
+
+# make documentation generation tasks
+# available only if yard gem is installed
+begin
+  require "yard"
+  YARD::Rake::YardocTask.new do |t|
+    t.files   = ['lib/**/*.rb']
+    t.stats_options = ['--list-undoc']
+  end
+rescue LoadError
+end
