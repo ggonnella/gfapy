@@ -1,6 +1,7 @@
 #
-# A representation of an optional field of a GFA line.
-# This is one of the fields in the form "XX:Y:Z+" where
+# A representation of optional fields (also called tags) of GFA files.
+#
+# An optional field is a field in the form "XX:Y:Z+" where
 # XX is the two-letter tag name, Y the type, and Z+ the value.
 #
 # Example usage:
@@ -25,7 +26,11 @@ class GFA::Optfield
 
   require "json"
 
-  attr_reader :tag, :type
+  # @return [String] Tag name
+  attr_reader :tag
+
+  # @return [String] Tag type
+  attr_reader :type
 
   # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#optional-fields
   TagRegexp = /[A-Za-z][A-Za-z0-9]/
@@ -44,47 +49,67 @@ class GFA::Optfield
 
   # Creates a +GFA::Optfield+ instance.
   #
-  # *Raises*:
-  # - +GFA::Optfield::TagError+ if the tag name is not two letters or
-  #                             one letter and one number
-  # - +GFA::Optfield::TypeError+ if the type is not one of "AifZHB"
-  # - +GFA::Optfield::ValueError+ if the value is not in accordance to the
-  #                                specified type
-  def initialize(tag, type, v, validate: true)
+  # @param tag [String, length 2] tag name
+  # @param type [A|i|f|Z|H|B|J] type
+  # @param value [String|Integer|Float|Hash|Array]
+  #   Either a string which
+  #   specifies the value in accordance to the +type+, or an instance of a
+  #   compatible Ruby class (Integer for "i" and "H", Float for "f", Array of
+  #   Integer or Float values for "B", String for "Z" and "A", Array or
+  #   Hash for "J").
+  # @param [boolean] validate <i>(defaults to: +true+)</i>
+  #    if false, skip validations
+  #
+  # @return [GFA::Optfield]
+  # @raise [GFA::Optfield::TagError] if the tag name is not two letters or
+  #   one letter and one number
+  # @raise [GFA::Optfield::TypeError] if the type is not one of +AifZHBJ+
+  # @raise [GFA::Optfield::ValueError] if the value is not in accordance to the
+  #   specified type
+  def initialize(tag, type, value, validate: true)
     @tag = tag.to_s
     @type = type.to_s
-    @value = value_to_optfield_s(@type, v)
+    @value = value_to_optfield_s(@type, value)
     @validate = validate
     validate! if @validate
   end
 
+  # String representation of the optional field.
+  # @return [String] "NN:T:VALUE" wheren NN is the tag name, T is the type
+  #   and VALUE a string representing the value.
   def to_s
     "#@tag#{GFA::Optfield::Separator}#@type#{GFA::Optfield::Separator}#@value"
   end
 
-  # Creates a +GFA::Optfield+ instance, guessing the correct type to use
-  # from the class of +value+.
+  # Creates a +GFA::Optfield+ instance without specificing the type,
+  # i.e. selecting the type to use from the class of +value+:
+  # - Integer: "i"
+  # - Float: "f"
+  # - Array, with elements:
+  #   - Integer: "B" with subtype "i"
+  #   - Float: "B" with subtype "f"
+  #   - #to_json: "J"
+  # - Hash: "J"
+  # - other (#to_s): "Z"
   #
-  # *Type of returned GFA::Optfield*:
-  #   - Integer          => "i"
-  #   - Float            => "f"
-  #   - Array of Integer => "B"/"i,..."
-  #   - Array of Float   => "B"/"f,..."
-  #   - other Array      => "J"
-  #   - Hash             => "J"
-  #   - other            => "Z"
+  # @return [GFA::Optfield]
   #
+  # @param tag [String, length 2] tag name
+  # @param value [String|Integer|Float|Hash|Array|#to_s] value
+  # @param [boolean] validate <i>(defaults to: +true+)</i>
+  #    if false, skip validations
   def self.new_autotype(tag, value, validate: true)
     self.new(tag, guess_type(value), value, validate: validate)
   end
 
   # Sets the +value+ of the GFA::Optfield.
   #
-  # *Arguments*:
-  #   - +v-: the value to set; the value must be either a string which
-  #   specifies the value in accordance to the +type+, or a value of a
-  #   compatible type, e.g. Integer for "i" and "H", Float for "f", Array of
-  #   Integer or Float values for "B", String for "Z" and "A", Hash for "J"
+  # @param value [String|Integer|Float|Hash|Array]
+  #   Either a string which
+  #   specifies the value in accordance to the +type+, or an instance of a
+  #   compatible Ruby class (Integer for "i" and "H", Float for "f", Array of
+  #   Integer or Float values for "B", String for "Z" and "A", Array or
+  #   Hash for "J").
   #
   def value=(v)
     @value = value_to_optfield_s(@type, v)
@@ -93,8 +118,7 @@ class GFA::Optfield
 
   # Get the +value+ of the GFA::Optfield.
   #
-  # *Arguments*:
-  #   - +cast+, if true, values are casted according to
+  # @param [boolean] cast if true, values are casted according to
   #             their type: "i" and "H" to Integer, "f" to Float,
   #             "B" to an Array of Integer or Float elements,
   #             "Z" and "A" to strings, "J" are interpreted by JSON.parse()
@@ -102,10 +126,14 @@ class GFA::Optfield
     cast ? value_from_optfield_s(@type, @value) : @value
   end
 
+  # @param validate ignored (compatibility reasons)
+  # @return [GFA::Optfield] self
   def to_gfa_optfield(validate: true)
     self
   end
 
+  # Creates a copy of an instance.
+  # @return [GFA::Optfield]
   def clone
     self.class.new(@tag.clone, @type.clone, @value.clone)
   end
@@ -234,9 +262,11 @@ class String
 
   # Creates a GFA::Optfield instance from a String
   #
-  # *Raises*:
-  #   - +TypeError+ if the String cannot be converted into an Optfield
-  #   - see GFA::Optfield#new for other possible exceptions
+  # @return [GFA::Optfield]
+  # @raise [TypeError] if the string does not contain 3 elements,
+  #   separated by GFA::Optfield::Separator
+  # @param [boolean] validate <i>(defaults to: +true+)</i>
+  #    if false, skip validations
   def to_gfa_optfield(validate: true)
     components = split(GFA::Optfield::Separator)
     if components.size != 3
