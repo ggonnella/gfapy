@@ -103,4 +103,9 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
+  # returns a symbol with the name of the segment
+  def to_sym
+    name.to_sym
+  end
+
 end

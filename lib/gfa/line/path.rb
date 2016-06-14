@@ -33,6 +33,11 @@ class GFA::Line::Path < GFA::Line
           validate: validate)
   end
 
+  # returns a symbol with the name of the path
+  def to_sym
+    name.to_sym
+  end
+
   private
 
   def self.split_cigars(c)
