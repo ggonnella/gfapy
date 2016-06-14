@@ -3,6 +3,12 @@
 #
 module GFA::CIGAR
 
+  # Parses a CIGAR string into an array of cigar operations,
+  # each represented by a tuple of operation length and operation
+  # symbol (one of MIDNSHPX=).
+  #
+  # @return ["*"] if self == "*"
+  # @return [Array<Integer, String(1)>] otherwise
   def cigar_operations
     return "*" if self == "*"
     raise TypeError if self !~ /^([0-9]+[MIDNSHPX=])+$/
@@ -13,6 +19,25 @@ module GFA::CIGAR
     end
   end
 
+
+  # Parses a CIGAR string representing an overlap and reverses it, i.e.
+  # computes the CIGAR for the segments in reverse direction.
+  # Return type: @see cigar_operations
+  #
+  # Example of conversion of a link to its reverse complement:
+  #
+  #   S1 + S2 + 2M1D3M
+  #
+  #   S1+  ACGACTGTGA
+  #   S2+      CT-TGACGG
+  #
+  #   S2-  CCGTCA-AG
+  #   S1-     TCACAGTCGT
+  #
+  #   S2 - S1 - 3M1I2M
+  #
+  # @return ["*"] if self == "*"
+  # @return [Array<Integer, String(1)>] otherwise
   def reverse_cigar_operations
     return "*" if self == "*"
     self.cigar_operations.reverse.map do |oplen, opcode|
@@ -25,6 +50,9 @@ module GFA::CIGAR
     end
   end
 
+  # @see reverse_cigar_operation
+  # @return ["*"] if self == "*"
+  # @return [String] the reverse CIGAR, otherwise
   def reverse_cigar
     return "*" if self == "*"
     reverse_cigar_operations.flatten.join
