@@ -71,7 +71,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal(nil, gfa.link(["1a", :E], ["2", :B]))
     assert_equal(nil, gfa.containment("5", "0"))
     assert_equal(6000, gfa.segment("1").RC)
-    gfa.duplicate("1")
+    gfa.multiply("1", 2)
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal(l, gfa.link(["1", :E], ["2", :B]))
     assert_equal(c, gfa.containment("1", "0"))

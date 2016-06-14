@@ -3,13 +3,17 @@
 #
 module GFA::Edit
 
-  # Eliminate the sequences from S lines
+  # Eliminate all sequences from S lines, changing them to a "*"
+  #
+  # @return [GFA] self
   def delete_sequences
     @lines["S"].each {|l| l.sequence = "*"}
     self
   end
 
-  # Eliminate the CIGAR from L/C/P lines
+  # Eliminate all CIGAR from L/C/P lines, changing them to "*"
+  #
+  # @return [GFA] self
   def delete_alignments
     @lines["L"].each {|l| l.overlap = "*"}
     @lines["C"].each {|l| l.overlap = "*"}
@@ -17,6 +21,13 @@ module GFA::Edit
     self
   end
 
+  # Rename a segment or a path
+  #
+  # @param old_name [String] the name of the segment or path to rename
+  # @param new_name [String] the new name for the segment or path
+  #
+  # @raise if +new_name+ is already a segment or path name
+  # @return [GFA] self
   def rename(old_name, new_name)
     validate_segment_and_path_name_unique!(new_name)
     is_path = @path_names.has_key?(old_name.to_sym)
@@ -54,9 +65,40 @@ module GFA::Edit
     self
   end
 
-  def multiply(segment_name, factor, copy_names: :lowcase,
+  # Create multiple copies of a segment.
+  #
+  # <b>Automatic computation of the copy names:</b>
+  #
+  # - Can be overridden, by providing an array of copy names.
+  # - First, itis checked if the name of the original segment ends with a
+  #   relevant
+  #   string, i.e. a lower case letter (for +:lowcase+), an upper case letter
+  #   (for +:upcase+), a digit (for +:number+), or the string +"_copy"+
+  #   plus one or more optional digits (for +:copy+).
+  # - If so, it is assumed, it was already a copy, and it is not
+  #   altered.
+  # - If not, then +a+ (for +:lowcase+), +A+ (for +:upcase+), +1+ (for
+  #   +:number+), +_copy+ (for +:copy+) is appended to the string.
+  # - Then, in all
+  #   cases, next (*) is called on the string, until a valid, non-existant name
+  #   is found for each of the segment copies
+  # - (*) = except for +:copy+, where
+  #   for the first copy no digit is present, but for the following is,
+  #   i.e. the segment names will be +:copy+, +:copy2+, +:copy3+, etc.
+  #
+  # @param [Integer] factor multiplication factor; if 0, delete the segment;
+  #   if 1; do nothing; if > 1; number of copies to create
+  # @segment [String|GFA::Line::Segment] name of segment (or segment object),
+  #   specifying the segment to copy
+  # @param [:lowcase|:upcase|:number|:copy|Array] copy_names
+  #   <i>(Default: +:lowcase+)</i> Array of names for the copies of the segment,
+  #   or a symbol, which defines a system to compute the names from the name of
+  #   the original segment.
+  #
+  # @return [GFA] self
+  def multiply(segment, factor, copy_names: :lowcase,
                conserve_components: true)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     if factor < 2
       return self if factor == 1
       return self if cut_segment?(segment_name) and conserve_components
@@ -67,11 +109,6 @@ module GFA::Edit
     copy_names = compute_copy_names(copy_names, segment_name, factor)
     copy_names.each {|cn| clone_segment_and_connections(s, cn)}
     return self
-  end
-
-  def duplicate(segment_name, copy_name: :lowcase)
-    multiply(segment_name, 2,
-             copy_names: copy_name.kind_of?(String) ? [copy_name] : copy_name)
   end
 
   private
