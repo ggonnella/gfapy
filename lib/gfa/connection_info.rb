@@ -21,7 +21,7 @@ class GFA::ConnectionInfo
   #
   # @param rt [:L|:C|:P] the record type
   # @param value [Integer] an index in @lines[rt]
-  # @param sn [String] the segment name
+  # @param sn [String|GFA::Line::Segment] the segment name
   # @param dir [:from|:to|nil] is segment the from or the to segment of the
   #   link/containment?; use nil for paths
   # @param o ["+"|"-"|nil] the segment orientation (links/containments); use
@@ -50,11 +50,11 @@ class GFA::ConnectionInfo
   #
   # @param rt [:L|:C|:P] the record type
   # @param value [Integer] the value (index in @lines[rt]) to remove
-  # @param sn [String] the segment name
+  # @param sn [GFA::Line::Segment|String] the segment instance or segment name
   # @param dir [:from|:to|nil] direction (for links/containments);
   #   set to nil for paths
   # @param o ["+"|"-"|nil] orientation (for links/containments);
-  #   set to nil for paths; if nil in links/containments: both
+  #   set to nil for paths; if nil in links/containments: both orientations
   #
   # @example delete("P", value, sn) => rm path ref
   # @example  delete("C"|"L", value, sn, :from|:to, "+"|"-")
@@ -84,8 +84,8 @@ class GFA::ConnectionInfo
   end
 
   # Rename a segment in the connection info.
-  # @param sn [String] old segment name
-  # @param new_sn [String] new segment name
+  # @param sn [GFA::Line::Segment|String] the old segment instance or name
+  # @param new_sn [GFA::Line::Segment|String] the new segment instance or name
   def rename_segment(sn, new_sn)
     sn = sn.to_sym
     new_sn = new_sn.to_sym
@@ -100,22 +100,31 @@ class GFA::ConnectionInfo
   end
 
   # Delete all information about a segment in the connection info.
-  # @param sn [String] the segment name
+  # @param sn [GFA::Line::Segment|String] the segment instance or segment name
   def delete_segment(sn)
     [:P, :L, :C].each {|rt| @connect[rt].delete(sn.to_sym)}
     self
   end
 
-  # Find values from connection infos
+  # Find indices of GFA lines referring to a segment
   #
-  # *Usage*:
-  # +find("P", sn)+ => find paths
-  # +find("C"|"L", sn, :from|:to)+ => both orientations of +sn+
-  # +find("C"|"L", sn, :from|:to, :+|:-)+ => only specified orientation
+  # @param rt [:L|:C|:P] the record type
+  # @param sn [GFA::Line::Segment|String] the segment instance or segment name
+  # @param dir [:from|:to|nil] direction (for links/containments);
+  #   set to nil for paths
+  # @param o ["+"|"-"|nil] orientation (for links/containments);
+  #   set to nil for paths; if nil in links/containments: both orientations
   #
-  # *Note*:
-  # The returned array should only be read; modifications must be done using
-  # +add()+ or +delete()+
+  # @example
+  #   find("P", sn)                       # => find paths
+  #   find("C"|"L", sn, :from|:to)        # => both orientations
+  #   find("C"|"L", sn, :from|:to, :+|:-) # => only specified orientation
+  #
+  # @note Do not modify the returned array; modifications must be done using
+  #   #add and #delete.
+  # @return [Array<Integer>] the indices of lines array of given record
+  #   type for all lines referring to the segment and respecting the +dir+
+  #   and +o+ conditions
   def find(rt, sn, dir = nil, o = nil)
     rt = rt.to_sym
     sn = sn.to_sym
@@ -130,7 +139,20 @@ class GFA::ConnectionInfo
     end
   end
 
-  # @return [Array<GFA::Line>] the lines of the given record type for segment
+  # Find GFA lines referring to a segment
+  #
+  # @param rt [:L|:C|:P] the record type
+  # @param sn [GFA::Line::Segment|String] the segment instance or segment name
+  # @param dir [:from|:to|nil] direction (for links/containments);
+  #   set to nil for paths
+  # @param o ["+"|"-"|nil] orientation (for links/containments);
+  #   set to nil for paths; if nil in links/containments: both orientations
+  #
+  # @note You can modify the line instances, but do not modify the returned
+  #   array itself; modifications must be done using #add and #delete.
+  # @return [Array<GFA::Line>] the lines of given record
+  #   type referring to the segment and respecting the +dir+
+  #   and +o+ conditions
   def lines(rt, sn, dir = nil, o = nil)
     find(rt, sn, dir, o).map{|i| @lines[rt][i]}
   end
@@ -141,7 +163,7 @@ class GFA::ConnectionInfo
   # @raise if any link/containment field (from/from_orient/to/to_orient) is not
   #   consistent with the stored information
   # @raise if the paths segment name field is not consistent
-  #   with the stored inforation
+  #   with the stored information
   #
   def validate!
     @connect[:P].keys.each do |sn|
