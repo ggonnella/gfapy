@@ -151,8 +151,6 @@ class TestGFALine < Test::Unit::TestCase
     l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
-    assert_equal("H", l[0])
-    assert_equal("H", l.get_field(0))
     assert_equal(:record_type, l.fieldnames[0])
     assert_equal(:record_type, l.required_fieldnames[0])
     assert_equal("H", l.record_type)
@@ -164,9 +162,6 @@ class TestGFALine < Test::Unit::TestCase
     l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
-    assert_equal(13, l[2])
-    assert_equal(13, l.get_field(2))
-    assert_equal("13", l.get_field(2, false))
     assert_equal(:xx, l.fieldnames[2])
     assert_equal(:xx, l.optional_fieldnames[0])
     assert_equal(13, l.xx)
