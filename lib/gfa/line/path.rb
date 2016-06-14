@@ -22,6 +22,9 @@ class GFA::Line::Path < GFA::Line
 
   OptfieldTypes = {}
 
+  # @param [Array<String>] fields
+  # @param [boolean] validate <it>(default: +true+>)</it>
+  # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields, GFA::Line::Path::FieldRegexp,
           GFA::Line::Path::OptfieldTypes,

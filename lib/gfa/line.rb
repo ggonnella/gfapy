@@ -1,12 +1,15 @@
 #
-# This class is not meant to be directly initialized by the end-user;
-# instead the end-user will typically initialize one of its child classes,
-# which define the different record types.
+# Generic representation of a record of a GFA file.
+#
+# This class is usually not meant to be directly initialized by the user;
+# initialize instead one of its child classes, which define the different
+# record types.
 #
 class GFA::Line
 
   Separator = "\t"
 
+  # RecordTypes
   #
   # In case new record types are defined, add them here and define the
   # corresponding class in a file gfa/line/<downcasetypename>.rb;
@@ -21,6 +24,7 @@ class GFA::Line
       "P" => "GFA::Line::Path"
     }
 
+  # @raise if record type is not one of GFA::Line::RecordTypes
   def self.validate_record_type!(rtype)
     if !GFA::Line::RecordTypes.has_key?(rtype)
       raise GFA::Line::UnknownRecordTypeError,
@@ -28,21 +32,20 @@ class GFA::Line
     end
   end
 
-  #
-  # <fields> is an array of strings, the content of a line
-  #
-  # <reqfield_definitions> is an array of two-element arrays,
-  # which contain a field name and a regular expression;
-  # the field name will be used as method name; the regular expression
-  # will be used to validate the content of the field
-  #
-  # <optfield_types> is a (possibly empty) hash of optfield_tag to optfield_type
-  # pairs; if an instance of the predefined optfield_tag is specified in a
-  # record, it will be required to be of type optfield_type
-  #
-  # <reqfield_cast> is a (possibly empty) hash of field name to lambda,
-  # where the lambda defines a conversion of the value of the field
-  # which is performed when the field name getter method is called
+  # @param fields [Array<String>] the content of the line
+  # @param reqfield_definitions [Array<[Symbol,Regex]>] in the order of the
+  #   required fields in the line; symbol is the required
+  #   field name, regular expressions is used for validation.
+  #   The array *must* have an element for each required field; if no
+  #   validation is necessary, use the regex +/.*/+.
+  # @param optfield_types [Hash<Symbol(optfield_tag):String(optfield_type1)>]
+  #   (possibly empty)
+  #   if an instance of the predefined optfield_tag is specified in a
+  #   record, it will be required to be of type optfield_type
+  # @param reqfield_cast [Hash<Symbol(field_name):Lambda(CastMethod)>]
+  #   defines methods for the conversion of selected required fields into
+  #   instances of the corresponding Ruby classes
+  # @return [GFA::Line]
   def initialize(fields,
                  reqfield_definitions,
                  optfield_types,
@@ -61,15 +64,18 @@ class GFA::Line
 
   attr_reader :fieldnames
 
+  # @return [Array<Symbol>] name of the required fields
   def required_fieldnames
     @fieldnames[0..(n_required_fields-1)]
   end
 
+  # @return [Array<Symbol>] name of the optional fields
   def optional_fieldnames
     @fieldnames.size > n_required_fields ?
       @fieldnames[n_required_fields..-1] : []
   end
 
+  # @return [GFA::Line or subclass] a deep-copy of self
   def clone
     if self.class === GFA::Line
       self.class.new(@fields.clone.map{|e|e.clone}, @reqfield_definitions.clone,
@@ -79,10 +85,15 @@ class GFA::Line
     end
   end
 
+  # @return [String] a string representation of self
   def to_s
     @fields.join(GFA::Line::Separator)
   end
 
+  # @param [String|GFA::Optfield] an optional field to add to the line
+  # @raise [GFA::Line::DuplicateOptfieldNameError] if the line already
+  #   contains an optional field with the same tag name
+  # @return self
   def add_optfield(optfield)
     if !optfield.respond_to?(:to_gfa_optfield)
       raise ArgumentError,
@@ -101,6 +112,9 @@ class GFA::Line
     self
   end
 
+  # Remove an optional field from the line
+  # @param [#to_sym] the tag name of the optfield to remove
+  # @return self
   def rm_optfield(optfield_tag)
     i = optional_fieldnames.index(optfield_tag.to_sym)
     if !i.nil?
@@ -111,13 +125,96 @@ class GFA::Line
     self
   end
 
+  # @param optfield_tag [#to_sym]
+  # @return GFA::Optfield
   def optfield(optfield_tag)
     i = optional_fieldnames.index(optfield_tag.to_sym)
     return i.nil? ? nil : @fields[i + n_required_fields]
   end
 
+  # @see add_optfield
   def <<(optfield)
     add_optfield(optfield)
+  end
+
+  # Three methods are created for each existing field name as well as
+  # for each non-existing but valid optional field name.
+  #
+  # <fieldname>(cast: true): returns the value of the field; if cast is
+  #   false, then return original string, otherwise cast into ruby type;
+  #   returns nil if fieldname is a non-existing but valid optional
+  #   field name
+  #
+  # <fieldname>!: as <fieldname>, but raise if non-existing
+  #
+  # <fieldname>=(value): sets the value of the field; if fieldname is a
+  #   non-existing but valid optional field name, creates an optional
+  #   field, using an appropriate type, depending on the value class
+  #   (see GFA::Optfield::new_autotype)
+  def method_missing(m, *args, &block)
+    ms, var, i = process_unknown_method(m)
+    if !i.nil?
+      return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
+    elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
+      raise "No value defined for tag #{ms}" if var == :bang
+      return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
+    end
+    super
+  end
+
+  def respond_to?(m, include_all=false)
+    retval = super
+    if !retval
+      pum_retvals = process_unknown_method(m)
+      ms = pum_retvals[0]
+      i = pum_retvals[2]
+      return (!i.nil? or ms =~ /^#{GFA::Optfield::TagRegexp}$/)
+    end
+    return retval
+  end
+
+  # @return self
+  # @param [boolean] validate ignored (compatibility reasons)
+  def to_gfa_line(validate: true)
+    self
+  end
+
+  # @return [boolean] does the line contains the same optional fields
+  #   and all required and optional fields contain the same field values?
+  def ==(o)
+    (o.fieldnames == self.fieldnames) and
+      (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
+  end
+
+  # @param ["+"|"-"] an orientation
+  # @return ["+"|"-"] the other orientation
+  def self.other_orientation(orientation)
+    raise "Unknown orientation" if !["+","-"].include?(orientation)
+    return orientation == "+" ? "-" : "+"
+  end
+
+  # @param [:B|:E] an end type
+  # @return [:B|:E] the other end type
+  def self.other_end_type(end_type)
+    raise "Unknown end_type" if ![:B,:E].include?(end_type)
+    return end_type == :B ? :E : :B
+  end
+
+  # @raise if the field content is not valid
+  def validate!
+    validate_required_fields!
+    validate_optional_fields!
+    self.class.validate_record_type!(self.record_type)
+  end
+
+  private
+
+  def []=(i, value)
+    set_field(i, value)
+  end
+
+  def [](i)
+    get_field(i, true)
   end
 
   def set_field(i, value)
@@ -150,61 +247,6 @@ class GFA::Line
       return @fields[i].value(autocast)
     end
   end
-
-  def []=(i, value)
-    set_field(i, value)
-  end
-
-  def [](i)
-    get_field(i, true)
-  end
-
-  def method_missing(m, *args, &block)
-    ms, var, i = process_unknown_method(m)
-    if !i.nil?
-      return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
-    elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
-      raise "No value defined for tag #{ms}" if var == :bang
-      return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
-    end
-    super
-  end
-
-  def respond_to?(m, include_all=false)
-    retval = super
-    if !retval
-      ms, var, i = process_unknown_method(m)
-      return (!i.nil? or ms =~ /^#{GFA::Optfield::TagRegexp}$/)
-    end
-    return retval
-  end
-
-  def to_gfa_line(validate: true)
-    self
-  end
-
-  def ==(o)
-    (o.fieldnames == self.fieldnames) and
-      (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
-  end
-
-  def self.other_orientation(orientation)
-    raise "Unknown orientation" if !["+","-"].include?(orientation)
-    return orientation == "+" ? "-" : "+"
-  end
-
-  def self.other_end_type(end_type)
-    raise "Unknown end_type" if ![:B,:E].include?(end_type)
-    return end_type == :B ? :E : :B
-  end
-
-  def validate!
-    validate_required_fields!
-    validate_optional_fields!
-    self.class.validate_record_type!(self.record_type)
-  end
-
-  private
 
   def n_required_fields
     @reqfield_definitions.size
@@ -359,6 +401,10 @@ end
 #
 class String
 
+  # @return [GFA::Line or subclass] the line instance coded by the string
+  # @raise if the string does not comply to the GFA specification
+  # @param validate [boolean] <i>(default: +true+)</i> if false,
+  #   turn off validations
   def to_gfa_line(validate: true)
     components = split(GFA::Line::Separator)
     record_type = components[0]
