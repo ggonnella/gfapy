@@ -176,7 +176,7 @@ class TestGFALine < Test::Unit::TestCase
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(nil, l.zz)
-    assert_raise(RuntimeError) { l.zz! }
+    assert_raise(GFA::Line::TagMissing) { l.zz! }
   end
 
   def test_field_setters_required_fields
@@ -257,12 +257,6 @@ class TestGFALine < Test::Unit::TestCase
     l1 = l.to_gfa_line
     assert_equal(GFA::Line, l1.class)
     assert_equal(l, l1)
-  end
-
-  def test_other_orientation
-    assert_equal("+", GFA::Line.other_orientation("-"))
-    assert_equal("-", GFA::Line.other_orientation("+"))
-    assert_raises(RuntimeError) {GFA::Line.other_orientation("x")}
   end
 
   def test_validate
