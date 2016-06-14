@@ -16,8 +16,8 @@ class GFA::Line::Segment < GFA::Line
      "KC" => "i", # k-mer count
     }
 
-  # @param [Array<String>] fields
-  # @param [boolean] validate <it>(default: +true+>)</it>
+  # @param [Array<String>] fields splitted content of the line
+  # @param [Boolean] validate <i>(defaults to +true+)</i> perform validations?
   # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields, GFA::Line::Segment::FieldRegexp,
@@ -35,9 +35,11 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
-  # @return [Integer] value of LN tag, if segment has LN tag
-  # @return [Integer] sequence length if no LN and sequence not "*"
+  # @!macro [new] length
+  #   @return [Integer] value of LN tag, if segment has LN tag
+  #   @return [Integer] sequence length if no LN and sequence not "*"
   # @return [nil] if sequence is "*"
+  # @see #length!
   def length
     if self.LN
       self.LN
@@ -48,26 +50,30 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
-  # @see length
-  # @raise if not LN and sequence is "*"
+  # @!macro length
+  # @!macro [new] length_needed
+  #   @raise [GFA::Line::Segment::UndefinedLength] if not an LN tag and the
+  #     sequence is "*"
+  # @see #length
   def length!
     l = self.length()
-    raise "No length information available" if l.nil?
+    raise GFA::Line::Segment::UndefinedLength,
+      "No length information available" if l.nil?
     return l
   end
 
-  # The coverage computed from a count_tag.
-  # If unit_length is provided then: count/(length-unit_length+1),
-  # otherwise: count/length.
-  # The latter is a good approximation if length >>> unit_length.
-  #
-  # @param [Symbol] count_tag integer tag storing the count, usually
-  #   :KC, :RC or :FC
-  # @param [Integer] unit_length the (average) length of a read (for
-  #   :RC), fragment (for :FC) or k-mer (for :KC)
-  #
-  # @return [Integer] coverage, if count_tag exists
+  # @!macro [new] coverage
+  #   The coverage computed from a count_tag.
+  #   If unit_length is provided then: count/(length-unit_length+1),
+  #   otherwise: count/length.
+  #   The latter is a good approximation if length >>> unit_length.
+  #   @param [Symbol] count_tag <i>(defaults to +:RC+)</i>
+  #     integer tag storing the count, usually :KC, :RC or :FC
+  #   @param [Integer] unit_length the (average) length of a read (for
+  #     :RC), fragment (for :FC) or k-mer (for :KC)
+  #   @return [Integer] coverage, if count_tag and length are defined
   # @return [nil] otherwise
+  # @see #coverage!
   def coverage(count_tag: :RC, unit_length: 1)
     if optional_fieldnames.include?(count_tag) and self.length
       return (self.send(count_tag).to_f)/(self.length-unit_length+1)
@@ -76,21 +82,23 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
-  # @see coverage
-  # @raise if segment does not have count_tag
-  # @raise if segment does not have LN and sequence is "*"
+  # @see #coverage
+  # @!macro coverage
+  # @raise [GFA::Line::TagMissing] if segment does not have count_tag
+  # @!macro length_needed
   def coverage!(count_tag: :RC, unit_length: 1)
     c = coverage(count_tag: count_tag, unit_length: unit_length)
     if c.nil?
       self.length!
-      raise "Tag #{count_tag} undefined for segment #{name}"
+      raise GFA::Line::TagMissing,
+        "Tag #{count_tag} undefined for segment #{name}"
     else
       return c
     end
   end
 
   # @return string representation of the segment
-  # @param [boolean] without_sequence if false output "*" instead of sequence
+  # @param [Boolean] without_sequence if +true+, output "*" instead of sequence
   def to_s(without_sequence: false)
     if !without_sequence
       return super()
@@ -103,9 +111,32 @@ class GFA::Line::Segment < GFA::Line
     end
   end
 
-  # returns a symbol with the name of the segment
+  # @return [Symbol] name of the segment as symbol
   def to_sym
     name.to_sym
   end
 
+  # Strings, which represents the orientation of a segment in
+  # links/paths/containments
+  ORIENTATION = [ FORWARD = "+", REVERSE = "-" ]
+
+  # @param orientation [GFA::Line::Segment::ORIENTATION] an orientation
+  # @return [GFA::Line::Segment::ORIENTATION] the other orientation
+  # @raise [GFA::Line::Segment::UnknownOrientation]
+  #   if +orientation+ is not valid
+  def self.other_orientation(orientation)
+    if !GFA::Line::Segment::ORIENTATION.include?(orientation)
+      raise GFA::Line::Segment::UnknownOrientation
+    end
+    return (orientation == GFA::Line::Segment::FORWARD ?
+              GFA::Line::Segment::REVERSE :
+              GFA::Line::Segment::FORWARD)
+  end
+
 end
+
+# Error raised if an unknown value for orientation is given
+class GFA::Line::Segment::UnknownOrientation < ArgumentError; end
+
+# Error raised if length of segment cannot be computed
+class GFA::Line::Segment::UndefinedLength < ArgumentError; end

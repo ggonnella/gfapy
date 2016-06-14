@@ -24,8 +24,8 @@ class GFA::Line::Containment < GFA::Line
      "NM" => "i", # Number of mismatches/gaps
     }
 
-  # @param [Array<String>] fields
-  # @param [boolean] validate <it>(default: +true+>)</it>
+  # @param [Array<String>] fields splitted content of the line
+  # @param [Boolean] validate <i>(defaults to +true+)</i> perform validations?
   # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields,

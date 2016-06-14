@@ -1,20 +1,17 @@
 #
 # Generic representation of a record of a GFA file.
 #
-# This class is usually not meant to be directly initialized by the user;
-# initialize instead one of its child classes, which define the different
-# record types.
-#
 class GFA::Line
 
   # Separator in the string representation of GFA lines
   Separator = "\t"
 
-  # RecordTypes
+  # List of allowed record_type values and the associated subclasses of
+  # {GFA::Line}
   #
   # In case new record types are defined, add them here and define the
-  # corresponding class in a file gfa/line/<downcasetypename>.rb;
-  # the file will be automatically required
+  # corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
+  # All file in the +line+ subdirectory are automatically required.
   #
   RecordTypes =
     {
@@ -33,18 +30,26 @@ class GFA::Line
     end
   end
 
+  # @note
+  #   This class is usually not meant to be directly initialized by the user;
+  #   initialize instead one of its child classes, which define the concrete
+  #   different record types.
+  #
   # @param fields [Array<String>] the content of the line
   # @param reqfield_definitions
-  #   [Array<[Symbol(field_name),Regex(validator)]>] defines
-  #   the order of the required fields in the line and their validators;
+  #   [Array<Array(Symbol,Regex)>] defines
+  #   the order of the required fields (Symbol) in the line and their
+  #   validators (Regex);
   #   an element _must_ be present for each required field;
   #   to accept any string, use the regex +/.*/ as validator
-  # @param optfield_types [Hash<Symbol(optfield_tag):String(optfield_type)>]
+  # @param optfield_types [Hash{Symbol=>String}]
   #   <i>(possibly empty)</i> defines the predefined optional
-  #   fields and their required type
-  # @param reqfield_cast [Hash<Symbol(field_name):Lambda(CastMethod)>]
-  #   defines methods for casting selected required fields into
-  #   instances of the corresponding Ruby classes
+  #   fields and their required type (String)
+  # @param reqfield_cast [Hash{Symbol=>Lambda}]
+  #   defines procedures (Lambda) for casting selected required fields
+  #   (Symbol) into instances of the corresponding Ruby classes; the
+  #   lambda shall take one argument (the field string value) and
+  #   return one argument (the Ruby value)
   # @return [GFA::Line]
   # @raise [GFA::Line::UnknownRecordTypeError]
   #   if the record_type is not one of +GFA::Line::RecordTypes+
@@ -61,7 +66,6 @@ class GFA::Line
   # @raise [GFA::Line::PredefinedOptfieldTypeError]
   #   if the type of a predefined optional field does not
   #   respect the specified type.
-
   def initialize(fields,
                  reqfield_definitions,
                  optfield_types,
@@ -91,7 +95,7 @@ class GFA::Line
       @fieldnames[n_required_fields..-1] : []
   end
 
-  # @return [GFA::Line or subclass] a deep-copy of self
+  # @return [self.class] deep copy of self (GFA::Line or subclass)
   def clone
     if self.class === GFA::Line
       self.class.new(@fields.clone.map{|e|e.clone}, @reqfield_definitions.clone,
@@ -161,7 +165,7 @@ class GFA::Line
   # The value of the field.
   #
   # <b>Parameters:</b>
-  # - +*cast*+ (boolean) -- <i>(default: true)</i> if +false+,
+  # - +*cast*+ (Boolean) -- <i>(default: true)</i> if +false+,
   #   return original string, otherwise cast into ruby type
   #
   # <b>Returns:</b>
@@ -174,7 +178,7 @@ class GFA::Line
   # Banged version of +<fieldname>+.
   #
   # <b>Parameters:</b>
-  # - +*cast*+ (boolean) -- <i>(default: true)</i> if +false+,
+  # - +*cast*+ (Boolean) -- <i>(default: true)</i> if +false+,
   #   return original string, otherwise cast into ruby type
   #
   # <b>Returns:</b>
@@ -182,7 +186,7 @@ class GFA::Line
   # - (String) if field exists and +cast+ is false
   #
   # <b>Raises:</b>
-  # - (RuntimeError) if the field does not exist
+  # - (GFA::Line::TagMissing) if the field does not exist
   #
   # ---
   #
@@ -206,12 +210,15 @@ class GFA::Line
     if !i.nil?
       return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
     elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
-      raise "No value defined for tag #{ms}" if var == :bang
+      raise GFA::Line::TagMissing,
+        "No value defined for tag #{ms}" if var == :bang
       return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
     end
     super
   end
 
+  # Redefines respond_to? to correctly handle dynamical methods.
+  # @see #method_missing
   def respond_to?(m, include_all=false)
     retval = super
     if !retval
@@ -224,30 +231,16 @@ class GFA::Line
   end
 
   # @return self
-  # @param [boolean] validate ignored (compatibility reasons)
+  # @param [Boolean] validate ignored (compatibility reasons)
   def to_gfa_line(validate: true)
     self
   end
 
-  # @return [boolean] does the line contains the same optional fields
+  # @return [Boolean] does the line contains the same optional fields
   #   and all required and optional fields contain the same field values?
   def ==(o)
     (o.fieldnames == self.fieldnames) and
       (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
-  end
-
-  # @param orientation ["+"|"-"] an orientation
-  # @return ["+"|"-"] the other orientation
-  def self.other_orientation(orientation)
-    raise "Unknown orientation" if !["+","-"].include?(orientation)
-    return orientation == "+" ? "-" : "+"
-  end
-
-  # @param end_type [:B|:E] an end type
-  # @return [:B|:E] the other end type
-  def self.other_end_type(end_type)
-    raise "Unknown end_type" if ![:B,:E].include?(end_type)
-    return end_type == :B ? :E : :B
   end
 
   # @raise if the field content is not valid
@@ -454,6 +447,9 @@ class GFA::Line::DuplicateOptfieldNameError  < ArgumentError; end
 # respect the specified type.
 class GFA::Line::PredefinedOptfieldTypeError < TypeError;     end
 
+# Error raised if optional tag is not present
+class GFA::Line::TagMissing                  < NoMethodError; end
+
 #
 # Automatically require the child classes specified in the RecordTypes hash
 #
@@ -470,7 +466,7 @@ class String
 
   # @return [GFA::Line or subclass] the line instance coded by the string
   # @raise if the string does not comply to the GFA specification
-  # @param validate [boolean] <i>(default: +true+)</i> if false,
+  # @param validate [Boolean] <i>(default: +true+)</i> if false,
   #   turn off validations
   def to_gfa_line(validate: true)
     components = split(GFA::Line::Separator)
