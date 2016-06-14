@@ -18,8 +18,8 @@ require_relative "./gfa/logger.rb"
 #
 # *Internals*:
 # - The main structures are the @lines arrays, one for each record_type
-#   (e.g. header => @lines["H"]); these contain GFA::Line objects of the
-#   corresponding subclass (e.g. GFA::Line::Header)
+#   (e.g. header => @lines["H"]); these contain +GFA::Line+ objects of the
+#   corresponding subclass (e.g. +GFA::Line::Header+)
 # - If an element is deleted, the position in @lines[record_type] is set to
 #   +nil+, so that the links to all other positions still function
 # - The @segment_names and @path_names arrays contain the names of
@@ -27,9 +27,11 @@ require_relative "./gfa/logger.rb"
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
-# - @c contains array of indices of @lines["L"|"C"|"P"] which allow to directly
-#   find the links, containments and paths involving a given segment; @c must
-#   be updated if links, containments or paths are added or deleted
+# - @c contains a GFA::ConnectionInfo object, with hashes of indices of
+#   @lines["L"|"C"|"P"] which allow to directly
+#   find the links, containments and paths involving a given segment; @c is
+#   kept uptodate by the methods which allow to delete/rename or add links,
+#   containments or paths
 class GFA
 
   include GFA::LineGetters
@@ -39,13 +41,13 @@ class GFA
   include GFA::Traverse
   include GFA::LoggerSupport
 
-  def initialize(segments_first_order: false)
+  def initialize
     @lines = {}
     GFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
     @segment_names = {}
     @path_names = {}
     @c = GFA::ConnectionInfo.new(@lines)
-    @segments_first_order = segments_first_order
+    @segments_first_order = false
     @validate = true
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}

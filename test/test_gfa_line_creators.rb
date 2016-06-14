@@ -42,11 +42,6 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
     assert_raises(RuntimeError) {gfa.link!(["2", :E], ["1", :B])}
     assert_nothing_raised { gfa << l2 }
-    gfa = GFA.new(segments_first_order: true)
-    gfa << s1
-    gfa << s2
-    assert_nothing_raised { gfa << l1 }
-    assert_raises(RuntimeError) { gfa << l2 }
   end
 
   def test_add_containments
@@ -64,11 +59,6 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_nothing_raised {gfa.containment!("1",  "2")}
     assert_raises(RuntimeError) {gfa.containment!("2", "1")}
     assert_nothing_raised { gfa << c2 }
-    gfa = GFA.new(segments_first_order: true)
-    gfa << s1
-    gfa << s2
-    assert_nothing_raised { gfa << c1 }
-    assert_raises(RuntimeError) { gfa << c2 }
   end
 
   def test_add_paths
@@ -89,9 +79,26 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_raises(RuntimeError) {gfa.path!("5")}
     assert_raises(ArgumentError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
-    gfa = GFA.new(segments_first_order: true)
+  end
+
+  def test_segments_first_order
+    s1 = "S\t1\t*"
+    s2 = "S\t2\t*"
+    l1 = "L\t1\t+\t2\t+\t12M"
+    l2 = "L\t1\t+\t3\t+\t12M"
+    c1 = "C\t1\t+\t2\t+\t12\t12M"
+    c2 = "C\t1\t+\t3\t+\t12\t12M"
+    p1 = "P\t4\t1+,2+\t122M,120M"
+    p2 = "P\t1\t1+,2+\t122M,120M"
+    p3 = "P\t5\t1+,3+\t122M,120M"
+    gfa = GFA.new
+    gfa.require_segments_first_order
     gfa << s1
     gfa << s2
+    assert_nothing_raised { gfa << l1 }
+    assert_raises(RuntimeError) { gfa << l2 }
+    assert_nothing_raised { gfa << c1 }
+    assert_raises(RuntimeError) { gfa << c2 }
     assert_nothing_raised { gfa << p1 }
     assert_raises(ArgumentError) { gfa << p2 }
     assert_raises(RuntimeError) { gfa << p3 }

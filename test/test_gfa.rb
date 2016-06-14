@@ -8,9 +8,6 @@ class TestGFA < Test::Unit::TestCase
     assert_nothing_raised { GFA.new }
     gfa = GFA.new
     assert_equal(GFA, gfa.class)
-    assert_nothing_raised { GFA.new(segments_first_order: true) }
-    gfa = GFA.new(segments_first_order: true)
-    assert_equal(GFA, gfa.class)
   end
 
   def test_segment_names
