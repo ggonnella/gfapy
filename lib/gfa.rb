@@ -1,3 +1,7 @@
+#
+# (c) 2016, Giorgio Gonnella, ZBH, Uni-Hamburg <gonnella@zbh.uni-hamburg.de>
+#
+
 GFA = Class.new
 require_relative "./gfa/optfield.rb"
 require_relative "./gfa/line.rb"
@@ -12,9 +16,10 @@ require_relative "./gfa/traverse.rb"
 require_relative "./gfa/logger.rb"
 
 #
-# A representation of the GFA graph.
-# Supports input and output from/to file or strings.
-# Validates the input according to the GFA specification.
+# This is the main class of the RGFA library.
+# It provides a representation of the \GFA graph.
+# Supports creating a graph from scratch, input and output from/to file
+# or strings, as well as several operations on the graph.
 #
 # *Internals*:
 # - The main structures are the @lines arrays, one for each record_type
@@ -57,17 +62,15 @@ class GFA
   # to a segment are added after the segment. Default: do not
   # require any particular ordering.
   #
-  # @return [self]
+  # @return [void]
   def require_segments_first_order
     @segments_first_order = true
-    self
   end
 
   # Turns off validations. This increases the performance.
-  # @return [self]
+  # @return [void]
   def turn_off_validations
     @validate = false
-    self
   end
 
   # List all names of segments in the graph
@@ -84,7 +87,7 @@ class GFA
 
   # Post-validation of the GFA; checks that L, C and P refer to
   # existing S.
-  # @return [self]
+  # @return [void]
   # @raise if validation fails
   def validate!
     # todo this should also call validate in cascade to all records
@@ -92,7 +95,6 @@ class GFA
       @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
     end
     @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
-    return self
   end
 
   # Creates a string representation of GFA conforming to the current
@@ -102,7 +104,7 @@ class GFA
     s = ""
     GFA::Line::RecordTypes.keys.each do |rt|
       @lines[rt].each do |line|
-        next if line.nil
+        next if line.nil?
         s << "#{line}\n"
       end
     end
@@ -110,11 +112,13 @@ class GFA
   end
 
   # Return the gfa itself
+  # @return [self]
   def to_gfa
     self
   end
 
-  # Create a copy of a gfa
+  # Create a deep copy of the GFA instance.
+  # @return [GFA]
   def clone
     cpy = to_s.to_gfa(validate: false)
     cpy.turn_off_validations if !@validate
@@ -123,6 +127,14 @@ class GFA
     return cpy
   end
 
+  # Populates a GFA instance reading from file with specified +filename+
+  # @param [boolean] validate <i>(default: +true+ if +#turn_off_validations+
+  #   was never called, +false+ otherwise)</i> calls #validate! after
+  #   construction of the graph (note: setting it to false does not deactivate
+  #   all validations; for this use #turn_off_validations)
+  # @param [String] filename
+  # @raise if file cannot be opened for reading
+  # @return [self]
   def read_file(filename, validate: @validate)
     if @progress
       linecount = `wc -l #{filename}`.strip.split(" ")[0].to_i
@@ -140,7 +152,13 @@ class GFA
     self
   end
 
-  # Creats a GFA instance reading from file with specified +filename+
+  # Creates a GFA instance parsing the file with specified +filename+
+  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  #   construction of the graph (note: setting it to false does not deactivate
+  #   all validations; for this use #turn_off_validations)
+  # @param [String] filename
+  # @raise if file cannot be opened for reading
+  # @return [GFA]
   def self.from_file(filename, validate: true)
     gfa = GFA.new
     gfa.read_file(filename, validate: validate)
@@ -149,10 +167,30 @@ class GFA
 
   # Write GFA to file with specified +filename+;
   # overwrites it if it exists
+  # @param [String] filename
+  # @raise if file cannot be opened for writing
+  # @return [void]
   def to_file(filename)
     File.open(filename, "w") {|f| f.puts self}
   end
 
+  #
+  # @param [boolean] short compact output as a single text line
+  #
+  # Compact output has the following keys:
+  # - +ns+: number of segments
+  # - +nl+: number of links
+  # - +cc+: number of connected components
+  # - +de+: number of dead ends
+  # - +tl+: total length of segment sequences
+  # - +50+: N50 segment sequence length
+  #
+  # Normal output outputs a table with the same information, plus the largest
+  # component, the shortest and largest and 1st/2nd/3rd quartiles
+  # of segment sequence length.
+  #
+  # @return [String] sequence and topology information collected from the graph.
+  #
   def info(short = false)
     q, n50, tlen = lenstats
     nde = n_dead_ends()
@@ -184,14 +222,19 @@ class GFA
     return retval
   end
 
-  private
-
+  # Counts the dead ends
+  # (i.e. segment ends without connections)
+  #
+  # @return [Integer] number of dead ends in the graph
+  #
   def n_dead_ends
     segments.inject(0) do |n,s|
       [:E, :B].each {|e| n+= 1 if links_of([s.name, e]).empty?}
       n
     end
   end
+
+  private
 
   def lenstats
     sln = segments.map(&:length!).sort
@@ -217,10 +260,15 @@ class GFA
 
 end
 
+# Ruby core String class, with additional methods.
 class String
 
   # Converts a +String+ into a +GFA+ instance. Each line of the string is added
   # separately to the gfa.
+  # @return [GFA]
+  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  #   construction of the graph (note: setting it to false does not deactivate
+  #   all validations; for this use #turn_off_validations)
   def to_gfa(validate: true)
     gfa = GFA.new
     split("\n").each {|line| gfa << line}
@@ -230,10 +278,15 @@ class String
 
 end
 
+# Ruby core Array class, with additional methods.
 class Array
 
   # Converts an +Array+ of strings or GFA::Line instances
   # into a +GFA+ instance.
+  # @return [GFA]
+  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  #   construction of the graph (note: setting it to false does not deactivate
+  #   all validations; for this use #turn_off_validations)
   def to_gfa(validate: true)
     gfa = GFA.new
     each {|line| gfa << line}
