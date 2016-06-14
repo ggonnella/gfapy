@@ -21,7 +21,7 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(s1, gfa.segment("1"))
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
-    assert_raises(RuntimeError) { gfa.segment!("0") }
+    assert_raises(GFA::LineMissingError) { gfa.segment!("0") }
     assert_raises(ArgumentError) { gfa << s2 }
   end
 
@@ -40,7 +40,7 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(l1, gfa.link(["2", :B], ["1", :E]))
     assert_equal(nil, gfa.link(["2", :E], ["1", :B]))
     assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
-    assert_raises(RuntimeError) {gfa.link!(["2", :E], ["1", :B])}
+    assert_raises(GFA::LineMissingError) {gfa.link!(["2", :E], ["1", :B])}
     assert_nothing_raised { gfa << l2 }
   end
 
@@ -57,7 +57,7 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal([c1], gfa.containments)
     assert_equal(c1, gfa.containment("1", "2"))
     assert_nothing_raised {gfa.containment!("1",  "2")}
-    assert_raises(RuntimeError) {gfa.containment!("2", "1")}
+    assert_raises(GFA::LineMissingError) {gfa.containment!("2", "1")}
     assert_nothing_raised { gfa << c2 }
   end
 
@@ -76,7 +76,7 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}
-    assert_raises(RuntimeError) {gfa.path!("5")}
+    assert_raises(GFA::LineMissingError) {gfa.path!("5")}
     assert_raises(ArgumentError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
   end
@@ -96,12 +96,12 @@ class TestGFALineCreators < Test::Unit::TestCase
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << l1 }
-    assert_raises(RuntimeError) { gfa << l2 }
+    assert_raises(GFA::LineMissingError) { gfa << l2 }
     assert_nothing_raised { gfa << c1 }
-    assert_raises(RuntimeError) { gfa << c2 }
+    assert_raises(GFA::LineMissingError) { gfa << c2 }
     assert_nothing_raised { gfa << p1 }
     assert_raises(ArgumentError) { gfa << p2 }
-    assert_raises(RuntimeError) { gfa << p3 }
+    assert_raises(GFA::LineMissingError) { gfa << p3 }
   end
 
   def test_set_headers

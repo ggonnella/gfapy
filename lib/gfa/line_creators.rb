@@ -3,6 +3,13 @@
 #
 module GFA::LineCreators
 
+  # Add a line to a GFA
+  #
+  # @overload <<(gfa_line_string)
+  #   @param [String] gfa_line_string representation of a GFA line
+  # @overload <<(gfa_line)
+  #   @param [GFA::Line] gfa_line instance of a subclass of GFA::Line
+  # @return [void]
   def <<(gfa_line)
     gfa_line = gfa_line.to_gfa_line(validate: @validate)
     rt = gfa_line.record_type
@@ -18,8 +25,15 @@ module GFA::LineCreators
     else
       raise # this never happens, as already catched by gfa_line init
     end
+    return nil
   end
 
+  # Sets the header data
+  # @param headers_data [Hash{Symbol:Object}] data contained in the header
+  #   fields; the special key :multiple_values shall contain an array of field
+  #   symbols for which multiple values shall be defined in multiple lines;
+  #   in this case the values must be summarized in an array
+  # @return [void]
   def set_headers(headers_data)
     rm(:headers)
     multiple_values = headers_data.delete(:multiple_values)
@@ -35,25 +49,37 @@ module GFA::LineCreators
         self << h
       end
     end
+    return nil
   end
 
+  # Sets the value of a field in the header
+  #
+  # @param replace [Boolean] if true and the field already exists, the
+  #   value is replaced by +value+ (regardless of +duplicate+)
+  # @param duplicate [Boolean] if true and +replace+ is not set
+  #   and the field already exists, the
+  #   value is added, eventually creating an array of values
+  #
+  # @return [void]
   def set_header_field(field, value, replace: false, duplicate: false)
+    # todo: summarize replace and duplicate in a single option key with three
+    #       possible values
     h = headers_data
     if !h.has_key?(field) or replace
       h[field] = value
       h[:multiple_values].delete(field)
     else
       if h[:multiple_values].include?(field)
-        return self if h[field].include?(value) and !duplicate
+        return nil if h[field].include?(value) and !duplicate
         h[field] << value
       else
-        return self if h[field] == value and !duplicate
+        return nil if h[field] == value and !duplicate
         h[field] = [h[field], value]
         h[:multiple_values] << field
       end
     end
     set_headers(h)
-    self
+    return nil
   end
 
   private

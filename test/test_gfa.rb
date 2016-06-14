@@ -34,11 +34,11 @@ class TestGFA < Test::Unit::TestCase
     gfa << "S\t1\t*"
     assert_nothing_raised { gfa.validate! }
     gfa << "L\t1\t+\t2\t-\t*"
-    assert_raise(RuntimeError) { gfa.validate! }
+    assert_raise(GFA::LineMissingError) { gfa.validate! }
     gfa << "S\t2\t*"
     assert_nothing_raised { gfa.validate! }
     gfa << "P\t3\t1+,4-\t*"
-    assert_raise(RuntimeError) { gfa.validate! }
+    assert_raise(GFA::LineMissingError) { gfa.validate! }
     gfa << "S\t4\t*"
     assert_nothing_raised { gfa.validate! }
   end

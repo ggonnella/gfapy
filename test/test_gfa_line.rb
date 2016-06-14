@@ -176,7 +176,7 @@ class TestGFALine < Test::Unit::TestCase
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(nil, l.zz)
-    assert_raise(GFA::Line::TagMissing) { l.zz! }
+    assert_raise(GFA::Line::TagMissingError) { l.zz! }
   end
 
   def test_field_setters_required_fields

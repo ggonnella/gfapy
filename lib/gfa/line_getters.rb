@@ -9,53 +9,67 @@ module GFA::LineGetters
     define_method(:"each_#{$1.downcase}") { |&block| each(rt, &block) }
   end
 
-  # Searches the segment with name equal to +segment_name+.
+  # @!macro [new] segment
+  #   Searches the segment with name equal to +segment_name+.
+  #   @param segment_name [String] a segment name
+  #   @return [GFA::Line::Segment] if a segment is found
+  # @return [nil] if no such segment exists in the GFA instance
   #
-  # *Returns*:
-  #   - +nil+ if no such segment exists in the gfa
-  #   - a GFA::Line::Segment instance otherwise
   def segment(segment_name)
     i = @segment_names[segment_name.to_sym]
     i.nil? ? nil : @lines["S"][i]
   end
 
-  # Calls +segment+ and raises a +RuntimeError+ if no segment was found.
+  # @!macro segment
+  # @raise [GFA::LineMissingError] if no such segment exists in the GFA instance
   def segment!(segment_name)
     s = segment(segment_name)
-    raise "No segment has name #{segment_name}" if s.nil?
+    raise GFA::LineMissingError,
+      "No segment has name #{segment_name}" if s.nil?
     s
   end
 
-  # Searches the path with name equal to +path_name+.
+  # @!macro [new] path
+  #   Searches the path with name equal to +path_name+.
+  #   @param path_name [String] a path name
+  #   @return [GFA::Line::Path] if a path is found
+  # @return [nil] if no such path exists in the GFA instance
   #
-  # *Returns*:
-  #   - +nil+ if no such path exists in the gfa
-  #   - a GFA::Line::Path instance otherwise
   def path(path_name)
     i = @path_names[path_name.to_sym]
     i.nil? ? nil : @lines["P"][i]
   end
 
-  # Calls +path+ and raises a +RuntimeError+ if no path was found.
+  # @!macro path
+  # @raise [GFA::LineMissingError] if no such path exists in the GFA instance
   def path!(path_name)
     pt = path(path_name)
-    raise "No path has name #{path_name}" if pt.nil?
+    raise GFA::LineMissingError,
+      "No path has name #{path_name}" if pt.nil?
     pt
   end
 
-  # Find path lines whose +segment_names+ include segment +segment_name+
+  # @return [Array<GFA::Line::Path>] paths whose +segment_names+ include the
+  #   specified segment.
+  # @!macro [new] segment_or_name
+  #   @overload $0(segment)
+  #     @param segment [GFA::Line::Segment] a segment instance
+  #   @overload $0(segment_name)
+  #     @param segment_name [String] a segment name
   def paths_with(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("P",segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
+  # @!macro segment_or_name
   def contained_in(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
+  # @!macro segment_or_name
   def containing(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("C", segment_name, :to)
@@ -79,65 +93,71 @@ module GFA::LineGetters
   # Calls +containment+ and raises a +RuntimeError+ if no containment was found.
   def containment!(container, contained)
     c = containment(container, contained)
-    raise "No containment was found" if c.nil?
+    raise GFA::LineMissingError, "No containment was found" if c.nil?
     c
   end
 
-  # Find links of the specified end of segment
+  # Finds links of the specified end of segment.
   #
-  # *Returns*
-  #   - An array of GFA::Line::Link containing:
-  #     - if segment_end[1] == :E
-  #       links from sn with from_orient +
-  #       links to   sn with to_orient   -
-  #     - if segment_end[1] == :B
-  #       links to   sn with to_orient   +
-  #       links from sn with from_orient -
+  # @param [GFA::SegmentEnd] segment_end a segment end
   #
-  # *Note*:
-  #   - To add or remove links, use +connect()+ or +disconnect()+;
-  #     adding or removing links from the returned array will not work
+  # @return [Array<GFA::Line::Link>] if segment_end[1] == :E,
+  #   links from sn with from_orient + and to sn with to_orient -
+  # @return [Array<GFA::Line::Link>] if segment_end[1] == :B,
+  #   links to sn with to_orient + and from sn with from_orient -
+  #
+  # @note to add or remove links, use the appropriate methods;
+  #   adding or removing links from the returned array will not work
   def links_of(segment_end)
-    case segment_end[1]
-    when :E
-      o = ["+","-"]
-    when :B
-      o = ["-","+"]
-    else
-      raise "end_type unknown: #{segment_end[1].inspect}"
-    end
-    @c.lines("L",segment_end[0],:from,o[0]) +
-      @c.lines("L",segment_end[0],:to,o[1])
+    segment_end = [segment_end].to_segment_end
+    o = segment_end.end_type == :E ? ["+","-"] : ["-","+"]
+    @c.lines("L",segment_end.segment,:from,o[0]) +
+      @c.lines("L",segment_end.segment,:to,o[1])
   end
 
+  # Finds segment ends connected to the specified segment end.
+  #
+  # @param [GFA::SegmentEnd] segment_end a segment end
+  #
+  # @return [Array<GFA::SegmentEnd>>] segment ends connected by links
+  #   to +segment_end+
   def neighbours(segment_end)
     links_of(segment_end).map {|l| l.other_end(segment_end) }
   end
 
+  # @return [GFA::SegmentEnd] the other end of a segment
+  #
+  # @param [GFA::SegmentEnd] segment_end a segment end
   def other_segment_end(segment_end)
-    [segment_end[0], segment_end[1] == :B ? :E : :B]
+    [segment_end].to_segment_end.other_end
   end
 
-  def connected_segments(segment_name)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
-    (neighbours([segment_name, :B]).map{|s, e| s} +
-      neighbours([segment_name, :E]).map{|s, e| s} +
-        contained_in(segment_name).map{|c| c.to} +
-          containing(segment_name).map{|c| c.from}).uniq
+  # @return [Array<String>] list of names of segments connected to +segment+
+  #   by links or containments
+  def connected_segments(segment)
+    (neighbours([segment, :B]).map{|s, e| s} +
+      neighbours([segment, :E]).map{|s, e| s} +
+        contained_in(segment).map{|c| c.to} +
+          containing(segment).map{|c| c.from}).uniq
   end
 
   # Searches all links between +segment_end1+ and +segment_end2+
   #
-  # Returns a possibly empty array of links.
+  # @!macro [new] two_segment_ends
+  #   @param segment_end1 [GFA::SegmentEnd] a segment end
+  #   @param segment_end2 [GFA::SegmentEnd] a segment end
+  # @return [Array<GFA::Line::Link>] (possibly empty)
   def links_between(segment_end1, segment_end2)
     links_of(segment_end1).select do |l|
       l.other_end(segment_end1) == segment_end2
     end
   end
 
-  # Searches a link between +segment_end1+ and +segment_end2+
-  #
-  # Returns the first link found or nil if none found.
+  # @!macro [new] link
+  #   Searches a link between +segment_end1+ and +segment_end2+
+  #   @!macro two_segment_ends
+  #   @return [GFA::Line::Link] the first link found
+  # @return [nil] if no link is found.
   def link(segment_end1, segment_end2)
     links_of(segment_end1).each do |l|
       return l if l.other_end(segment_end1) == segment_end2
@@ -145,15 +165,21 @@ module GFA::LineGetters
     return nil
   end
 
-  # Calls +link+ and raises a +RuntimeError+ if no link was found.
+  # @!macro link
+  # @raise [GFA::LineMissingError] if no link is found.
   def link!(segment_end1, segment_end2)
     l = link(segment_end1, segment_end2)
-    raise "No link was found: "+
+    raise GFA::LineMissingError,
+      "No link was found: "+
           "#{segment_end1.join(":")} -- "+
           "#{segment_end2.join(":")}" if l.nil?
     l
   end
 
+  # @return [Hash{Symbol:Object}] data contained in the header fields;
+  #   the special key :multiple_values contains an array of fields for
+  #   which multiple values were defined in multiple lines; in this case
+  #   the values are summarized in an array
   def headers_data
     data = {}
     data[:multiple_values] = []
@@ -189,3 +215,7 @@ module GFA::LineGetters
   end
 
 end
+
+# The error raised by banged line finders if no line respecting the criteria
+# exist in the GFA
+class GFA::LineMissingError < ArgumentError; end

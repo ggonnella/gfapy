@@ -108,7 +108,7 @@ class TestGFALineGetters < Test::Unit::TestCase
     assert_equal(s[0],gfa.segment("1").to_s)
     assert_equal(s[0],gfa.segment!("1").to_s)
     assert_equal(nil,gfa.segment("0"))
-    assert_raises(RuntimeError) {gfa.segment!("0").to_s}
+    assert_raises(GFA::LineMissingError) {gfa.segment!("0").to_s}
   end
 
   def test_path
@@ -118,7 +118,7 @@ class TestGFALineGetters < Test::Unit::TestCase
     assert_equal(pt[0],gfa.path("4").to_s)
     assert_equal(pt[0],gfa.path!("4").to_s)
     assert_equal(nil,gfa.path("6"))
-    assert_raises(RuntimeError) {gfa.path!("6").to_s}
+    assert_raises(GFA::LineMissingError) {gfa.path!("6").to_s}
   end
 
   def test_paths_with_segment
@@ -170,7 +170,7 @@ class TestGFALineGetters < Test::Unit::TestCase
     gfa << c1
     gfa << c2
     assert_equal(nil, gfa.containment("0", "1"))
-    assert_raises(RuntimeError) {gfa.containment!("0", "1")}
+    assert_raises(GFA::LineMissingError) {gfa.containment!("0", "1")}
     assert_equal(c1, gfa.containment("1", "0"))
     assert_equal(c1, gfa.containment!("1", "0"))
   end
@@ -223,7 +223,7 @@ class TestGFALineGetters < Test::Unit::TestCase
     assert_equal(l0, gfa.link(["1", :E], ["2", :B]))
     assert_equal(l0, gfa.link!(["1", :E], ["2", :B]))
     assert_equal(nil, gfa.link(["1", :E], ["2", :E]))
-    assert_raise(RuntimeError) { gfa.link!(["1", :E], ["2", :E]) }
+    assert_raise(GFA::LineMissingError) { gfa.link!(["1", :E], ["2", :E]) }
   end
 
   def test_headers_data

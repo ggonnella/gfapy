@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
               'lib/gfa/logger.rb',
               'lib/gfa/optfield.rb',
               'lib/gfa/segment_references.rb',
+              'lib/gfa/segment_end.rb',
               'lib/gfa/sequence.rb',
               'lib/gfa/traverse.rb',
               'lib/gfa/line/containment.rb',

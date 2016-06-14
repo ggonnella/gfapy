@@ -39,13 +39,13 @@ class TestGFALineSegment < Test::Unit::TestCase
     assert_equal(6, l.coverage!)
     l = "S\t0\t*\tRC:i:600".to_gfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(GFA::Line::Segment::UndefinedLength) {l.coverage!}
+    assert_raises(GFA::Line::Segment::UndefinedLengthError) {l.coverage!}
     l = "S\t0\t*\tLN:i:100".to_gfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(GFA::Line::TagMissing) {l.coverage!}
+    assert_raises(GFA::Line::TagMissingError) {l.coverage!}
     l = "S\t0\t*\tFC:i:600\tLN:i:100".to_gfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(GFA::Line::TagMissing) {l.coverage!}
+    assert_raises(GFA::Line::TagMissingError) {l.coverage!}
     assert_equal(6, l.coverage(count_tag: :FC))
     assert_equal(6, l.coverage!(count_tag: :FC))
   end
@@ -53,7 +53,7 @@ class TestGFALineSegment < Test::Unit::TestCase
   def test_other_orientation
     assert_equal("+", GFA::Line::Segment.other_orientation("-"))
     assert_equal("-", GFA::Line::Segment.other_orientation("+"))
-    assert_raises(GFA::Line::Segment::UnknownOrientation) do
+    assert_raises(GFA::Line::Segment::UnknownOrientationError) do
       GFA::Line::Segment.other_orientation("x")
     end
   end

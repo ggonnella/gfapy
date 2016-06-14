@@ -14,6 +14,7 @@ require_relative "./gfa/line_destructors.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/traverse.rb"
 require_relative "./gfa/logger.rb"
+require_relative "./gfa/segment_end.rb"
 
 #
 # This is the main class of the RGFA library.

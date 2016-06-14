@@ -88,8 +88,7 @@ module GFA::Edit
   #
   # @param [Integer] factor multiplication factor; if 0, delete the segment;
   #   if 1; do nothing; if > 1; number of copies to create
-  # @segment [String|GFA::Line::Segment] name of segment (or segment object),
-  #   specifying the segment to copy
+  # @param segment [String|GFA::Line::Segment] segment name or instance
   # @param [:lowcase|:upcase|:number|:copy|Array] copy_names
   #   <i>(Default: +:lowcase+)</i> Array of names for the copies of the segment,
   #   or a symbol, which defines a system to compute the names from the name of

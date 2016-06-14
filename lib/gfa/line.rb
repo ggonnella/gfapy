@@ -186,7 +186,7 @@ class GFA::Line
   # - (String) if field exists and +cast+ is false
   #
   # <b>Raises:</b>
-  # - (GFA::Line::TagMissing) if the field does not exist
+  # - (GFA::Line::TagMissingError) if the field does not exist
   #
   # ---
   #
@@ -210,7 +210,7 @@ class GFA::Line
     if !i.nil?
       return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
     elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
-      raise GFA::Line::TagMissing,
+      raise GFA::Line::TagMissingError,
         "No value defined for tag #{ms}" if var == :bang
       return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
     end
@@ -448,7 +448,7 @@ class GFA::Line::DuplicateOptfieldNameError  < ArgumentError; end
 class GFA::Line::PredefinedOptfieldTypeError < TypeError;     end
 
 # Error raised if optional tag is not present
-class GFA::Line::TagMissing                  < NoMethodError; end
+class GFA::Line::TagMissingError             < NoMethodError; end
 
 #
 # Automatically require the child classes specified in the RecordTypes hash

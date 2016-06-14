@@ -8,42 +8,43 @@ module GFA::Traverse
 
   # Computes the connectivity of a segment from its number of links.
   #
-  # *Arguments*:
-  #   - +segment_name+: name of the segment
-  #   - +reverse_complement+ use the reverse complement of the segment sequence
+  # @param segment [String|GFA::Line::Segment] segment name or instance
   #
-  # *Returns*:
-  #   - [b, e], where:
-  #      - bn is the number of links to the beginning of the sequence
-  #      - en is the number of links to the end of the sequence
-  #      - b = :M if bn > 1, otherwise bn
-  #      - e = :M if en > 1, otherwise en
+  # @return [Array<conn_symbol,conn_symbol>]
+  #  conn. symbols respectively of the :B and :E ends of +segment+.
   #
-  def connectivity(segment_name, reverse_complement = false)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
-    ends = [:B, :E]
-    ends.reverse! if reverse_complement
-    connectivity_symbols(links_of([segment_name, ends.first]).size,
-                         links_of([segment_name, ends.last]).size)
+  # <b>Connectivity symbol:</b> (+conn_symbol+)
+  # - Let _n_ be the number of links to an end (+:B+ or +:E+) of a segment.
+  #   Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
+  #
+  def connectivity(segment)
+    connectivity_symbols(links_of([segment, :B]).size,
+                         links_of([segment, :E]).size)
   end
 
-  # Find a path without branches which includes segment +segment_name+
-  # and excludes any segment whose name is stored in +exclude+.
+  # @return [Array<segment_end>] path without branches which includes +segment+
+  # and excludes segments in +exclude+.
+  #
+  # <b>Segment end:</b> (+segment_end+)
+  # - <tt>Array<String|GFA::Line::Segment, Symbol></tt>
+  # - the first element is either a segment name, or a segment instance
+  # - the second element is a symbol representing one of the two segment
+  #   extremities, i.e. :B for beginning and :E for end.
   #
   # *Side effects*:
   #   - any segment used in the path will be added to +exclude+
   #
   # *Returns*:
   #   - an array of segment names
-  def linear_path(segment_name, exclude = Set.new)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
-    cs = connectivity(segment_name)
+  def linear_path(segment, exclude = Set.new)
+    segment = segment.name if segment.kind_of?(GFA::Line)
+    cs = connectivity(segment)
     segpath = []
     [:B, :E].each_with_index do |et, i|
       if cs[i] == 1
-        exclude << segment_name
+        exclude << segment
         segpath.pop
-        segpath += traverse_linear_path([segment_name, et], exclude)
+        segpath += traverse_linear_path([segment, et], exclude)
       end
     end
     return (segpath.size < 2) ? nil : segpath
@@ -344,12 +345,12 @@ module GFA::Traverse
       if l2.to == segment_end.first
         l2.to = merged_name
         if reversed
-          l2.to_orient = GFA::Line.other_orientation(l2.to_orient)
+          l2.to_orient = GFA::Line::Segment.other_orientation(l2.to_orient)
         end
       else
         l2.from = merged_name
         if reversed
-          l2.from_orient = GFA::Line.other_orientation(l2.from_orient)
+          l2.from_orient = GFA::Line::Segment.other_orientation(l2.from_orient)
         end
       end
       self << l2
