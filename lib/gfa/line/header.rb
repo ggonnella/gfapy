@@ -1,7 +1,8 @@
 class GFA::Line::Header < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#header-line
-  # note: the field names were made all downcase with _ separating words
+  # @note The field names are derived from the GFA specification at:
+  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#header-line
+  #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /H/]
     ]

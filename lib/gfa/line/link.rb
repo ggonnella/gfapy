@@ -2,8 +2,9 @@ require_relative "../segment_references.rb"
 
 class GFA::Line::Link < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#link-line
-  # note: the field names were made all downcase with _ separating words
+  # @note The field names are derived from the GFA specification at:
+  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#link-line
+  #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /L/],
      [:from,        /[!-)+-<>-~][!-~]*/], # name of segment

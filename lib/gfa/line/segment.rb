@@ -1,7 +1,8 @@
 class GFA::Line::Segment < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#segment-line
-  # note: the field names were made all downcase with _ separating words
+  # @note The field names are derived from the GFA specification at:
+  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#segment-line
+  #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /S/],
      [:name,        /[!-)+-<>-~][!-~]*/], # Segment name

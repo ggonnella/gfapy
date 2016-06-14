@@ -53,38 +53,56 @@ class GFA
     @default = {:count_tag => :RC, :unit_length => 1}
   end
 
+  # Require that the links, containments and paths referring
+  # to a segment are added after the segment. Default: do not
+  # require any particular ordering.
+  #
+  # @return [self]
   def require_segments_first_order
     @segments_first_order = true
+    self
   end
 
+  # Turns off validations. This increases the performance.
+  # @return [self]
   def turn_off_validations
     @validate = false
+    self
   end
 
   # List all names of segments in the graph
+  # @return [Array<String>]
   def segment_names
     @segment_names.keys.compact.map(&:to_s)
   end
 
   # List all names of path lines in the graph
+  # @return [Array<String>]
   def path_names
     @path_names.keys.compact.map(&:to_s)
   end
 
+  # Post-validation of the GFA; checks that L, C and P refer to
+  # existing S.
+  # @return [self]
+  # @raise if validation fails
   def validate!
+    # todo this should also call validate in cascade to all records
     ["L", "C"].each do |rt|
       @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
     end
     @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+    return self
   end
 
   # Creates a string representation of GFA conforming to the current
   # specifications
+  # @return [String]
   def to_s
     s = ""
     GFA::Line::RecordTypes.keys.each do |rt|
       @lines[rt].each do |line|
-        next if line.nil?
+        next if line.nil
         s << "#{line}\n"
       end
     end
@@ -96,6 +114,7 @@ class GFA
     self
   end
 
+  # Create a copy of a gfa
   def clone
     cpy = to_s.to_gfa(validate: false)
     cpy.turn_off_validations if !@validate

@@ -1,12 +1,13 @@
 class GFA::Line::Path < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#path-line
-  # note: the field names were made all downcase with _ separating words;
-  #       the cigar and segment_name regexps and name were changed to better
-  #       implement what written in the commentaries of the specification
-  #       (i.e. name pluralized and regexp changed to a comma-separated list
-  #       for segment_name of segment names and orientations and for cigar of
-  #       CIGAR strings);
+  # @note The field names are derived from the GFA specification at:
+  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#path-line
+  #   and were made all downcase with _ separating words;
+  #   the cigar and segment_name regexps and name were changed to better
+  #   implement what written in the commentaries of the specification
+  #   (i.e. name pluralized and regexp changed to a comma-separated list
+  #   for segment_name of segment names and orientations and for cigar of
+  #   CIGAR strings);
   FieldRegexp = [
      [:record_type,   /P/],
      [:path_name,     /[!-)+-<>-~][!-~]*/], # Path name

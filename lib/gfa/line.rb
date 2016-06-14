@@ -7,6 +7,7 @@
 #
 class GFA::Line
 
+  # Separator in the string representation of GFA lines
   Separator = "\t"
 
   # RecordTypes
@@ -33,19 +34,34 @@ class GFA::Line
   end
 
   # @param fields [Array<String>] the content of the line
-  # @param reqfield_definitions [Array<[Symbol,Regex]>] in the order of the
-  #   required fields in the line; symbol is the required
-  #   field name, regular expressions is used for validation.
-  #   The array *must* have an element for each required field; if no
-  #   validation is necessary, use the regex +/.*/+.
-  # @param optfield_types [Hash<Symbol(optfield_tag):String(optfield_type1)>]
-  #   (possibly empty)
-  #   if an instance of the predefined optfield_tag is specified in a
-  #   record, it will be required to be of type optfield_type
+  # @param reqfield_definitions
+  #   [Array<[Symbol(field_name),Regex(validator)]>] defines
+  #   the order of the required fields in the line and their validators;
+  #   an element _must_ be present for each required field;
+  #   to accept any string, use the regex +/.*/ as validator
+  # @param optfield_types [Hash<Symbol(optfield_tag):String(optfield_type)>]
+  #   <i>(possibly empty)</i> defines the predefined optional
+  #   fields and their required type
   # @param reqfield_cast [Hash<Symbol(field_name):Lambda(CastMethod)>]
-  #   defines methods for the conversion of selected required fields into
+  #   defines methods for casting selected required fields into
   #   instances of the corresponding Ruby classes
   # @return [GFA::Line]
+  # @raise [GFA::Line::UnknownRecordTypeError]
+  #   if the record_type is not one of +GFA::Line::RecordTypes+
+  # @raise [GFA::Line::InvalidFieldNameError]
+  #   if a field has the same name as a method of the class
+  # @raise [GFA::Line::RequiredFieldMissingError]
+  #   if too less required fields are specified
+  # @raise [GFA::Line::RequiredFieldTypeError]
+  #   if the type of a required field does not match the validation regexp
+  # @raise [GFA::Line::CustomOptfieldNameError]
+  #   if a non-predefined optional field uses upcase letters
+  # @raise [GFA::Line::DuplicateOptfieldNameError]
+  #   if an optional field tag name is used more than once
+  # @raise [GFA::Line::PredefinedOptfieldTypeError]
+  #   if the type of a predefined optional field does not
+  #   respect the specified type.
+
   def initialize(fields,
                  reqfield_definitions,
                  optfield_types,
@@ -137,20 +153,54 @@ class GFA::Line
     add_optfield(optfield)
   end
 
-  # Three methods are created for each existing field name as well as
-  # for each non-existing but valid optional field name.
+  # Three methods are dynamically created for each existing field name as well
+  # as for each non-existing but valid optional field name.
   #
-  # <fieldname>(cast: true): returns the value of the field; if cast is
-  #   false, then return original string, otherwise cast into ruby type;
-  #   returns nil if fieldname is a non-existing but valid optional
-  #   field name
+  # ---
+  #  - (Object) <fieldname>(cast: false)
+  # The value of the field.
   #
-  # <fieldname>!: as <fieldname>, but raise if non-existing
+  # <b>Parameters:</b>
+  # - +*cast*+ (boolean) -- <i>(default: true)</i> if +false+,
+  #   return original string, otherwise cast into ruby type
   #
-  # <fieldname>=(value): sets the value of the field; if fieldname is a
-  #   non-existing but valid optional field name, creates an optional
-  #   field, using an appropriate type, depending on the value class
-  #   (see GFA::Optfield::new_autotype)
+  # <b>Returns:</b>
+  # - (String|Hash|Array|Integer|Float) if field exists and +cast+ is true
+  # - (String) if field exists and +cast+ is false
+  # - (nil) if the field does not exist, but is a valid optional field name
+  #
+  # ---
+  #  - (Object) <fieldname>!(cast: false)
+  # Banged version of +<fieldname>+.
+  #
+  # <b>Parameters:</b>
+  # - +*cast*+ (boolean) -- <i>(default: true)</i> if +false+,
+  #   return original string, otherwise cast into ruby type
+  #
+  # <b>Returns:</b>
+  # - (String|Hash|Array|Integer|Float) if field exists and +cast+ is true
+  # - (String) if field exists and +cast+ is false
+  #
+  # <b>Raises:</b>
+  # - (RuntimeError) if the field does not exist
+  #
+  # ---
+  #
+  #  - (self) <fieldname>=(value)
+  # Sets the value of a required or optional
+  # field, or creates a new optional field if the fieldname is
+  # non-existing but valid. In the latter case, the type of the
+  # optional field is selected, depending on the class of +value+
+  # (see GFA::Optfield::new_autotype() method).
+  #
+  # <b>Parameters:</b>
+  # - +*value*+ (String|Hash|Array|Integer|Float) value to set
+  #
+  # <b>Returns:</b>
+  # - (self)
+  #
+  # ---
+  #
   def method_missing(m, *args, &block)
     ms, var, i = process_unknown_method(m)
     if !i.nil?
@@ -379,12 +429,29 @@ class GFA::Line
 
 end
 
+# Error raised if the record_type is not one of GFA::Line::RecordTypes
 class GFA::Line::UnknownRecordTypeError      < TypeError;     end
+
+# Error raised if a field has the same name as a method of the class;
+# This is required by the dynamic method generation system.
 class GFA::Line::InvalidFieldNameError       < ArgumentError; end
+
+# Error raised if too less required fields are specified.
 class GFA::Line::RequiredFieldMissingError   < ArgumentError; end
+
+# Error raised if the type of a required field does not match the
+# validation regexp.
 class GFA::Line::RequiredFieldTypeError      < TypeError;     end
+
+# Error raised if a non-predefined optional field uses upcase
+# letters.
 class GFA::Line::CustomOptfieldNameError     < ArgumentError; end
+
+# Error raised if an optional field tag name is used more than once.
 class GFA::Line::DuplicateOptfieldNameError  < ArgumentError; end
+
+# Error raised if the type of a predefined optional field does not
+# respect the specified type.
 class GFA::Line::PredefinedOptfieldTypeError < TypeError;     end
 
 #

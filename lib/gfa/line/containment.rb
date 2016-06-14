@@ -2,8 +2,9 @@ require_relative "../segment_references.rb"
 
 class GFA::Line::Containment < GFA::Line
 
-  # https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#containment-line
-  # note: the field names were made all downcase with _ separating words
+  # @note The field names are derived from the GFA specification at:
+  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#containment-line
+  #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /C/],
      [:from,        /[!-)+-<>-~][!-~]*/], # name of segment
