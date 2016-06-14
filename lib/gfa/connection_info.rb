@@ -9,8 +9,8 @@
 class GFA::ConnectionInfo
 
   # @return [GFA::ConnectionInfo]
-  # @param [Array] reference to GFA instance @lines array (this is required by
-  #   the #validate! and the #lines methods only)
+  # @param lines [Array] reference to GFA instance @lines array
+  #   (required by the #validate! and the #lines methods)
   def initialize(lines)
     @lines = lines
     @connect = {}

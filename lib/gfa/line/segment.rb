@@ -60,9 +60,9 @@ class GFA::Line::Segment < GFA::Line
   # otherwise: count/length.
   # The latter is a good approximation if length >>> unit_length.
   #
-  # @param [Symbol] count_tag, integer tag storing the count, usually
+  # @param [Symbol] count_tag integer tag storing the count, usually
   #   :KC, :RC or :FC
-  # @param [Integer] unit_length, the (average) length of a read (for
+  # @param [Integer] unit_length the (average) length of a read (for
   #   :RC), fragment (for :FC) or k-mer (for :KC)
   #
   # @return [Integer] coverage, if count_tag exists

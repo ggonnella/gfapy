@@ -90,7 +90,7 @@ class GFA::Line
     @fields.join(GFA::Line::Separator)
   end
 
-  # @param [String|GFA::Optfield] an optional field to add to the line
+  # @param optfield [String|GFA::Optfield] an optional field to add to the line
   # @raise [GFA::Line::DuplicateOptfieldNameError] if the line already
   #   contains an optional field with the same tag name
   # @return self
@@ -113,7 +113,7 @@ class GFA::Line
   end
 
   # Remove an optional field from the line
-  # @param [#to_sym] the tag name of the optfield to remove
+  # @param optfield_tag [#to_sym] the tag name of the optfield to remove
   # @return self
   def rm_optfield(optfield_tag)
     i = optional_fieldnames.index(optfield_tag.to_sym)
@@ -186,14 +186,14 @@ class GFA::Line
       (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
   end
 
-  # @param ["+"|"-"] an orientation
+  # @param orientation ["+"|"-"] an orientation
   # @return ["+"|"-"] the other orientation
   def self.other_orientation(orientation)
     raise "Unknown orientation" if !["+","-"].include?(orientation)
     return orientation == "+" ? "-" : "+"
   end
 
-  # @param [:B|:E] an end type
+  # @param end_type [:B|:E] an end type
   # @return [:B|:E] the other end type
   def self.other_end_type(end_type)
     raise "Unknown end_type" if ![:B,:E].include?(end_type)

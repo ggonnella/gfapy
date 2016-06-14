@@ -104,15 +104,14 @@ class GFA::Optfield
 
   # Sets the +value+ of the GFA::Optfield.
   #
-  # @param value [String|Integer|Float|Hash|Array]
-  #   Either a string which
+  # @param value [String|Integer|Float|Hash|Array] either a string which
   #   specifies the value in accordance to the +type+, or an instance of a
   #   compatible Ruby class (Integer for "i" and "H", Float for "f", Array of
   #   Integer or Float values for "B", String for "Z" and "A", Array or
   #   Hash for "J").
   #
-  def value=(v)
-    @value = value_to_optfield_s(@type, v)
+  def value=(value)
+    @value = value_to_optfield_s(@type, value)
     validate_value! if @validate
   end
 
