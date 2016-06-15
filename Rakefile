@@ -26,6 +26,7 @@ end
 # available only if yard gem is installed
 begin
   require "yard"
+  YARD::Tags::Library.define_tag("Developer notes", :developer)
   YARD::Rake::YardocTask.new do |t|
     t.files   = ['lib/**/*.rb']
     t.stats_options = ['--list-undoc']
