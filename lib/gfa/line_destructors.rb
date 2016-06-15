@@ -129,12 +129,14 @@ module GFA::LineDestructors
   # @overload delete_link(link)
   #   @param link [GFA::Line::Link] link instance
   # @return [GFA] self
-  def delete_link(from, from_orient, to, to_orient)
+  def delete_link(from, from_orient=nil, to=nil, to_orient=nil)
     if from.kind_of?(GFA::Line::Link)
       to = from.to
       to_orient = from.to_orient
       from_orient = from.from_orient
       from = from.from
+    else
+      raise "To segment not specified" if to.nil?
     end
     delete_containments_or_links("L", from, from_orient, to,
                                  to_orient, nil, true)
@@ -149,13 +151,15 @@ module GFA::LineDestructors
   # @overload delete_containment(containment)
   #   @param containment [GFA::Line::Containment] containment instance
   # @return [GFA] self
-  def delete_containment(from, from_orient, to, to_orient, pos)
+  def delete_containment(from, from_orient=nil, to=nil, to_orient=nil, pos=nil)
     if from.kind_of?(GFA::Line::Containment)
       to = from.to
       to_orient = from.to_orient
       from_orient = from.from_orient
       pos = from.pos
       from = from.from
+    else
+      raise "To segment not specified" if to.nil?
     end
     delete_containments_or_links("C", from, from_orient, to,
                                  to_orient, pos, true)
