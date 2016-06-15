@@ -198,7 +198,7 @@ module GFA::LineDestructors
     links_of(segment_end).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)
-          delete_link_line(l)
+          delete_link(l)
         end
       end
     end
