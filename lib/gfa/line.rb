@@ -7,11 +7,12 @@ class GFA::Line
   Separator = "\t"
 
   # List of allowed record_type values and the associated subclasses of
-  # {GFA::Line}
+  # {GFA::Line}.
   #
-  # In case new record types are defined, add them here and define the
-  # corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
-  # All file in the +line+ subdirectory are automatically required.
+  # @developer
+  #   In case new record types are defined, add them here and define the
+  #   corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
+  #   All file in the +line+ subdirectory are automatically required.
   #
   RecordTypes =
     {
@@ -110,10 +111,14 @@ class GFA::Line
     @fields.join(GFA::Line::Separator)
   end
 
-  # @param optfield [String|GFA::Optfield] an optional field to add to the line
+  # @overload add_optfield(optfield_string)
+  #   @param optfield [String] string representation of an optional field
+  #     to add to the line
+  # @overload add_optfield(optfield_instance)
+  #   @param optfield [GFA::Optfield] an optional field to add to the line
   # @raise [GFA::Line::DuplicateOptfieldNameError] if the line already
   #   contains an optional field with the same tag name
-  # @return self
+  # @return [void]
   def add_optfield(optfield)
     if !optfield.respond_to?(:to_gfa_optfield)
       raise ArgumentError,
@@ -129,12 +134,12 @@ class GFA::Line
     validate_optional_field!(optfield) if @validate
     @fields << optfield
     @fieldnames << sym
-    self
+    nil
   end
 
   # Remove an optional field from the line
   # @param optfield_tag [#to_sym] the tag name of the optfield to remove
-  # @return self
+  # @return [void]
   def rm_optfield(optfield_tag)
     i = optional_fieldnames.index(optfield_tag.to_sym)
     if !i.nil?
@@ -142,17 +147,20 @@ class GFA::Line
       @fieldnames.delete_at(i)
       @fields.delete_at(i)
     end
-    self
+    nil
   end
 
-  # @param optfield_tag [#to_sym]
-  # @return GFA::Optfield
+  # Returns the string representation of an optional field
+  # @param optfield_tag [#to_sym] name of the optional field
+  # @return [GFA::Optfield] string representation of optional field
+  # @return [nil] if optional field does not exist
   def optfield(optfield_tag)
     i = optional_fieldnames.index(optfield_tag.to_sym)
     return i.nil? ? nil : @fields[i + n_required_fields]
   end
 
-  # @see add_optfield
+  # Alias for {#add_optfield}
+  # @see #add_optfield
   def <<(optfield)
     add_optfield(optfield)
   end
@@ -231,23 +239,28 @@ class GFA::Line
   end
 
   # @return self
-  # @param [Boolean] validate ignored (compatibility reasons)
+  # @param validate [Boolean] ignored (compatibility reasons)
   def to_gfa_line(validate: true)
     self
   end
 
+  # Equivalence check
   # @return [Boolean] does the line contains the same optional fields
   #   and all required and optional fields contain the same field values?
+  # @see GFA::Line::Link#==
   def ==(o)
     (o.fieldnames == self.fieldnames) and
       (o.fieldnames.all? {|fn|o.send(fn) == self.send(fn)})
   end
 
+  # Validate the GFA::Line instance
   # @raise if the field content is not valid
+  # @return [void]
   def validate!
     validate_required_fields!
     validate_optional_fields!
     self.class.validate_record_type!(self.record_type)
+    nil
   end
 
   private
@@ -457,17 +470,16 @@ GFA::Line::RecordTypes.values.each do |rtclass|
   require_relative "../#{rtclass.downcase.gsub("::","/")}.rb"
 end
 
-#
-# Define a String#to_gfa_line method which allow to parse a string
-# representation of a gfa_line and obtain an object of the correct record type
-# child class of GFA::Line
+# Extensions to the String core class.
 #
 class String
 
-  # @return [GFA::Line or subclass] the line instance coded by the string
+  # Parses a line of a GFA file and creates an object of the correct record type
+  # child class of {GFA::Line}
+  # @return [subclass of GFA::Line]
   # @raise if the string does not comply to the GFA specification
-  # @param validate [Boolean] <i>(default: +true+)</i> if false,
-  #   turn off validations
+  # @param validate [Boolean] <i>(defaults to: +true+)</i>
+  #   if false, turn off validations
   def to_gfa_line(validate: true)
     components = split(GFA::Line::Separator)
     record_type = components[0]
