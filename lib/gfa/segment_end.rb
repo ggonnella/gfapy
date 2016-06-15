@@ -23,7 +23,7 @@ class GFA::SegmentEnd < Array
     return nil
   end
 
-  # @return [String|GFA::Line::Segment] the segment
+  # @return [String, GFA::Line::Segment] the segment instance or name
   def segment
     self[0]
   end
