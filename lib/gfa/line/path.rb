@@ -1,3 +1,4 @@
+# A path line of a GFA file
 class GFA::Line::Path < GFA::Line
 
   # @note The field names are derived from the GFA specification at:

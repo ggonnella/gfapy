@@ -168,14 +168,14 @@ module GFA::LoggerSupport
 
   # @!macro progress_log
   # @return [GFA] self
-  def progress_log(symbol, progress=1)
+  def progress_log(symbol, progress=1, **keyargs)
     @progress.progress_log(symbol, progress) if @progress
     return self
   end
 
   # @!macro progress_end
   # @return [GFA] self
-  def progress_log_end(symbol)
+  def progress_log_end(symbol, **keyargs)
     @progress.progress_end(symbol) if @progress
     return self
   end

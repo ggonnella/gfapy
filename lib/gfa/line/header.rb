@@ -1,3 +1,4 @@
+# A header line of a GFA file
 class GFA::Line::Header < GFA::Line
 
   # @note The field names are derived from the GFA specification at:

@@ -83,24 +83,24 @@ module GFA::LineGetters
   #   specified segment.
   # @!macro [new] segment_or_name
   #   @param segment [GFA::Line::Segment, String] a segment instance or name
-  def paths_with(segment_name)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+  def paths_with(segment)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     @c.lines("P",segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
   # @!macro segment_or_name
   # @return [Array<GFA::Line::Containment>]
-  def contained_in(segment_name)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+  def contained_in(segment)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
   # @return [Array<GFA::Line::Containment>]
   # @!macro segment_or_name
-  def containing(segment_name)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+  def containing(segment)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     @c.lines("C", segment_name, :to)
   end
 

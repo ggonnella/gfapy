@@ -1,5 +1,6 @@
 require_relative "../segment_references.rb"
 
+# A containment line of a GFA file
 class GFA::Line::Containment < GFA::Line
 
   # @note The field names are derived from the GFA specification at:
