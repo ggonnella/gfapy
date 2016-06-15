@@ -22,20 +22,15 @@ module GFA::Traverse
                          links_of([segment, :E]).size)
   end
 
-  # @return [Array<segment_end>] path without branches which includes +segment+
-  # and excludes segments in +exclude+.
+  # @return [Array<GFA::SegmentEnd>]
   #
-  # <b>Segment end:</b> (+segment_end+)
-  # - <tt>Array<String|GFA::Line::Segment, Symbol></tt>
-  # - the first element is either a segment name, or a segment instance
-  # - the second element is a symbol representing one of the two segment
-  #   extremities, i.e. :B for beginning and :E for end.
+  # Find an eventual path without branches which
+  #   includes +segment+ and excludes segments in +exclude+.
+  # Any segment used in the returned path will be added to +exclude+
   #
-  # *Side effects*:
-  #   - any segment used in the path will be added to +exclude+
+  # @param segment [String|GFA::Line::Segment] a segment name or instance
+  # @param exclude [Set<String>] a set of segment names to exclude from the path
   #
-  # *Returns*:
-  #   - an array of segment names
   def linear_path(segment, exclude = Set.new)
     segment = segment.name if segment.kind_of?(GFA::Line)
     cs = connectivity(segment)
@@ -51,6 +46,8 @@ module GFA::Traverse
   end
 
   # Find all unbranched paths of segments connected by links in the graph.
+  #
+  # @return [Array<Array<GFA::SegmentEnd>>]
   def linear_paths
     exclude = Set.new
     paths = []
@@ -66,8 +63,16 @@ module GFA::Traverse
     return paths.compact
   end
 
-  # limitations:
-  # - all containments und paths involving merged segments are deleted
+  # Merge a linear path, i.e. a path of segments without extra-branches
+  # @!macro [new] merge_lim
+  #   Limitations: all containments und paths involving merged segments are
+  #   deleted.
+  #
+  # @param segpath [Array<GFA::SegmentEnd>] a linear path, such as that
+  #   retrieved by {#linear_path}
+  #
+  # @return [GFA] self
+  # @see #merge_linear_paths
   def merge_linear_path(segpath, **options)
     raise if segpath.size < 2
     raise if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
@@ -83,6 +88,11 @@ module GFA::Traverse
     self
   end
 
+  # Merge all linear paths in the graph, i.e.
+  # paths of segments without extra-branches
+  # @!macro merge_lim
+  #
+  # @return [GFA] self
   def merge_linear_paths(**options)
     paths = linear_paths
     psize = paths.flatten.size / 2
@@ -95,6 +105,9 @@ module GFA::Traverse
     self
   end
 
+  # @return [Boolean] does the removal of the link alone divide a component
+  #   of the graph into two?
+  # @param link [GFA::Line::Link] a link
   def cut_link?(link)
     return false if link.circular?
     return true if links_of(other_segment_end(link.from_end)).size == 0
@@ -111,8 +124,11 @@ module GFA::Traverse
     return c[:from] != c[:to]
   end
 
-  def cut_segment?(segment_name)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+  # @return [Boolean] does the removal of the segment and its links divide a
+  #   component of the graph into two?
+  # @param segment [String, GFA::Line::Segment] a segment name or instance
+  def cut_segment?(segment)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     cn = connectivity(segment_name)
     return false if [[0,0],[0,1],[1,0]].include?(cn)
     start_points = []
@@ -131,8 +147,14 @@ module GFA::Traverse
     return cc.any?{|c|c != cc[0]}
   end
 
-  def segment_connected_component(segment_name, visited = Set.new)
-    segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
+  # Find the connected component of the graph in which a segment is included
+  # @return [Array<String>]
+  #   array of segment names
+  # @param segment [String, GFA::Line::Segment] a segment name or instance
+  # @param visited [Set<String>] a set of segments to ignore during graph
+  #   traversal; all segments in the found component will be added to it
+  def segment_connected_component(segment, visited = Set.new)
+    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
     visited << segment_name
     c = [segment_name]
     traverse_component([segment_name, :B], c, visited)
@@ -140,6 +162,9 @@ module GFA::Traverse
     return c
   end
 
+  # Find the connected components of the graph
+  # @return [Array<Array<String>>]
+  #   array of components, each an array of segment names
   def connected_components
     components = []
     visited = Set.new
@@ -150,6 +175,8 @@ module GFA::Traverse
     return components
   end
 
+  # Split connected components of the graph into single-component GFAs
+  # @return [Array<GFA>]
   def split_connected_components
     retval = []
     ccs = connected_components
