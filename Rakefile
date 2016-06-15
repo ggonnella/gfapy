@@ -42,8 +42,8 @@ end
 desc "Create a PDF documentation"
 task :pdf => :onefile do
   system("wkhtmltopdf cover doc/cover.html "+
-                     "toc doc/index.html "+
+                     "toc "+
                      "doc/index.html "+
                      "--user-style-sheet doc/print.css "+
-                     "doc/documentation.pdf")
+                     "doc/rgfa-api-1.0.1.pdf")
 end
