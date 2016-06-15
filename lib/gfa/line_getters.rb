@@ -3,6 +3,36 @@
 #
 module GFA::LineGetters
 
+  # @!method links
+  #   All links of the graph
+  #   @return [Array<GFA::Line::Link>]
+  # @!method segments
+  #   All segments of the graph
+  #   @return [Array<GFA::Line::Segment>]
+  # @!method paths
+  #   All path lines of the graph
+  #   @return [Array<GFA::Line::Path>]
+  # @!method headers
+  #   All header lines of the graph
+  #   @return [Array<GFA::Line::Header>]
+  # @!method containments
+  #   All containments of the graph
+  #   @return [Array<GFA::Line::Containment>]
+  # @!method each_link
+  #   Iterate over all links of the graph
+  #   @yield [GFA::Line::Link]
+  # @!method each_segment
+  #   Iterate over all segments of the graph
+  #   @yield [GFA::Line::Segment]
+  # @!method each_path
+  #   Iterate over all path lines of the graph
+  #   @yield [GFA::Line::Path]
+  # @!method each_header
+  #   Iterate over all header lines of the graph
+  #   @yield [GFA::Line::Header]
+  # @!method each_containment
+  #   Iterate over all containments of the graph
+  #   @yield [GFA::Line::Containment]
   GFA::Line::RecordTypes.each do |rt, klass|
     klass =~ /GFA::Line::(.*)/
     define_method(:"#{$1.downcase}s") { lines(rt) }
@@ -52,10 +82,7 @@ module GFA::LineGetters
   # @return [Array<GFA::Line::Path>] paths whose +segment_names+ include the
   #   specified segment.
   # @!macro [new] segment_or_name
-  #   @overload $0(segment)
-  #     @param segment [GFA::Line::Segment] a segment instance
-  #   @overload $0(segment_name)
-  #     @param segment_name [String] a segment name
+  #   @param segment [GFA::Line::Segment, String] a segment instance or name
   def paths_with(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("P",segment_name)
@@ -63,12 +90,14 @@ module GFA::LineGetters
 
   # Find containment lines whose +from+ segment name is +segment_name+
   # @!macro segment_or_name
+  # @return [Array<GFA::Line::Containment>]
   def contained_in(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
     @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
+  # @return [Array<GFA::Line::Containment>]
   # @!macro segment_or_name
   def containing(segment_name)
     segment_name = segment_name.name if segment_name.kind_of?(GFA::Line)
@@ -76,21 +105,33 @@ module GFA::LineGetters
   end
 
   # Searches all containments of +contained+ in +container+.
-  #
   # Returns a possibly empty array of containments.
+  #
+  # @return [Array<GFA::Line::Containment>]
+  # @!macro [new] container_contained
+  #   @param container [GFA::Line::Segment, String] a segment instance or name
+  #   @param contained [GFA::Line::Segment, String] a segment instance or name
+  #
   def containments_between(container, contained)
     contained_in(container).select {|l| l.to == contained }
   end
 
   # Searches a containment of +contained+ in +container+.
-  #
   # Returns the first containment found or nil if none found.
+  #
+  # @return [GFA::Line::Containment, nil]
+  # @!macro container_contained
   def containment(container, contained)
     contained_in(container).each {|l| return l if l.to == contained }
     return nil
   end
 
-  # Calls +containment+ and raises a +RuntimeError+ if no containment was found.
+  # Searches a containment of +contained+ in +container+.
+  # Raises a +RuntimeError+ if no containment was found.
+  #
+  # @return [GFA::Line::Containment]
+  # @raise [GFA::LineMissingError] if no such containment found
+  # @!macro container_contained
   def containment!(container, contained)
     c = containment(container, contained)
     raise GFA::LineMissingError, "No containment was found" if c.nil?
