@@ -154,7 +154,7 @@ class GFA
   end
 
   # Creates a GFA instance parsing the file with specified +filename+
-  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  # @param [Boolean] validate <i>(default: true)</i> calls #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
   # @param [String] filename
@@ -267,7 +267,7 @@ class String
   # Converts a +String+ into a +GFA+ instance. Each line of the string is added
   # separately to the gfa.
   # @return [GFA]
-  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
   def to_gfa(validate: true)
@@ -285,7 +285,7 @@ class Array
   # Converts an +Array+ of strings or GFA::Line instances
   # into a +GFA+ instance.
   # @return [GFA]
-  # @param [boolean] validate <i>(default: true)</i> calls #validate! after
+  # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
   def to_gfa(validate: true)
