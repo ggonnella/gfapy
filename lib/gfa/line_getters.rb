@@ -109,7 +109,7 @@ module GFA::LineGetters
   # @note to add or remove links, use the appropriate methods;
   #   adding or removing links from the returned array will not work
   def links_of(segment_end)
-    segment_end = [segment_end].to_segment_end
+    segment_end = segment_end.to_segment_end
     o = segment_end.end_type == :E ? ["+","-"] : ["-","+"]
     @c.lines("L",segment_end.segment,:from,o[0]) +
       @c.lines("L",segment_end.segment,:to,o[1])
@@ -129,7 +129,7 @@ module GFA::LineGetters
   #
   # @param [GFA::SegmentEnd] segment_end a segment end
   def other_segment_end(segment_end)
-    [segment_end].to_segment_end.other_end
+    segment_end.to_segment_end.other_end
   end
 
   # @return [Array<String>] list of names of segments connected to +segment+

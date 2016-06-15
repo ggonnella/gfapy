@@ -65,7 +65,7 @@ class Array
   # @return [GFA::SegmentEnd]
   def to_segment_end
     return self if self.kind_of?(GFA::SegmentEnd)
-    se = GFA::SegmentEnd.new(*self)
+    se = GFA::SegmentEnd.new(self)
     se.validate!
     return se
   end
