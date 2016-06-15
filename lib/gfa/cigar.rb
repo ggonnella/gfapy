@@ -15,7 +15,7 @@ module GFA::CIGAR
     scan(/[0-9]+[MIDNSHPX=]/).map do |op|
       oplen = op[0..-2].to_i
       opcode = op[-1..-1]
-      [oplen, opcode]
+      GFA::CigarOperation.new([oplen, opcode])
     end
   end
 
@@ -58,6 +58,26 @@ module GFA::CIGAR
     reverse_cigar_operations.flatten.join
   end
 
+end
+
+# Class representing a CIGAR operation
+class GFA::CigarOperation < Array
+  # @return [Integer] operation length
+  def oplen
+    self[0]
+  end
+  # @return [String] <i>(length: 1)</i>
+  #   operation code
+  def opcode
+    self[1]
+  end
+end
+
+class Array
+  # @return [GFA::CigarOperation]
+  def to_cigar_operation
+    kind_of?(GFA::CigarOperation) ? self : GFA::CigarOperation.new(self)
+  end
 end
 
 class String
