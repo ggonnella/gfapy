@@ -9,7 +9,7 @@ module GFA::LineCreators
   #   @param [String] gfa_line_string representation of a GFA line
   # @overload <<(gfa_line)
   #   @param [GFA::Line] gfa_line instance of a subclass of GFA::Line
-  # @return [void]
+  # @return [GFA] self
   def <<(gfa_line)
     gfa_line = gfa_line.to_gfa_line(validate: @validate)
     rt = gfa_line.record_type
@@ -25,7 +25,7 @@ module GFA::LineCreators
     else
       raise # this never happens, as already catched by gfa_line init
     end
-    return nil
+    return self
   end
 
   # Sets the header data
@@ -33,7 +33,7 @@ module GFA::LineCreators
   #   fields; the special key :multiple_values shall contain an array of field
   #   symbols for which multiple values shall be defined in multiple lines;
   #   in this case the values must be summarized in an array
-  # @return [void]
+  # @return [GFA] self
   def set_headers(headers_data)
     rm(:headers)
     multiple_values = headers_data.delete(:multiple_values)
@@ -49,7 +49,7 @@ module GFA::LineCreators
         self << h
       end
     end
-    return nil
+    return self
   end
 
   # Sets the value of a field in the header
@@ -60,7 +60,7 @@ module GFA::LineCreators
   #   and the field already exists, the
   #   value is added, eventually creating an array of values
   #
-  # @return [void]
+  # @return [GFA] self
   def set_header_field(field, value, replace: false, duplicate: false)
     # todo: summarize replace and duplicate in a single option key with three
     #       possible values
@@ -79,7 +79,7 @@ module GFA::LineCreators
       end
     end
     set_headers(h)
-    return nil
+    return self
   end
 
   private
