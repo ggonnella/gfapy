@@ -3,21 +3,33 @@
 #
 module GFA::Sequence
 
-  # Computes the reverse complement of a nucleotidic sequence.
+  # Computes the reverse complement of a nucleotidic sequence
   #
-  # * *Args* :
-  #   - +tolerant+ -> if true, anything non-sequence is complemented to itself;
-  #                   otherwise an exception is raised
-  #   - +forcerna+ -> if true, any A and a is complemented into u and U
-  # * *Raises* :
-  #   - +RuntimeError+ if +!tolerant+ and the string contains a character with
-  #                    no defined Watson-Crick complement
-  #   - +RuntimeError+ if sequence contains both U and T
-  # * *Returns* :
-  #   - if the string consist of only "*", then "*" is returned
-  #   - otherwise: a string containing the reverse complement
-  #                and without newlines and spaces
-  def rc(tolerant = false, rnasequence = false)
+  # @return [String] reverse complement, without newlines and spaces
+  # @return [String] "*" if string is "*"
+  #
+  # @param tolerant [Boolean] <i>(defaults to: +false+)</i>
+  #   if true, anything non-sequence is complemented to itself
+  # @param rnasequence [Boolean] <i>(defaults to: +false+)</i>
+  #   if true, any A and a is complemented into u and U; otherwise
+  #   it is so, only if an U is found; otherwise DNA is assumed
+  #
+  # @raise [RuntimeError] if not +tolerant+ and chars are found for which
+  #   no Watson-Crick complement is defined
+  # @raise [RuntimeError] if sequence contains both U and T
+  #
+  # @example
+  #  "ACTG".rc  # => "CAGT"
+  #  "acGT".rc  # => "ACgt"
+  # @example Undefined sequence is represented by "*":
+  #  "*".rc     # => "*"
+  # @example Extended IUPAC Alphabet:
+  #  "ARBN".rc  # => "NVYT"
+  # @example Usage with RNA sequences:
+  #  "ACUG".rc                    # => "CAGU"
+  #  "ACG".rc(rnasequence: true)  # => "CGU"
+  #  "ACUT".rc                    # (raises RuntimeError, both U and T)
+  def rc(tolerant: false, rnasequence: false)
     return "*" if self == "*"
     retval = each_char.map do |c|
       if c == "U" or c == "u"
@@ -25,7 +37,9 @@ module GFA::Sequence
       elsif rnasequence and (c == "T" or c == "t")
         raise "String contains both U/u and T/t"
       end
-      c.wcc(tolerant)
+      wcc = WCC.fetch(c, tolerant ? c : nil)
+      raise "#{self}: no Watson-Crick complement for #{c}" if wcc.nil?
+      wcc
     end.reverse.join
     if rnasequence
       retval.tr!("tT","uU")
@@ -33,6 +47,7 @@ module GFA::Sequence
     retval
   end
 
+  # Watson-Crick Complements
   WCC = {"a"=>"t","t"=>"a","A"=>"T","T"=>"A",
          "c"=>"g","g"=>"c","C"=>"G","G"=>"C",
          "b"=>"v","B"=>"V","v"=>"b","V"=>"B",
@@ -43,31 +58,6 @@ module GFA::Sequence
          "n"=>"n","N"=>"N","u"=>"a","U"=>"A",
          "-"=>"-","."=>".","="=>"=",
          " "=>"","\n"=>""}
-
-  # Watson-Crick complement of base (single-character string)
-  #
-  # * *Args* :
-  #   - +tolerant+ -> if true, anything non-sequence is complemented to itself;
-  #                   otherwise an exception is raised
-  # * *Raises* :
-  #   - +RuntimeError+ if the string contains multiple characters
-  #   - +RuntimeError+ if +!tolerant+ and the string contains a character with
-  #                    no defined Watson-Crick complement
-  # * *Returns* :
-  #   - a string of length 1 containing the WC complement, or the character
-  #   itself if this is not available, and +tolerant+ is set
-  def wcc(tolerant=false)
-    raise "String#wcc: string must be a single character (#{self})" \
-      if size != 1
-    res = WCC[self]
-    if res.nil?
-      return self if tolerant
-      raise "#{self}: no Watson-Crick complement defined"
-    else
-      return res
-    end
-  end
-
 end
 
 class String
