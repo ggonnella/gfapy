@@ -33,3 +33,17 @@ begin
   end
 rescue LoadError
 end
+
+desc "Create yard documentation in single file"
+task :onefile do
+  system("yard2.0 --one-file")
+end
+
+desc "Create a PDF documentation"
+task :pdf => :onefile do
+  system("wkhtmltopdf cover doc/cover.html "+
+                     "toc doc/index.html "+
+                     "doc/index.html "+
+                     "--user-style-sheet doc/print.css "+
+                     "doc/documentation.pdf")
+end
