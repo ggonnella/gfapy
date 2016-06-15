@@ -56,10 +56,18 @@ class TestGFAOptfield < Test::Unit::TestCase
     assert_nothing_raised { GFA::Optfield.new("aa","A","1") }
     assert_nothing_raised { GFA::Optfield.new("a1","A","1") }
     assert_nothing_raised { GFA::Optfield.new("A1","A","1") }
-    assert_raise(GFA::Optfield::TagError) { GFA::Optfield.new("1A","A","A") }
-    assert_raise(GFA::Optfield::TagError) { GFA::Optfield.new("_A","A","A") }
-    assert_raise(GFA::Optfield::TagError) { GFA::Optfield.new("A","A","A") }
-    assert_raise(GFA::Optfield::TagError) { GFA::Optfield.new("AAA","A","A") }
+    assert_raise(GFA::Optfield::TagNameError) do
+      GFA::Optfield.new("1A","A","A")
+    end
+    assert_raise(GFA::Optfield::TagNameError) do
+      GFA::Optfield.new("_A","A","A")
+    end
+    assert_raise(GFA::Optfield::TagNameError) do
+      GFA::Optfield.new("A","A","A")
+    end
+    assert_raise(GFA::Optfield::TagNameError) do
+      GFA::Optfield.new("AAA","A","A")
+    end
   end
 
   def test_validate_type

@@ -209,7 +209,7 @@ class GFA::Line
     ms, var, i = process_unknown_method(m)
     if !i.nil?
       return (var == :set) ? (self[i] = args[0]) : get_field(i, *args)
-    elsif ms =~ /^#{GFA::Optfield::TagRegexp}$/
+    elsif ms =~ /^#{GFA::Optfield::TAG_REGEXP}$/
       raise GFA::Line::TagMissingError,
         "No value defined for tag #{ms}" if var == :bang
       return (var == :set) ? auto_create_optfield(ms, args[0]) : nil
@@ -225,7 +225,7 @@ class GFA::Line
       pum_retvals = process_unknown_method(m)
       ms = pum_retvals[0]
       i = pum_retvals[2]
-      return (!i.nil? or ms =~ /^#{GFA::Optfield::TagRegexp}$/)
+      return (!i.nil? or ms =~ /^#{GFA::Optfield::TAG_REGEXP}$/)
     end
     return retval
   end
