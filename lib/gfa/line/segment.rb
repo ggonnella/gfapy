@@ -9,6 +9,7 @@ class GFA::Line::Segment < GFA::Line
      [:sequence,    /\*|[A-Za-z=.]+/]     # The nucleotide sequence
     ]
 
+  # Predefined optional fields
   OptfieldTypes = {
      "LN" => "i", # Segment length
      "RC" => "i", # Read count
@@ -16,8 +17,9 @@ class GFA::Line::Segment < GFA::Line
      "KC" => "i", # k-mer count
     }
 
-  # @param [Array<String>] fields splitted content of the line
-  # @param [Boolean] validate <i>(defaults to +true+)</i> perform validations?
+  # @param fields [Array<String>] splitted content of the line
+  # @param validate [Boolean] <i>(defaults to: +true+)</i>
+  #   perform validations?
   # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields, GFA::Line::Segment::FieldRegexp,

@@ -17,14 +17,17 @@ class GFA::Line::Path < GFA::Line
                       # A comma-separated list of CIGAR strings
     ]
 
+  # Procedures for the conversion of selected required fields to Ruby types
   FieldCast =
     { :segment_names => lambda {|e| split_segment_names(e) },
       :cigars        => lambda {|e| split_cigars(e) } }
 
+  # Predefined optional fields
   OptfieldTypes = {}
 
-  # @param [Array<String>] fields splitted content of the line
-  # @param [Boolean] validate <i>(defaults to +true+)</i> perform validations?
+  # @param fields [Array<String>] splitted content of the line
+  # @param validate [Boolean] <i>(defaults to: +true+)</i>
+  #   perform validations?
   # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields, GFA::Line::Path::FieldRegexp,
@@ -33,7 +36,7 @@ class GFA::Line::Path < GFA::Line
           validate: validate)
   end
 
-  # returns a symbol with the name of the path
+  # @return [Symbol] name of the path as symbol
   def to_sym
     name.to_sym
   end

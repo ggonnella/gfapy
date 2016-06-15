@@ -169,7 +169,7 @@ class GFA::Line
   #   return original string, otherwise cast into ruby type
   #
   # <b>Returns:</b>
-  # - (String|Hash|Array|Integer|Float) if field exists and +cast+ is true
+  # - (String, Hash, Array, Integer, Float) if field exists and +cast+ is true
   # - (String) if field exists and +cast+ is false
   # - (nil) if the field does not exist, but is a valid optional field name
   #
@@ -182,7 +182,7 @@ class GFA::Line
   #   return original string, otherwise cast into ruby type
   #
   # <b>Returns:</b>
-  # - (String|Hash|Array|Integer|Float) if field exists and +cast+ is true
+  # - (String, Hash, Array, Integer, Float) if field exists and +cast+ is true
   # - (String) if field exists and +cast+ is false
   #
   # <b>Raises:</b>

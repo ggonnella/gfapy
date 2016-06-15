@@ -7,12 +7,14 @@ class GFA::Line::Header < GFA::Line
      [:record_type, /H/]
     ]
 
+  # Predefined optional fields
   OptfieldTypes = {
      "VN" => "Z", # Version number
     }
 
-  # @param [Array<String>] fields splitted content of the line
-  # @param [Boolean] validate <i>(defaults to +true+)</i> perform validations?
+  # @param fields [Array<String>] splitted content of the line
+  # @param validate [Boolean] <i>(defaults to: +true+)</i>
+  #   perform validations?
   # @return [GFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields, GFA::Line::Header::FieldRegexp,
