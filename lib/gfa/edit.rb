@@ -97,7 +97,7 @@ module GFA::Edit
   #   Array of names for the copies of the segment,
   #   or a symbol, which defines a system to compute the names from the name of
   #   the original segment. See "automatic computation of the copy names".
-  # @param [Boleean] conserve_components <i>(Defaults to: +true+)</i>
+  # @param [Boolean] conserve_components <i>(Defaults to: +true+)</i>
   #   If factor == 0 (i.e. deletion), delete segment only if
   #   {#cut_segment?}(segment) is +false+.
   #
