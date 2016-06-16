@@ -70,6 +70,15 @@ module GFA::Traverse
   #
   # @param segpath [Array<GFA::SegmentEnd>] a linear path, such as that
   #   retrieved by {#linear_path}
+  # @!macro [new] merge_options
+  #   @param options [Hash] optional keyword arguments
+  #   @option options [String, :short, nil] :merged_name (nil)
+  #     if nil, the merged_name is automatically computed; if :short,
+  #     a name is computed starting with "merged1" and calling next until
+  #     an available name is founf; if String, the name to use
+  #   @option options [Boolean] :cut_counts (false)
+  #     if true, total count in merged segment m, composed of segments
+  #     s of set S is multiplied by the factor Sum(|s in S|)/|m|
   #
   # @return [GFA] self
   # @see #merge_linear_paths
@@ -91,6 +100,7 @@ module GFA::Traverse
   # Merge all linear paths in the graph, i.e.
   # paths of segments without extra-branches
   # @!macro merge_lim
+  # @!macro merge_options
   #
   # @return [GFA] self
   def merge_linear_paths(**options)
