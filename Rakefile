@@ -34,21 +34,17 @@ begin
 rescue LoadError
 end
 
-desc "Create yard documentation in single file"
-task :onefile do
-  system("yard2.0 --one-file")
+desc "Create cheatsheet"
+task :cs do
+  system("latexmk cheatsheet/rgfa-cheatsheet-1.0.1.tex -pdf -outdir=cheatsheet")
 end
 
 desc "Create a PDF documentation"
-task :pdf => :onefile do
-  system("wkhtmltopdf cover doc/cover.html "+
+task :pdf do
+  system("yard2.0 --one-file -o pdfdoc")
+  system("wkhtmltopdf cover pdfdoc/cover.html "+
                      "toc "+
-                     "doc/index.html "+
-                     "--user-style-sheet doc/print.css "+
-                     "doc/rgfa-api-1.0.1.pdf")
-end
-
-desc "Create cheatsheet"
-task :cs do
-  system("latexmk doc/rgfa-cheatsheet-1.0.1.tex -pdf -outdir=doc")
+                     "pdfdoc/index.html "+
+                     "--user-style-sheet pdfdoc/print.css "+
+                     "pdfdoc/rgfa-api-1.0.1.pdf")
 end

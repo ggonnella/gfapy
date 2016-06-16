@@ -1,3 +1,10 @@
 *.gem
 doc
 .yardoc
+pdfdoc/index.html
+pdfdoc/rgfa*.pdf
+cheatsheet/*.aux
+cheatsheet/*_latexmk
+cheatsheet/*.fls
+cheatsheet/*.log
+cheatsheet/*.pdf
