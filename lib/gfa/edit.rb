@@ -96,7 +96,10 @@ module GFA::Edit
   #   <i>(Defaults to: +:lowcase+)</i>
   #   Array of names for the copies of the segment,
   #   or a symbol, which defines a system to compute the names from the name of
-  #   the original segment.
+  #   the original segment. See "automatic computation of the copy names".
+  # @param [Boleean] conserve_components <i>(Defaults to: +true+)</i>
+  #   If factor == 0 (i.e. deletion), delete segment only if
+  #   {#cut_segment?}(segment) is +false+.
   #
   # @return [GFA] self
   def multiply(segment, factor, copy_names: :lowcase,
