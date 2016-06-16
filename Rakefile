@@ -47,3 +47,8 @@ task :pdf => :onefile do
                      "--user-style-sheet doc/print.css "+
                      "doc/rgfa-api-1.0.1.pdf")
 end
+
+desc "Create cheatsheet"
+task :cs do
+  system("latexmk doc/rgfa-cheatsheet-1.0.1.tex -pdf -outdir=doc")
+end
