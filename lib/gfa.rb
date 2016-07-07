@@ -14,7 +14,8 @@ require_relative "./gfa/line_destructors.rb"
 require_relative "./gfa/edit.rb"
 require_relative "./gfa/traverse.rb"
 require_relative "./gfa/logger.rb"
-require_relative "./gfa/segment_end.rb"
+require_relative "./gfa/segment_info.rb"
+require_relative "./gfa/rgl.rb"
 
 #
 # This is the main class of the RGFA library.
@@ -46,6 +47,7 @@ class GFA
   include GFA::Edit
   include GFA::Traverse
   include GFA::LoggerSupport
+  include GFA::RGL
 
   def initialize
     @lines = {}
