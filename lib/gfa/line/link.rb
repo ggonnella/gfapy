@@ -125,16 +125,28 @@ class GFA::Line::Link < GFA::Line
     overlap(false).send((cast ? :reverse_cigar_operations : :reverse_cigar))
   end
 
+  # @return[GFA::OrientedSegment] the oriented segment represented by the
+  #   from/from_orient fields
+  def oriented_from
+    [from, from_orient].to_oriented_segment
+  end
+
+  # @return[GFA::OrientedSegment] the oriented segment represented by the
+  #   to/to_orient fields
+  def oriented_to
+    [to, to_orient].to_oriented_segment
+  end
+
   # @return[GFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end
-    [from, from_orient == "+" ? :E : :B]
+    [from, from_orient == "+" ? :E : :B].to_segment_end
   end
 
   # @return[GFA::SegmentEnd] the segment end represented by the
   #   to/to_orient fields
   def to_end
-    [to, to_orient == "+" ? :B : :E]
+    [to, to_orient == "+" ? :B : :E].to_segment_end
   end
 
   # @param[GFA::SegmentEnd] segment_end one of the two segment ends
@@ -145,9 +157,7 @@ class GFA::Line::Link < GFA::Line
   #   representation
   # @raise [RuntimeError] if segment_end is not a segment end of the link
   def other_end(segment_end)
-    if segment_end.size != 2 and ![:B, :E].include?(segment_end[1])
-      raise ArgumentError, "This is not a segment end #{segment_end.inspect}"
-    end
+    segment_end = segment_end.to_segment_end
     if (from_end == segment_end)
       return to_end
     elsif (to_end == segment_end)
