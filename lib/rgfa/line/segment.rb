@@ -1,8 +1,8 @@
-# A segment line of a GFA file
-class GFA::Line::Segment < GFA::Line
+# A segment line of a RGFA file
+class RGFA::Line::Segment < RGFA::Line
 
-  # @note The field names are derived from the GFA specification at:
-  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#segment-line
+  # @note The field names are derived from the RGFA specification at:
+  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#segment-line
   #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /S/],
@@ -21,10 +21,10 @@ class GFA::Line::Segment < GFA::Line
   # @param fields [Array<String>] splitted content of the line
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   perform validations?
-  # @return [GFA::Line::Link]
+  # @return [RGFA::Line::Link]
   def initialize(fields, validate: true)
-    super(fields, GFA::Line::Segment::FieldRegexp,
-          GFA::Line::Segment::OptfieldTypes, validate: validate)
+    super(fields, RGFA::Line::Segment::FieldRegexp,
+          RGFA::Line::Segment::OptfieldTypes, validate: validate)
     validate_length! if validate
   end
 
@@ -55,12 +55,12 @@ class GFA::Line::Segment < GFA::Line
 
   # @!macro length
   # @!macro [new] length_needed
-  #   @raise [GFA::Line::Segment::UndefinedLengthError] if not an LN tag and the
+  #   @raise [RGFA::Line::Segment::UndefinedLengthError] if not an LN tag and the
   #     sequence is "*"
   # @see #length
   def length!
     l = self.length()
-    raise GFA::Line::Segment::UndefinedLengthError,
+    raise RGFA::Line::Segment::UndefinedLengthError,
       "No length information available" if l.nil?
     return l
   end
@@ -87,13 +87,13 @@ class GFA::Line::Segment < GFA::Line
 
   # @see #coverage
   # @!macro coverage
-  # @raise [GFA::Line::TagMissingError] if segment does not have count_tag
+  # @raise [RGFA::Line::TagMissingError] if segment does not have count_tag
   # @!macro length_needed
   def coverage!(count_tag: :RC, unit_length: 1)
     c = coverage(count_tag: count_tag, unit_length: unit_length)
     if c.nil?
       self.length!
-      raise GFA::Line::TagMissingError,
+      raise RGFA::Line::TagMissingError,
         "Tag #{count_tag} undefined for segment #{name}"
     else
       return c
@@ -123,23 +123,23 @@ class GFA::Line::Segment < GFA::Line
   # links/paths/containments
   ORIENTATION = [ FORWARD = "+", REVERSE = "-" ]
 
-  # @param orientation [GFA::Line::Segment::ORIENTATION] an orientation
-  # @return [GFA::Line::Segment::ORIENTATION] the other orientation
-  # @raise [GFA::Line::Segment::UnknownOrientationError]
+  # @param orientation [RGFA::Line::Segment::ORIENTATION] an orientation
+  # @return [RGFA::Line::Segment::ORIENTATION] the other orientation
+  # @raise [RGFA::Line::Segment::UnknownOrientationError]
   #   if +orientation+ is not valid
   def self.other_orientation(orientation)
-    if !GFA::Line::Segment::ORIENTATION.include?(orientation)
-      raise GFA::Line::Segment::UnknownOrientationError
+    if !RGFA::Line::Segment::ORIENTATION.include?(orientation)
+      raise RGFA::Line::Segment::UnknownOrientationError
     end
-    return (orientation == GFA::Line::Segment::FORWARD ?
-              GFA::Line::Segment::REVERSE :
-              GFA::Line::Segment::FORWARD)
+    return (orientation == RGFA::Line::Segment::FORWARD ?
+              RGFA::Line::Segment::REVERSE :
+              RGFA::Line::Segment::FORWARD)
   end
 
 end
 
 # Error raised if an unknown value for orientation is given
-class GFA::Line::Segment::UnknownOrientationError < ArgumentError; end
+class RGFA::Line::Segment::UnknownOrientationError < ArgumentError; end
 
 # Error raised if length of segment cannot be computed
-class GFA::Line::Segment::UndefinedLengthError < ArgumentError; end
+class RGFA::Line::Segment::UndefinedLengthError < ArgumentError; end

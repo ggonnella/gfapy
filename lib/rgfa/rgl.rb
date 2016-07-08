@@ -5,7 +5,7 @@ begin
   #
   # Conversion to RGL graphs
   #
-  module GFA::RGL
+  module RGFA::RGL
 
     # Creates an RGL graph.
     #
@@ -23,8 +23,8 @@ begin
     # Creates an RGL graph, including links orientations.
     #
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
-    #   where vertices are [GFA::Segment, orientation] pairs
-    #   (instances of the GFA::OrientedSegment subclass of Array)
+    #   where vertices are [RGFA::Segment, orientation] pairs
+    #   (instances of the RGFA::OrientedSegment subclass of Array)
     def to_rgl_oriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator do |block|
@@ -41,7 +41,7 @@ begin
             block.call(os)
           end
           @c.lines("L", oriented_segment.name, :to,
-              GFA::OrientedSegment.other(oriented_segment.orient)).each do |l|
+              RGFA::OrientedSegment.other(oriented_segment.orient)).each do |l|
             os = [segment(l.from), l.from_orient].to_oriented_segment
             block.call(os.other_orient)
           end
@@ -56,7 +56,7 @@ begin
     # @raise [RuntimeError] if the graph contains any link where
     #   from_orient or to_orient is "-"
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
-    #   where vertices are GFA::Segment objects
+    #   where vertices are RGFA::Segment objects
     def to_rgl_unoriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
@@ -86,18 +86,18 @@ begin
       # @!macro[new] from_rgl
       #   <b>Accepted vertex formats</b>:
       #
-      #   - GFA::OrientedSegment, or Array which can be converted to it;
+      #   - RGFA::OrientedSegment, or Array which can be converted to it;
       #     where the first element is a <i>segment specifier</i> (see below)
       #   - <i>segment specifier</i> alone: the orientation is assumed to be "+"
       #
       #   The <i>segment specifier</i> can be:
-      #   - GFA::Segment instance
+      #   - RGFA::Segment instance
       #   - String, segment representation (e.g. "S\tsegment\t*")
       #   - String, valid segment name (e.g. "segment")
       #
-      #   @return [GFA] a new GFA instance
+      #   @return [RGFA] a new RGFA instance
       def from_rgl(g)
-        gfa = GFA.new
+        gfa = RGFA.new
         if not (g.respond_to?(:each_vertex) and
                 g.respond_to?(:each_edge))
           raise "#{g} is not a valid RGL graph"
@@ -107,15 +107,15 @@ begin
         end
         g.each_vertex do |v|
           v = v.to_oriented_segment rescue [v, "+"].to_oriented_segment
-          v = v.segment.to_gfa_line rescue ["S",v.segment,"*"].to_gfa_line
+          v = v.segment.to_rgfa_line rescue ["S",v.segment,"*"].to_rgfa_line
           gfa << v unless gfa.segment_names.include?(v.name)
         end
         g.each_edge do |s, t|
           s = s.to_oriented_segment rescue [s, "+"].to_oriented_segment
-          s[0] = s[0].to_gfa_line rescue s[0]
+          s[0] = s[0].to_rgfa_line rescue s[0]
           t = t.to_oriented_segment rescue [t, "+"].to_oriented_segment
-          t[0] = t[0].to_gfa_line rescue t[0]
-          gfa << ["L", s.name, s.orient, t.name, t.orient, "*"].to_gfa_line
+          t[0] = t[0].to_rgfa_line rescue t[0]
+          gfa << ["L", s.name, s.orient, t.name, t.orient, "*"].to_rgfa_line
         end
         gfa
       end
@@ -127,8 +127,8 @@ begin
   module RGL::Graph
 
     # @!macro from_rgl
-    def to_gfa
-      GFA.from_rgl(self)
+    def to_rgfa
+      RGFA.from_rgl(self)
     end
 
   end
@@ -137,7 +137,7 @@ begin
 
 rescue LoadError
 
-  module GFA::RGL
+  module RGFA::RGL
   end
 
 end

@@ -1,7 +1,7 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFATraverse < Test::Unit::TestCase
+class TestRGFATraverse < Test::Unit::TestCase
 
   def test_linear_path_merging
     s = ["S\t0\tACGA",
@@ -11,7 +11,7 @@ class TestGFATraverse < Test::Unit::TestCase
     l = ["L\t0\t+\t1\t+\t1M",
          "L\t1\t+\t2\t-\t1M",
          "L\t2\t+\t3\t+\t1M"]
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_raises(RuntimeError) do
@@ -24,16 +24,16 @@ class TestGFATraverse < Test::Unit::TestCase
     l = ["L\t0\t+\t1\t+\t1M",
          "L\t1\t+\t2\t-\t1M",
          "L\t2\t-\t3\t+\t1M"]
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised do
       gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
-    assert_raises(GFA::LineMissingError) {gfa.segment!("0")}
-    assert_raises(GFA::LineMissingError) {gfa.segment!("1")}
-    assert_raises(GFA::LineMissingError) {gfa.segment!("2")}
-    assert_raises(GFA::LineMissingError) {gfa.segment!("3")}
+    assert_raises(RGFA::LineMissingError) {gfa.segment!("0")}
+    assert_raises(RGFA::LineMissingError) {gfa.segment!("1")}
+    assert_raises(RGFA::LineMissingError) {gfa.segment!("2")}
+    assert_raises(RGFA::LineMissingError) {gfa.segment!("3")}
     assert_nothing_raised {gfa.segment!("0_1_2_3")}
     assert_equal([], gfa.links)
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)
@@ -47,7 +47,7 @@ class TestGFATraverse < Test::Unit::TestCase
     l = ["L\t0\t+\t1\t+\t1M",
          "L\t1\t+\t2\t-\t1M",
          "L\t2\t-\t3\t+\t1M"]
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     gfa.merge_linear_paths
@@ -62,8 +62,8 @@ class TestGFATraverse < Test::Unit::TestCase
     l = ["L\t0\t+\t1\t+\t1M",
          "L\t0\t+\t2\t+\t1M",
          "L\t1\t+\t2\t-\t1M",
-         "L\t2\t-\t3\t+\t1M"].map(&:to_gfa_line)
-    gfa = GFA.new
+         "L\t2\t-\t3\t+\t1M"].map(&:to_rgfa_line)
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_linear_paths }
@@ -76,8 +76,8 @@ class TestGFATraverse < Test::Unit::TestCase
     l = ["L\t0\t+\t1\t+\t1M",
          "L\t0\t+\t2\t+\t1M",
          "L\t1\t+\t2\t+\t1M",
-         "L\t2\t+\t3\t+\t1M"].map(&:to_gfa_line)
-    gfa = GFA.new
+         "L\t2\t+\t3\t+\t1M"].map(&:to_rgfa_line)
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_linear_paths }
@@ -86,7 +86,7 @@ class TestGFATraverse < Test::Unit::TestCase
   end
 
   def test_linear_path_merge_example1
-    gfa = GFA.from_file("test/testdata/example1.gfa")
+    gfa = RGFA.from_file("test/testdata/example1.gfa")
     assert_equal([%w[18 19 1],
                   %w[11 9 12],
                   %w[22 16 20 21 23]],

@@ -1,14 +1,14 @@
 #
 # Extensions of the String class to handle CIGAR strings
 #
-module GFA::CIGAR
+module RGFA::CIGAR
 
   # Parses a CIGAR string into an array of cigar operations,
   # each represented by a tuple of operation length and operation
   # symbol (one of MIDNSHPX=).
   #
   # @return ["*"] if self == "*"
-  # @return [Array<GFA::CigarOperation>] otherwise
+  # @return [Array<RGFA::CigarOperation>] otherwise
   # @raise [TypeError] if the string is not a valid CIGAR string
   def cigar_operations
     return "*" if self == "*"
@@ -16,7 +16,7 @@ module GFA::CIGAR
     scan(/[0-9]+[MIDNSHPX=]/).map do |op|
       oplen = op[0..-2].to_i
       opcode = op[-1..-1]
-      GFA::CigarOperation.new([oplen, opcode])
+      RGFA::CigarOperation.new([oplen, opcode])
     end
   end
 
@@ -26,7 +26,7 @@ module GFA::CIGAR
   #
   # @see #reverse_cigar
   # @return ["*"] if self == "*"
-  # @return [Array<GFA::CigarOperation>] otherwise
+  # @return [Array<RGFA::CigarOperation>] otherwise
   # @raise [TypeError] if the string is not a valid CIGAR string
   def reverse_cigar_operations
     return "*" if self == "*"
@@ -70,7 +70,7 @@ module GFA::CIGAR
 end
 
 # Class representing a CIGAR operation
-class GFA::CigarOperation < Array
+class RGFA::CigarOperation < Array
   # The operation length
   # @return [Integer] operation length
   def oplen
@@ -85,12 +85,12 @@ class GFA::CigarOperation < Array
 end
 
 class Array
-  # @return [GFA::CigarOperation]
+  # @return [RGFA::CigarOperation]
   def to_cigar_operation
-    kind_of?(GFA::CigarOperation) ? self : GFA::CigarOperation.new(self)
+    kind_of?(RGFA::CigarOperation) ? self : RGFA::CigarOperation.new(self)
   end
 end
 
 class String
-  include GFA::CIGAR
+  include RGFA::CIGAR
 end

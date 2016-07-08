@@ -1,10 +1,10 @@
 require_relative "../segment_references.rb"
 
-# A containment line of a GFA file
-class GFA::Line::Containment < GFA::Line
+# A containment line of a RGFA file
+class RGFA::Line::Containment < RGFA::Line
 
-  # @note The field names are derived from the GFA specification at:
-  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#containment-line
+  # @note The field names are derived from the RGFA specification at:
+  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#containment-line
   #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /C/],
@@ -31,15 +31,15 @@ class GFA::Line::Containment < GFA::Line
   # @param fields [Array<String>] splitted content of the line
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   perform validations?
-  # @return [GFA::Line::Link]
+  # @return [RGFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields,
-          GFA::Line::Containment::FieldRegexp,
-          GFA::Line::Containment::OptfieldTypes,
-          GFA::Line::Containment::FieldCast,
+          RGFA::Line::Containment::FieldRegexp,
+          RGFA::Line::Containment::OptfieldTypes,
+          RGFA::Line::Containment::FieldCast,
           validate: validate)
   end
 
-  include GFA::SegmentReferences
+  include RGFA::SegmentReferences
 
 end

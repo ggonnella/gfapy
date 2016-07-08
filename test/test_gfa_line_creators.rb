@@ -1,19 +1,19 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFALineCreators < Test::Unit::TestCase
+class TestRGFALineCreators < Test::Unit::TestCase
 
   def test_add_headers
-    gfa = GFA.new
-    h = "H\tVN:Z:1.0".to_gfa_line
+    gfa = RGFA.new
+    h = "H\tVN:Z:1.0".to_rgfa_line
     assert_nothing_raised { gfa << h }
     assert_equal([h], gfa.headers)
   end
 
   def test_add_segments
-    gfa = GFA.new
-    s1 = "S\t1\t*".to_gfa_line
-    s2 = "S\t2\t*".to_gfa_line
+    gfa = RGFA.new
+    s1 = "S\t1\t*".to_rgfa_line
+    s2 = "S\t2\t*".to_rgfa_line
     assert_nothing_raised { gfa << s1 }
     assert_nothing_raised { gfa << s2 }
     assert_equal([s1, s2], gfa.segments)
@@ -21,16 +21,16 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(s1, gfa.segment("1"))
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
-    assert_raises(GFA::LineMissingError) { gfa.segment!("0") }
+    assert_raises(RGFA::LineMissingError) { gfa.segment!("0") }
     assert_raises(ArgumentError) { gfa << s2 }
   end
 
   def test_add_links
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    l1 = "L\t1\t+\t2\t+\t12M".to_gfa_line
+    l1 = "L\t1\t+\t2\t+\t12M".to_rgfa_line
     l2 = "L\t1\t+\t3\t+\t12M"
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << l1 }
@@ -40,16 +40,16 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(l1, gfa.link(["2", :B], ["1", :E]))
     assert_equal(nil, gfa.link(["2", :E], ["1", :B]))
     assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
-    assert_raises(GFA::LineMissingError) {gfa.link!(["2", :E], ["1", :B])}
+    assert_raises(RGFA::LineMissingError) {gfa.link!(["2", :E], ["1", :B])}
     assert_nothing_raised { gfa << l2 }
   end
 
   def test_add_containments
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    c1 = "C\t1\t+\t2\t+\t12\t12M".to_gfa_line
+    c1 = "C\t1\t+\t2\t+\t12\t12M".to_rgfa_line
     c2 = "C\t1\t+\t3\t+\t12\t12M"
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << c1 }
@@ -57,17 +57,17 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal([c1], gfa.containments)
     assert_equal(c1, gfa.containment("1", "2"))
     assert_nothing_raised {gfa.containment!("1",  "2")}
-    assert_raises(GFA::LineMissingError) {gfa.containment!("2", "1")}
+    assert_raises(RGFA::LineMissingError) {gfa.containment!("2", "1")}
     assert_nothing_raised { gfa << c2 }
   end
 
   def test_add_paths
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    p1 = "P\t4\t1+,2+\t122M,120M".to_gfa_line
+    p1 = "P\t4\t1+,2+\t122M,120M".to_rgfa_line
     p2 = "P\t1\t1+,2+\t122M,120M"
     p3 = "P\t5\t1+,3+\t122M,120M"
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << p1 }
@@ -76,7 +76,7 @@ class TestGFALineCreators < Test::Unit::TestCase
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}
-    assert_raises(GFA::LineMissingError) {gfa.path!("5")}
+    assert_raises(RGFA::LineMissingError) {gfa.path!("5")}
     assert_raises(ArgumentError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
   end
@@ -91,21 +91,21 @@ class TestGFALineCreators < Test::Unit::TestCase
     p1 = "P\t4\t1+,2+\t122M,120M"
     p2 = "P\t1\t1+,2+\t122M,120M"
     p3 = "P\t5\t1+,3+\t122M,120M"
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa.require_segments_first_order
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << l1 }
-    assert_raises(GFA::LineMissingError) { gfa << l2 }
+    assert_raises(RGFA::LineMissingError) { gfa << l2 }
     assert_nothing_raised { gfa << c1 }
-    assert_raises(GFA::LineMissingError) { gfa << c2 }
+    assert_raises(RGFA::LineMissingError) { gfa << c2 }
     assert_nothing_raised { gfa << p1 }
     assert_raises(ArgumentError) { gfa << p2 }
-    assert_raises(GFA::LineMissingError) { gfa << p3 }
+    assert_raises(RGFA::LineMissingError) { gfa << p3 }
   end
 
   def test_set_headers
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     gfa << "H\taa:i:12\tab:Z:test1"
     gfa << "H\taa:i:15"
@@ -130,7 +130,7 @@ class TestGFALineCreators < Test::Unit::TestCase
   end
 
   def test_set_header_field
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     gfa << "H\taa:i:12\tab:Z:test1"
     gfa << "H\tac:Z:test2"

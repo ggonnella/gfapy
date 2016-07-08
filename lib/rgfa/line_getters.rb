@@ -1,40 +1,40 @@
 #
-# Methods for the GFA class, which allow to retrieve specific lines.
+# Methods for the RGFA class, which allow to retrieve specific lines.
 #
-module GFA::LineGetters
+module RGFA::LineGetters
 
   # @!method links
   #   All links of the graph
-  #   @return [Array<GFA::Line::Link>]
+  #   @return [Array<RGFA::Line::Link>]
   # @!method segments
   #   All segments of the graph
-  #   @return [Array<GFA::Line::Segment>]
+  #   @return [Array<RGFA::Line::Segment>]
   # @!method paths
   #   All path lines of the graph
-  #   @return [Array<GFA::Line::Path>]
+  #   @return [Array<RGFA::Line::Path>]
   # @!method headers
   #   All header lines of the graph
-  #   @return [Array<GFA::Line::Header>]
+  #   @return [Array<RGFA::Line::Header>]
   # @!method containments
   #   All containments of the graph
-  #   @return [Array<GFA::Line::Containment>]
+  #   @return [Array<RGFA::Line::Containment>]
   # @!method each_link
   #   Iterate over all links of the graph
-  #   @yield [GFA::Line::Link]
+  #   @yield [RGFA::Line::Link]
   # @!method each_segment
   #   Iterate over all segments of the graph
-  #   @yield [GFA::Line::Segment]
+  #   @yield [RGFA::Line::Segment]
   # @!method each_path
   #   Iterate over all path lines of the graph
-  #   @yield [GFA::Line::Path]
+  #   @yield [RGFA::Line::Path]
   # @!method each_header
   #   Iterate over all header lines of the graph
-  #   @yield [GFA::Line::Header]
+  #   @yield [RGFA::Line::Header]
   # @!method each_containment
   #   Iterate over all containments of the graph
-  #   @yield [GFA::Line::Containment]
-  GFA::Line::RecordTypes.each do |rt, klass|
-    klass =~ /GFA::Line::(.*)/
+  #   @yield [RGFA::Line::Containment]
+  RGFA::Line::RecordTypes.each do |rt, klass|
+    klass =~ /RGFA::Line::(.*)/
     define_method(:"#{$1.downcase}s") { lines(rt) }
     define_method(:"each_#{$1.downcase}") { |&block| each(rt, &block) }
   end
@@ -42,8 +42,8 @@ module GFA::LineGetters
   # @!macro [new] segment
   #   Searches the segment with name equal to +segment_name+.
   #   @param segment_name [String] a segment name
-  #   @return [GFA::Line::Segment] if a segment is found
-  # @return [nil] if no such segment exists in the GFA instance
+  #   @return [RGFA::Line::Segment] if a segment is found
+  # @return [nil] if no such segment exists in the RGFA instance
   #
   def segment(segment_name)
     i = @segment_names[segment_name.to_sym]
@@ -51,10 +51,10 @@ module GFA::LineGetters
   end
 
   # @!macro segment
-  # @raise [GFA::LineMissingError] if no such segment exists in the GFA instance
+  # @raise [RGFA::LineMissingError] if no such segment exists in the RGFA instance
   def segment!(segment_name)
     s = segment(segment_name)
-    raise GFA::LineMissingError,
+    raise RGFA::LineMissingError,
       "No segment has name #{segment_name}" if s.nil?
     s
   end
@@ -62,8 +62,8 @@ module GFA::LineGetters
   # @!macro [new] path
   #   Searches the path with name equal to +path_name+.
   #   @param path_name [String] a path name
-  #   @return [GFA::Line::Path] if a path is found
-  # @return [nil] if no such path exists in the GFA instance
+  #   @return [RGFA::Line::Path] if a path is found
+  # @return [nil] if no such path exists in the RGFA instance
   #
   def path(path_name)
     i = @path_names[path_name.to_sym]
@@ -71,46 +71,46 @@ module GFA::LineGetters
   end
 
   # @!macro path
-  # @raise [GFA::LineMissingError] if no such path exists in the GFA instance
+  # @raise [RGFA::LineMissingError] if no such path exists in the RGFA instance
   def path!(path_name)
     pt = path(path_name)
-    raise GFA::LineMissingError,
+    raise RGFA::LineMissingError,
       "No path has name #{path_name}" if pt.nil?
     pt
   end
 
-  # @return [Array<GFA::Line::Path>] paths whose +segment_names+ include the
+  # @return [Array<RGFA::Line::Path>] paths whose +segment_names+ include the
   #   specified segment.
   # @!macro [new] segment_or_name
-  #   @param segment [GFA::Line::Segment, String] a segment instance or name
+  #   @param segment [RGFA::Line::Segment, String] a segment instance or name
   def paths_with(segment)
-    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     @c.lines("P",segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
   # @!macro segment_or_name
-  # @return [Array<GFA::Line::Containment>]
+  # @return [Array<RGFA::Line::Containment>]
   def contained_in(segment)
-    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     @c.lines("C", segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
-  # @return [Array<GFA::Line::Containment>]
+  # @return [Array<RGFA::Line::Containment>]
   # @!macro segment_or_name
   def containing(segment)
-    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     @c.lines("C", segment_name, :to)
   end
 
   # Searches all containments of +contained+ in +container+.
   # Returns a possibly empty array of containments.
   #
-  # @return [Array<GFA::Line::Containment>]
+  # @return [Array<RGFA::Line::Containment>]
   # @!macro [new] container_contained
-  #   @param container [GFA::Line::Segment, String] a segment instance or name
-  #   @param contained [GFA::Line::Segment, String] a segment instance or name
+  #   @param container [RGFA::Line::Segment, String] a segment instance or name
+  #   @param contained [RGFA::Line::Segment, String] a segment instance or name
   #
   def containments_between(container, contained)
     contained_in(container).select {|l| l.to == contained }
@@ -119,7 +119,7 @@ module GFA::LineGetters
   # Searches a containment of +contained+ in +container+.
   # Returns the first containment found or nil if none found.
   #
-  # @return [GFA::Line::Containment, nil]
+  # @return [RGFA::Line::Containment, nil]
   # @!macro container_contained
   def containment(container, contained)
     contained_in(container).each {|l| return l if l.to == contained }
@@ -129,22 +129,22 @@ module GFA::LineGetters
   # Searches a containment of +contained+ in +container+.
   # Raises a +RuntimeError+ if no containment was found.
   #
-  # @return [GFA::Line::Containment]
-  # @raise [GFA::LineMissingError] if no such containment found
+  # @return [RGFA::Line::Containment]
+  # @raise [RGFA::LineMissingError] if no such containment found
   # @!macro container_contained
   def containment!(container, contained)
     c = containment(container, contained)
-    raise GFA::LineMissingError, "No containment was found" if c.nil?
+    raise RGFA::LineMissingError, "No containment was found" if c.nil?
     c
   end
 
   # Finds links of the specified end of segment.
   #
-  # @param [GFA::SegmentEnd] segment_end a segment end
+  # @param [RGFA::SegmentEnd] segment_end a segment end
   #
-  # @return [Array<GFA::Line::Link>] if segment_end[1] == :E,
+  # @return [Array<RGFA::Line::Link>] if segment_end[1] == :E,
   #   links from sn with from_orient + and to sn with to_orient -
-  # @return [Array<GFA::Line::Link>] if segment_end[1] == :B,
+  # @return [Array<RGFA::Line::Link>] if segment_end[1] == :B,
   #   links to sn with to_orient + and from sn with from_orient -
   #
   # @note to add or remove links, use the appropriate methods;
@@ -158,17 +158,17 @@ module GFA::LineGetters
 
   # Finds segment ends connected to the specified segment end.
   #
-  # @param [GFA::SegmentEnd] segment_end a segment end
+  # @param [RGFA::SegmentEnd] segment_end a segment end
   #
-  # @return [Array<GFA::SegmentEnd>>] segment ends connected by links
+  # @return [Array<RGFA::SegmentEnd>>] segment ends connected by links
   #   to +segment_end+
   def neighbours(segment_end)
     links_of(segment_end).map {|l| l.other_end(segment_end) }
   end
 
-  # @return [GFA::SegmentEnd] the other end of a segment
+  # @return [RGFA::SegmentEnd] the other end of a segment
   #
-  # @param [GFA::SegmentEnd] segment_end a segment end
+  # @param [RGFA::SegmentEnd] segment_end a segment end
   def other_segment_end(segment_end)
     segment_end.to_segment_end.other_end
   end
@@ -185,9 +185,9 @@ module GFA::LineGetters
   # Searches all links between +segment_end1+ and +segment_end2+
   #
   # @!macro [new] two_segment_ends
-  #   @param segment_end1 [GFA::SegmentEnd] a segment end
-  #   @param segment_end2 [GFA::SegmentEnd] a segment end
-  # @return [Array<GFA::Line::Link>] (possibly empty)
+  #   @param segment_end1 [RGFA::SegmentEnd] a segment end
+  #   @param segment_end2 [RGFA::SegmentEnd] a segment end
+  # @return [Array<RGFA::Line::Link>] (possibly empty)
   def links_between(segment_end1, segment_end2)
     links_of(segment_end1).select do |l|
       l.other_end(segment_end1) == segment_end2
@@ -197,7 +197,7 @@ module GFA::LineGetters
   # @!macro [new] link
   #   Searches a link between +segment_end1+ and +segment_end2+
   #   @!macro two_segment_ends
-  #   @return [GFA::Line::Link] the first link found
+  #   @return [RGFA::Line::Link] the first link found
   # @return [nil] if no link is found.
   def link(segment_end1, segment_end2)
     links_of(segment_end1).each do |l|
@@ -207,10 +207,10 @@ module GFA::LineGetters
   end
 
   # @!macro link
-  # @raise [GFA::LineMissingError] if no link is found.
+  # @raise [RGFA::LineMissingError] if no link is found.
   def link!(segment_end1, segment_end2)
     l = link(segment_end1, segment_end2)
-    raise GFA::LineMissingError,
+    raise RGFA::LineMissingError,
       "No link was found: "+
           "#{segment_end1.join(":")} -- "+
           "#{segment_end2.join(":")}" if l.nil?
@@ -258,5 +258,5 @@ module GFA::LineGetters
 end
 
 # The error raised by banged line finders if no line respecting the criteria
-# exist in the GFA
-class GFA::LineMissingError < ArgumentError; end
+# exist in the RGFA
+class RGFA::LineMissingError < ArgumentError; end

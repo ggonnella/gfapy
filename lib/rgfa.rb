@@ -2,31 +2,31 @@
 # (c) 2016, Giorgio Gonnella, ZBH, Uni-Hamburg <gonnella@zbh.uni-hamburg.de>
 #
 
-GFA = Class.new
-require_relative "./gfa/optfield.rb"
-require_relative "./gfa/line.rb"
-require_relative "./gfa/cigar.rb"
-require_relative "./gfa/sequence.rb"
-require_relative "./gfa/connection_info.rb"
-require_relative "./gfa/line_getters.rb"
-require_relative "./gfa/line_creators.rb"
-require_relative "./gfa/line_destructors.rb"
-require_relative "./gfa/edit.rb"
-require_relative "./gfa/traverse.rb"
-require_relative "./gfa/logger.rb"
-require_relative "./gfa/segment_info.rb"
-require_relative "./gfa/rgl.rb"
+RGFA = Class.new
+require_relative "./rgfa/optfield.rb"
+require_relative "./rgfa/line.rb"
+require_relative "./rgfa/cigar.rb"
+require_relative "./rgfa/sequence.rb"
+require_relative "./rgfa/connection_info.rb"
+require_relative "./rgfa/line_getters.rb"
+require_relative "./rgfa/line_creators.rb"
+require_relative "./rgfa/line_destructors.rb"
+require_relative "./rgfa/edit.rb"
+require_relative "./rgfa/traverse.rb"
+require_relative "./rgfa/logger.rb"
+require_relative "./rgfa/segment_info.rb"
+require_relative "./rgfa/rgl.rb"
 
 #
 # This is the main class of the RGFA library.
-# It provides a representation of the \GFA graph.
+# It provides a representation of the \RGFA graph.
 # Supports creating a graph from scratch, input and output from/to file
 # or strings, as well as several operations on the graph.
 #
 # *Internals*:
 # - The main structures are the @lines arrays, one for each record_type
-#   (e.g. header => @lines["H"]); these contain +GFA::Line+ objects of the
-#   corresponding subclass (e.g. +GFA::Line::Header+)
+#   (e.g. header => @lines["H"]); these contain +RGFA::Line+ objects of the
+#   corresponding subclass (e.g. +RGFA::Line::Header+)
 # - If an element is deleted, the position in @lines[record_type] is set to
 #   +nil+, so that the links to all other positions still function
 # - The @segment_names and @path_names arrays contain the names of
@@ -34,27 +34,27 @@ require_relative "./gfa/rgl.rb"
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
-# - @c contains a GFA::ConnectionInfo object, with hashes of indices of
+# - @c contains a RGFA::ConnectionInfo object, with hashes of indices of
 #   @lines["L"|"C"|"P"] which allow to directly
 #   find the links, containments and paths involving a given segment; @c is
 #   kept uptodate by the methods which allow to delete/rename or add links,
 #   containments or paths
-class GFA
+class RGFA
 
-  include GFA::LineGetters
-  include GFA::LineCreators
-  include GFA::LineDestructors
-  include GFA::Edit
-  include GFA::Traverse
-  include GFA::LoggerSupport
-  include GFA::RGL
+  include RGFA::LineGetters
+  include RGFA::LineCreators
+  include RGFA::LineDestructors
+  include RGFA::Edit
+  include RGFA::Traverse
+  include RGFA::LoggerSupport
+  include RGFA::RGL
 
   def initialize
     @lines = {}
-    GFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
+    RGFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
     @segment_names = {}
     @path_names = {}
-    @c = GFA::ConnectionInfo.new(@lines)
+    @c = RGFA::ConnectionInfo.new(@lines)
     @segments_first_order = false
     @validate = true
     @progress = false
@@ -88,7 +88,7 @@ class GFA
     @path_names.keys.compact.map(&:to_s)
   end
 
-  # Post-validation of the GFA; checks that L, C and P refer to
+  # Post-validation of the RGFA; checks that L, C and P refer to
   # existing S.
   # @return [void]
   # @raise if validation fails
@@ -100,12 +100,12 @@ class GFA
     @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
   end
 
-  # Creates a string representation of GFA conforming to the current
+  # Creates a string representation of RGFA conforming to the current
   # specifications
   # @return [String]
   def to_s
     s = ""
-    GFA::Line::RecordTypes.keys.each do |rt|
+    RGFA::Line::RecordTypes.keys.each do |rt|
       @lines[rt].each do |line|
         next if line.nil?
         s << "#{line}\n"
@@ -116,21 +116,21 @@ class GFA
 
   # Return the gfa itself
   # @return [self]
-  def to_gfa
+  def to_rgfa
     self
   end
 
-  # Create a deep copy of the GFA instance.
-  # @return [GFA]
+  # Create a deep copy of the RGFA instance.
+  # @return [RGFA]
   def clone
-    cpy = to_s.to_gfa(validate: false)
+    cpy = to_s.to_rgfa(validate: false)
     cpy.turn_off_validations if !@validate
     cpy.enable_progress_logging if @progress
     cpy.require_segments_first_order if @segments_first_order
     return cpy
   end
 
-  # Populates a GFA instance reading from file with specified +filename+
+  # Populates a RGFA instance reading from file with specified +filename+
   # @param [boolean] validate <i>(default: +true+ if +#turn_off_validations+
   #   was never called, +false+ otherwise)</i> calls #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
@@ -155,20 +155,20 @@ class GFA
     self
   end
 
-  # Creates a GFA instance parsing the file with specified +filename+
+  # Creates a RGFA instance parsing the file with specified +filename+
   # @param [Boolean] validate <i>(default: true)</i> calls #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
   # @param [String] filename
   # @raise if file cannot be opened for reading
-  # @return [GFA]
+  # @return [RGFA]
   def self.from_file(filename, validate: true)
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa.read_file(filename, validate: validate)
     return gfa
   end
 
-  # Write GFA to file with specified +filename+;
+  # Write RGFA to file with specified +filename+;
   # overwrites it if it exists
   # @param [String] filename
   # @raise if file cannot be opened for writing
@@ -266,14 +266,14 @@ end
 # Ruby core String class, with additional methods.
 class String
 
-  # Converts a +String+ into a +GFA+ instance. Each line of the string is added
+  # Converts a +String+ into a +RGFA+ instance. Each line of the string is added
   # separately to the gfa.
-  # @return [GFA]
+  # @return [RGFA]
   # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
-  def to_gfa(validate: true)
-    gfa = GFA.new
+  def to_rgfa(validate: true)
+    gfa = RGFA.new
     split("\n").each {|line| gfa << line}
     gfa.validate! if validate
     return gfa
@@ -284,14 +284,14 @@ end
 # Ruby core Array class, with additional methods.
 class Array
 
-  # Converts an +Array+ of strings or GFA::Line instances
-  # into a +GFA+ instance.
-  # @return [GFA]
+  # Converts an +Array+ of strings or RGFA::Line instances
+  # into a +RGFA+ instance.
+  # @return [RGFA]
   # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
   #   construction of the graph (note: setting it to false does not deactivate
   #   all validations; for this use #turn_off_validations)
-  def to_gfa(validate: true)
-    gfa = GFA.new
+  def to_rgfa(validate: true)
+    gfa = RGFA.new
     each {|line| gfa << line}
     gfa.validate! if validate
     return gfa

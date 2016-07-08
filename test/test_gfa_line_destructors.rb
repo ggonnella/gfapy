@@ -1,25 +1,25 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFALineDestructors < Test::Unit::TestCase
+class TestRGFALineDestructors < Test::Unit::TestCase
 
   def test_delete_headers
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     assert_equal(["H\tVN:Z:1.0"], gfa.headers.map(&:to_s))
     gfa.delete_headers
     assert_equal([], gfa.headers)
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     gfa.rm(:headers)
     assert_equal([], gfa.headers)
   end
 
   def test_delete_links
-    gfa = GFA.new
+    gfa = RGFA.new
     s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]
-    l = "L\t1\t+\t2\t+\t12M".to_gfa_line
-    c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
+    l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
+    c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
     (s + [l,c]).each {|line| gfa << line }
     assert_equal([l], gfa.links)
     assert_equal(l, gfa.link(["1", :E], ["2", :B]))
@@ -40,10 +40,10 @@ class TestGFALineDestructors < Test::Unit::TestCase
   end
 
   def test_delete_containments
-    gfa = GFA.new
+    gfa = RGFA.new
     s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]
-    l = "L\t1\t+\t2\t+\t12M".to_gfa_line
-    c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
+    l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
+    c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
     (s + [l,c]).each {|line| gfa << line }
     gfa.delete_containment("1", "+", "0", "+", 12)
     assert_nothing_raised { gfa.send(:validate_connect) }
@@ -60,10 +60,10 @@ class TestGFALineDestructors < Test::Unit::TestCase
   end
 
   def test_unconnect_segments
-    gfa = GFA.new
+    gfa = RGFA.new
     s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]
-    l = "L\t1\t+\t2\t+\t12M".to_gfa_line
-    c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
+    l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
+    c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
     (s + [l,c]).each {|line| gfa << line }
     gfa.unconnect_segments("0", "1")
     assert_nothing_raised { gfa.send(:validate_connect) }
@@ -81,12 +81,12 @@ class TestGFALineDestructors < Test::Unit::TestCase
   end
 
   def test_delete_segment
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
-    s = ["S\t0\t*".to_gfa_line, "S\t1\t*".to_gfa_line, "S\t2\t*".to_gfa_line]
-    l = "L\t1\t+\t2\t+\t12M".to_gfa_line
-    c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
-    p = "P\t4\t2+,0-\t12M,12M".to_gfa_line
+    s = ["S\t0\t*".to_rgfa_line, "S\t1\t*".to_rgfa_line, "S\t2\t*".to_rgfa_line]
+    l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
+    c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
+    p = "P\t4\t2+,0-\t12M,12M".to_rgfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
     assert_equal(["0", "1", "2"], gfa.segment_names)

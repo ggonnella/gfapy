@@ -1,21 +1,21 @@
 #
-# Methods for the GFA class, which allow to delete lines.
+# Methods for the RGFA class, which allow to delete lines.
 #
-module GFA::LineDestructors
+module RGFA::LineDestructors
 
-  # Delete elements from the GFA graph
+  # Delete elements from the RGFA graph
   # @overload rm(segment)
-  #   @param segment [String, GFA::Line::Segment] segment name or instance
+  #   @param segment [String, RGFA::Line::Segment] segment name or instance
   # @overload rm(path)
-  #   @param path [String, GFA::Line::Segment] path name or instance
+  #   @param path [String, RGFA::Line::Segment] path name or instance
   # @overload rm(segment1, segment1_orient, segment2, segment2_orient)
   #   Remove all links/containments where segment1 is the "From segment
   #   and segment2 is the "To" segment
-  #   @param segment1 [String, GFA::Line::Segment] segment 1 name or instance
-  #   @param segment1_orient [GFA::Line::Segment::ORIENTATION]
+  #   @param segment1 [String, RGFA::Line::Segment] segment 1 name or instance
+  #   @param segment1_orient [RGFA::Line::Segment::ORIENTATION]
   #      orientation of segment 1
-  #   @param segment2 [String, GFA::Line::Segment] segment 2 name or instance
-  #   @param segment2_orient [GFA::Line::Segment::ORIENTATION]
+  #   @param segment2 [String, RGFA::Line::Segment] segment 2 name or instance
+  #   @param segment2_orient [RGFA::Line::Segment::ORIENTATION]
   #      orientation of segment 2
   # @overload rm(:sequences)
   #   Replace all sequences with "*"
@@ -27,13 +27,13 @@ module GFA::LineDestructors
   #   Calls {#rm} using each element of the array as argument
   #   @param array [Array]
   # @overload rm(method_name, *args)
-  #   Call a method of GFA instance, then {#rm} for each returned value
+  #   Call a method of RGFA instance, then {#rm} for each returned value
   #   @param method_name [Symbol] method to call
   #   @param args arguments of the method
-  # @return [GFA] self
+  # @return [RGFA] self
   def rm(x, *args)
-    if x.kind_of?(GFA::Line)
-      raise "One argument required if first GFA::Line" if !args.empty?
+    if x.kind_of?(RGFA::Line)
+      raise "One argument required if first RGFA::Line" if !args.empty?
       case x.record_type
       when "H" then raise "Cannot remove single header lines"
       when "S" then delete_segment(x)
@@ -83,11 +83,11 @@ module GFA::LineDestructors
     return self
   end
 
-  # Delete a segment from the GFA graph
-  # @return [GFA] self
-  # @param segment [String, GFA::Line::Segment] segment name or instance
+  # Delete a segment from the RGFA graph
+  # @return [RGFA] self
+  # @param segment [String, RGFA::Line::Segment] segment name or instance
   def delete_segment(segment, cascade=true)
-    segment_name = segment.kind_of?(GFA::Line::Segment) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line::Segment) ? segment.name : segment
     i = @segment_names[segment_name.to_sym]
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     if cascade
@@ -103,9 +103,9 @@ module GFA::LineDestructors
   end
 
   # Delete all links/containments involving two segments
-  # @return [GFA] self
-  # @param segment1 [String, GFA::Line::Segment] segment 1 name or instance
-  # @param segment2 [String, GFA::Line::Segment] segment 2 name or instance
+  # @return [RGFA] self
+  # @param segment1 [String, RGFA::Line::Segment] segment 1 name or instance
+  # @param segment2 [String, RGFA::Line::Segment] segment 2 name or instance
   def unconnect_segments(segment1, segment2)
     delete_containments_or_links("C", segment1, nil, segment2, nil, nil, false)
     delete_containments_or_links("L", segment1, nil, segment2, nil, nil, false)
@@ -115,11 +115,11 @@ module GFA::LineDestructors
   end
 
   # @!macro [new] from_to
-  #   @param from [String, GFA::Line::Segment] segment name or instance
-  #   @param from_orient [nil, GFA::Line::Segment::ORIENTATION]
+  #   @param from [String, RGFA::Line::Segment] segment name or instance
+  #   @param from_orient [nil, RGFA::Line::Segment::ORIENTATION]
   #      orientation of from segment (use nil for both orientations)
-  #   @param to [String, GFA::Line::Segment] segment name or instance
-  #   @param to_orient [nil, GFA::Line::Segment::ORIENTATION]
+  #   @param to [String, RGFA::Line::Segment] segment name or instance
+  #   @param to_orient [nil, RGFA::Line::Segment::ORIENTATION]
   #      orientation of to segment (use nil for both orientations)
 
   # Delete a link from a segment to another
@@ -127,10 +127,10 @@ module GFA::LineDestructors
   # @overload delete_link(from, from_orient, to, to_orient)
   #   @macro from_to
   # @overload delete_link(link)
-  #   @param link [GFA::Line::Link] link instance
-  # @return [GFA] self
+  #   @param link [RGFA::Line::Link] link instance
+  # @return [RGFA] self
   def delete_link(from, from_orient=nil, to=nil, to_orient=nil)
-    if from.kind_of?(GFA::Line::Link)
+    if from.kind_of?(RGFA::Line::Link)
       to = from.to
       to_orient = from.to_orient
       from_orient = from.from_orient
@@ -149,10 +149,10 @@ module GFA::LineDestructors
   #   @macro from_to
   #   @param pos [Integer, nil] starting position (any if nil)
   # @overload delete_containment(containment)
-  #   @param containment [GFA::Line::Containment] containment instance
-  # @return [GFA] self
+  #   @param containment [RGFA::Line::Containment] containment instance
+  # @return [RGFA] self
   def delete_containment(from, from_orient=nil, to=nil, to_orient=nil, pos=nil)
-    if from.kind_of?(GFA::Line::Containment)
+    if from.kind_of?(RGFA::Line::Containment)
       to = from.to
       to_orient = from.to_orient
       from_orient = from.from_orient
@@ -165,11 +165,11 @@ module GFA::LineDestructors
                                  to_orient, pos, true)
   end
 
-  # Delete a path from the GFA graph
-  # @return [GFA] self
-  # @param path [String, GFA::Line::Path] path name or instance
+  # Delete a path from the RGFA graph
+  # @return [RGFA] self
+  # @param path [String, RGFA::Line::Path] path name or instance
   def delete_path(path)
-    path_name = path.kind_of?(GFA::Line::Path) ? path.name : path
+    path_name = path.kind_of?(RGFA::Line::Path) ? path.name : path
     i = @path_names[path_name.to_sym]
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]
@@ -180,19 +180,19 @@ module GFA::LineDestructors
   end
 
   # Remove all headers
-  # @return [GFA] self
+  # @return [RGFA] self
   def delete_headers
     @lines["H"] = []
   end
 
   # Remove all links of a segment end end except that to the other specified
   # segment end.
-  # @param segment_end [GFA::SegmentEnd] the segment end
-  # @param other_end [GFA::SegmentEnd] the other segment end
+  # @param segment_end [RGFA::SegmentEnd] the segment end
+  # @param other_end [RGFA::SegmentEnd] the other segment end
   # @param conserve_components [Boolean] <i>(defaults to: +false+)</i>
   #   Do not remove links if removing them breaks the graph into unconnected
   #   components.
-  # @return [GFA] self
+  # @return [RGFA] self
   def delete_other_links(segment_end, other_end,
                          conserve_components: false)
     links_of(segment_end).each do |l|
@@ -208,8 +208,8 @@ module GFA::LineDestructors
 
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
-    from = from.kind_of?(GFA::Line::Segment) ? from.name : from
-    to = to.kind_of?(GFA::Line::Segment) ? to.name : to
+    from = from.kind_of?(RGFA::Line::Segment) ? from.name : from
+    to = to.kind_of?(RGFA::Line::Segment) ? to.name : to
     to_rm = []
     @c.find(rt,from,:from).each do |li|
       l = @lines[rt][li]

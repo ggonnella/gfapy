@@ -1,7 +1,7 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFASequence < Test::Unit::TestCase
+class TestRGFASequence < Test::Unit::TestCase
 
   def test_rc
     assert_equal("gcatcgatcgt","acgatcgatgc".rc)

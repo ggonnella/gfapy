@@ -1,14 +1,14 @@
 #
-# Methods for the GFA class, which allow to modify the content of the graph
+# Methods for the RGFA class, which allow to modify the content of the graph
 # without requiring complex graph traversal.
 #
-# @see GFA::Traverse
+# @see RGFA::Traverse
 #
-module GFA::Edit
+module RGFA::Edit
 
   # Eliminate all sequences from S lines, changing them to a "*"
   #
-  # @return [GFA] self
+  # @return [RGFA] self
   def delete_sequences
     @lines["S"].each {|l| l.sequence = "*"}
     self
@@ -16,7 +16,7 @@ module GFA::Edit
 
   # Eliminate all CIGAR from L/C/P lines, changing them to "*"
   #
-  # @return [GFA] self
+  # @return [RGFA] self
   def delete_alignments
     @lines["L"].each {|l| l.overlap = "*"}
     @lines["C"].each {|l| l.overlap = "*"}
@@ -30,7 +30,7 @@ module GFA::Edit
   # @param new_name [String] the new name for the segment or path
   #
   # @raise if +new_name+ is already a segment or path name
-  # @return [GFA] self
+  # @return [RGFA] self
   def rename(old_name, new_name)
     validate_segment_and_path_name_unique!(new_name)
     is_path = @path_names.has_key?(old_name.to_sym)
@@ -91,7 +91,7 @@ module GFA::Edit
   #
   # @param [Integer] factor multiplication factor; if 0, delete the segment;
   #   if 1; do nothing; if > 1; number of copies to create
-  # @param segment [String, GFA::Line::Segment] segment name or instance
+  # @param segment [String, RGFA::Line::Segment] segment name or instance
   # @param [:lowcase, :upcase, :number, :copy, Array<String>] copy_names
   #   <i>(Defaults to: +:lowcase+)</i>
   #   Array of names for the copies of the segment,
@@ -101,10 +101,10 @@ module GFA::Edit
   #   If factor == 0 (i.e. deletion), delete segment only if
   #   {#cut_segment?}(segment) is +false+.
   #
-  # @return [GFA] self
+  # @return [RGFA] self
   def multiply(segment, factor, copy_names: :lowcase,
                conserve_components: true)
-    segment_name = segment.kind_of?(GFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     if factor < 2
       return self if factor == 1
       return self if cut_segment?(segment_name) and conserve_components

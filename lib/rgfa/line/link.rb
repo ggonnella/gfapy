@@ -1,10 +1,10 @@
 require_relative "../segment_references.rb"
 
-# A link line of a GFA file
-class GFA::Line::Link < GFA::Line
+# A link line of a RGFA file
+class RGFA::Line::Link < RGFA::Line
 
-  # @note The field names are derived from the GFA specification at:
-  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#link-line
+  # @note The field names are derived from the RGFA specification at:
+  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#link-line
   #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /L/],
@@ -32,16 +32,16 @@ class GFA::Line::Link < GFA::Line
   # @param fields [Array<String>] splitted content of the line
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   perform validations?
-  # @return [GFA::Line::Link]
+  # @return [RGFA::Line::Link]
   def initialize(fields, validate: true)
     super(fields,
-          GFA::Line::Link::FieldRegexp,
-          GFA::Line::Link::OptfieldTypes,
-          GFA::Line::Link::FieldCast,
+          RGFA::Line::Link::FieldRegexp,
+          RGFA::Line::Link::OptfieldTypes,
+          RGFA::Line::Link::FieldCast,
           validate: validate)
   end
 
-  include GFA::SegmentReferences
+  include RGFA::SegmentReferences
 
   # Compares two links and determine their equivalence.
   # Thereby, optional fields are not considered.
@@ -50,7 +50,7 @@ class GFA::Line::Link < GFA::Line
   #   the CIGAR operations (order/type), one obtains a
   #   reverse but equivalent link.
   #
-  # @param other [GFA::Line::Link] a link
+  # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
   def eql?(other)
@@ -72,7 +72,7 @@ class GFA::Line::Link < GFA::Line
   #   are defined, which have a ``reverse'' operation which determines
   #   their value in the equivalent but reverse link.
   #
-  # @param other [GFA::Line::Link] a link
+  # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
   def eql_optional?(other)
@@ -90,7 +90,7 @@ class GFA::Line::Link < GFA::Line
   #   are defined, which have a ``reverse'' operation which determines
   #   their value in the equivalent but reverse link.
   #
-  # @return[GFA::Line::Link] the inverted link.
+  # @return[RGFA::Line::Link] the inverted link.
   def reverse
     l = self.clone
     l.from = to
@@ -108,7 +108,7 @@ class GFA::Line::Link < GFA::Line
   #   the CIGAR operations (order/type), one obtains an equivalent
   #   link.
   #
-  # @param other [GFA::Line::Link] a link
+  # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #eql?
   # @see #eql_optional?
@@ -120,38 +120,38 @@ class GFA::Line::Link < GFA::Line
   #
   # @param cast [Boolean] cast value?
   # @return [String] if cast is false
-  # @return [Array<GFA::CigarOperation>] if cast is true
+  # @return [Array<RGFA::CigarOperation>] if cast is true
   def reverse_overlap(cast=true)
     overlap(false).send((cast ? :reverse_cigar_operations : :reverse_cigar))
   end
 
-  # @return[GFA::OrientedSegment] the oriented segment represented by the
+  # @return[RGFA::OrientedSegment] the oriented segment represented by the
   #   from/from_orient fields
   def oriented_from
     [from, from_orient].to_oriented_segment
   end
 
-  # @return[GFA::OrientedSegment] the oriented segment represented by the
+  # @return[RGFA::OrientedSegment] the oriented segment represented by the
   #   to/to_orient fields
   def oriented_to
     [to, to_orient].to_oriented_segment
   end
 
-  # @return[GFA::SegmentEnd] the segment end represented by the
+  # @return[RGFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end
     [from, from_orient == "+" ? :E : :B].to_segment_end
   end
 
-  # @return[GFA::SegmentEnd] the segment end represented by the
+  # @return[RGFA::SegmentEnd] the segment end represented by the
   #   to/to_orient fields
   def to_end
     [to, to_orient == "+" ? :B : :E].to_segment_end
   end
 
-  # @param[GFA::SegmentEnd] segment_end one of the two segment ends
+  # @param[RGFA::SegmentEnd] segment_end one of the two segment ends
   #   of the link
-  # @return[GFA::SegmentEnd] the other segment end
+  # @return[RGFA::SegmentEnd] the other segment end
   #
   # @raise [ArgumentError] if segment_end is not a valid segment end
   #   representation

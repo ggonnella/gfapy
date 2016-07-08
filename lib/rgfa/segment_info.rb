@@ -1,14 +1,15 @@
 # A segment or segment name plus an additional boolean attribute
 #
 # This class shall not be initialized directly.
+# @api private
 #
-class GFA::SegmentInfo < Array
+class RGFA::SegmentInfo < Array
 
   # Check that the elements of the array are compatible with the definition.
   #
   # @!macro[new] segment_info_validation_errors
   #   @raise [ArgumentError] if size is not 2
-  #   @raise [GFA::SegmentInfo::InvalidAttribute] if second element
+  #   @raise [RGFA::SegmentInfo::InvalidAttribute] if second element
   #     is not a valid info
   # @return [void]
   def validate!
@@ -16,27 +17,27 @@ class GFA::SegmentInfo < Array
       raise ArgumentError, "Wrong n of elements, 2 expected (#{inspect})"
     end
     if !self.class::ATTR.include?(self[1])
-      raise GFA::SegmentInfo::InvalidAttribute,
+      raise RGFA::SegmentInfo::InvalidAttribute,
         "Invalid attribute (#{self[1].inspect})"
     end
     return nil
   end
 
-  # @return [String, GFA::Line::Segment] the segment instance or name
+  # @return [String, RGFA::Line::Segment] the segment instance or name
   def segment
     self[0]
   end
 
   # @return [String] the segment name
   def name
-    self[0].kind_of?(GFA::Line::Segment) ? self[0].name : self[0]
+    self[0].kind_of?(RGFA::Line::Segment) ? self[0].name : self[0]
   end
 
   def attribute
     self[1]
   end
 
-  # @return [GFA::SegmentInfo] same segment, inverted attribute
+  # @return [RGFA::SegmentInfo] same segment, inverted attribute
   def other
     self.class.new([self[0],
                     self.class::ATTR[self.class::ATTR[0] == self[1] ? 1 : 0]])
@@ -47,7 +48,7 @@ class GFA::SegmentInfo < Array
   def self.other(attribute)
     i = self::ATTR.index(attribute)
     if i.nil?
-      raise GFA::SegmentInfo::InvalidAttribute,
+      raise RGFA::SegmentInfo::InvalidAttribute,
         "Invalid attribute (#{self[1].inspect})"
     end
     return self::ATTR[i-1]
@@ -65,7 +66,7 @@ class GFA::SegmentInfo < Array
 
   # Compare the segment names and attributes of two instances
   #
-  # @param [GFA::SegmentInfo] other the other instance
+  # @param [RGFA::SegmentInfo] other the other instance
   # @return [Boolean]
   def ==(other)
     other = other.to_segment_info(self.class)
@@ -76,10 +77,10 @@ class GFA::SegmentInfo < Array
 end
 
 # Error raised if an unknown value for attribute is used
-class GFA::SegmentInfo::InvalidAttribute < ArgumentError; end
+class RGFA::SegmentInfo::InvalidAttribute < ArgumentError; end
 
 # A representation of a segment end
-class GFA::SegmentEnd < GFA::SegmentInfo
+class RGFA::SegmentEnd < RGFA::SegmentInfo
   # Segment end type (begin or end)
   ATTR = [ END_TYPE_BEGIN = :B, END_TYPE_END = :E ]
   alias_method :end_type, :attribute
@@ -87,7 +88,7 @@ class GFA::SegmentEnd < GFA::SegmentInfo
 end
 
 # A segment plus orientation
-class GFA::OrientedSegment < GFA::SegmentInfo
+class RGFA::OrientedSegment < RGFA::SegmentInfo
   # Segment orientation
   ATTR = [ ORIENT_FWD = "+", ORIENT_REV = "-" ]
   alias_method :orient, :attribute
@@ -98,16 +99,16 @@ class Array
 
   # Create and validate a segment end from an array
   # @!macro segment_info_validation_errors
-  # @return [GFA::SegmentEnd]
+  # @return [RGFA::SegmentEnd]
   def to_segment_end
-    to_segment_info(GFA::SegmentEnd)
+    to_segment_info(RGFA::SegmentEnd)
   end
 
   # Create and validate a segment end from an array
   # @!macro segment_info_validation_errors
-  # @return [GFA::OrientedSegment]
+  # @return [RGFA::OrientedSegment]
   def to_oriented_segment
-    to_segment_info(GFA::OrientedSegment)
+    to_segment_info(RGFA::OrientedSegment)
   end
 
   protected

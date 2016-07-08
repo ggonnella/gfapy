@@ -1,7 +1,7 @@
 #
 # Extensions of the String class to handle nucleotidic sequences
 #
-module GFA::Sequence
+module RGFA::Sequence
 
   # Computes the reverse complement of a nucleotidic sequence
   #
@@ -61,5 +61,5 @@ module GFA::Sequence
 end
 
 class String
-  include GFA::Sequence
+  include RGFA::Sequence
 end

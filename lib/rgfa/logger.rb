@@ -2,7 +2,7 @@
 # This class allows to output a message to the log file or STDERR and
 # to keep track of the progress of a method which takes long time to complete.
 #
-class GFA::Logger
+class RGFA::Logger
 
   # Information about the progress of a computation
   ProgressData = Struct.new(:counter, :units, :partsize,
@@ -17,7 +17,7 @@ class GFA::Logger
   #   output prefix (default: "#")
   # @param verbose_level [Integer]
   #   0: no logging; >0: the higher, the more logging
-  # @return [GFA::Logger]
+  # @return [RGFA::Logger]
   def initialize(verbose_level: 1, channel: STDERR, prefix: "#")
     @progress = false
     if !verbose_level.kind_of?(Integer)
@@ -43,7 +43,7 @@ class GFA::Logger
   # Enable output from the Logger instance
   #
   # @param part [Float]
-  #  - part = 0      => output at every call of {GFA::Logger.progress_log}
+  #  - part = 0      => output at every call of {RGFA::Logger.progress_log}
   #  - 0 < part < 1  => output once per part of the total progress
   #                     (e.g. 0.001 = log every 0.1% progress)
   #  - part = 1      => output only total elapsed time
@@ -148,33 +148,33 @@ class GFA::Logger
 
 end
 
-# Progress logging related-methods for GFA class
-module GFA::LoggerSupport
+# Progress logging related-methods for RGFA class
+module RGFA::LoggerSupport
 
   # Activate logging of progress
-  # @return [GFA] self
+  # @return [RGFA] self
   def enable_progress_logging(part: 0.1, channel: STDERR)
-    @progress = GFA::Logger.new(channel: channel)
+    @progress = RGFA::Logger.new(channel: channel)
     @progress.enable_progress(part: part)
     return self
   end
 
   # @!macro progress_init
-  # @return [GFA] self
+  # @return [RGFA] self
   def progress_log_init(symbol, units, total, initmsg = nil)
     @progress.progress_init(symbol, units, total, initmsg) if @progress
     return self
   end
 
   # @!macro progress_log
-  # @return [GFA] self
+  # @return [RGFA] self
   def progress_log(symbol, progress=1, **keyargs)
     @progress.progress_log(symbol, progress) if @progress
     return self
   end
 
   # @!macro progress_end
-  # @return [GFA] self
+  # @return [RGFA] self
   def progress_log_end(symbol, **keyargs)
     @progress.progress_end(symbol) if @progress
     return self

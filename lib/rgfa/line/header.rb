@@ -1,8 +1,8 @@
-# A header line of a GFA file
-class GFA::Line::Header < GFA::Line
+# A header line of a RGFA file
+class RGFA::Line::Header < RGFA::Line
 
-  # @note The field names are derived from the GFA specification at:
-  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#header-line
+  # @note The field names are derived from the RGFA specification at:
+  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#header-line
   #   and were made all downcase with _ separating words
   FieldRegexp = [
      [:record_type, /H/]
@@ -16,10 +16,10 @@ class GFA::Line::Header < GFA::Line
   # @param fields [Array<String>] splitted content of the line
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   perform validations?
-  # @return [GFA::Line::Link]
+  # @return [RGFA::Line::Link]
   def initialize(fields, validate: true)
-    super(fields, GFA::Line::Header::FieldRegexp,
-          GFA::Line::Header::OptfieldTypes, validate: validate)
+    super(fields, RGFA::Line::Header::FieldRegexp,
+          RGFA::Line::Header::OptfieldTypes, validate: validate)
   end
 
 end

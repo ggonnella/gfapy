@@ -1,17 +1,17 @@
 #
-# Methods for the GFA class, which allow to add lines.
+# Methods for the RGFA class, which allow to add lines.
 #
-module GFA::LineCreators
+module RGFA::LineCreators
 
-  # Add a line to a GFA
+  # Add a line to a RGFA
   #
   # @overload <<(gfa_line_string)
-  #   @param [String] gfa_line_string representation of a GFA line
+  #   @param [String] gfa_line_string representation of a RGFA line
   # @overload <<(gfa_line)
-  #   @param [GFA::Line] gfa_line instance of a subclass of GFA::Line
-  # @return [GFA] self
+  #   @param [RGFA::Line] gfa_line instance of a subclass of RGFA::Line
+  # @return [RGFA] self
   def <<(gfa_line)
-    gfa_line = gfa_line.to_gfa_line(validate: @validate)
+    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     rt = gfa_line.record_type
     case rt
     when "H"
@@ -33,7 +33,7 @@ module GFA::LineCreators
   #   fields; the special key :multiple_values shall contain an array of field
   #   symbols for which multiple values shall be defined in multiple lines;
   #   in this case the values must be summarized in an array
-  # @return [GFA] self
+  # @return [RGFA] self
   def set_headers(headers_data)
     rm(:headers)
     multiple_values = headers_data.delete(:multiple_values)
@@ -44,7 +44,7 @@ module GFA::LineCreators
         raise "Field #{of} listed in multiple_values key, but is not an array"
       end
       values.each do |value|
-        h = "H".to_gfa_line
+        h = "H".to_rgfa_line
         h.send(:"#{of}=", value)
         self << h
       end
@@ -60,7 +60,7 @@ module GFA::LineCreators
   #   and the field already exists, the
   #   value is added, eventually creating an array of values
   #
-  # @return [GFA] self
+  # @return [RGFA] self
   def set_header_field(field, value, replace: false, duplicate: false)
     # todo: summarize replace and duplicate in a single option key with three
     #       possible values

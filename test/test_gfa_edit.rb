@@ -1,16 +1,16 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFAEdit < Test::Unit::TestCase
+class TestRGFAEdit < Test::Unit::TestCase
 
   def test_delete_sequences
-    gfa = GFA.new
+    gfa = RGFA.new
     seqs = ["ACCAGCTAGCGAGC", "CGCTAGTGCTG", "GCTAGCTAG"]
     seqs.each_with_index {|seq, i| gfa << "S\t#{i}\t#{seq}" }
     assert_equal(seqs, gfa.segments.map{|s|s.sequence})
     gfa.delete_sequences
     assert_equal(["*","*","*"], gfa.segments.map{|s|s.sequence})
-    gfa = GFA.new
+    gfa = RGFA.new
     seqs = ["ACCAGCTAGCGAGC", "CGCTAGTGCTG", "GCTAGCTAG"]
     seqs.each_with_index {|seq, i| gfa << "S\t#{i}\t#{seq}" }
     gfa.rm(:sequences)
@@ -19,7 +19,7 @@ class TestGFAEdit < Test::Unit::TestCase
 
   def test_delete_alignments
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
     assert_equal([[12,"M"]], gfa.links[0].overlap)
     assert_equal([[12,"M"]], gfa.containments[0].overlap)
     assert_equal([[[12,"M"]],[[12,"M"]]], gfa.paths[0].cigars)
@@ -28,7 +28,7 @@ class TestGFAEdit < Test::Unit::TestCase
     assert_equal("*", gfa.containments[0].overlap)
     assert_equal(["*"], gfa.paths[0].cigars)
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
     gfa.rm(:alignments)
     assert_equal("*", gfa.links[0].overlap)
     assert_equal("*", gfa.containments[0].overlap)
@@ -37,7 +37,7 @@ class TestGFAEdit < Test::Unit::TestCase
 
   def test_rename
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t0\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_gfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
     gfa.rename("0", "X")
     assert_equal(["X", "1", "2"].sort, gfa.segment_names.sort)
     assert_equal("L\tX\t+\t2\t+\t12M", gfa.links[0].to_s)
@@ -54,14 +54,14 @@ class TestGFAEdit < Test::Unit::TestCase
   end
 
   def test_multiply_segment
-    gfa = GFA.new
+    gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
-    s = ["S\t0\t*\tRC:i:600".to_gfa_line,
-         "S\t1\t*\tRC:i:6000".to_gfa_line,
-         "S\t2\t*\tRC:i:60000".to_gfa_line]
-    l = "L\t1\t+\t2\t+\t12M".to_gfa_line
-    c = "C\t1\t+\t0\t+\t12\t12M".to_gfa_line
-    p = "P\t3\t2+,0-\t12M,12M".to_gfa_line
+    s = ["S\t0\t*\tRC:i:600".to_rgfa_line,
+         "S\t1\t*\tRC:i:6000".to_rgfa_line,
+         "S\t2\t*\tRC:i:60000".to_rgfa_line]
+    l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
+    c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
+    p = "P\t3\t2+,0-\t12M,12M".to_rgfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
     assert_equal([l], gfa.links)
@@ -99,7 +99,7 @@ class TestGFAEdit < Test::Unit::TestCase
            "S\t1\t*\tRC:i:600",
            "S\t1b\t*\tRC:i:6000",
            "S\t2\t*\tRC:i:60000",
-           "S\t3\t*\tRC:i:60000"].to_gfa
+           "S\t3\t*\tRC:i:60000"].to_rgfa
     gfa.multiply("2", 2, copy_names: :upcase)
     assert_nothing_raised {gfa.segment!("2B")}
     gfa.multiply("2", 2, copy_names: :upcase)

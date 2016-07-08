@@ -1,5 +1,5 @@
 #
-# Collection of hashes which allow fast retrieval of the lines of a GFA
+# Collection of hashes which allow fast retrieval of the lines of a GFA graph
 # which refer to a given segment.
 #
 # @api private
@@ -8,10 +8,10 @@
 #   to the GFA using an "S" line. This is necessary, as the order of the lines
 #   in the file during parsing is arbitrary.
 #
-class GFA::ConnectionInfo
+class RGFA::ConnectionInfo
 
-  # @return [GFA::ConnectionInfo]
-  # @param lines [Array] reference to GFA instance @lines array
+  # @return [RGFA::ConnectionInfo]
+  # @param lines [Array] reference to RGFA instance @lines array
   #   (required by the #validate! and the #lines methods)
   def initialize(lines)
     @lines = lines
@@ -23,7 +23,7 @@ class GFA::ConnectionInfo
   #
   # @!macro [new] connection_params
   #   @param rt [:L, :C, :P] the record type
-  #   @param sn [String, GFA::Line::Segment] the segment name or instance
+  #   @param sn [String, RGFA::Line::Segment] the segment name or instance
   #   @param dir [:from, :to, nil] is segment the from or the to segment of the
   #     link/containment?; use nil for paths
   # @param value [Integer] an index in @lines[rt]
@@ -87,8 +87,8 @@ class GFA::ConnectionInfo
   end
 
   # Rename a segment in the connection info.
-  # @param sn [GFA::Line::Segment, String] the old segment instance or name
-  # @param new_sn [GFA::Line::Segment, String] the new segment instance or name
+  # @param sn [RGFA::Line::Segment, String] the old segment instance or name
+  # @param new_sn [RGFA::Line::Segment, String] the new segment instance or name
   # @return [void]
   def rename_segment(sn, new_sn)
     sn = sn.to_sym
@@ -104,14 +104,14 @@ class GFA::ConnectionInfo
   end
 
   # Delete all information about a segment in the connection info.
-  # @param sn [GFA::Line::Segment, String] the segment instance or segment name
+  # @param sn [RGFA::Line::Segment, String] the segment instance or segment name
   # @return [void]
   def delete_segment(sn)
     [:P, :L, :C].each {|rt| @connect[rt].delete(sn.to_sym)}
     nil
   end
 
-  # Find indices of GFA lines referring to a segment
+  # Find indices of RGFA lines referring to a segment
   #
   # @!macro connection_params
   # @!macro orientation_or_nil
@@ -147,7 +147,7 @@ class GFA::ConnectionInfo
   #
   # @note You can modify the line instances, but do not modify the returned
   #   array itself; modifications must be done using {#add} and {#delete}.
-  # @return [Array<GFA::Line>] the lines of given record type referring to the
+  # @return [Array<RGFA::Line>] the lines of given record type referring to the
   #   segment and respecting the +dir+ and +o+ conditions
   def lines(rt, sn, dir = nil, o = nil)
     find(rt, sn, dir, o).map{|i| @lines[rt][i]}

@@ -1,8 +1,8 @@
-# A path line of a GFA file
-class GFA::Line::Path < GFA::Line
+# A path line of a RGFA file
+class RGFA::Line::Path < RGFA::Line
 
-  # @note The field names are derived from the GFA specification at:
-  #   https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#path-line
+  # @note The field names are derived from the RGFA specification at:
+  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#path-line
   #   and were made all downcase with _ separating words;
   #   the cigar and segment_name regexps and name were changed to better
   #   implement what written in the commentaries of the specification
@@ -29,11 +29,11 @@ class GFA::Line::Path < GFA::Line
   # @param fields [Array<String>] splitted content of the line
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   perform validations?
-  # @return [GFA::Line::Link]
+  # @return [RGFA::Line::Link]
   def initialize(fields, validate: true)
-    super(fields, GFA::Line::Path::FieldRegexp,
-          GFA::Line::Path::OptfieldTypes,
-          GFA::Line::Path::FieldCast,
+    super(fields, RGFA::Line::Path::FieldRegexp,
+          RGFA::Line::Path::OptfieldTypes,
+          RGFA::Line::Path::FieldCast,
           validate: validate)
   end
 

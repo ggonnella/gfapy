@@ -1,117 +1,117 @@
-require_relative "../lib/gfa.rb"
+require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestGFALine < Test::Unit::TestCase
+class TestRGFALine < Test::Unit::TestCase
 
   def test_initialize_line
-    l = GFA::Line.new(["H"],[[:record_type, /H/]],{})
+    l = RGFA::Line.new(["H"],[[:record_type, /H/]],{})
     assert(l)
   end
 
   def test_initialize_unknown_record_type
-    assert_raise(GFA::Line::UnknownRecordTypeError) do
-      GFA::Line.new(["A"],[[:record_type, /[A-Z]/]],{})
+    assert_raise(RGFA::Line::UnknownRecordTypeError) do
+      RGFA::Line.new(["A"],[[:record_type, /[A-Z]/]],{})
     end
   end
 
   def test_initialize_not_enough_required
     assert_nothing_raised do
-      GFA::Line.new(["H"],[[:record_type, /[A-Z]/]],{})
+      RGFA::Line.new(["H"],[[:record_type, /[A-Z]/]],{})
     end
-    assert_raise(GFA::Line::RequiredFieldMissingError) do
-      GFA::Line.new([],[[:record_type, /[A-Z]/]],{})
+    assert_raise(RGFA::Line::RequiredFieldMissingError) do
+      RGFA::Line.new([],[[:record_type, /[A-Z]/]],{})
     end
-    assert_raise(GFA::Line::RequiredFieldMissingError) do
-      GFA::Line.new(["H"],[[:record_type, /[A-Z]/],[:from, /[0-9]+/]],{})
+    assert_raise(RGFA::Line::RequiredFieldMissingError) do
+      RGFA::Line.new(["H"],[[:record_type, /[A-Z]/],[:from, /[0-9]+/]],{})
     end
   end
 
   def test_initialize_too_many_required
     assert_raise(TypeError) do
-      GFA::Line.new(["H","1","2"],
+      RGFA::Line.new(["H","1","2"],
                     [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],{})
     end
   end
 
   def test_initialize_predefined_optfield_wrong_type
     assert_nothing_raised do
-      GFA::Line.new(["H","XX:Z:A"],[[:record_type, /[A-Z]/]],{"XX" => "Z"})
+      RGFA::Line.new(["H","XX:Z:A"],[[:record_type, /[A-Z]/]],{"XX" => "Z"})
     end
-    assert_raise(GFA::Line::PredefinedOptfieldTypeError) do
-      GFA::Line.new(["H","XX:i:1"],[[:record_type, /[A-Z]/]],{"XX" => "Z"})
+    assert_raise(RGFA::Line::PredefinedOptfieldTypeError) do
+      RGFA::Line.new(["H","XX:i:1"],[[:record_type, /[A-Z]/]],{"XX" => "Z"})
     end
   end
 
   def test_initialize_wrong_optfield_format
     assert_raise(TypeError) do
-      GFA::Line.new(["H","XX Z-A"],
+      RGFA::Line.new(["H","XX Z-A"],
                     [[:record_type, /[A-Z]/]],{"XX" => "Z"})
     end
   end
 
   def test_initialize_reqfield_invalid_name
-    assert_raise(GFA::Line::InvalidFieldNameError) do
-      GFA::Line.new(["H","1"],[[:record_type, /[A-Z]/],[:to_s, /[0-9]+/]],{})
+    assert_raise(RGFA::Line::InvalidFieldNameError) do
+      RGFA::Line.new(["H","1"],[[:record_type, /[A-Z]/],[:to_s, /[0-9]+/]],{})
     end
   end
 
   def test_initialize_reqfield_type_error
-    assert_raise(GFA::Line::RequiredFieldTypeError) do
-      GFA::Line.new(["H","A"],[[:record_type, /[A-Z]/],[:from, /[0-9]+/]],{})
+    assert_raise(RGFA::Line::RequiredFieldTypeError) do
+      RGFA::Line.new(["H","A"],[[:record_type, /[A-Z]/],[:from, /[0-9]+/]],{})
     end
   end
 
   def test_initialize_optfield_type_error
-    assert_raise(GFA::Optfield::ValueError) do
-      GFA::Line.new(["H","ZZ:i:12A"],
+    assert_raise(RGFA::Optfield::ValueError) do
+      RGFA::Line.new(["H","ZZ:i:12A"],
                     [[:record_type, /[A-Z]/]],{"ZZ" => "i"})
     end
   end
 
   def test_initialize_duplicate_optfield
-    assert_raise(GFA::Line::DuplicateOptfieldNameError) do
-      GFA::Line.new(["H","XX:i:1", "XX:i:2"],
+    assert_raise(RGFA::Line::DuplicateOptfieldNameError) do
+      RGFA::Line.new(["H","XX:i:1", "XX:i:2"],
                     [[:record_type, /[A-Z]/]],{"XX" => "i"})
     end
-    assert_raise(GFA::Line::DuplicateOptfieldNameError) do
-      GFA::Line.new(["H","zz:i:1", "XX:Z:A", "zz:i:2"],
+    assert_raise(RGFA::Line::DuplicateOptfieldNameError) do
+      RGFA::Line.new(["H","zz:i:1", "XX:Z:A", "zz:i:2"],
                     [[:record_type, /[A-Z]/]],{"XX" => "Z"})
     end
   end
 
   def test_initialize_missing_field_definitions
     assert_nothing_raised do
-      GFA::Line.new(["H","id:i:1"], [[:record_type, /[A-Z]/]], {})
+      RGFA::Line.new(["H","id:i:1"], [[:record_type, /[A-Z]/]], {})
     end
     assert_raise(ArgumentError) do
-      GFA::Line.new(["H","id:i:1"], nil, {"xx" => "i"})
+      RGFA::Line.new(["H","id:i:1"], nil, {"xx" => "i"})
     end
     assert_raise(ArgumentError) do
-      GFA::Line.new(["H","id:i:1"], [[:record_type, /[A-Z]/]], nil)
+      RGFA::Line.new(["H","id:i:1"], [[:record_type, /[A-Z]/]], nil)
     end
   end
 
   def test_initialize_duplicate_field_names
     assert_raise(ArgumentError) do
-      GFA::Line.new(["H","id:i:1"],
+      RGFA::Line.new(["H","id:i:1"],
                     [[:record_type, /[A-Z]/],
                      [:XX, /.*/],
                      [:XX, /.*/]], {"ZZ" => "i"})
     end
     assert_raise(ArgumentError) do
-      GFA::Line.new(["H", "1"],
+      RGFA::Line.new(["H", "1"],
                     [[:record_type, /[A-Z]/],
                      [:XX, /.*/]], {"XX" => "i"})
     end
   end
 
   def test_initialize_custom_optfield
-    assert_raise(GFA::Line::CustomOptfieldNameError) do
-      GFA::Line.new(["H","XX:i:1"],
+    assert_raise(RGFA::Line::CustomOptfieldNameError) do
+      RGFA::Line.new(["H","XX:i:1"],
                     [[:record_type, /[A-Z]/]],{"XY" => "i"})
     end
-    assert_raise(GFA::Line::CustomOptfieldNameError) do
-      GFA::Line.new(["H","a","xx:i:1"],
+    assert_raise(RGFA::Line::CustomOptfieldNameError) do
+      RGFA::Line.new(["H","a","xx:i:1"],
                     [[:record_type, /[A-Z]/],
                      [:xx, /.*/]],
                      {"ZZ" => "i"})
@@ -119,11 +119,11 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_clone
-    l = "H\tVN:Z:1.0".to_gfa_line
+    l = "H\tVN:Z:1.0".to_rgfa_line
     l1 = l
     l2 = l.clone
-    assert_equal(GFA::Line::Header, l.class)
-    assert_equal(GFA::Line::Header, l2.class)
+    assert_equal(RGFA::Line::Header, l.class)
+    assert_equal(RGFA::Line::Header, l2.class)
     l2.VN="2.0"
     assert_equal("2.0", l2.VN)
     assert_equal("1.0", l.VN)
@@ -132,7 +132,7 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_respond_to
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert(l.respond_to?(:record_type))
@@ -148,7 +148,7 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_field_getters_required_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(:record_type, l.fieldnames[0])
@@ -159,7 +159,7 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_field_getters_existing_optional_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(:xx, l.fieldnames[2])
@@ -172,39 +172,39 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_field_getters_not_existing_optional_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(nil, l.zz)
-    assert_raise(GFA::Line::TagMissingError) { l.zz! }
+    assert_raise(RGFA::Line::TagMissingError) { l.zz! }
   end
 
   def test_field_setters_required_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     l.record_type = "S"
     assert_equal("S", l.record_type)
-    assert_raise(GFA::Line::RequiredFieldTypeError) { l.from = "A" }
+    assert_raise(RGFA::Line::RequiredFieldTypeError) { l.from = "A" }
     l.from = "14"
     assert_equal("14", l.from)
   end
 
   def test_field_setters_existing_optional_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)
-    assert_raise(GFA::Optfield::ValueError) { l.xx = "1A" }
+    assert_raise(RGFA::Optfield::ValueError) { l.xx = "1A" }
     assert_equal("HI", l.XY)
     l.XY = "HO"
     assert_equal("HO", l.XY)
   end
 
   def test_field_setters_not_existing_optional_fields
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_nothing_raised { l.zz="1" }
@@ -232,48 +232,48 @@ class TestGFALine < Test::Unit::TestCase
   end
 
   def test_add_optfield
-    l = GFA::Line.new(["H","12","xx:i:13"],
+    l = RGFA::Line.new(["H","12","xx:i:13"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(nil, l.XY)
     l << "XY:Z:HI"
     assert_equal("HI", l.XY)
-    assert_raise(GFA::Line::DuplicateOptfieldNameError) {l << "XY:Z:HI"}
+    assert_raise(RGFA::Line::DuplicateOptfieldNameError) {l << "XY:Z:HI"}
   end
 
   def test_to_s
     fields = ["H","12","xx:i:13","XY:Z:HI"]
-    l = GFA::Line.new(fields,
+    l = RGFA::Line.new(fields,
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_equal(fields.join("\t"),l.to_s)
   end
 
-  def test_to_gfa_line
+  def test_to_rgfa_line
     fields = ["H","12","xx:i:13","XY:Z:HI"]
-    l = GFA::Line.new(fields,
+    l = RGFA::Line.new(fields,
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
-    l1 = l.to_gfa_line
-    assert_equal(GFA::Line, l1.class)
+    l1 = l.to_rgfa_line
+    assert_equal(RGFA::Line, l1.class)
     assert_equal(l, l1)
   end
 
   def test_validate
-    l = GFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
+    l = RGFA::Line.new(["H","12","xx:i:13","XY:Z:HI"],
                       [[:record_type, /[A-Z]/],[:from, /[0-9]+/]],
                        {"XY"=>"Z"})
     assert_nothing_raised {l.validate!}
     l.record_type = "Z"
-    assert_raise(GFA::Line::UnknownRecordTypeError) {l.validate!}
+    assert_raise(RGFA::Line::UnknownRecordTypeError) {l.validate!}
   end
 
-  def test_string_to_gfa_line
+  def test_string_to_rgfa_line
     str = "H\tVN:Z:1.0"
-    l = str.to_gfa_line
-    assert_equal(GFA::Line::Header, l.class)
-    assert_equal(GFA::Line::Header, l.to_gfa_line.class)
-    assert_equal(str, l.to_gfa_line.to_s)
+    l = str.to_rgfa_line
+    assert_equal(RGFA::Line::Header, l.class)
+    assert_equal(RGFA::Line::Header, l.to_rgfa_line.class)
+    assert_equal(str, l.to_rgfa_line.to_s)
   end
 
 end
