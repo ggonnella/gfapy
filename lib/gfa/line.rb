@@ -23,11 +23,14 @@ class GFA::Line
       "P" => "GFA::Line::Path"
     }
 
+  # @param rtype [String] the record type string to be validated
+  # @param obj [Object] and object to be displayed in case of error
   # @raise if record type is not one of GFA::Line::RecordTypes
-  def self.validate_record_type!(rtype)
+  def self.validate_record_type!(rtype, obj=nil)
     if !GFA::Line::RecordTypes.has_key?(rtype)
-      raise GFA::Line::UnknownRecordTypeError,
-        "Record type unknown: '#{rtype}'"
+      msg = "Record type unknown: '#{rtype}'"
+      msg += " (#{obj.inspect})" if obj
+      raise GFA::Line::UnknownRecordTypeError, msg
     end
   end
 
@@ -381,8 +384,8 @@ class GFA::Line
     regexp = /^#{@reqfield_definitions[i][1]}$/
     if @fields[i] !~ regexp
       raise GFA::Line::RequiredFieldTypeError,
-        "Field n.#{i} ('#{@fieldnames[i]}') has a wrong format, "+
-        "expected: #{regexp}"
+        "Field n.#{i} ('#{@fieldnames[i]}') has a wrong format\n"+
+        "expected: #{regexp}\ngot: #{@fields[i]}"
     end
   end
 
@@ -498,7 +501,7 @@ class Array
   #   if false, turn off validations
   def to_gfa_line(validate: true)
     record_type = self[0]
-    GFA::Line.validate_record_type!(record_type) unless !validate
+    GFA::Line.validate_record_type!(record_type,self) unless !validate
     eval(GFA::Line::RecordTypes[record_type]).new(self, validate: validate)
   end
 
