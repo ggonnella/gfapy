@@ -7,10 +7,25 @@ begin
   #
   module GFA::RGL
 
-    # Converts into a RGL graph
+    # Creates an RGL graph.
     #
-    # @return RGL::ImplicitGraph
-    def to_rgl
+    # @param oriented [Boolean] (defaults to: <i>+true+</i>) may the graph
+    #   contain links of segments in different orientation?
+    # @return [RGL::ImplicitGraph] an rgl implicit directed graph
+    def to_rgl(oriented: true)
+      if oriented
+        to_rgl_oriented
+      else
+        to_rgl_unoriented
+      end
+    end
+
+    # Creates an RGL graph, including links orientations.
+    #
+    # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
+    #   where vertices are [GFA::Segment, orientation] pairs
+    #   (instances of the GFA::OrientedSegment subclass of Array)
+    def to_rgl_oriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator do |block|
           self.each_segment do |segment|
@@ -35,12 +50,52 @@ begin
       end
     end
 
+    # Creates an RGL graph, assuming that all links orientations
+    # are "+".
+    #
+    # @raise [RuntimeError] if the graph contains any link where
+    #   from_orient or to_orient is "-"
+    # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
+    #   where vertices are GFA::Segment objects
+    def to_rgl_unoriented
+      RGL::ImplicitGraph.new do |g|
+        g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
+        g.adjacent_iterator do |s, bl|
+          @c.lines("L", s, :from, "+").each do |l|
+            if l.to_orient == "-"
+              raise "Graph contains links with segments in reverse orientations"
+            end
+            bl.call(segment(l.to))
+          end
+          if @c.lines("L", s, :from, "-").size > 0
+            raise "Graph contains links with segments in reverse orientations"
+          end
+        end
+        g.directed = true
+      end
+    end
+
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
 
+      # @param g [RGL::ImplicitGraph, RGL::DirectedAdjacencyGraph] an RGL graph.
+      #
+      # @!macro[new] from_rgl
+      #   <b>Accepted vertex formats</b>:
+      #
+      #   - GFA::OrientedSegment, or Array which can be converted to it;
+      #     where the first element is a <i>segment specifier</i> (see below)
+      #   - <i>segment specifier</i> alone: the orientation is assumed to be "+"
+      #
+      #   The <i>segment specifier</i> can be:
+      #   - GFA::Segment instance
+      #   - String, segment representation (e.g. "S\tsegment\t*")
+      #   - String, valid segment name (e.g. "segment")
+      #
+      #   @return [GFA] a new GFA instance
       def from_rgl(g)
         gfa = GFA.new
         if not (g.respond_to?(:each_vertex) and
@@ -71,6 +126,7 @@ begin
 
   module RGL::Graph
 
+    # @!macro from_rgl
     def to_gfa
       GFA.from_rgl(self)
     end
