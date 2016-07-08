@@ -1,10 +1,16 @@
 #
 # Generic representation of a record of a RGFA file.
 #
+# @!macro[new] rgfa_line
+#   @note
+#     This class is usually not meant to be directly initialized by the user;
+#     initialize instead one of its child classes, which define the concrete
+#     different record types.
+#
 class RGFA::Line
 
   # Separator in the string representation of RGFA lines
-  Separator = "\t"
+  SEPARATOR = "\t"
 
   # List of allowed record_type values and the associated subclasses of
   # {RGFA::Line}.
@@ -14,7 +20,7 @@ class RGFA::Line
   #   corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
   #   All file in the +line+ subdirectory are automatically required.
   #
-  RecordTypes =
+  RECORD_TYPES =
     {
       "H" => "RGFA::Line::Header",
       "S" => "RGFA::Line::Segment",
@@ -25,40 +31,37 @@ class RGFA::Line
 
   # @param rtype [String] the record type string to be validated
   # @param obj [Object] and object to be displayed in case of error
-  # @raise if record type is not one of RGFA::Line::RecordTypes
+  # @raise if record type is not one of RGFA::Line::RECORD_TYPES
   def self.validate_record_type!(rtype, obj=nil)
-    if !RGFA::Line::RecordTypes.has_key?(rtype)
+    if !RGFA::Line::RECORD_TYPES.has_key?(rtype)
       msg = "Record type unknown: '#{rtype}'"
       msg += " (#{obj.inspect})" if obj
       raise RGFA::Line::UnknownRecordTypeError, msg
     end
   end
 
-  # @note
-  #   This class is usually not meant to be directly initialized by the user;
-  #   initialize instead one of its child classes, which define the concrete
-  #   different record types.
+  # @!macro rgfa_line
   #
   # @param fields [Array<String>] the content of the line
-  # @param reqfield_definitions
-  #   [Array<Array(Symbol,Regex)>] defines
-  #   the order of the required fields (Symbol) in the line and their
-  #   validators (Regex);
-  #   an element _must_ be present for each required field;
-  #   to accept any string, use the regex +/.*/ as validator
-  # @param optfield_types [Hash{Symbol=>String}]
-  #   <i>(possibly empty)</i> defines the predefined optional
-  #   fields and their required type (String)
-  # @param reqfield_cast [Hash{Symbol=>Lambda}]
+  #
+  # <b> Constants defined by subclasses </b>
+  #
+  # Subclasses of RGFA::Line _must_ define the following constants:
+  # - RECORD_TYPE [String, size 1]
+  # - REQFIELD_DEFINITIONS [Array<Array(Symbol,Regex)>]:
+  #   <i>(possibly empty)</i>
+  #   defines the order of the required fields (Symbol) in the line and their
+  #   validators (Regex)
+  # - REQFIELD_CAST [Hash{Symbol=>Lambda}]:
+  #   <i>(possibly empty)</i>
   #   defines procedures (Lambda) for casting selected required fields
   #   (Symbol) into instances of the corresponding Ruby classes; the
   #   lambda shall take one argument (the field string value) and
   #   return one argument (the Ruby value)
-  # @return [RGFA::Line]
-  # @raise [RGFA::Line::UnknownRecordTypeError]
-  #   if the record_type is not one of +RGFA::Line::RecordTypes+
-  # @raise [RGFA::Line::InvalidFieldNameError]
-  #   if a field has the same name as a method of the class
+  # - OPTFIELD_TYPES [Hash{Symbol=>String}]:
+  #   <i>(possibly empty)</i> defines the predefined optional
+  #   fields and their required type (String)
+  #
   # @raise [RGFA::Line::RequiredFieldMissingError]
   #   if too less required fields are specified
   # @raise [RGFA::Line::RequiredFieldTypeError]
@@ -70,27 +73,29 @@ class RGFA::Line
   # @raise [RGFA::Line::PredefinedOptfieldTypeError]
   #   if the type of a predefined optional field does not
   #   respect the specified type.
-  def initialize(fields,
-                 reqfield_definitions,
-                 optfield_types,
-                 reqfield_cast = {},
-                 validate: true)
-    @reqfield_definitions = reqfield_definitions
-    @optfield_types = optfield_types
-    @reqfield_cast = reqfield_cast
+  #
+  # @return [RGFA::Line]
+  def initialize(fields, validate: true)
+    raise "This class shall not be directly instantiated; "+
+      "use a subclass instead" if self.record_type.nil?
     @fields = fields
     @fieldnames = []
     @validate = validate
-    initialize_required_fields
     self.class.validate_record_type!(self.record_type) if @validate
+    initialize_required_fields
     initialize_optional_fields
+    validate_record_type_specific_info! if @validate
   end
 
   attr_reader :fieldnames
 
+  def record_type
+    self.class::RECORD_TYPE
+  end
+
   # @return [Array<Symbol>] name of the required fields
   def required_fieldnames
-    @fieldnames[0..(n_required_fields-1)]
+    @fieldnames[0,n_required_fields]
   end
 
   # @return [Array<Symbol>] name of the optional fields
@@ -99,19 +104,14 @@ class RGFA::Line
       @fieldnames[n_required_fields..-1] : []
   end
 
-  # @return [self.class] deep copy of self (RGFA::Line or subclass)
+  # @return [self.class] deep copy of self (RGFA::Line subclass)
   def clone
-    if self.class === RGFA::Line
-      self.class.new(@fields.clone.map{|e|e.clone}, @reqfield_definitions.clone,
-                     @optfield_types.clone, @reqfield_cast.clone)
-    else
-      self.class.new(@fields.clone.map{|e|e.clone})
-    end
+    self.class.new(@fields.clone.map{|e|e.clone})
   end
 
   # @return [String] a string representation of self
   def to_s
-    @fields.join(RGFA::Line::Separator)
+    ([self.class::RECORD_TYPE]+@fields).join(RGFA::Line::SEPARATOR)
   end
 
   # @overload add_optfield(optfield_string)
@@ -130,7 +130,7 @@ class RGFA::Line
     end
     optfield = optfield.to_rgfa_optfield(validate: @validate)
     sym = optfield.tag.to_sym
-    if @fieldnames[n_required_fields..-1].include?(sym)
+    if optional_fieldnames.include?(sym)
       raise RGFA::Line::DuplicateOptfieldNameError,
         "Optional tag '#{optfield.tag}' exists more than once"
     end
@@ -260,9 +260,10 @@ class RGFA::Line
   # @raise if the field content is not valid
   # @return [void]
   def validate!
+    self.class.validate_record_type!(self.record_type)
     validate_required_fields!
     validate_optional_fields!
-    self.class.validate_record_type!(self.record_type)
+    validate_record_type_specific_info!
     nil
   end
 
@@ -297,8 +298,8 @@ class RGFA::Line
       raise ArgumentError, "Line does not have a field number #{i}"
     end
     if i < n_required_fields
-      if autocast and @reqfield_cast.has_key?(@fieldnames[i])
-        return @reqfield_cast[@fieldnames[i]].call(@fields[i])
+      if autocast and self.class::REQFIELD_CAST.has_key?(@fieldnames[i])
+        return self.class::REQFIELD_CAST[@fieldnames[i]].call(@fields[i])
       else
         return @fields[i]
       end
@@ -308,12 +309,12 @@ class RGFA::Line
   end
 
   def n_required_fields
-    @reqfield_definitions.size
+    self.class::REQFIELD_DEFINITIONS.size
   end
 
   def initialize_required_fields
     validate_reqfield_definitions! if @validate
-    @fieldnames += @reqfield_definitions.map{|name,re| name.to_sym}
+    @fieldnames += self.class::REQFIELD_DEFINITIONS.map{|name,re| name.to_sym}
     validate_required_fields! if @validate
   end
 
@@ -321,7 +322,7 @@ class RGFA::Line
     validate_optfield_types! if @validate
     if @fields.size > n_required_fields
       optfields = @fields[n_required_fields..-1].dup
-      @fields = @fields[0..(n_required_fields-1)]
+      @fields = @fields[0,n_required_fields]
       optfields.each { |f| self << f.to_rgfa_optfield(validate: @validate) }
     end
   end
@@ -346,11 +347,11 @@ class RGFA::Line
   end
 
   def validate_reqfield_definitions!
-    if !@reqfield_definitions.kind_of?(Array)
+    if !self.class::REQFIELD_DEFINITIONS.kind_of?(Array)
       raise ArgumentError, "Argument 'reqfield_definitions' must be an Array"
     end
     names = []
-    @reqfield_definitions.each do |name, regexp|
+    self.class::REQFIELD_DEFINITIONS.each do |name, regexp|
       if (self.methods+self.private_methods).include?(name.to_sym)
         raise RGFA::Line::InvalidFieldNameError,
           "Invalid name of required field, '#{name}' is a method of RGFA::Line"
@@ -364,10 +365,10 @@ class RGFA::Line
   end
 
   def validate_optfield_types!
-    if !@optfield_types.kind_of?(Hash)
+    if !self.class::OPTFIELD_TYPES.kind_of?(Hash)
       raise ArgumentError, "Argument 'optfield_types' must be a Hash"
     end
-    @optfield_types.each do |name, type|
+    self.class::OPTFIELD_TYPES.each do |name, type|
       if (self.methods+self.private_methods).include?(name.to_sym)
         raise RGFA::Line::InvalidFieldNameError,
           "Invalid name of optional field, '#{name}' is a method of RGFA::Line"
@@ -381,7 +382,7 @@ class RGFA::Line
   end
 
   def validate_required_field!(i)
-    regexp = /^#{@reqfield_definitions[i][1]}$/
+    regexp = /^#{self.class::REQFIELD_DEFINITIONS[i][1]}$/
     if @fields[i] !~ regexp
       raise RGFA::Line::RequiredFieldTypeError,
         "Field n.#{i} ('#{@fieldnames[i]}') has a wrong format\n"+
@@ -399,17 +400,18 @@ class RGFA::Line
   end
 
   def validate_optional_field!(f)
-    predefopt = @optfield_types.keys
+    predefopt = self.class::OPTFIELD_TYPES.keys
     if predefopt.include?(f.tag)
-      if @optfield_types[f.tag] != f.type
+      if self.class::OPTFIELD_TYPES[f.tag] != f.type
         raise RGFA::Line::PredefinedOptfieldTypeError,
-          "Optional field #{f.tag} must be of type #{@optfield_types[f.tag]}"
+          "Optional field #{f.tag} must be of type "+
+            "#{self.class::OPTFIELD_TYPES[f.tag]}"
       end
     else
       if f.tag !~ /^[a-z][a-z0-9]$/
         raise RGFA::Line::CustomOptfieldNameError,
         "Invalid name of custom-defined optional field,"+
-        "'#{f.tag}' is now in lower case"
+        "'#{f.tag}' is not in lower case"
       end
     end
     if required_fieldnames.include?(f.tag.to_sym)
@@ -436,9 +438,12 @@ class RGFA::Line
     end
   end
 
+  def validate_record_type_specific_info!
+  end
+
 end
 
-# Error raised if the record_type is not one of RGFA::Line::RecordTypes
+# Error raised if the record_type is not one of RGFA::Line::RECORD_TYPES
 class RGFA::Line::UnknownRecordTypeError      < TypeError;     end
 
 # Error raised if a field has the same name as a method of the class;
@@ -467,9 +472,9 @@ class RGFA::Line::PredefinedOptfieldTypeError < TypeError;     end
 class RGFA::Line::TagMissingError             < NoMethodError; end
 
 #
-# Automatically require the child classes specified in the RecordTypes hash
+# Automatically require the child classes specified in the RECORD_TYPES hash
 #
-RGFA::Line::RecordTypes.values.each do |rtclass|
+RGFA::Line::RECORD_TYPES.values.each do |rtclass|
   require_relative "../#{rtclass.downcase.gsub("::","/")}.rb"
 end
 
@@ -484,7 +489,7 @@ class String
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   if false, turn off validations
   def to_rgfa_line(validate: true)
-    split(RGFA::Line::Separator).to_rgfa_line(validate: validate)
+    split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate)
   end
 
 end
@@ -502,7 +507,8 @@ class Array
   def to_rgfa_line(validate: true)
     record_type = self[0]
     RGFA::Line.validate_record_type!(record_type,self) unless !validate
-    eval(RGFA::Line::RecordTypes[record_type]).new(self, validate: validate)
+    eval(RGFA::Line::RECORD_TYPES[record_type]).new(self[1..-1],
+                                                    validate: validate)
   end
 
 end

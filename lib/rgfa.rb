@@ -51,7 +51,7 @@ class RGFA
 
   def initialize
     @lines = {}
-    RGFA::Line::RecordTypes.keys.each {|rt| @lines[rt] = []}
+    RGFA::Line::RECORD_TYPES.keys.each {|rt| @lines[rt] = []}
     @segment_names = {}
     @path_names = {}
     @c = RGFA::ConnectionInfo.new(@lines)
@@ -105,7 +105,7 @@ class RGFA
   # @return [String]
   def to_s
     s = ""
-    RGFA::Line::RecordTypes.keys.each do |rt|
+    RGFA::Line::RECORD_TYPES.keys.each do |rt|
       @lines[rt].each do |line|
         next if line.nil?
         s << "#{line}\n"

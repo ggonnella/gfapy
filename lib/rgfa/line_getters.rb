@@ -33,7 +33,7 @@ module RGFA::LineGetters
   # @!method each_containment
   #   Iterate over all containments of the graph
   #   @yield [RGFA::Line::Containment]
-  RGFA::Line::RecordTypes.each do |rt, klass|
+  RGFA::Line::RECORD_TYPES.each do |rt, klass|
     klass =~ /RGFA::Line::(.*)/
     define_method(:"#{$1.downcase}s") { lines(rt) }
     define_method(:"each_#{$1.downcase}") { |&block| each(rt, &block) }

@@ -1,32 +1,25 @@
 # A segment line of a RGFA file
 class RGFA::Line::Segment < RGFA::Line
 
+  RECORD_TYPE = "S"
+
   # @note The field names are derived from the RGFA specification at:
   #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#segment-line
   #   and were made all downcase with _ separating words
-  FieldRegexp = [
-     [:record_type, /S/],
+  REQFIELD_DEFINITIONS = [
      [:name,        /[!-)+-<>-~][!-~]*/], # Segment name
      [:sequence,    /\*|[A-Za-z=.]+/]     # The nucleotide sequence
     ]
 
   # Predefined optional fields
-  OptfieldTypes = {
+  OPTFIELD_TYPES = {
      "LN" => "i", # Segment length
      "RC" => "i", # Read count
      "FC" => "i", # Fragment count
      "KC" => "i", # k-mer count
     }
 
-  # @param fields [Array<String>] splitted content of the line
-  # @param validate [Boolean] <i>(defaults to: +true+)</i>
-  #   perform validations?
-  # @return [RGFA::Line::Link]
-  def initialize(fields, validate: true)
-    super(fields, RGFA::Line::Segment::FieldRegexp,
-          RGFA::Line::Segment::OptfieldTypes, validate: validate)
-    validate_length! if validate
-  end
+  REQFIELD_CAST = {}
 
   # @raise if sequence length and LN tag are not consistent.
   def validate_length!
@@ -134,6 +127,12 @@ class RGFA::Line::Segment < RGFA::Line
     return (orientation == RGFA::Line::Segment::FORWARD ?
               RGFA::Line::Segment::REVERSE :
               RGFA::Line::Segment::FORWARD)
+  end
+
+  private
+
+  def validate_record_type_specific_info!
+    validate_length!
   end
 
 end

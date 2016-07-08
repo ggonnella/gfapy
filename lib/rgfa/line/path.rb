@@ -1,6 +1,8 @@
 # A path line of a RGFA file
 class RGFA::Line::Path < RGFA::Line
 
+  RECORD_TYPE = "P"
+
   # @note The field names are derived from the RGFA specification at:
   #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#path-line
   #   and were made all downcase with _ separating words;
@@ -9,8 +11,7 @@ class RGFA::Line::Path < RGFA::Line
   #   (i.e. name pluralized and regexp changed to a comma-separated list
   #   for segment_name of segment names and orientations and for cigar of
   #   CIGAR strings);
-  FieldRegexp = [
-     [:record_type,   /P/],
+  REQFIELD_DEFINITIONS = [
      [:path_name,     /[!-)+-<>-~][!-~]*/], # Path name
      [:segment_names, /[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])*/],
                       # A comma-separated list of segment names and orientations
@@ -19,23 +20,12 @@ class RGFA::Line::Path < RGFA::Line
     ]
 
   # Procedures for the conversion of selected required fields to Ruby types
-  FieldCast =
+  REQFIELD_CAST =
     { :segment_names => lambda {|e| split_segment_names(e) },
       :cigars        => lambda {|e| split_cigars(e) } }
 
   # Predefined optional fields
-  OptfieldTypes = {}
-
-  # @param fields [Array<String>] splitted content of the line
-  # @param validate [Boolean] <i>(defaults to: +true+)</i>
-  #   perform validations?
-  # @return [RGFA::Line::Link]
-  def initialize(fields, validate: true)
-    super(fields, RGFA::Line::Path::FieldRegexp,
-          RGFA::Line::Path::OptfieldTypes,
-          RGFA::Line::Path::FieldCast,
-          validate: validate)
-  end
+  OPTFIELD_TYPES = {}
 
   # @return [Symbol] name of the path as symbol
   def to_sym

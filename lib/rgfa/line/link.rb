@@ -3,11 +3,12 @@ require_relative "../segment_references.rb"
 # A link line of a RGFA file
 class RGFA::Line::Link < RGFA::Line
 
+  RECORD_TYPE = "L"
+
   # @note The field names are derived from the RGFA specification at:
   #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#link-line
   #   and were made all downcase with _ separating words
-  FieldRegexp = [
-     [:record_type, /L/],
+  REQFIELD_DEFINITIONS = [
      [:from,        /[!-)+-<>-~][!-~]*/],      # name of segment
      [:from_orient, /\+|-/],                   # orientation of From segment
      [:to,          /[!-)+-<>-~][!-~]*/],      # name of segment
@@ -16,30 +17,18 @@ class RGFA::Line::Link < RGFA::Line
     ]
 
   # Procedures for the conversion of selected required fields to Ruby types
-  FieldCast = {
+  REQFIELD_CAST = {
       :overlap => lambda {|e| e.cigar_operations }
     }
 
   # Predefined optional fields
-  OptfieldTypes = {
+  OPTFIELD_TYPES = {
      "MQ" => "i", # Mapping quality
      "NM" => "i", # # mismatches/gaps
      "RC" => "i", # Read count
      "FC" => "i", # Fragment count
      "KC" => "i"  # k-mer count
     }
-
-  # @param fields [Array<String>] splitted content of the line
-  # @param validate [Boolean] <i>(defaults to: +true+)</i>
-  #   perform validations?
-  # @return [RGFA::Line::Link]
-  def initialize(fields, validate: true)
-    super(fields,
-          RGFA::Line::Link::FieldRegexp,
-          RGFA::Line::Link::OptfieldTypes,
-          RGFA::Line::Link::FieldCast,
-          validate: validate)
-  end
 
   include RGFA::SegmentReferences
 
