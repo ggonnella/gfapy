@@ -481,11 +481,25 @@ class String
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   if false, turn off validations
   def to_gfa_line(validate: true)
-    components = split(GFA::Line::Separator)
-    record_type = components[0]
+    split(GFA::Line::Separator).to_gfa_line(validate: validate)
+  end
+
+end
+
+# Extensions to the Array core class.
+#
+class Array
+
+  # Parses an array containing the fields of a GFA file line and creates an
+  # object of the correct record type child class of {GFA::Line}
+  # @return [subclass of GFA::Line]
+  # @raise if the fields do not comply to the GFA specification
+  # @param validate [Boolean] <i>(defaults to: +true+)</i>
+  #   if false, turn off validations
+  def to_gfa_line(validate: true)
+    record_type = self[0]
     GFA::Line.validate_record_type!(record_type) unless !validate
-    eval(GFA::Line::RecordTypes[record_type]).new(split(GFA::Line::Separator),
-                                                  validate: validate)
+    eval(GFA::Line::RecordTypes[record_type]).new(self, validate: validate)
   end
 
 end
