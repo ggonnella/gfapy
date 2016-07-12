@@ -33,10 +33,15 @@ module RGFA::LineGetters
   # @!method each_containment
   #   Iterate over all containments of the graph
   #   @yield [RGFA::Line::Containment]
-  RGFA::Line::RECORD_TYPES.each do |rt, klass|
-    klass =~ /RGFA::Line::(.*)/
-    define_method(:"#{$1.downcase}s") { lines(rt) }
-    define_method(:"each_#{$1.downcase}") { |&block| each(rt, &block) }
+  RGFA::Line::RECORD_TYPE_LABELS.each do |rt, label|
+    define_method(:"#{label}s") { lines(rt) }
+    define_method(:"each_#{label}") { |&block| each(rt, &block) }
+  end
+
+  # Iterate over all lines of the graph
+  # @yield [RGFA::Line]
+  def each_line(&block)
+    RGFA::Line::RECORD_TYPES.each {|rt| each(rt, &block) }
   end
 
   # @!macro [new] segment

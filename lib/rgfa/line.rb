@@ -20,25 +20,15 @@ class RGFA::Line
   #   corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
   #   All file in the +line+ subdirectory are automatically required.
   #
-  RECORD_TYPES =
-    {
-      "H" => "RGFA::Line::Header",
-      "S" => "RGFA::Line::Segment",
-      "L" => "RGFA::Line::Link",
-      "C" => "RGFA::Line::Containment",
-      "P" => "RGFA::Line::Path"
-    }
+  RECORD_TYPES = [ "H", "S", "L", "C", "P" ]
 
-  # @param rtype [String] the record type string to be validated
-  # @param obj [Object] and object to be displayed in case of error
-  # @raise if record type is not one of RGFA::Line::RECORD_TYPES
-  def self.validate_record_type!(rtype, obj=nil)
-    if !RGFA::Line::RECORD_TYPES.has_key?(rtype)
-      msg = "Record type unknown: '#{rtype}'"
-      msg += " (#{obj.inspect})" if obj
-      raise RGFA::Line::UnknownRecordTypeError, msg
-    end
-  end
+  RECORD_TYPE_LABELS = {
+    "H" => "header",
+    "S" => "segment",
+    "L" => "link",
+    "C" => "containment",
+    "P" => "path",
+  }
 
   # @!macro rgfa_line
   #
@@ -84,8 +74,9 @@ class RGFA::Line
   # - :nocast => turn casting off
   #
   def initialize(data, validate: true)
-    raise "This class shall not be directly instantiated; "+
-      "use a subclass instead" unless self.class.const_defined?("RECORD_TYPE")
+    unless self.class.const_defined?("RECORD_TYPE")
+      raise "This class shall not be directly instantiated"
+    end
     @validate = validate
     @data = {}
     if data.kind_of?(Hash)
@@ -96,6 +87,19 @@ class RGFA::Line
       initialize_required_fields(data)
       initialize_optional_fields(data)
       validate_record_type_specific_info! if @validate
+    end
+  end
+
+  def self.subclass(record_type)
+    case record_type
+    when "H" then RGFA::Line::Header
+    when "S" then RGFA::Line::Segment
+    when "L" then RGFA::Line::Link
+    when "C" then RGFA::Line::Containment
+    when "P" then RGFA::Line::Path
+    else
+      raise RGFA::Line::UnknownRecordTypeError,
+        "Record type unknown: '#{record_type}'"
     end
   end
 
@@ -404,7 +408,7 @@ class RGFA::Line
         "#{strings.size}) found\n#{strings.inspect}"
     end
     n_required_fields.times do |i|
-      s = strings[i]
+      s = strings.shift
       n = self.class::REQFIELDS[i]
       t = self.class::DATATYPE[n]
       s = s.parse_datastring(t, validate: @validate, lazy: true, fieldname: n)
@@ -428,8 +432,7 @@ class RGFA::Line
   end
 
   def initialize_optional_fields(strings)
-    n_required_fields.upto(strings.size-1) do |i|
-      s = strings[i]
+    while (s = strings.shift)
       n, t, s = s.parse_optfield(parse_datastring: false,
                                  validate_datastring: false)
       if @validate
@@ -456,25 +459,29 @@ class RGFA::Line
   end
 
   def split_method_name(m)
-    ms = m.to_s
-    var = :get
-    if ms[-1] == "!"
-      var = :get!
-      ms.chop!
-    elsif ms[-1] == "="
-      var = :set
-      ms.chop!
-    end
-    fn = ms.to_sym
-    if @data.has_key?(fn)
-      state = :field
-    elsif self.class::PREDEFINED_OPTFIELDS.include?(fn) or
-        valid_custom_optional_fieldname?(fn)
-      state = :valid
+    if @data.has_key?(m)
+      return m, :get, :field
     else
-      state = :invalid
+      case m[-1]
+      when "!"
+        var = :get!
+        m = m[0..-2].to_sym
+      when "="
+        var = :set
+        m = m[0..-2].to_sym
+      else
+        var = :get
+      end
+      if @data.has_key?(m)
+        state = :field
+      elsif self.class::PREDEFINED_OPTFIELDS.include?(m) or
+          valid_custom_optional_fieldname?(m)
+        state = :valid
+      else
+        state = :invalid
+      end
+      return m, var, state
     end
-    return fn, var, state
   end
 
   def validate_record_type_specific_info!
@@ -509,11 +516,13 @@ class RGFA::Line::DuplicatedOptfieldNameError < ArgumentError; end
 class RGFA::Line::PredefinedOptfieldTypeError < TypeError;     end
 
 #
-# Automatically require the child classes specified in the RECORD_TYPES hash
+# Require the child classes
 #
-RGFA::Line::RECORD_TYPES.values.each do |rtclass|
-  require_relative "../#{rtclass.downcase.gsub("::","/")}.rb"
-end
+require_relative "line/header.rb"
+require_relative "line/segment.rb"
+require_relative "line/path.rb"
+require_relative "line/link.rb"
+require_relative "line/containment.rb"
 
 # Extensions to the String core class.
 #
@@ -558,15 +567,15 @@ class Array
 
   # Parses an array containing the fields of a RGFA file line and creates an
   # object of the correct record type child class of {RGFA::Line}
+  # @note
+  #  This method modifies the content of the array; if you still
+  #  need the array, you must create a copy before calling it
   # @return [subclass of RGFA::Line]
   # @raise if the fields do not comply to the RGFA specification
   # @param validate [Boolean] <i>(defaults to: +true+)</i>
   #   if false, turn off validations
   def to_rgfa_line(validate: true)
-    record_type = self[0]
-    RGFA::Line.validate_record_type!(record_type,self) unless !validate
-    eval(RGFA::Line::RECORD_TYPES[record_type]).new(self[1..-1],
-                                                    validate: validate)
+    RGFA::Line.subclass(shift).new(self, validate: validate)
   end
 
 end

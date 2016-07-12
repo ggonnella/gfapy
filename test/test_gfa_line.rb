@@ -178,7 +178,7 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_to_s
     fields = ["xx:i:13","VN:Z:HI"]
-    l = RGFA::Line::Header.new(fields)
+    l = RGFA::Line::Header.new(fields.clone)
     assert_equal((["H"]+fields).join("\t"),l.to_s)
   end
 

@@ -25,10 +25,10 @@ module RGFA::Datastrings
     :orn => /^\+|-$/,                    # segment orientation
     :lbs => /^[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])*$/,
                            # multiple labels with orientations, comma-sep
-    :seq => /^\*|[A-Za-z=.]+$/,          # nucleotide sequence
+    :seq => /^\*$|^[A-Za-z=.]+$/,          # nucleotide sequence
     :pos => /^[0-9]*$/,                  # positive integer
-    :cig => /^\*|([0-9]+[MIDNSHPX=])+$/, # CIGAR string
-    :cgs => /^\*|([0-9]+[MIDNSHPX=])+((,[0-9]+[MIDNSHPX=])+)*$/,
+    :cig => /^\*$|^([0-9]+[MIDNSHPX=])+$/, # CIGAR string
+    :cgs => /^\*$|^([0-9]+[MIDNSHPX=])+((,[0-9]+[MIDNSHPX=])+)*$/,
                                        # multiple CIGARs, comma-sep
   }
 
@@ -48,7 +48,7 @@ class String
   # @return [void]
   def validate_datastring(datatype, fieldname: nil)
     regexp = RGFA::Datastrings::VALIDATION_REGEXP.fetch(datatype)
-    if (self =~ regexp) != 0
+    if (regexp !~ self)
       fieldname ||= "Value"
       raise RGFA::Line::FieldFormatError,
         "#{fieldname}: #{self.inspect}\n"+
