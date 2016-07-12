@@ -21,15 +21,17 @@ Gem::Specification.new do |s|
   s.email = 'gonnella@zbh.uni-hamburg.de'
   s.files = [
               'lib/rgfa.rb',
+              'lib/rgfa/byte_array.rb',
               'lib/rgfa/cigar.rb',
               'lib/rgfa/connection_info.rb',
+              'lib/rgfa/datastrings.rb',
               'lib/rgfa/edit.rb',
               'lib/rgfa/line_creators.rb',
               'lib/rgfa/line_destructors.rb',
               'lib/rgfa/line_getters.rb',
               'lib/rgfa/line.rb',
               'lib/rgfa/logger.rb',
-              'lib/rgfa/optfield.rb',
+              'lib/rgfa/numeric_array.rb',
               'lib/rgfa/rgl.rb',
               'lib/rgfa/segment_info.rb',
               'lib/rgfa/segment_references.rb',

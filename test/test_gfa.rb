@@ -15,16 +15,16 @@ class TestRGFA < Test::Unit::TestCase
     assert_equal([], gfa.segment_names)
     gfa << "S\t1\t*"
     gfa << "S\t2\t*"
-    assert_equal(["1", "2"], gfa.segment_names)
+    assert_equal([:"1", :"2"], gfa.segment_names)
     gfa.delete_segment("1")
-    assert_equal(["2"], gfa.segment_names)
+    assert_equal([:"2"], gfa.segment_names)
   end
 
   def test_path_names
     gfa = RGFA.new
     assert_equal([], gfa.path_names)
     gfa << "P\t3\t1+,4-\t*"
-    assert_equal(["3"], gfa.path_names)
+    assert_equal([:"3"], gfa.path_names)
     gfa.delete_path("3")
     assert_equal([], gfa.path_names)
   end

@@ -84,7 +84,7 @@ module RGFA::LineGetters
   # @!macro [new] segment_or_name
   #   @param segment [RGFA::Line::Segment, String] a segment instance or name
   def paths_with(segment)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
     @c.lines("P",segment_name)
   end
 
@@ -92,7 +92,7 @@ module RGFA::LineGetters
   # @!macro segment_or_name
   # @return [Array<RGFA::Line::Containment>]
   def contained_in(segment)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
     @c.lines("C", segment_name, :from)
   end
 
@@ -100,7 +100,7 @@ module RGFA::LineGetters
   # @return [Array<RGFA::Line::Containment>]
   # @!macro segment_or_name
   def containing(segment)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
+    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
     @c.lines("C", segment_name, :to)
   end
 
@@ -113,6 +113,10 @@ module RGFA::LineGetters
   #   @param contained [RGFA::Line::Segment, String] a segment instance or name
   #
   def containments_between(container, contained)
+    container = container.kind_of?(RGFA::Line) ? container.name
+                                               : container.to_sym
+    contained = contained.kind_of?(RGFA::Line) ? contained.name
+                                               : contained.to_sym
     contained_in(container).select {|l| l.to == contained }
   end
 
@@ -122,6 +126,10 @@ module RGFA::LineGetters
   # @return [RGFA::Line::Containment, nil]
   # @!macro container_contained
   def containment(container, contained)
+    container = container.kind_of?(RGFA::Line) ? container.name
+                                               : container.to_sym
+    contained = contained.kind_of?(RGFA::Line) ? contained.name
+                                               : contained.to_sym
     contained_in(container).each {|l| return l if l.to == contained }
     return nil
   end
@@ -151,7 +159,7 @@ module RGFA::LineGetters
   #   adding or removing links from the returned array will not work
   def links_of(segment_end)
     segment_end = segment_end.to_segment_end
-    o = segment_end.end_type == :E ? ["+","-"] : ["-","+"]
+    o = segment_end.end_type == :E ? [:+,:-] : [:-,:+]
     @c.lines("L",segment_end.segment,:from,o[0]) +
       @c.lines("L",segment_end.segment,:to,o[1])
   end
@@ -189,6 +197,8 @@ module RGFA::LineGetters
   #   @param segment_end2 [RGFA::SegmentEnd] a segment end
   # @return [Array<RGFA::Line::Link>] (possibly empty)
   def links_between(segment_end1, segment_end2)
+    segment_end1 = segment_end1.to_segment_end
+    segment_end2 = segment_end2.to_segment_end
     links_of(segment_end1).select do |l|
       l.other_end(segment_end1) == segment_end2
     end
@@ -200,6 +210,8 @@ module RGFA::LineGetters
   #   @return [RGFA::Line::Link] the first link found
   # @return [nil] if no link is found.
   def link(segment_end1, segment_end2)
+    segment_end1 = segment_end1.to_segment_end
+    segment_end2 = segment_end2.to_segment_end
     links_of(segment_end1).each do |l|
       return l if l.other_end(segment_end1) == segment_end2
     end

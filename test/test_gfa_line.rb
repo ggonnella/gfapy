@@ -13,7 +13,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_too_many_required
-    assert_raise(TypeError) do
+    assert_raise(RGFA::Line::FieldFormatError) do
       RGFA::Line::Segment.new(["1","*","*"])
     end
   end
@@ -28,28 +28,28 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_wrong_optfield_format
-    assert_raise(TypeError) do
+    assert_raise(RGFA::Line::FieldFormatError) do
       RGFA::Line::Header.new(["VN i:1"])
     end
   end
 
   def test_initialize_reqfield_type_error
-    assert_raise(RGFA::Line::RequiredFieldTypeError) do
+    assert_raise(RGFA::Line::FieldFormatError) do
       RGFA::Line::Segment.new(["1\t1","*","*"])
     end
   end
 
   def test_initialize_optfield_type_error
-    assert_raise(RGFA::Optfield::ValueError) do
+    assert_raise(RGFA::Line::FieldFormatError) do
       RGFA::Line::Header.new(["zz:i:1A"])
     end
   end
 
   def test_initialize_duplicate_optfield
-    assert_raise(RGFA::Line::DuplicateOptfieldNameError) do
+    assert_raise(RGFA::Line::DuplicatedOptfieldNameError) do
       RGFA::Line::Header.new(["zz:i:1","zz:i:2"])
     end
-    assert_raise(RGFA::Line::DuplicateOptfieldNameError) do
+    assert_raise(RGFA::Line::DuplicatedOptfieldNameError) do
       RGFA::Line::Header.new(["zz:i:1", "VN:Z:1", "zz:i:2"])
     end
   end
@@ -102,7 +102,7 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_field_getters_required_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
-    assert_equal("12", l.name)
+    assert_equal(:"12", l.name)
     assert_raise(NoMethodError) { l.zzz }
   end
 
@@ -110,14 +110,12 @@ class TestRGFALine < Test::Unit::TestCase
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
     assert_equal(:xx, l.fieldnames[2])
     assert_equal(:xx, l.optional_fieldnames[0])
+    assert_equal("13", l.get_string(:xx))
     assert_equal(13, l.xx)
-    assert_equal("13", l.xx(false))
     assert_equal(13, l.xx!)
-    assert_equal("13", l.xx!(false))
+    assert_equal("10", l.get_string(:KC))
     assert_equal(10, l.KC)
-    assert_equal("10", l.KC(false))
     assert_equal(10, l.KC!)
-    assert_equal("10", l.KC!(false))
   end
 
   def test_field_getters_not_existing_optional_fields
@@ -128,9 +126,10 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_field_setters_required_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
-    assert_raise(RGFA::Line::RequiredFieldTypeError) { l.name = "A\t1" }
+    assert_raise(RGFA::Line::FieldFormatError) { l.name = "A\t1";
+                                                 l.validate_field!(:name) }
     l.name = "14"
-    assert_equal("14", l.name)
+    assert_equal(:"14", l.name)
   end
 
   def test_field_setters_existing_optional_fields
@@ -138,7 +137,7 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)
-    assert_raise(RGFA::Optfield::ValueError) { l.xx = "1A" }
+    assert_raise(ArgumentError) { l.xx = "1A"; l.xx }
     assert_equal("HI", l.VN)
     l.VN = "HO"
     assert_equal("HO", l.VN)
@@ -148,34 +147,33 @@ class TestRGFALine < Test::Unit::TestCase
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_nothing_raised { l.zz="1" }
     assert_equal("1", l.zz)
-    assert_equal("Z", l.optfield(:zz).type)
+    assert_equal(:"Z", l.zz.gfa_datatype)
     assert_nothing_raised { l.zi=1 }
     assert_equal(1, l.zi)
-    assert_equal("i", l.optfield(:zi).type)
+    assert_equal(:"i", l.zi.gfa_datatype)
     assert_nothing_raised { l.zf=1.0 }
     assert_equal(1.0, l.zf)
-    assert_equal("f", l.optfield(:zf).type)
+    assert_equal(:"f", l.zf.gfa_datatype)
     assert_nothing_raised { l.bf=[1.0,1.0] }
     assert_equal([1.0,1.0], l.bf)
-    assert_equal("B", l.optfield(:bf).type)
+    assert_equal(:"B", l.bf.gfa_datatype)
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
-    assert_equal("B", l.optfield(:bi).type)
+    assert_equal(:"B", l.bi.gfa_datatype)
     assert_nothing_raised { l.ba=[1.0,1] }
     assert_equal([1.0,1], l.ba)
-    assert_equal("J", l.optfield(:ba).type)
+    assert_equal(:"J", l.ba.gfa_datatype)
     assert_nothing_raised { l.bh={:a => 1.0, :b => 1} }
-    assert_equal({"a"=>1.0,"b"=>1}, l.bh)
-    assert_equal("J", l.optfield(:bh).type)
+    assert_equal({"a"=>1.0,"b"=>1}, l.to_s.to_rgfa_line.bh)
+    assert_equal(:"J", l.bh.gfa_datatype)
     assert_raise(NoMethodError) { l.zzz="1" }
   end
 
   def test_add_optfield
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_equal(nil, l.xy)
-    l << "xy:Z:HI"
+    l.set(:xy, "HI")
     assert_equal("HI", l.xy)
-    assert_raise(RGFA::Line::DuplicateOptfieldNameError) {l << "xy:Z:HI"}
   end
 
   def test_to_s

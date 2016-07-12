@@ -8,7 +8,7 @@ module RGFA::SegmentReferences
   #   if circular, then +segment+
   def other(segment)
     segment_name =
-      (segment.kind_of?(RGFA::Line::Segment) ? segment.name : segment)
+      (segment.kind_of?(RGFA::Line::Segment) ? segment.name : segment.to_sym)
     if segment_name == from
       to
     elsif segment_name == to

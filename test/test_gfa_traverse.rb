@@ -52,7 +52,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     gfa.merge_linear_paths
     assert_nothing_raised { gfa.merge_linear_paths }
-    assert_equal(["0_1_2_3"], gfa.segment_names)
+    assert_equal([:"0_1_2_3"], gfa.segment_names)
     assert_equal(1, gfa.segments.size)
     assert_equal([], gfa.links)
     s = ["S\t0\t*",
@@ -68,7 +68,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_linear_paths }
     assert_equal(3, gfa.segments.size)
-    assert_equal(["0","3","1_2"], gfa.segments.map(&:name))
+    assert_equal([:"0",:"3",:"1_2"], gfa.segments.map(&:name))
     s = ["S\t0\t*",
          "S\t1\t*",
          "S\t2\t*",
@@ -82,7 +82,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     (s + l).each {|line| gfa << line }
     assert_nothing_raised { gfa.merge_linear_paths }
     assert_equal(3, gfa.segments.size)
-    assert_equal(["0", "1", "2_3"], gfa.segments.map(&:name))
+    assert_equal([:"0", :"1", :"2_3"], gfa.segments.map(&:name))
   end
 
   def test_linear_path_merge_example1
@@ -90,7 +90,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     assert_equal([%w[18 19 1],
                   %w[11 9 12],
                   %w[22 16 20 21 23]],
-                 gfa.linear_paths.map{|sp|sp.map{|sn,et|sn}})
+                 gfa.linear_paths.map{|sp|sp.map{|sn,et|sn.to_s}})
   end
 
 end

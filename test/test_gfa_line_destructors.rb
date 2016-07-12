@@ -89,15 +89,15 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     p = "P\t4\t2+,0-\t12M,12M".to_rgfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
-    assert_equal(["0", "1", "2"], gfa.segment_names)
+    assert_equal([:"0", :"1", :"2"], gfa.segment_names)
     assert_equal([l], gfa.links)
     assert_equal([c], gfa.containments)
     assert_equal([p], gfa.paths)
-    assert_equal(["4"], gfa.path_names)
+    assert_equal([:"4"], gfa.path_names)
     gfa.delete_segment("0")
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([s[1],s[2]], gfa.segments)
-    assert_equal(["1", "2"], gfa.segment_names)
+    assert_equal([:"1", :"2"], gfa.segment_names)
     assert_equal([l], gfa.links)
     assert_equal([], gfa.containments)
     assert_equal([], gfa.paths)

@@ -2,24 +2,16 @@
 class RGFA::Line::Segment < RGFA::Line
 
   RECORD_TYPE = "S"
-
-  # @note The field names are derived from the RGFA specification at:
-  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#segment-line
-  #   and were made all downcase with _ separating words
-  REQFIELD_DEFINITIONS = [
-     [:name,        /[!-)+-<>-~][!-~]*/], # Segment name
-     [:sequence,    /\*|[A-Za-z=.]+/]     # The nucleotide sequence
-    ]
-
-  # Predefined optional fields
-  OPTFIELD_TYPES = {
-     "LN" => "i", # Segment length
-     "RC" => "i", # Read count
-     "FC" => "i", # Fragment count
-     "KC" => "i", # k-mer count
-    }
-
-  REQFIELD_CAST = {}
+  REQFIELDS = [:name, :sequence]
+  PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC]
+  DATATYPE = {
+    :name => :lbl,
+    :sequence => :seq,
+    :LN => :i,
+    :RC => :i,
+    :FC => :i,
+    :KC => :i
+  }
 
   # @raise if sequence length and LN tag are not consistent.
   def validate_length!
@@ -112,23 +104,6 @@ class RGFA::Line::Segment < RGFA::Line
     name.to_sym
   end
 
-  # Strings, which represents the orientation of a segment in
-  # links/paths/containments
-  ORIENTATION = [ FORWARD = "+", REVERSE = "-" ]
-
-  # @param orientation [RGFA::Line::Segment::ORIENTATION] an orientation
-  # @return [RGFA::Line::Segment::ORIENTATION] the other orientation
-  # @raise [RGFA::Line::Segment::UnknownOrientationError]
-  #   if +orientation+ is not valid
-  def self.other_orientation(orientation)
-    if !RGFA::Line::Segment::ORIENTATION.include?(orientation)
-      raise RGFA::Line::Segment::UnknownOrientationError
-    end
-    return (orientation == RGFA::Line::Segment::FORWARD ?
-              RGFA::Line::Segment::REVERSE :
-              RGFA::Line::Segment::FORWARD)
-  end
-
   private
 
   def validate_record_type_specific_info!
@@ -136,9 +111,6 @@ class RGFA::Line::Segment < RGFA::Line
   end
 
 end
-
-# Error raised if an unknown value for orientation is given
-class RGFA::Line::Segment::UnknownOrientationError < ArgumentError; end
 
 # Error raised if length of segment cannot be computed
 class RGFA::Line::Segment::UndefinedLengthError < ArgumentError; end

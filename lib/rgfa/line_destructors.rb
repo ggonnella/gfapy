@@ -42,14 +42,27 @@ module RGFA::LineDestructors
       when "C" then delete_containment(x)
       end
     elsif x.kind_of?(Symbol)
-      case x
-      when :sequences
+      if @segment_names.has_key?(x)
+        if args.empty?
+          delete_segment(x)
+        elsif args.size != 3
+          raise "1 or 4 arguments required if first segment name"
+        else
+          delete_containments_or_links("C", x, args[0], args[1], args[2],
+                                       nil, false)
+          delete_containments_or_links("L", x, args[0], args[1], args[2],
+                                       nil, false)
+        end
+      elsif x.kind_of?(Symbol) and @path_names.has_key?(x)
+        raise "One argument required if first path name" if !args.empty?
+        delete_path(x)
+      elsif x == :sequences
         raise "One argument required if first #{x.inspect}" if !args.empty?
         delete_sequences
-      when :headers
+      elsif x == :headers
         raise "One argument required if first #{x.inspect}" if !args.empty?
         delete_headers
-      when :alignments
+      elsif x == :alignments
         raise "One argument required if first #{x.inspect}" if !args.empty?
         delete_alignments
       else
@@ -59,20 +72,8 @@ module RGFA::LineDestructors
           raise "Cannot remove #{x.inspect}"
         end
       end
-    elsif x.kind_of?(String) and @segment_names.has_key?(x.to_sym)
-      if args.empty?
-        delete_segment(x)
-      elsif args.size != 3
-        raise "1 or 4 arguments required if first segment name"
-      else
-        delete_containments_or_links("C", x, args[0], args[1], args[2],
-                                     nil, false)
-        delete_containments_or_links("L", x, args[0], args[1], args[2],
-                                     nil, false)
-      end
-    elsif x.kind_of?(String) and @path_names.has_key?(x.to_sym)
-      raise "One argument required if first path name" if !args.empty?
-      delete_path(x)
+    elsif x.kind_of?(String)
+      rm(x.to_sym, *args)
     elsif x.kind_of?(Array)
       x.each {|elem| rm(elem, *args)}
     elsif x.nil?
@@ -87,8 +88,9 @@ module RGFA::LineDestructors
   # @return [RGFA] self
   # @param segment [String, RGFA::Line::Segment] segment name or instance
   def delete_segment(segment, cascade=true)
-    segment_name = segment.kind_of?(RGFA::Line::Segment) ? segment.name : segment
-    i = @segment_names[segment_name.to_sym]
+    segment_name = segment.kind_of?(RGFA::Line::Segment) ?
+      segment.name : segment.to_sym
+    i = @segment_names[segment_name]
     raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
     if cascade
       connected_segments(segment_name).each do |c|
@@ -169,8 +171,8 @@ module RGFA::LineDestructors
   # @return [RGFA] self
   # @param path [String, RGFA::Line::Path] path name or instance
   def delete_path(path)
-    path_name = path.kind_of?(RGFA::Line::Path) ? path.name : path
-    i = @path_names[path_name.to_sym]
+    path_name = path.kind_of?(RGFA::Line::Path) ? path.name : path.to_sym
+    i = @path_names[path_name]
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
     pt = @lines["P"][i]
     pt.segment_names.each {|sn, o| @c.delete("P",i,sn)}
@@ -208,15 +210,17 @@ module RGFA::LineDestructors
 
   def delete_containments_or_links(rt, from, from_orient, to, to_orient, pos,
                                   firstonly = false)
-    from = from.kind_of?(RGFA::Line::Segment) ? from.name : from
-    to = to.kind_of?(RGFA::Line::Segment) ? to.name : to
+    from = from.kind_of?(RGFA::Line::Segment) ? from.name : from.to_sym
+    from_orient = from_orient.nil? ? nil : from_orient.to_sym
+    to = to.kind_of?(RGFA::Line::Segment) ? to.name : to.to_sym
+    to_orient = to_orient.nil? ? nil : to_orient.to_sym
     to_rm = []
     @c.find(rt,from,:from).each do |li|
       l = @lines[rt][li]
       if (l.to == to) and
          (to_orient.nil? or (l.to_orient == to_orient)) and
          (from_orient.nil? or (l.from_orient == from_orient)) and
-         (pos.nil? or (l.pos(false) == pos.to_s))
+         (pos.nil? or (l.pos == pos.to_i))
         to_rm << li
         break if firstonly
       end

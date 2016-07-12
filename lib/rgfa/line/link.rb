@@ -4,31 +4,20 @@ require_relative "../segment_references.rb"
 class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = "L"
-
-  # @note The field names are derived from the RGFA specification at:
-  #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#link-line
-  #   and were made all downcase with _ separating words
-  REQFIELD_DEFINITIONS = [
-     [:from,        /[!-)+-<>-~][!-~]*/],      # name of segment
-     [:from_orient, /\+|-/],                   # orientation of From segment
-     [:to,          /[!-)+-<>-~][!-~]*/],      # name of segment
-     [:to_orient,   /\+|-/],                   # orientation of To segment
-     [:overlap,     /\*|([0-9]+[MIDNSHPX=])+/] # CIGAR string describing overlap
-    ]
-
-  # Procedures for the conversion of selected required fields to Ruby types
-  REQFIELD_CAST = {
-      :overlap => lambda {|e| e.cigar_operations }
-    }
-
-  # Predefined optional fields
-  OPTFIELD_TYPES = {
-     "MQ" => "i", # Mapping quality
-     "NM" => "i", # # mismatches/gaps
-     "RC" => "i", # Read count
-     "FC" => "i", # Fragment count
-     "KC" => "i"  # k-mer count
-    }
+  REQFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
+  PREDEFINED_OPTFIELDS = [:MQ, :NM, :RC, :FC, :KC]
+  DATATYPE = {
+     :from => :lbl,
+     :from_orient => :orn,
+     :to => :lbl,
+     :to_orient => :orn,
+     :overlap => :cig,
+     :MQ => :i,
+     :NM => :i,
+     :RC => :i,
+     :FC => :i,
+     :KC => :i,
+  }
 
   include RGFA::SegmentReferences
 
@@ -83,9 +72,9 @@ class RGFA::Line::Link < RGFA::Line
   def reverse
     l = self.clone
     l.from = to
-    l.from_orient = (to_orient == "+" ? "-" : "+")
+    l.from_orient = (to_orient == :+ ? :- : :+)
     l.to = from
-    l.to_orient = (from_orient == "+" ? "-" : "+")
+    l.to_orient = (from_orient == :+ ? :- : :+)
     l.overlap = reverse_overlap(false)
     l
   end
@@ -111,7 +100,8 @@ class RGFA::Line::Link < RGFA::Line
   # @return [String] if cast is false
   # @return [Array<RGFA::CigarOperation>] if cast is true
   def reverse_overlap(cast=true)
-    overlap(false).send((cast ? :reverse_cigar_operations : :reverse_cigar))
+    get_string(:overlap).send((cast ? :reverse_cigar_operations :
+                                      :reverse_cigar))
   end
 
   # @return[RGFA::OrientedSegment] the oriented segment represented by the
@@ -129,13 +119,13 @@ class RGFA::Line::Link < RGFA::Line
   # @return[RGFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end
-    [from, from_orient == "+" ? :E : :B].to_segment_end
+    [from, from_orient == :+ ? :E : :B].to_segment_end
   end
 
   # @return[RGFA::SegmentEnd] the segment end represented by the
   #   to/to_orient fields
   def to_end
-    [to, to_orient == "+" ? :B : :E].to_segment_end
+    [to, to_orient == :+ ? :B : :E].to_segment_end
   end
 
   # @param[RGFA::SegmentEnd] segment_end one of the two segment ends
@@ -152,7 +142,8 @@ class RGFA::Line::Link < RGFA::Line
     elsif (to_end == segment_end)
       return from_end
     else
-      raise "Segment end '#{segment_end.inspect}' not found"
+      raise "Segment end '#{segment_end.inspect}' not found\n"+
+            "(from=#{from_end.inspect};to=#{to_end.inspect})"
     end
   end
 

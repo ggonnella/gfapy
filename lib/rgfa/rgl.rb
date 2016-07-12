@@ -29,7 +29,7 @@ begin
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator do |block|
           self.each_segment do |segment|
-            ["+", "-"].each do |orient|
+            [:+, :-].each do |orient|
               block.call([segment, orient].to_oriented_segment)
             end
           end
@@ -54,20 +54,20 @@ begin
     # are "+".
     #
     # @raise [RuntimeError] if the graph contains any link where
-    #   from_orient or to_orient is "-"
+    #   from_orient or to_orient is :-
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
     #   where vertices are RGFA::Segment objects
     def to_rgl_unoriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
         g.adjacent_iterator do |s, bl|
-          @c.lines("L", s, :from, "+").each do |l|
-            if l.to_orient == "-"
+          @c.lines("L", s, :from, :+).each do |l|
+            if l.to_orient == :-
               raise "Graph contains links with segments in reverse orientations"
             end
             bl.call(segment(l.to))
           end
-          if @c.lines("L", s, :from, "-").size > 0
+          if @c.lines("L", s, :from, :-).size > 0
             raise "Graph contains links with segments in reverse orientations"
           end
         end
@@ -88,7 +88,7 @@ begin
       #
       #   - RGFA::OrientedSegment, or Array which can be converted to it;
       #     where the first element is a <i>segment specifier</i> (see below)
-      #   - <i>segment specifier</i> alone: the orientation is assumed to be "+"
+      #   - <i>segment specifier</i> alone: the orientation is assumed to be :+
       #
       #   The <i>segment specifier</i> can be:
       #   - RGFA::Segment instance
@@ -106,14 +106,14 @@ begin
           raise "#{g} is not a directed graph"
         end
         g.each_vertex do |v|
-          v = v.to_oriented_segment rescue [v, "+"].to_oriented_segment
+          v = v.to_oriented_segment rescue [v, :+].to_oriented_segment
           v = v.segment.to_rgfa_line rescue ["S",v.segment,"*"].to_rgfa_line
           gfa << v unless gfa.segment_names.include?(v.name)
         end
         g.each_edge do |s, t|
-          s = s.to_oriented_segment rescue [s, "+"].to_oriented_segment
+          s = s.to_oriented_segment rescue [s, :+].to_oriented_segment
           s[0] = s[0].to_rgfa_line rescue s[0]
-          t = t.to_oriented_segment rescue [t, "+"].to_oriented_segment
+          t = t.to_oriented_segment rescue [t, :+].to_oriented_segment
           t[0] = t[0].to_rgfa_line rescue t[0]
           gfa << ["L", s.name, s.orient, t.name, t.orient, "*"].to_rgfa_line
         end

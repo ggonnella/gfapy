@@ -32,6 +32,8 @@ module RGFA::Edit
   # @raise if +new_name+ is already a segment or path name
   # @return [RGFA] self
   def rename(old_name, new_name)
+    old_name = old_name.to_sym
+    new_name = new_name.to_sym
     validate_segment_and_path_name_unique!(new_name)
     is_path = @path_names.has_key?(old_name.to_sym)
     is_segment = @segment_names.has_key?(old_name.to_sym)

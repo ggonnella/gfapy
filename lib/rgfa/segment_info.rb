@@ -23,14 +23,14 @@ class RGFA::SegmentInfo < Array
     return nil
   end
 
-  # @return [String, RGFA::Line::Segment] the segment instance or name
+  # @return [Symbol, RGFA::Line::Segment] the segment instance or name
   def segment
     self[0]
   end
 
-  # @return [String] the segment name
+  # @return [Symbol] the segment name
   def name
-    self[0].kind_of?(RGFA::Line::Segment) ? self[0].name : self[0]
+    self[0].kind_of?(RGFA::Line::Segment) ? self[0].name : self[0].to_sym
   end
 
   def attribute
@@ -46,7 +46,7 @@ class RGFA::SegmentInfo < Array
   # @param [Object] attribute an attribute value
   # @return [Object] the other attribute value
   def self.other(attribute)
-    i = self::ATTR.index(attribute)
+    i = self::ATTR.index(attribute.to_sym)
     if i.nil?
       raise RGFA::SegmentInfo::InvalidAttribute,
         "Invalid attribute (#{self[1].inspect})"
@@ -90,7 +90,7 @@ end
 # A segment plus orientation
 class RGFA::OrientedSegment < RGFA::SegmentInfo
   # Segment orientation
-  ATTR = [ ORIENT_FWD = "+", ORIENT_REV = "-" ]
+  ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
   alias_method :orient, :attribute
   alias_method :other_orient, :other
 end
@@ -116,6 +116,9 @@ class Array
   def to_segment_info(subclass)
     return self if self.kind_of?(subclass)
     se = subclass.new(self)
+    se.size.times do |i|
+      self[i] = self[i].to_sym
+    end
     se.validate!
     return se
   end

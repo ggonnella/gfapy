@@ -10,16 +10,16 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { str.to_rgfa_line }
     assert_equal(RGFA::Line::Segment, str.to_rgfa_line.class)
     assert_equal(fields[0], str.to_rgfa_line.record_type)
-    assert_equal(fields[1], str.to_rgfa_line.name)
+    assert_equal(fields[1].to_sym, str.to_rgfa_line.name)
     assert_equal(fields[2], str.to_rgfa_line.sequence)
     assert_equal(1232, str.to_rgfa_line.RC)
     assert_equal(11, str.to_rgfa_line.LN)
     assert_equal(2321, str.to_rgfa_line.FC)
     assert_equal(1212, str.to_rgfa_line.KC)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(TypeError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::Line::FieldFormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "S\tH".to_rgfa_line }
-    assert_raises(RGFA::Line::RequiredFieldTypeError) do
+    assert_raises(RGFA::Line::FieldFormatError) do
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
@@ -51,10 +51,10 @@ class TestRGFALineSegment < Test::Unit::TestCase
   end
 
   def test_other_orientation
-    assert_equal("+", RGFA::Line::Segment.other_orientation("-"))
-    assert_equal("-", RGFA::Line::Segment.other_orientation("+"))
-    assert_raises(RGFA::Line::Segment::UnknownOrientationError) do
-      RGFA::Line::Segment.other_orientation("x")
+    assert_equal(:+, RGFA::OrientedSegment.other("-"))
+    assert_equal(:-, RGFA::OrientedSegment.other("+"))
+    assert_raises(RGFA::SegmentInfo::InvalidAttribute) do
+      RGFA::OrientedSegment.other("x")
     end
   end
 

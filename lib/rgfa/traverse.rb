@@ -309,7 +309,9 @@ module RGFA::Traverse
     else
       (segment.sequence == "*") ? (merged.sequence = "*")
                                 : (merged.sequence += s)
-      merged.name += "_#{segment.name}" if options[:merged_name].nil?
+      if options[:merged_name].nil?
+        merged.name = "#{merged.name}_#{segment.name}"
+      end
       if merged.LN
         segment.LN ? merged.LN += (segment.LN - cut)
                    : merged.LN = nil
@@ -382,12 +384,12 @@ module RGFA::Traverse
       if l2.to == segment_end.first
         l2.to = merged_name
         if reversed
-          l2.to_orient = RGFA::Line::Segment.other_orientation(l2.to_orient)
+          l2.to_orient = RGFA::OrientedSegment.other(l2.to_orient)
         end
       else
         l2.from = merged_name
         if reversed
-          l2.from_orient = RGFA::Line::Segment.other_orientation(l2.from_orient)
+          l2.from_orient = RGFA::OrientedSegment.other(l2.from_orient)
         end
       end
       self << l2

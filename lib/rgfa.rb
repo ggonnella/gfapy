@@ -3,19 +3,21 @@
 #
 
 RGFA = Class.new
-require_relative "./rgfa/optfield.rb"
-require_relative "./rgfa/line.rb"
+require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
-require_relative "./rgfa/sequence.rb"
 require_relative "./rgfa/connection_info.rb"
+require_relative "./rgfa/datastrings.rb"
+require_relative "./rgfa/edit.rb"
+require_relative "./rgfa/line.rb"
 require_relative "./rgfa/line_getters.rb"
 require_relative "./rgfa/line_creators.rb"
 require_relative "./rgfa/line_destructors.rb"
-require_relative "./rgfa/edit.rb"
-require_relative "./rgfa/traverse.rb"
 require_relative "./rgfa/logger.rb"
-require_relative "./rgfa/segment_info.rb"
+require_relative "./rgfa/numeric_array.rb"
 require_relative "./rgfa/rgl.rb"
+require_relative "./rgfa/segment_info.rb"
+require_relative "./rgfa/sequence.rb"
+require_relative "./rgfa/traverse.rb"
 
 #
 # This is the main class of the RGFA library.
@@ -79,13 +81,13 @@ class RGFA
   # List all names of segments in the graph
   # @return [Array<String>]
   def segment_names
-    @segment_names.keys.compact.map(&:to_s)
+    @segment_names.keys.compact
   end
 
   # List all names of path lines in the graph
   # @return [Array<String>]
   def path_names
-    @path_names.keys.compact.map(&:to_s)
+    @path_names.keys.compact
   end
 
   # Post-validation of the RGFA; checks that L, C and P refer to

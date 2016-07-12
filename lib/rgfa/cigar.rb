@@ -36,7 +36,7 @@ module RGFA::CIGAR
       elsif opcode == "D"
         opcode = "I"
       end
-      [oplen, opcode]
+      RGFA::CigarOperation.new([oplen, opcode])
     end
   end
 
@@ -81,6 +81,11 @@ class RGFA::CigarOperation < Array
   #   operation code
   def opcode
     self[1]
+  end
+  # The string representation of the operation
+  # @return [String]
+  def to_s
+    join
   end
 end
 

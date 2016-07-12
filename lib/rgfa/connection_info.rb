@@ -27,7 +27,7 @@ class RGFA::ConnectionInfo
   #   @param dir [:from, :to, nil] is segment the from or the to segment of the
   #     link/containment?; use nil for paths
   # @param value [Integer] an index in @lines[rt]
-  # @param o ["+", "-", nil] the segment orientation (links/containments); use
+  # @param o [:+, :-, nil] the segment orientation (links/containments); use
   #   nil for # paths
   # @return [void]
   def add(rt, value, sn, dir=nil, o=nil)
@@ -40,7 +40,7 @@ class RGFA::ConnectionInfo
       @connect[rt][sn] << value
     else
       raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
-      raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
+      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
       @connect[rt][sn]||={}
       @connect[rt][sn][dir]||={}
       @connect[rt][sn][dir][o]||=[]
@@ -54,16 +54,16 @@ class RGFA::ConnectionInfo
   #
   # @!macro connection_params
   # @!macro orientation_or_nil
-  #   @param o ["+","-",nil] orientation (for links/containments);
+  #   @param o [:+,:-,nil] orientation (for links/containments);
   #     set to nil for paths; if nil in links/containments: both orientations
   # @param value [Integer] index in @lines[rt] to remove
   # @return [void]
   #
   # @example
   #   delete("P", value, sn)                         # => rm path ref
-  #   delete("C"|"L", value, sn, :from|:to, "+"|"-") # => rm link/cont. ref
+  #   delete("C"|"L", value, sn, :from|:to, :+|:-) # => rm link/cont. ref
   #   delete("C"|"L", value, sn, :from|:to, nil)
-  #               # => rm link/cont. ref from sn in both "+" and "-" orient
+  #               # => rm link/cont. ref from sn in both :+ and :- orient
   #
   def delete(rt, value, sn, dir=nil, o=nil)
     rt = rt.to_sym
@@ -75,11 +75,11 @@ class RGFA::ConnectionInfo
     else
       raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
       if o.nil?
-        delete(rt, value, sn, dir, "+")
-        delete(rt, value, sn, dir, "-")
+        delete(rt, value, sn, dir, :+)
+        delete(rt, value, sn, dir, :-)
         return
       end
-      raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
+      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
       @connect[rt].fetch(sn,{}).fetch(dir,{}).fetch(o,[]).delete(value)
     end
     validate! if $DEBUG
@@ -134,8 +134,8 @@ class RGFA::ConnectionInfo
       @connect[rt].fetch(sn,[])
     else
       raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
-      return find(rt,sn,dir,"+")+find(rt,sn,dir,"-") if o.nil?
-      raise "o unknown: #{o.inspect}" if o != "+" and o != "-"
+      return find(rt,sn,dir,:+)+find(rt,sn,dir,:-) if o.nil?
+      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
       @connect[rt].fetch(sn,{}).fetch(dir,{}).fetch(o,[])
     end
   end
