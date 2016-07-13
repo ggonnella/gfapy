@@ -124,7 +124,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
         "H\taa:i:16",
         "H\tab:Z:test1",
         "H\tad:J:{\"a\":1,\"b\":2}",
-        "H\tae:B:i,12,14",
+        "H\tae:B:C,12,14",
       ],
       gfa.headers.map(&:to_s).sort)
   end

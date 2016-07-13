@@ -133,8 +133,6 @@ begin
 
   end
 
-  # Is it possible to make also a bidirectional rgl graph?
-
 rescue LoadError
 
   module RGFA::RGL

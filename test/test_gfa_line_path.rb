@@ -15,9 +15,9 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_equal([[[9,"M"],[2,"I"],[3,"D"],[1,"M"]],[[12,"M"]],[[12,"M"]]],
                  str.to_rgfa_line.cigars)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(RGFA::Line::FieldFormatError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "P\tH".to_rgfa_line }
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line
     end
     assert_nothing_raised do
@@ -26,10 +26,10 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_nothing_raised do
       f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[3]="12,12,20"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[3]="12M|12M|12M"; l=f.join("\t").to_rgfa_line; p l; p l.cigars
     end
   end

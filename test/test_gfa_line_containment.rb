@@ -18,18 +18,18 @@ class TestRGFALineContainment < Test::Unit::TestCase
     assert_equal(1232, str.to_rgfa_line.MQ)
     assert_equal(3, str.to_rgfa_line.NM)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(RGFA::Line::FieldFormatError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "C\tH".to_rgfa_line }
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do

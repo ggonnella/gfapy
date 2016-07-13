@@ -13,7 +13,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_too_many_required
-    assert_raise(RGFA::Line::FieldFormatError) do
+    assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Segment.new(["1","*","*"])
     end
   end
@@ -28,19 +28,19 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_wrong_optfield_format
-    assert_raise(RGFA::Line::FieldFormatError) do
+    assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Header.new(["VN i:1"])
     end
   end
 
   def test_initialize_reqfield_type_error
-    assert_raise(RGFA::Line::FieldFormatError) do
+    assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Segment.new(["1\t1","*","*"])
     end
   end
 
   def test_initialize_optfield_type_error
-    assert_raise(RGFA::Line::FieldFormatError) do
+    assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Header.new(["zz:i:1A"])
     end
   end
@@ -126,7 +126,7 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_field_setters_required_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
-    assert_raise(RGFA::Line::FieldFormatError) { l.name = "A\t1";
+    assert_raise(RGFA::FieldParser::FormatError) { l.name = "A\t1";
                                                  l.validate_field!(:name) }
     l.name = "14"
     assert_equal(:"14", l.name)

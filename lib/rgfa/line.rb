@@ -12,16 +12,10 @@ class RGFA::Line
   # Separator in the string representation of RGFA lines
   SEPARATOR = "\t"
 
-  # List of allowed record_type values and the associated subclasses of
-  # {RGFA::Line}.
-  #
-  # @developer
-  #   In case new record types are defined, add them here and define the
-  #   corresponding class (in <tt>lib/gfa/line/<downcasetypename>.rb</tt>).
-  #   All file in the +line+ subdirectory are automatically required.
-  #
+  # List of allowed record_type values
   RECORD_TYPES = [ "H", "S", "L", "C", "P" ]
 
+  # Full name of the record types
   RECORD_TYPE_LABELS = {
     "H" => "header",
     "S" => "segment",
@@ -30,27 +24,32 @@ class RGFA::Line
     "P" => "path",
   }
 
+  # A symbol representing a datatype for optional fields
+  OPTFIELD_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
+
+  # A symbol representing a datatype for required fields
+  REQFIELD_DATATYPE = [:lbl, :orn, :lbs, :seq, :pos, :cig, :cgs]
+
+  # A symbol representing a valid datatype
+  FIELD_DATATYPE = OPTFIELD_DATATYPE + REQFIELD_DATATYPE
+
   # @!macro rgfa_line
   #
-  # @param fields [Array<String>] the content of the line
+  # @param fields [Array<String>] the content of the line; the
+  #   array content is not preserved by this method (the array
+  #   will be empty after calling this method)
+  # @param validate [Boolean] <i>(default: +true+)</i>
+  #   validate the content of the fields
+  #   using the regular expressions of the GFA specification
   #
   # <b> Constants defined by subclasses </b>
   #
   # Subclasses of RGFA::Line _must_ define the following constants:
   # - RECORD_TYPE [String, size 1]
-  # - REQFIELD_DEFINITIONS [Array<Array(Symbol,Regex)>]:
-  #   <i>(possibly empty)</i>
-  #   defines the order of the required fields (Symbol) in the line and their
-  #   validators (Regex)
-  # - REQFIELD_CAST [Hash{Symbol=>Lambda}]:
-  #   <i>(possibly empty)</i>
-  #   defines procedures (Lambda) for casting selected required fields
-  #   (Symbol) into instances of the corresponding Ruby classes; the
-  #   lambda shall take one argument (the field string value) and
-  #   return one argument (the Ruby value)
-  # - OPTDATATYPES [Hash{Symbol=>String}]:
-  #   <i>(possibly empty)</i> defines the predefined optional
-  #   fields and their required type (String)
+  # - REQFIELDS [Array<Symbol>] required fields
+  # - PREDEFINED_OPTFIELDS [Array<Symbol>] predefined optional fields
+  # - DATATYPE [Hash{Symbol=>Symbol}]:
+  #   datatypes for the required fields and the predefined optional fields
   #
   # @raise [RGFA::Line::RequiredFieldMissingError]
   #   if too less required fields are specified
@@ -63,15 +62,6 @@ class RGFA::Line
   #   respect the specified type.
   #
   # @return [RGFA::Line]
-  #
-  # Value storing behaviour:
-  # - :precast => cast all fields into ruby type;
-  #               cast to string when necessary (to_s / validation)
-  # - :lazy => store strings on initialization, but cast to
-  #            Ruby types and store them when values are accessed;
-  #            cast to strings when necessary (to_s / validation)
-  # - :optimized
-  # - :nocast => turn casting off
   #
   def initialize(data, validate: true)
     unless self.class.const_defined?("RECORD_TYPE")
@@ -90,6 +80,9 @@ class RGFA::Line
     end
   end
 
+  # Select a subclass based on the record type
+  # @raise [RGFA::Line::UnknownRecordTypeError] if the record_type is not valid
+  # @return [Class] a subclass of RGFA::Line
   def self.subclass(record_type)
     case record_type
     when "H" then RGFA::Line::Header
@@ -123,7 +116,7 @@ class RGFA::Line
     (@data.keys - self.class::REQFIELDS)
   end
 
-  # @return [self.class] deep copy of self (RGFA::Line subclass)
+  # @return [RGFA::Line] deep copy of self (RGFA::Line subclass)
   def clone
     self.class.new(@data, validate: @validate)
   end
@@ -136,11 +129,9 @@ class RGFA::Line
   # @return [Array<String>] an array of string representations of the fields
   def to_a(validate: true)
     a = [record_type]
-    required_fieldnames.each {|fn| a << get_string(fn,
-                                                       validate: validate,
+    required_fieldnames.each {|fn| a << get_string(fn, validate: validate,
                                                        optfield: false)}
-    optional_fieldnames.each {|fn| a << get_string(fn,
-                                                       validate: validate,
+    optional_fieldnames.each {|fn| a << get_string(fn, validate: validate,
                                                        optfield: true)}
     return a
   end
@@ -183,14 +174,18 @@ class RGFA::Line
     v.nil? ? nil : v[1]
   end
 
-  # Returns the string representation of the content of a field.
-  # The datatype is either predefined (required fields,
-  # optional fields), manually set (see #set_datatype)
-  # or automatically computed.
+  # @!macro[new] get_string
+  #   Returns the string representation of the content of a field.
+  #   The datatype is either predefined (required fields,
+  #   optional fields), manually set (see #set_datatype)
+  #   or automatically computed.
   #
-  # @param validate [Boolean] <i>(defaults to: +true+)</i> perform a
-  #   validation of the string, using the regular expression
-  #   for the datatype
+  #   @param validate [Boolean] <i>(defaults to: +true+)</i> perform a
+  #     validation of the string, using the regular expression
+  #     for the datatype
+  #
+  #   @param optfield [Boolean] <i>(defaults to: +false+)</i>
+  #     return the tagname:datatype:datastring representation
   #
   # @return [String] the string representation (an empty
   #   string if the field does not exist)
@@ -204,17 +199,28 @@ class RGFA::Line
     return f
   end
 
+  # @!macro get_string
+  # @raise [RGFA::Line::TagMissingError] if field is not defined
+  # @return [String] the string representation
+  def get_string!(fieldname, validate: true, optfield: false)
+    v = get_string(fieldname, validate: validate, optfield: optfield)
+    raise RGFA::Line::TagMissingError,
+      "No value defined for tag #{fieldname}" if v.nil?
+    return v
+  end
+
   # Set or change the datatype of a custom optional field
   #
   # @param fieldname [#to_sym] the field name
   # @param datatype [#to_sym] the datatype
-  # @raise [Exception] if the field name is not a valid custom optional name
+  # @raise [RGFA::Line::CustomOptfieldNameError] if the field name is not a
+  #   valid custom optional name
   # @raise [RGFA::Line::UnknownDatatype] if +datatype+ is not
   #   a valid datatype for optional fields
   def set_datatype(fieldname, datatype)
     fieldname = fieldname.to_sym
     datatype = datatype.to_sym
-    unless String::OPTFIELD_DATATYPES.includes?(datatype)
+    unless OPTFIELD_DATATYPES.includes?(datatype)
       raise RGFA::Line::UnknownDatatype, "Unknown datatype: #{datatype}"
     end
     validate_custom_optional_fieldname(fieldname)
@@ -229,8 +235,9 @@ class RGFA::Line
   # To validate the content, use #validate_field!. Automatic validation
   # is performed, when the fields are read from string or written to
   # string.
-  # To explicitely set the datatype of custom optional fields use #set_datatype
-  # (otherwise the type will be automatically selected from the value).
+  # To explicitely set the datatype of a new custom optional fields
+  # use #set_datatype,
+  # otherwise the type will be automatically selected from the value.
   # @param fieldname [#to_sym] the name of the field to set
   # @return [void]
   def set(fieldname, value)
@@ -273,27 +280,30 @@ class RGFA::Line
     return v
   end
 
-  def get_string!(field_name)
-    v = get_string(field_name)
-    raise RGFA::Line::TagMissingError,
-      "No value defined for tag #{field_name}" if v.nil?
-    return v
-  end
-
   # Three methods are dynamically created for each existing field name as well
   # as for each non-existing but valid optional field name.
   #
   # ---
-  #  - (Object) <fieldname>
+  #  - (Object) <fieldname>(parse=true)
   # The value of a field.
+  #
+  # <b>Parameters:</b>
+  # - +*parse*+ (Boolean) <i>(default: +true+)</i>
+  #   parse the string and return the corresponding ruby object if +true+;
+  #   return the GFA string representation of the data if +false+
   #
   # <b>Returns:</b>
   # - (String, Hash, Array, Integer, Float) if the field exists
   # - (nil) if the field does not exist, but is a valid optional field name
   #
   # ---
-  #  - (Object) <fieldname>!(cast: false)
+  #  - (Object) <fieldname>!(parse=true)
   # The valid of a field, raising an exception if not available.
+  #
+  # <b>Parameters:</b>
+  # - +*parse*+ (Boolean) <i>(default: +true+)</i>
+  #   parse the string and return the corresponding ruby object if +true+;
+  #   return the GFA string representation of the data if +false+
   #
   # <b>Returns:</b>
   # - (String, Hash, Array, Integer, Float) if the field exists
@@ -492,8 +502,10 @@ end
 # Error raised if the record_type is not one of RGFA::Line::RECORD_TYPES
 class RGFA::Line::UnknownRecordTypeError      < TypeError;     end
 
+# Error raised if an invalid datatype symbol is found
 class RGFA::Line::UnknownDatatype             < TypeError;     end
 
+# Error raised if an invalid fieldname symbol is found
 class RGFA::Line::FieldnameError              < NameError;     end
 
 # Error raised if optional tag is not present
@@ -501,8 +513,6 @@ class RGFA::Line::TagMissingError             < NoMethodError; end
 
 # Error raised if too less required fields are specified.
 class RGFA::Line::RequiredFieldMissingError   < ArgumentError; end
-
-class RGFA::Line::FieldFormatError            < TypeError;     end
 
 # Error raised if a non-predefined optional field uses upcase
 # letters.
@@ -538,27 +548,6 @@ class String
     split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate)
   end
 
-  # Parses an optional field in the form tagname:datatype:value
-  # and parses the value according to the datatype
-  # @param validate_datastring [Boolean] validate the format of the value
-  #   datastring using regular expressions
-  # @raise RGFA::Line::FieldFormatError if the string does not represent
-  #   an optional field
-  # @return [Array(Symbol, Symbol, Object)] the parsed content of the field
-  def parse_optfield(parse_datastring: :lazy, validate_datastring: true)
-    if self =~ /^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$/
-      n = $1.to_sym
-      t = $2.to_sym
-      v = $3
-      v.validate_datastring(t, fieldname: n) if validate_datastring
-      v = v.parse_datastring(t, validate: false,
-            lazy: parse_datastring == :lazy) if parse_datastring
-      return n, t, v
-    else
-      raise RGFA::Line::FieldFormatError,
-        "Expected optional field, found: #{self.inspect}"
-    end
-  end
 end
 
 # Extensions to the Array core class.

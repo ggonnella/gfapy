@@ -17,9 +17,9 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(2321, str.to_rgfa_line.FC)
     assert_equal(1212, str.to_rgfa_line.KC)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(RGFA::Line::FieldFormatError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "S\tH".to_rgfa_line }
-    assert_raises(RGFA::Line::FieldFormatError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
