@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'rgfa'
-  s.version = '1.0.1'
-  s.date = '2016-05-12'
+  s.version = '1.1'
+  s.date = '2016-07-13'
   s.summary = 'Parse, edit and write GFA-format graphs in Ruby'
   s.description = <<-EOF
     The Graphical Fragment Assembly (GFA) is a proposed format which allow
@@ -24,7 +24,9 @@ Gem::Specification.new do |s|
               'lib/rgfa/byte_array.rb',
               'lib/rgfa/cigar.rb',
               'lib/rgfa/connection_info.rb',
-              'lib/rgfa/datastrings.rb',
+              'lib/rgfa/field_writer.rb',
+              'lib/rgfa/field_parser.rb',
+              'lib/rgfa/field_validator.rb',
               'lib/rgfa/edit.rb',
               'lib/rgfa/line_creators.rb',
               'lib/rgfa/line_destructors.rb',

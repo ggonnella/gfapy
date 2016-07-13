@@ -131,7 +131,7 @@ module RGFA::Edit
         accepted.inspect
     end
     retval = []
-    next_name = segment_name
+    next_name = segment_name.to_s
     case copy_names
     when :lowcase
       if next_name =~ /^.*[a-z]$/

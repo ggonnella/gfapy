@@ -1,5 +1,7 @@
 require "rake/testtask"
 
+$rgfaversion="1.0.1"
+
 Rake::TestTask.new do |t|
   t.libs << 'test'
 end
@@ -36,7 +38,8 @@ end
 
 desc "Create cheatsheet"
 task :cs do
-  system("latexmk cheatsheet/rgfa-cheatsheet-1.0.1.tex -pdf -outdir=cheatsheet")
+  system("latexmk cheatsheet/rgfa-cheatsheet-#$rgfaversion.tex "+
+         "-pdf -outdir=cheatsheet")
 end
 
 desc "Create a PDF documentation"
@@ -46,5 +49,5 @@ task :pdf do
                      "toc "+
                      "pdfdoc/index.html "+
                      "--user-style-sheet pdfdoc/print.css "+
-                     "pdfdoc/rgfa-api-1.0.1.pdf")
+                     "pdfdoc/rgfa-api-#$rgfaversion.pdf")
 end
