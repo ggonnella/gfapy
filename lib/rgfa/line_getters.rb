@@ -52,11 +52,11 @@ module RGFA::LineGetters
   #
   def segment(segment_name)
     i = @segment_names[segment_name.to_sym]
-    i.nil? ? nil : @lines["S"][i]
+    i.nil? ? nil : @lines[:S][i]
   end
 
   # @!macro segment
-  # @raise [RGFA::LineMissingError] if no such segment exists in the RGFA instance
+  # @raise [RGFA::LineMissingError] if no such segment exists
   def segment!(segment_name)
     s = segment(segment_name)
     raise RGFA::LineMissingError,
@@ -72,7 +72,7 @@ module RGFA::LineGetters
   #
   def path(path_name)
     i = @path_names[path_name.to_sym]
-    i.nil? ? nil : @lines["P"][i]
+    i.nil? ? nil : @lines[:P][i]
   end
 
   # @!macro path
@@ -90,7 +90,7 @@ module RGFA::LineGetters
   #   @param segment [RGFA::Line::Segment, String] a segment instance or name
   def paths_with(segment)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
-    @c.lines("P",segment_name)
+    @c.lines(:P,segment_name)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
@@ -98,7 +98,7 @@ module RGFA::LineGetters
   # @return [Array<RGFA::Line::Containment>]
   def contained_in(segment)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
-    @c.lines("C", segment_name, :from)
+    @c.lines(:C, segment_name, :from)
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
@@ -106,7 +106,7 @@ module RGFA::LineGetters
   # @!macro segment_or_name
   def containing(segment)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym
-    @c.lines("C", segment_name, :to)
+    @c.lines(:C, segment_name, :to)
   end
 
   # Searches all containments of +contained+ in +container+.
@@ -165,8 +165,8 @@ module RGFA::LineGetters
   def links_of(segment_end)
     segment_end = segment_end.to_segment_end
     o = segment_end.end_type == :E ? [:+,:-] : [:-,:+]
-    @c.lines("L",segment_end.segment,:from,o[0]) +
-      @c.lines("L",segment_end.segment,:to,o[1])
+    @c.lines(:L,segment_end.segment,:from,o[0]) +
+      @c.lines(:L,segment_end.segment,:to,o[1])
   end
 
   # Finds segment ends connected to the specified segment end.

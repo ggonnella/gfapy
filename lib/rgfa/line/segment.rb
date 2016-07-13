@@ -1,7 +1,7 @@
 # A segment line of a RGFA file
 class RGFA::Line::Segment < RGFA::Line
 
-  RECORD_TYPE = "S"
+  RECORD_TYPE = :S
   REQFIELDS = [:name, :sequence]
   PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC]
   DATATYPE = {

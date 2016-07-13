@@ -10,7 +10,7 @@ module RGFA::Edit
   #
   # @return [RGFA] self
   def delete_sequences
-    @lines["S"].each {|l| l.sequence = "*"}
+    @lines[:S].each {|l| l.sequence = "*"}
     self
   end
 
@@ -18,9 +18,9 @@ module RGFA::Edit
   #
   # @return [RGFA] self
   def delete_alignments
-    @lines["L"].each {|l| l.overlap = "*"}
-    @lines["C"].each {|l| l.overlap = "*"}
-    @lines["P"].each {|l| l.cigars = "*"}
+    @lines[:L].each {|l| l.overlap = "*"}
+    @lines[:C].each {|l| l.overlap = "*"}
+    @lines[:P].each {|l| l.cigars = "*"}
     self
   end
 
@@ -46,7 +46,7 @@ module RGFA::Edit
       i = @segment_names[old_name.to_sym]
       @segment_names.delete(old_name.to_sym)
       @segment_names[new_name.to_sym] = i
-      ["L","C"].each do |rt|
+      [:L,:C].each do |rt|
         [:from,:to].each do |dir|
           @c.lines(rt, old_name, dir).each do |l|
             l.send(:"#{dir}=", new_name)
@@ -186,7 +186,7 @@ module RGFA::Edit
 
   def divide_segment_and_connection_counts(segment, factor)
     divide_counts(segment, factor)
-    ["L","C"].each do |rt|
+    [:L,:C].each do |rt|
       [:from,:to].each do |dir|
         @c.lines(rt,segment.name,dir).each do |l|
           # circular link counts shall be divided only ones
@@ -201,7 +201,7 @@ module RGFA::Edit
     cpy = segment.clone
     cpy.name = clone_name
     self << cpy
-    ["L","C"].each do |rt|
+    [:L,:C].each do |rt|
       [:from,:to].each do |dir|
         @c.lines(rt,segment.name,dir).each do |l|
           lc = l.clone

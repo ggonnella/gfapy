@@ -9,7 +9,7 @@ class TestRGFALineLink < Test::Unit::TestCase
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
     assert_equal(RGFA::Line::Link, str.to_rgfa_line.class)
-    assert_equal(fields[0], str.to_rgfa_line.record_type)
+    assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.from)
     assert_equal(fields[2].to_sym, str.to_rgfa_line.from_orient)
     assert_equal(fields[3].to_sym, str.to_rgfa_line.to)

@@ -3,7 +3,7 @@ require_relative "../segment_references.rb"
 # A containment line of a RGFA file
 class RGFA::Line::Containment < RGFA::Line
 
-  RECORD_TYPE = "C"
+  RECORD_TYPE = :C
   REQFIELDS = [:from, :from_orient, :to, :to_orient, :pos, :overlap]
   PREDEFINED_OPTFIELDS = [:MQ, :NM]
   DATATYPE = {

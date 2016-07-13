@@ -3,7 +3,7 @@ require_relative "../segment_references.rb"
 # A link line of a RGFA file
 class RGFA::Line::Link < RGFA::Line
 
-  RECORD_TYPE = "L"
+  RECORD_TYPE = :L
   REQFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
   PREDEFINED_OPTFIELDS = [:MQ, :NM, :RC, :FC, :KC]
   DATATYPE = {

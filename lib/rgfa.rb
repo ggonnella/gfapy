@@ -34,7 +34,7 @@ require_relative "./rgfa/traverse.rb"
 # - If an element is deleted, the position in @lines[record_type] is set to
 #   +nil+, so that the links to all other positions still function
 # - The @segment_names and @path_names arrays contain the names of
-#   the segments and paths, in the same order as @lines["S"] and @lines["P"];
+#   the segments and paths, in the same order as @lines[:S] and @lines[:P];
 #   if a segment or path is added, its name is pushed on the @..._name array;
 #   if a segment or path is deleted, its position on the @..._name array is set
 #   to nil
@@ -98,10 +98,10 @@ class RGFA
   # @raise if validation fails
   def validate!
     # todo this should also call validate in cascade to all records
-    ["L", "C"].each do |rt|
+    [:L, :C].each do |rt|
       @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
     end
-    @lines["P"].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+    @lines[:P].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
   end
 
   # Creates a string representation of RGFA conforming to the current

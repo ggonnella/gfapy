@@ -35,11 +35,11 @@ module RGFA::LineDestructors
     if x.kind_of?(RGFA::Line)
       raise "One argument required if first RGFA::Line" if !args.empty?
       case x.record_type
-      when "H" then raise "Cannot remove single header lines"
-      when "S" then delete_segment(x)
-      when "P" then delete_path(x)
-      when "L" then delete_link(x)
-      when "C" then delete_containment(x)
+      when :H then raise "Cannot remove single header lines"
+      when :S then delete_segment(x)
+      when :P then delete_path(x)
+      when :L then delete_link(x)
+      when :C then delete_containment(x)
       end
     elsif x.kind_of?(Symbol)
       if @segment_names.has_key?(x)
@@ -48,9 +48,9 @@ module RGFA::LineDestructors
         elsif args.size != 3
           raise "1 or 4 arguments required if first segment name"
         else
-          delete_containments_or_links("C", x, args[0], args[1], args[2],
+          delete_containments_or_links(:C, x, args[0], args[1], args[2],
                                        nil, false)
-          delete_containments_or_links("L", x, args[0], args[1], args[2],
+          delete_containments_or_links(:L, x, args[0], args[1], args[2],
                                        nil, false)
         end
       elsif x.kind_of?(Symbol) and @path_names.has_key?(x)
@@ -96,10 +96,10 @@ module RGFA::LineDestructors
       connected_segments(segment_name).each do |c|
         unconnect_segments(segment_name, c)
       end
-      @c.lines("P",segment_name).each {|pt| delete_path(pt.path_name)}
+      @c.lines(:P,segment_name).each {|pt| delete_path(pt.path_name)}
       @c.delete_segment(segment_name)
     end
-    @lines["S"][i] = nil
+    @lines[:S][i] = nil
     @segment_names.delete(segment_name.to_sym)
     return self
   end
@@ -109,10 +109,10 @@ module RGFA::LineDestructors
   # @param segment1 [String, RGFA::Line::Segment] segment 1 name or instance
   # @param segment2 [String, RGFA::Line::Segment] segment 2 name or instance
   def unconnect_segments(segment1, segment2)
-    delete_containments_or_links("C", segment1, nil, segment2, nil, nil, false)
-    delete_containments_or_links("L", segment1, nil, segment2, nil, nil, false)
-    delete_containments_or_links("C", segment2, nil, segment1, nil, nil, false)
-    delete_containments_or_links("L", segment2, nil, segment1, nil, nil, false)
+    delete_containments_or_links(:C, segment1, nil, segment2, nil, nil, false)
+    delete_containments_or_links(:L, segment1, nil, segment2, nil, nil, false)
+    delete_containments_or_links(:C, segment2, nil, segment1, nil, nil, false)
+    delete_containments_or_links(:L, segment2, nil, segment1, nil, nil, false)
     return self
   end
 
@@ -140,7 +140,7 @@ module RGFA::LineDestructors
     else
       raise "To segment not specified" if to.nil?
     end
-    delete_containments_or_links("L", from, from_orient, to,
+    delete_containments_or_links(:L, from, from_orient, to,
                                  to_orient, nil, true)
   end
 
@@ -163,7 +163,7 @@ module RGFA::LineDestructors
     else
       raise "To segment not specified" if to.nil?
     end
-    delete_containments_or_links("C", from, from_orient, to,
+    delete_containments_or_links(:C, from, from_orient, to,
                                  to_orient, pos, true)
   end
 
@@ -174,9 +174,9 @@ module RGFA::LineDestructors
     path_name = path.kind_of?(RGFA::Line::Path) ? path.name : path.to_sym
     i = @path_names[path_name]
     raise ArgumentError, "No path has name #{path_name}" if i.nil?
-    pt = @lines["P"][i]
-    pt.segment_names.each {|sn, o| @c.delete("P",i,sn)}
-    @lines["P"][i] = nil
+    pt = @lines[:P][i]
+    pt.segment_names.each {|sn, o| @c.delete(:P,i,sn)}
+    @lines[:P][i] = nil
     @path_names.delete(path_name.to_sym)
     return self
   end
@@ -184,7 +184,7 @@ module RGFA::LineDestructors
   # Remove all headers
   # @return [RGFA] self
   def delete_headers
-    @lines["H"] = []
+    @lines[:H] = []
   end
 
   # Remove all links of a segment end end except that to the other specified

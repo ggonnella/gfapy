@@ -96,7 +96,7 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_record_type
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
-    assert_equal("H", l.record_type)
+    assert_equal(:H, l.record_type)
     assert_raise(NoMethodError) { l.record_type = "S" }
   end
 

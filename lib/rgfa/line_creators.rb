@@ -14,13 +14,13 @@ module RGFA::LineCreators
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     rt = gfa_line.record_type
     case rt
-    when "H"
+    when :H
       add_header(gfa_line)
-    when "S"
+    when :S
       add_segment(gfa_line)
-    when "L", "C"
+    when :L, :C
       add_link_or_containment(rt, gfa_line)
-    when "P"
+    when :P
       add_path(gfa_line)
     else
       raise # this never happens, as already catched by gfa_line init
@@ -85,17 +85,17 @@ module RGFA::LineCreators
   private
 
   def add_header(gfa_line)
-    @lines["H"] << gfa_line
+    @lines[:H] << gfa_line
   end
 
   def add_segment(gfa_line)
     validate_segment_and_path_name_unique!(gfa_line.name) if @validate
-    @segment_names[gfa_line.name.to_sym] = @lines["S"].size
-    @lines["S"] << gfa_line
+    @segment_names[gfa_line.name.to_sym] = @lines[:S].size
+    @lines[:S] << gfa_line
   end
 
   def add_link_or_containment(rt, gfa_line)
-    if rt == "L"
+    if rt == :L
       l = link(gfa_line.from_end, gfa_line.to_end)
       return if l == gfa_line
     end
@@ -110,11 +110,11 @@ module RGFA::LineCreators
 
   def add_path(gfa_line)
     validate_segment_and_path_name_unique!(gfa_line.path_name) if @validate
-    @path_names[gfa_line.path_name.to_sym] = @lines["P"].size
-    @lines["P"] << gfa_line
+    @path_names[gfa_line.path_name.to_sym] = @lines[:P].size
+    @lines[:P] << gfa_line
     gfa_line.segment_names.each do |sn, o|
       segment!(sn) if @segments_first_order
-      @c.add("P",@lines["P"].size-1,sn)
+      @c.add(:P,@lines[:P].size-1,sn)
     end
   end
 

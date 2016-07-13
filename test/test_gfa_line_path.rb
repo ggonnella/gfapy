@@ -8,7 +8,7 @@ class TestRGFALinePath < Test::Unit::TestCase
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
     assert_equal(RGFA::Line::Path, str.to_rgfa_line.class)
-    assert_equal(fields[0], str.to_rgfa_line.record_type)
+    assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.path_name)
     assert_equal([[:"1",:"+"],[:"2",:"-"],[:"3",:"+"]],
                  str.to_rgfa_line.segment_names)

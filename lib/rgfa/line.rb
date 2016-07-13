@@ -13,15 +13,15 @@ class RGFA::Line
   SEPARATOR = "\t"
 
   # List of allowed record_type values
-  RECORD_TYPES = [ "H", "S", "L", "C", "P" ]
+  RECORD_TYPES = [ :H, :S, :L, :C, :P ]
 
   # Full name of the record types
   RECORD_TYPE_LABELS = {
-    "H" => "header",
-    "S" => "segment",
-    "L" => "link",
-    "C" => "containment",
-    "P" => "path",
+    :H => "header",
+    :S => "segment",
+    :L => "link",
+    :C => "containment",
+    :P => "path",
   }
 
   # A symbol representing a datatype for optional fields
@@ -45,7 +45,7 @@ class RGFA::Line
   # <b> Constants defined by subclasses </b>
   #
   # Subclasses of RGFA::Line _must_ define the following constants:
-  # - RECORD_TYPE [String, size 1]
+  # - RECORD_TYPE [RGFA::Line::RECORD_TYPES]
   # - REQFIELDS [Array<Symbol>] required fields
   # - PREDEFINED_OPTFIELDS [Array<Symbol>] predefined optional fields
   # - DATATYPE [Hash{Symbol=>Symbol}]:
@@ -84,12 +84,12 @@ class RGFA::Line
   # @raise [RGFA::Line::UnknownRecordTypeError] if the record_type is not valid
   # @return [Class] a subclass of RGFA::Line
   def self.subclass(record_type)
-    case record_type
-    when "H" then RGFA::Line::Header
-    when "S" then RGFA::Line::Segment
-    when "L" then RGFA::Line::Link
-    when "C" then RGFA::Line::Containment
-    when "P" then RGFA::Line::Path
+    case record_type.to_sym
+    when :H then RGFA::Line::Header
+    when :S then RGFA::Line::Segment
+    when :L then RGFA::Line::Link
+    when :C then RGFA::Line::Containment
+    when :P then RGFA::Line::Path
     else
       raise RGFA::Line::UnknownRecordTypeError,
         "Record type unknown: '#{record_type}'"

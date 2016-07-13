@@ -5,7 +5,7 @@
 # @api private
 #
 # @note It is not required that a segment has already been added
-#   to the GFA using an "S" line. This is necessary, as the order of the lines
+#   to the GFA using an :S line. This is necessary, as the order of the lines
 #   in the file during parsing is arbitrary.
 #
 class RGFA::ConnectionInfo
@@ -165,7 +165,7 @@ class RGFA::ConnectionInfo
   def validate!
     @connect[:P].keys.each do |sn|
       @connect[:P][sn].each do |li|
-        l = @lines["P"][li]
+        l = @lines[:P][li]
         if l.nil? or !l.segment_names.map{|s,o|s.to_sym}.include?(sn)
           raise "Error in connect\n"+
             "@connect[P][#{sn}]=[#{li},..]\n"+
@@ -178,7 +178,7 @@ class RGFA::ConnectionInfo
         @connect[rt][sn].keys.each do |dir|
           @connect[rt][sn][dir].keys.each do |o|
             @connect[rt][sn][dir][o].each do |li|
-              l = @lines[rt.to_s][li]
+              l = @lines[rt][li]
               if l.nil? or l.send(dir).to_sym != sn or
                    l.send(:"#{dir}_orient") != o
                 raise "Error in connect\n"+

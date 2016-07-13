@@ -9,7 +9,7 @@ class TestRGFALineSegment < Test::Unit::TestCase
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
     assert_equal(RGFA::Line::Segment, str.to_rgfa_line.class)
-    assert_equal(fields[0], str.to_rgfa_line.record_type)
+    assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.name)
     assert_equal(fields[2], str.to_rgfa_line.sequence)
     assert_equal(1232, str.to_rgfa_line.RC)

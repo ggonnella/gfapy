@@ -1,7 +1,7 @@
 # A path line of a RGFA file
 class RGFA::Line::Path < RGFA::Line
 
-  RECORD_TYPE = "P"
+  RECORD_TYPE = :P
   REQFIELDS = [:path_name, :segment_names, :cigars]
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
