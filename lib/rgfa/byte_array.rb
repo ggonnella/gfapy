@@ -10,7 +10,7 @@ class RGFA::ByteArray < Array
   # @return [void]
   def validate!
     each do |x|
-      if ![0..255].include?(x)
+      unless x.kind_of?(Integer) and (0..255).include?(x)
         raise RGFA::ByteArray::ValueError,
           "Value incompatible with byte array: #{x.inspect}\n"+
           "in array: #{self.inspect}"
@@ -25,14 +25,15 @@ class RGFA::ByteArray < Array
   end
 
   # GFA datatype H representation of the byte array
-  # @param validate [Boolean] <i>(default: +true+)</i>
-  #   perform a validation of the array elements
-  # @raise [RGFA::ByteArray::ValueError] if +validate+ and
-  #   the array is not a valid byte array
+  # @raise [RGFA::ByteArray::ValueError] if the
+  #   array is not a valid byte array
   # @return [String]
-  def to_s(validate: true)
-    validate! if validate
-    map{|x|x.to_s(16).upcase}.join
+  def to_s
+    validate!
+    map do |elem|
+      str = elem.to_s(16).upcase
+      elem < 16 ? "0#{str}" : str
+    end.join
   end
 
 end

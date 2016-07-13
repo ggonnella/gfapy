@@ -161,15 +161,13 @@ class String
     subtype = elems.shift
     integer = (subtype != "f")
     if integer
-      range = RGFA::NumericArray::SUBTYPE_RANGE[subtype].include?(e)
+      range = RGFA::NumericArray::SUBTYPE_RANGE[subtype]
     elsif !RGFA::NumericArray::SUBTYPE.include?(subtype)
       raise RGFA::NumericArray::TypeRror, "Subtype #{subtype} unknown"
     end
     elems.map do |e|
       begin
         if integer
-          Float(e)
-        else
           e = Integer(e)
           if validate and not range.include?(e)
             raise "NumericArray: value is outside of subtype #{subtype} range\n"+
@@ -177,6 +175,9 @@ class String
                   "Range: #{range.inspect}\n"+
                   "Content: #{inspect}"
           end
+          e
+        else
+          Float(e)
         end
       rescue => msg
         raise RGFA::NumericArray::ValueError, msg

@@ -25,9 +25,9 @@ module RGFA::FieldParser
     when :f
       return Float(self)
     when :H
-      return to_byte_array(validate: validate)
+      return to_byte_array
     when :B
-      return to_numeric_array(validate: validate)
+      return to_numeric_array
     when :J
       return JSON.parse(self)
     when :cig
