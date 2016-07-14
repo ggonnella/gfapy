@@ -247,6 +247,7 @@ class RGFA::Line
     elsif predefined_optional_fieldname?(fieldname)
       @data[fieldname] = [value, self.class::DATATYPE[fieldname]]
     elsif valid_custom_optional_fieldname?(fieldname)
+      define_field_methods(fieldname)
       @data[fieldname] = [value]
     else
       raise RGFA::Line::FieldnameError,
@@ -497,13 +498,31 @@ class RGFA::Line
   def validate_record_type_specific_info!
   end
 
-  def define_field_methods!
-    self::REQFIELDS.each do |fieldname|
-      define_method fieldname do |parse=true|
+  #
+  # Define field methods for a single field
+  #
+  def define_field_methods(fieldname)
+    define_singleton_method(fieldname) do |parse=true|
       parse ? get(fieldname) : get_string(fieldname)
+    end
+    define_singleton_method :"#{fieldname}!" do |parse=true|
+      parse ? get!(fieldname) : get_string!(fieldname)
+    end
+    define_singleton_method :"#{fieldname}=" do |value|
+      set(fieldname, value)
+    end
+  end
+
+  #
+  # This avoids calls to method_missing for fields which are already defined
+  #
+  def self.define_field_methods!
+    (self::REQFIELDS+self::PREDEFINED_OPTFIELDS).each do |fieldname|
+      define_method fieldname do |parse=true|
+        parse ? get(fieldname) : get_string(fieldname)
       end
       define_method :"#{fieldname}!" do |parse=true|
-      parse ? get!(fieldname) : get_string!(fieldname)
+        parse ? get!(fieldname) : get_string!(fieldname)
       end
       define_method :"#{fieldname}=" do |value|
         set(fieldname, value)
