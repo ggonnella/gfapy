@@ -497,6 +497,21 @@ class RGFA::Line
   def validate_record_type_specific_info!
   end
 
+  def define_field_methods!
+    self::REQFIELDS.each do |fieldname|
+      define_method fieldname do |parse=true|
+      parse ? get(fieldname) : get_string(fieldname)
+      end
+      define_method :"#{fieldname}!" do |parse=true|
+      parse ? get!(fieldname) : get_string!(fieldname)
+      end
+      define_method :"#{fieldname}=" do |value|
+        set(fieldname, value)
+      end
+    end
+  end
+  private_class_method :define_field_methods!
+
 end
 
 # Error raised if the record_type is not one of RGFA::Line::RECORD_TYPES

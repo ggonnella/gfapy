@@ -8,4 +8,6 @@ class RGFA::Line::Header < RGFA::Line
     :VN => :Z
   }
 
+  define_field_methods!
+
 end

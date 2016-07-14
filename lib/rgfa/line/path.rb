@@ -10,6 +10,8 @@ class RGFA::Line::Path < RGFA::Line
     :cigars => :cgs,
   }
 
+  define_field_methods!
+
   # @note The field names are derived from the RGFA specification at:
   #   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#path-line
   #   and were made all downcase with _ separating words;

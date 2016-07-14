@@ -13,6 +13,8 @@ class RGFA::Line::Segment < RGFA::Line
     :KC => :i
   }
 
+  define_field_methods!
+
   # @raise if sequence length and LN tag are not consistent.
   def validate_length!
     if sequence != "*" and optional_fieldnames.include?(:LN)

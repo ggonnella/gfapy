@@ -17,6 +17,8 @@ class RGFA::Line::Containment < RGFA::Line
      :NM => :i,
   }
 
+  define_field_methods!
+
   include RGFA::SegmentReferences
 
 end

@@ -19,6 +19,8 @@ class RGFA::Line::Link < RGFA::Line
      :KC => :i,
   }
 
+  define_field_methods!
+
   include RGFA::SegmentReferences
 
   # Compares two links and determine their equivalence.
