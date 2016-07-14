@@ -58,7 +58,7 @@ class RGFA
     RGFA::Line::RECORD_TYPES.each {|rt| @lines[rt] = []}
     @segment_names = {}
     @path_names = {}
-    @c = RGFA::ConnectionInfo.new(@lines)
+    @c = RGFA::ConnectionInfo.new(@lines, @segment_names)
     @segments_first_order = false
     @validate = true
     @progress = false

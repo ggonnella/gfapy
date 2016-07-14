@@ -1,3 +1,5 @@
+require "set"
+
 #
 # Collection of hashes which allow fast retrieval of the lines of a GFA graph
 # which refer to a given segment.
@@ -13,10 +15,10 @@ class RGFA::ConnectionInfo
   # @return [RGFA::ConnectionInfo]
   # @param lines [Array] reference to RGFA instance @lines array
   #   (required by the #validate! and the #lines methods)
-  def initialize(lines)
+  def initialize(lines, segment_names)
     @lines = lines
-    @connect = {}
-    [:L,:C,:P].each {|rt| @connect[rt] = {}}
+    @segment_names = segment_names
+    @virtual_segments = Hash.new
   end
 
   # Add a reference to a link/containment or path to connection infos
@@ -31,22 +33,16 @@ class RGFA::ConnectionInfo
   #   nil for # paths
   # @return [void]
   def add(rt, value, sn, dir=nil, o=nil)
-    rt = rt.to_sym
-    sn = sn.to_sym
-    raise if value.nil?
-    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    connections = get_connections_hash(sn)
     if rt == :P
-      @connect[rt][sn]||=[]
-      @connect[rt][sn] << value
+      connections[rt] ||= Set.new
+      connections[:P] << value
     else
-      raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
-      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
-      @connect[rt][sn]||={}
-      @connect[rt][sn][dir]||={}
-      @connect[rt][sn][dir][o]||=[]
-      @connect[rt][sn][dir][o] << value
+      connections[rt] ||= {}
+      connections[rt][dir] ||= {}
+      connections[rt][dir][o] ||= Set.new
+      connections[rt][dir][o] << value
     end
-    validate! if $DEBUG
     nil
   end
 
@@ -66,23 +62,23 @@ class RGFA::ConnectionInfo
   #               # => rm link/cont. ref from sn in both :+ and :- orient
   #
   def delete(rt, value, sn, dir=nil, o=nil)
-    rt = rt.to_sym
-    sn = sn.to_sym
-    raise if value.nil?
-    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    connections = get_connections_hash(sn)
+    c_rt = connections[rt]
+    return if c_rt.nil?
     if rt == :P
-      @connect[rt].fetch(sn,[]).delete(value)
+      c_rt.delete(value)
     else
-      raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
       if o.nil?
         delete(rt, value, sn, dir, :+)
         delete(rt, value, sn, dir, :-)
         return
       end
-      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
-      @connect[rt].fetch(sn,{}).fetch(dir,{}).fetch(o,[]).delete(value)
+      c_rt_dir = c_rt[dir]
+      return if c_rt_dir.nil?
+      c_rt_dir_o = c_rt_dir[o]
+      return if c_rt_dir_o.nil?
+      c_rt_dir_o.delete(value)
     end
-    validate! if $DEBUG
     nil
   end
 
@@ -91,15 +87,9 @@ class RGFA::ConnectionInfo
   # @param new_sn [RGFA::Line::Segment, String] the new segment instance or name
   # @return [void]
   def rename_segment(sn, new_sn)
-    sn = sn.to_sym
-    new_sn = new_sn.to_sym
-    [:P, :L, :C].each do |rt|
-      if @connect[rt].has_key?(sn)
-        @connect[rt][new_sn] = @connect[rt][sn]
-        @connect[rt].delete(sn)
-      end
+    if @virtual_segments.has_key?(sn)
+      @virtual_segments[new_sn] = @virtual_segments.delete(sn)
     end
-    validate! if $DEBUG
     nil
   end
 
@@ -107,7 +97,7 @@ class RGFA::ConnectionInfo
   # @param sn [RGFA::Line::Segment, String] the segment instance or segment name
   # @return [void]
   def delete_segment(sn)
-    [:P, :L, :C].each {|rt| @connect[rt].delete(sn.to_sym)}
+    @virtual_segments.delete(sn)
     nil
   end
 
@@ -127,16 +117,17 @@ class RGFA::ConnectionInfo
   #   type for all lines referring to the segment and respecting the +dir+
   #   and +o+ conditions
   def find(rt, sn, dir = nil, o = nil)
-    rt = rt.to_sym
-    sn = sn.to_sym
-    raise "RT invalid: #{rt.inspect} "if ![:L, :C, :P].include?(rt)
+    connections = get_connections_hash(sn)
+    c_rt = connections[rt]
+    return [] if c_rt.nil?
     if rt == :P
-      @connect[rt].fetch(sn,[])
+      return c_rt
     else
-      raise "dir unknown: #{dir.inspect}" if dir != :from and dir != :to
       return find(rt,sn,dir,:+)+find(rt,sn,dir,:-) if o.nil?
-      raise "o unknown: #{o.inspect}" if o != :+ and o != :-
-      @connect[rt].fetch(sn,{}).fetch(dir,{}).fetch(o,[])
+      c_rt_dir = c_rt[dir]
+      return [] if c_rt_dir.nil?
+      c_rt_dir_o = c_rt_dir[o]
+      return c_rt_dir_o.nil? ? [] : c_rt_dir_o.to_a
     end
   end
 
@@ -163,6 +154,7 @@ class RGFA::ConnectionInfo
   # @return [void]
   #
   def validate!
+    return true
     @connect[:P].keys.each do |sn|
       @connect[:P][sn].each do |li|
         l = @lines[:P][li]
@@ -191,6 +183,31 @@ class RGFA::ConnectionInfo
       end
     end
     nil
+  end
+
+  private
+
+  def get_connections_hash(sn)
+    sn = sn.to_sym
+    snum = @segment_names[sn]
+    connections = nil
+    if snum.nil?
+      connections = @virtual_segments[sn]
+      if connections.nil?
+        connections = {}
+        @virtual_segments[sn] = connections
+      end
+    else
+      s = @lines[:S][snum]
+      connections = @virtual_segments.delete(sn)
+      if connections
+        s.connections = connections
+      else
+        s.connections ||= {}
+        connections = s.connections
+      end
+    end
+    return connections
   end
 
 end
