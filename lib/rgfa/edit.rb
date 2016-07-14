@@ -46,20 +46,20 @@ module RGFA::Edit
       i = @segment_names[old_name.to_sym]
       @segment_names.delete(old_name.to_sym)
       @segment_names[new_name.to_sym] = i
-      @c.rename_segment(old_name, new_name)
       [:L,:C].each do |rt|
         [:from,:to].each do |dir|
-          @c.lines(rt, new_name, dir).each do |l|
+          @c.lines(rt, old_name, dir).each do |l|
             l.send(:"#{dir}=", new_name)
           end
         end
       end
-      paths_with(new_name).each do |l|
+      paths_with(old_name).each do |l|
         l.segment_names = l.segment_names.map do |sn, o|
           sn = new_name if sn == old_name
           [sn, o].join("")
         end.join(",")
       end
+      @c.rename_segment(old_name, new_name)
     else
       pt = path!(old_name)
       i = @path_names[old_name.to_sym]

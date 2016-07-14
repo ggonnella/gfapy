@@ -106,8 +106,6 @@ class RGFA::Line::Segment < RGFA::Line
     name.to_sym
   end
 
-  attr_accessor :connections
-
   private
 
   def validate_record_type_specific_info!
