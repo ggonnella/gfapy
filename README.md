@@ -11,3 +11,7 @@ traversing all links outgoing from or incoming to a segment), to search for
 elements (e.g. which links connect two segments) and to manipulate the
 graph (e.g. to eliminate a link or a segment or to duplicate a segment
 distributing the read counts evenly on the copies).
+
+The API documentation is available as pdf under
+https//github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.1.pdf
+or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
