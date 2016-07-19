@@ -234,6 +234,16 @@ class RGFA
     end
   end
 
+  # Compares two RGFA instances
+  # @return [Boolean] are the lines of the two instances equivalent?
+  def ==(other)
+    segments == other.segments and
+      links == other.links and
+      containments == other.containments and
+      headers == other.headers and
+      paths == other.paths
+  end
+
   private
 
   def lenstats
