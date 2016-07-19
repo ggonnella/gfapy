@@ -9,7 +9,7 @@ class RGFA::SegmentInfo < Array
 
   # Check that the elements of the array are compatible with the definition.
   #
-  # @!macro[new] segment_info_validation_errors
+  # @!macro [new] segment_info_validation_errors
   #   @raise [RGFA::SegmentInfo::InvalidSizeError] if size is not 2
   #   @raise [RGFA::SegmentInfo::InvalidAttributeError] if second element
   #     is not a valid info

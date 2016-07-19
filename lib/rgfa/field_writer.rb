@@ -39,7 +39,7 @@ module RGFA::FieldWriter
     return optfield ? "#{fieldname}:#{datatype}:#{s}" : s
   end
 
-  # @!macro[new] to_gfa_datastring
+  # @!macro [new] to_gfa_datastring
   #   Representation of the data for GFA fields; this method
   #   does not automatically validate the string.
   #   @return [String]
@@ -48,7 +48,7 @@ module RGFA::FieldWriter
     to_s
   end
 
-  # @!macro[new] gfa_datatype
+  # @!macro [new] gfa_datatype
   #   Optional field GFA datatype to use, if none is provided
   #   @return [RGFA::Line::FIELD_DATATYPE]
   def gfa_datatype; :Z; end

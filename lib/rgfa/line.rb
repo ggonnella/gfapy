@@ -1,7 +1,7 @@
 #
 # Generic representation of a record of a RGFA file.
 #
-# @!macro[new] rgfa_line
+# @!macro [new] rgfa_line
 #   @note
 #     This class is usually not meant to be directly initialized by the user;
 #     initialize instead one of its child classes, which define the concrete
@@ -38,7 +38,7 @@ class RGFA::Line
 
   # @!macro rgfa_line
   #
-  # @param fields [Array<String>] the content of the line; the
+  # @param data [Array<String>] the content of the line; the
   #   array content is not preserved by this method (the array
   #   will be empty after calling this method)
   # @param validate [Boolean] <i>(default: +true+)</i>
@@ -177,7 +177,7 @@ class RGFA::Line
     v.nil? ? nil : v[1]
   end
 
-  # @!macro[new] get_string
+  # @!macro [new] get_string
   #   Returns the string representation of the content of a field.
   #   The datatype is either predefined (required fields,
   #   optional fields), manually set (see #set_datatype)
@@ -261,7 +261,7 @@ class RGFA::Line
   end
 
   # Value of a field
-  # @param field_name [#to_sym] name of the field
+  # @param fieldname [#to_sym] name of the field
   # @return [Object,nil] value of the field
   #   or +nil+ if field is not defined
   def get(fieldname)
@@ -274,13 +274,13 @@ class RGFA::Line
   end
 
   # Value of a field, raising an exception if it is not defined
-  # @param field_name [#to_sym] name of the field
+  # @param fieldname [#to_sym] name of the field
   # @raise [RGFA::Line::TagMissingError] if field is not defined
   # @return [Object,nil] value of the field
-  def get!(field_name)
-    v = get(field_name)
+  def get!(fieldname)
+    v = get(fieldname)
     raise RGFA::Line::TagMissingError,
-      "No value defined for tag #{field_name}" if v.nil?
+      "No value defined for tag #{fieldname}" if v.nil?
     return v
   end
 
