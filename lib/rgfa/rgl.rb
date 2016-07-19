@@ -35,12 +35,12 @@ begin
           end
         end
         g.adjacent_iterator do |oriented_segment, block|
-          @c.lines("L", oriented_segment.name, :from,
+          @c.lines(:L, oriented_segment.name, :from,
               oriented_segment.orient).each do |l|
             os = [segment(l.to), l.to_orient].to_oriented_segment
             block.call(os)
           end
-          @c.lines("L", oriented_segment.name, :to,
+          @c.lines(:L, oriented_segment.name, :to,
               RGFA::OrientedSegment.other(oriented_segment.orient)).each do |l|
             os = [segment(l.from), l.from_orient].to_oriented_segment
             block.call(os.other_orient)
@@ -61,13 +61,13 @@ begin
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
         g.adjacent_iterator do |s, bl|
-          @c.lines("L", s, :from, :+).each do |l|
+          @c.lines(:L, s, :from, :+).each do |l|
             if l.to_orient == :-
               raise "Graph contains links with segments in reverse orientations"
             end
             bl.call(segment(l.to))
           end
-          if @c.lines("L", s, :from, :-).size > 0
+          if @c.lines(:L, s, :from, :-).size > 0
             raise "Graph contains links with segments in reverse orientations"
           end
         end
@@ -105,19 +105,56 @@ begin
         if not g.directed?
           raise "#{g} is not a directed graph"
         end
-        g.each_vertex do |v|
-          v = v.to_oriented_segment rescue [v, :+].to_oriented_segment
-          v = v.segment.to_rgfa_line rescue ["S",v.segment,"*"].to_rgfa_line
-          gfa << v unless gfa.segment_names.include?(v.name)
-        end
+        g.each_vertex {|v| add_segment_if_new(gfa, v)}
         g.each_edge do |s, t|
-          s = s.to_oriented_segment rescue [s, :+].to_oriented_segment
-          s[0] = s[0].to_rgfa_line rescue s[0]
-          t = t.to_oriented_segment rescue [t, :+].to_oriented_segment
-          t[0] = t[0].to_rgfa_line rescue t[0]
-          gfa << ["L", s.name, s.orient, t.name, t.orient, "*"].to_rgfa_line
+          gfa << RGFA::Line::Link.new(segment_name_and_orient(s) +
+                                      segment_name_and_orient(t) +
+                                      ["*"])
         end
         gfa
+      end
+
+      private
+
+      def add_segment_if_new(gfa, v)
+        # RGFA::OrientedSegment or GFA::GraphVertex
+        v = v.segment if v.respond_to?(:segment)
+        if v.kind_of?(Symbol)
+          # segment name as symbol
+          return if gfa.segment_names.include?(v)
+          v = RGFA::Line::Segment.new([v.to_s, "*"])
+        elsif v.kind_of?(String)
+          a = v.split("\t")
+          if a[0] == "S"
+            # string representation of segment
+            return if gfa.segment_names.include?(a[1].to_sym)
+            v = RGFA::Line::Segment.new(a[1..-1])
+          else
+            # segment name as string
+            return if gfa.segment_names.include?(v.to_sym)
+            v = RGFA::Line::Segment.new([v, "*"])
+          end
+        end
+        return if gfa.segment_names.include?(v.name)
+        gfa << v
+      end
+
+      def segment_name_and_orient(s)
+        # default orientation
+        o = s.respond_to?(:orient) ? s.orient.to_s : "+"
+        # RGFA::Line::Segment (also embedded in RGFA::OrientedSegment)
+        if s.respond_to?(:name)
+          s = s.name.to_s
+        elsif s.respond_to?(:segment)
+          # GFA::GraphVertex
+          s = s.segment.to_s
+        elsif s.respond_to?(:split)
+          a = s.split("\t")
+          s = a[1] if a[0] == "S"
+        else
+          s = s.to_s
+        end
+        return s, o
       end
 
     end
