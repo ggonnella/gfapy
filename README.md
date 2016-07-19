@@ -13,5 +13,15 @@ graph (e.g. to eliminate a link or a segment or to duplicate a segment
 distributing the read counts evenly on the copies).
 
 The API documentation is available as pdf under
-https//github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.1.pdf
+https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.1.pdf
 or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
+
+= References
+
+Giorgio Gonnella, Stefan Kurtz, "RGFA: powerful and convenient handling of
+assembly graphs" (2016)
+
+The manuscript describing the library has been accepted for presentation at
+the German Conference on Bioinformatics 2016. The PeerJ preprint will be linked
+here, as soon as available.
+
