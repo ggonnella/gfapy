@@ -1,6 +1,6 @@
 require "rake/testtask"
 
-$rgfaversion="1.0.1"
+$rgfaversion="1.1"
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
