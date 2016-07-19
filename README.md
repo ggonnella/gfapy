@@ -16,6 +16,9 @@ The API documentation is available as pdf under
 https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.1.pdf
 or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
 
+The RGFATools gem is available at
+https://github.com/ggonnella/rgfatools/.
+
 = References
 
 Giorgio Gonnella, Stefan Kurtz, "RGFA: powerful and convenient handling of
