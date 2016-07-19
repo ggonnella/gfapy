@@ -19,7 +19,7 @@ or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
 The RGFATools gem is available at
 https://github.com/ggonnella/rgfatools/.
 
-= References
+## References
 
 Giorgio Gonnella, Stefan Kurtz, "RGFA: powerful and convenient handling of
 assembly graphs" (2016)
