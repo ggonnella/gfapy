@@ -33,6 +33,9 @@ class RGFA::Line
   # A symbol representing a valid datatype
   FIELD_DATATYPE = OPTFIELD_DATATYPE + REQFIELD_DATATYPE
 
+  # data types which are parsed only on access
+  DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
+
   # @!macro rgfa_line
   #
   # @param fields [Array<String>] the content of the line; the
@@ -265,7 +268,7 @@ class RGFA::Line
     v = @data[fieldname.to_sym]
     return nil if v.nil?
     if not_casted?(v[0], v[1])
-      v[0] = v[0].parse_datastring(v[1], validate: false, lazy: false)
+      v[0] = v[0].parse_datastring(v[1])
     end
     return v[0]
   end
@@ -412,6 +415,12 @@ class RGFA::Line
     value.kind_of?(String) and not [:A, :Z, :seq, nil].include?(datatype)
   end
 
+  def init_field_value(n ,t, s)
+    s.validate_datastring(t, fieldname: n) if @validate
+    s = s.parse_datastring(t) unless DELAYED_PARSING_DATATYPES.include?(t)
+    @data[n] = [s, t]
+  end
+
   def initialize_required_fields(strings)
     if strings.size < n_required_fields
       raise RGFA::Line::RequiredFieldMissingError,
@@ -419,11 +428,8 @@ class RGFA::Line
         "#{strings.size}) found\n#{strings.inspect}"
     end
     n_required_fields.times do |i|
-      s = strings.shift
       n = self.class::REQFIELDS[i]
-      t = self.class::DATATYPE[n]
-      s = s.parse_datastring(t, validate: @validate, lazy: true, fieldname: n)
-      @data[n] = [s, t]
+      init_field_value(n, self.class::DATATYPE[n], strings.shift)
     end
   end
 
@@ -444,8 +450,7 @@ class RGFA::Line
 
   def initialize_optional_fields(strings)
     while (s = strings.shift)
-      n, t, s = s.parse_optfield(parse_datastring: false,
-                                 validate_datastring: false)
+      n, t, s = s.parse_optfield
       if @validate
         if @data.has_key?(n)
           raise RGFA::Line::DuplicatedOptfieldNameError,
@@ -464,8 +469,7 @@ class RGFA::Line
           end
         end
       end
-      s = s.parse_datastring(t, validate: @validate, lazy: true, fieldname: n)
-      @data[n] = [s, t]
+      init_field_value(n, t, s)
     end
   end
 
