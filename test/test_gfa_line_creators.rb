@@ -134,7 +134,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     gfa << "H\taa:i:12\tab:Z:test1"
     gfa << "H\tac:Z:test2"
-    gfa.set_header_field(:VN, "2.0", replace: true)
+    gfa.set_header_field(:VN, "2.0", existing: :replace)
     assert_equal(
       [
         "H\tVN:Z:2.0",
@@ -164,7 +164,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
         "H\tac:Z:test2",
       ],
       gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 16, replace: true)
+    gfa.set_header_field(:aa, 16, existing: :replace)
     assert_equal(
       [
         "H\tVN:Z:2.0",
@@ -182,7 +182,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
         "H\tac:Z:test2",
       ],
       gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 16, duplicate: true)
+    gfa.set_header_field(:aa, 16, existing: :duplicate)
     assert_equal(
       [
         "H\tVN:Z:2.0",

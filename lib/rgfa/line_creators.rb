@@ -30,19 +30,22 @@ module RGFA::LineCreators
 
   # Sets the header data
   # @param headers_data [Hash{Symbol:Object}] data contained in the header
-  #   fields; the special key :multiple_values shall contain an array of field
-  #   symbols for which multiple values shall be defined in multiple lines;
-  #   in this case the values must be summarized in an array
+  #   fields; the key +:multiple_values+ has a special meaning,
+  #   see below.
+  # <b>Multiple definitions of optional fields</b>
+  #   The specification does not forbid that different header line contain
+  #   the same optional field. If this is desired, then the +headers_data+
+  #   for the optional field shall be set to an array, and
+  #   +headers_data[:multiple_values]+ shall be an array containing the tag
+  #   name.
   # @return [RGFA] self
   def set_headers(headers_data)
     rm(:headers)
     multiple_values = headers_data.delete(:multiple_values)
     multiple_values ||= []
     headers_data.each do |of, values|
-      values = [values] if !multiple_values.include?(of)
-      if !values.kind_of?(Array)
-        raise "Field #{of} listed in multiple_values key, but is not an array"
-      end
+      values = [values] if !multiple_values.include?(of) or
+                           !values.kind_of?(Array)
       values.each do |value|
         h = "H".to_rgfa_line
         h.send(:"#{of}=", value)
@@ -54,26 +57,25 @@ module RGFA::LineCreators
 
   # Sets the value of a field in the header
   #
-  # @param replace [Boolean] if true and the field already exists, the
-  #   value is replaced by +value+ (regardless of +duplicate+)
-  # @param duplicate [Boolean] if true and +replace+ is not set
-  #   and the field already exists, the
-  #   value is added, eventually creating an array of values
+  # @param existing [Symbol] <i>(Default: +:ignore+)</i>
+  #   what shall be done if a field already
+  #   exist; +:replace+: the previous value is replaced by +value+;
+  #   +:duplicate+: if the previous value is an array, +value+ is
+  #   added to it, otherwise the field is set to +[previous value, value]+;
+  #   +:ignore+ (and anything else): the new value is ignored.
   #
   # @return [RGFA] self
-  def set_header_field(field, value, replace: false, duplicate: false)
-    # todo: summarize replace and duplicate in a single option key with three
-    #       possible values
+  def set_header_field(field, value, existing: :ignore)
     h = headers_data
-    if !h.has_key?(field) or replace
+    if !h.has_key?(field) or (existing == :replace)
       h[field] = value
       h[:multiple_values].delete(field)
     else
       if h[:multiple_values].include?(field)
-        return nil if h[field].include?(value) and !duplicate
+        return nil if h[field].include?(value) and (existing != :duplicate)
         h[field] << value
       else
-        return nil if h[field] == value and !duplicate
+        return nil if h[field] == value and (existing != :duplicate)
         h[field] = [h[field], value]
         h[:multiple_values] << field
       end
