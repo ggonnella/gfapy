@@ -2,6 +2,7 @@ require "json"
 require_relative "byte_array"
 require_relative "numeric_array"
 require_relative "cigar"
+require_relative "error"
 
 #
 # Methods to parse the string representations of the GFA fields
@@ -57,10 +58,10 @@ module RGFA::FieldParser
 end
 
 # Error raised if the field content has an invalid format
-class RGFA::FieldParser::FormatError < TypeError; end
+class RGFA::FieldParser::FormatError < RGFA::Error; end
 
 # Error raised if an unknown datatype symbol is used
-class RGFA::FieldParser::UnknownDatatype < TypeError; end
+class RGFA::FieldParser::UnknownDatatypeError < RGFA::Error; end
 
 class String
   include RGFA::FieldParser

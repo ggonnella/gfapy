@@ -68,7 +68,7 @@ class RGFA::Line
   #
   def initialize(data, validate: true)
     unless self.class.const_defined?("RECORD_TYPE")
-      raise "This class shall not be directly instantiated"
+      raise RuntimeError, "This class shall not be directly instantiated"
     end
     @validate = validate
     @data = {}
@@ -157,8 +157,8 @@ class RGFA::Line
   # the field type
   #
   # @param fieldname [#to_sym] the tag name of the field to validate
-  # @raise [Exception] if the content of the field is not valid, according
-  #   to its required type
+  # @raise [RGFA::FieldParser::FormatError] if the content of the field is
+  #   not valid, according to its required type
   # @return [nil]
   def validate_field!(fieldname)
     fieldname = fieldname.to_sym
@@ -396,7 +396,7 @@ class RGFA::Line
   end
 
   # Validate the RGFA::Line instance
-  # @raise if any field content is not valid
+  # @raise [RGFA::FieldParser::FormatError] if any field content is not valid
   # @return [void]
   def validate!
     @data.each_pair do |fieldname, field|
@@ -538,30 +538,30 @@ class RGFA::Line
 end
 
 # Error raised if the record_type is not one of RGFA::Line::RECORD_TYPES
-class RGFA::Line::UnknownRecordTypeError      < TypeError;     end
+class RGFA::Line::UnknownRecordTypeError      < RGFA::Error;     end
 
 # Error raised if an invalid datatype symbol is found
-class RGFA::Line::UnknownDatatype             < TypeError;     end
+class RGFA::Line::UnknownDatatype             < RGFA::Error;     end
 
 # Error raised if an invalid fieldname symbol is found
-class RGFA::Line::FieldnameError              < NameError;     end
+class RGFA::Line::FieldnameError              < RGFA::Error;     end
 
 # Error raised if optional tag is not present
-class RGFA::Line::TagMissingError             < NoMethodError; end
+class RGFA::Line::TagMissingError             < RGFA::Error; end
 
 # Error raised if too less required fields are specified.
-class RGFA::Line::RequiredFieldMissingError   < ArgumentError; end
+class RGFA::Line::RequiredFieldMissingError   < RGFA::Error; end
 
 # Error raised if a non-predefined optional field uses upcase
 # letters.
-class RGFA::Line::CustomOptfieldNameError     < ArgumentError; end
+class RGFA::Line::CustomOptfieldNameError     < RGFA::Error; end
 
 # Error raised if an optional field tag name is used more than once.
-class RGFA::Line::DuplicatedOptfieldNameError < ArgumentError; end
+class RGFA::Line::DuplicatedOptfieldNameError < RGFA::Error; end
 
 # Error raised if the type of a predefined optional field does not
 # respect the specified type.
-class RGFA::Line::PredefinedOptfieldTypeError < TypeError;     end
+class RGFA::Line::PredefinedOptfieldTypeError < RGFA::Error;     end
 
 #
 # Require the child classes

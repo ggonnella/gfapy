@@ -83,8 +83,10 @@ module RGFA::Traverse
   # @return [RGFA] self
   # @see #merge_linear_paths
   def merge_linear_path(segpath, **options)
-    raise if segpath.size < 2
-    raise if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
+    return if segpath.size < 2
+    if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
+      raise ArgumentError, "The specified path is not linear"
+    end
     merged, first_reversed, last_reversed =
                               create_merged_segment(segpath, options)
     self << merged
@@ -343,7 +345,8 @@ module RGFA::Traverse
       elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
         cut = l.overlap[0][0]
       else
-        raise "Overlaps contaning other operations than M are not supported"
+        raise ArgumentError,
+          "Overlaps contaning other operations than M are not supported"
       end
       total_cut += cut
       last_reversed = (b[1] == :E)
@@ -358,7 +361,8 @@ module RGFA::Traverse
       if merged.LN.nil?
         merged.LN = merged.sequence.length
       elsif @validate and merged.LN != merged.sequence.length
-        raise "Computed sequence length #{merged.sequence.length} "+
+        raise RGFA::Line::Segment::InconsistentLengthError,
+              "Computed sequence length #{merged.sequence.length} "+
               "and computed LN #{merged.LN} differ"
       end
     end

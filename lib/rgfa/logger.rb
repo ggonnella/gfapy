@@ -21,9 +21,11 @@ class RGFA::Logger
   def initialize(verbose_level: 1, channel: STDERR, prefix: "#")
     @progress = false
     if !verbose_level.kind_of?(Integer)
-      raise "verbose_level must be an Integer"
+      raise ArgumentError, "verbose_level must be an Integer"
     end
-    raise "channel must provide a puts method" if !channel.respond_to?(:puts)
+    if !channel.respond_to?(:puts)
+      raise TypeError, "channel must provide a puts method"
+    end
     @channel = channel
     @pfx = prefix
     @verbose_level = verbose_level
@@ -49,7 +51,9 @@ class RGFA::Logger
   #  - part = 1      => output only total elapsed time
   # @return [void]
   def enable_progress(part: 0.1)
-    raise "part must be in range [0..1]" if part < 0 or part > 1
+    if part < 0 or part > 1
+      raise ArgumentError, "part must be in range [0..1]"
+    end
     @progress = true
     @part = part
     @channel.puts "#@pfx Progress logging enabled" if @verbose_level > 0

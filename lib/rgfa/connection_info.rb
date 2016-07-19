@@ -1,3 +1,5 @@
+require_relative "error.rb"
+
 #
 # Collection of hashes which allow fast retrieval of the lines of a GFA graph
 # which refer to a given segment.
@@ -155,10 +157,13 @@ class RGFA::ConnectionInfo
 
   # Validate the information in connection info (useful for debugging).
   #
-  # @raise if any path/link/containment was deleted from +@lines+
-  # @raise if any link/containment field (from/from_orient/to/to_orient) is not
+  # @raise [RGFA::ConnectionInfo::ValidationError]
+  #   if any path/link/containment was deleted from +@lines+
+  # @raise [RGFA::ConnectionInfo::ValidationError]
+  #   if any link/containment field (from/from_orient/to/to_orient) is not
   #   consistent with the stored information
-  # @raise if the paths segment name field is not consistent
+  # @raise [RGFA::ConnectionInfo::ValidationError]
+  #   if the paths segment name field is not consistent
   #   with the stored information
   # @return [void]
   #
@@ -167,7 +172,8 @@ class RGFA::ConnectionInfo
       @connect[:P][sn].each do |li|
         l = @lines[:P][li]
         if l.nil? or !l.segment_names.map{|s,o|s.to_sym}.include?(sn)
-          raise "Error in connect\n"+
+          raise RGFA::ConnectionInfo::ValidationError,
+            "Error in connect\n"+
             "@connect[P][#{sn}]=[#{li},..]\n"+
             "@links[P][#{li}]=#{l.nil? ? l.inspect : l.to_s}"
         end
@@ -181,7 +187,8 @@ class RGFA::ConnectionInfo
               l = @lines[rt][li]
               if l.nil? or l.send(dir).to_sym != sn or
                    l.send(:"#{dir}_orient") != o
-                raise "Error in connect\n"+
+                raise RGFA::ConnectionInfo::ValidationError,
+                  "Error in connect\n"+
                   "@connect[#{rt}][#{sn}][#{dir.inspect}][#{o}]=[#{li},..]\n"+
                   "@links[#{rt}][#{li}]=#{l.nil? ? l.inspect : l.to_s}"
               end
@@ -194,3 +201,6 @@ class RGFA::ConnectionInfo
   end
 
 end
+
+# Error raised if the validation of the connection info failed
+class RGFA::ConnectionInfo::ValidationError < RGFA::Error; end

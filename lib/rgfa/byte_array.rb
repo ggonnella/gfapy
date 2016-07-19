@@ -1,3 +1,5 @@
+require_relative "error.rb"
+
 #
 # Array of positive integers <= 255;
 # representation of the data contained in an H field
@@ -39,7 +41,7 @@ class RGFA::ByteArray < Array
 end
 
 # Exception raised if any value is not a positive integer <= 255
-class RGFA::ByteArray::ValueError < RangeError; end
+class RGFA::ByteArray::ValueError < RGFA::Error; end
 
 # Method to create a RGFA::ByteArray from an Array
 class Array

@@ -3,7 +3,8 @@ module RGFA::SegmentReferences
 
   # The other segment of a link/containment
   # @param segment [String, RGFA::Line::Segment] segment name or instance
-  # @raise if segment is not involved in link/containment
+  # @raise [RGFA::LineMissingError]
+  #   if segment is not involved in link/containment
   # @return [String] the name of the other segment of link/containment;
   #   if circular, then +segment+
   def other(segment)
@@ -14,7 +15,8 @@ module RGFA::SegmentReferences
     elsif segment_name == to
       from
     else
-      raise "Link #{self} does not involve segment #{segment_name}"
+      raise RGFA::LineMissingError,
+        "Link #{self} does not involve segment #{segment_name}"
     end
   end
 

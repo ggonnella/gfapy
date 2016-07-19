@@ -15,11 +15,13 @@ class RGFA::Line::Segment < RGFA::Line
 
   define_field_methods!
 
-  # @raise if sequence length and LN tag are not consistent.
+  # @raise [RGFA::Line::Segment::InconsistentLengthError]
+  #    if sequence length and LN tag are not consistent.
   def validate_length!
     if sequence != "*" and optional_fieldnames.include?(:LN)
       if self.LN != sequence.length
-        raise "Length in LN tag (#{self.LN}) "+
+        raise RGFA::Line::Segment::InconsistentLengthError,
+          "Length in LN tag (#{self.LN}) "+
           "is different from length of sequence field (#{sequence.length})"
       end
     end
@@ -42,8 +44,8 @@ class RGFA::Line::Segment < RGFA::Line
 
   # @!macro length
   # @!macro [new] length_needed
-  #   @raise [RGFA::Line::Segment::UndefinedLengthError] if not an LN tag and the
-  #     sequence is "*"
+  #   @raise [RGFA::Line::Segment::UndefinedLengthError] if not an LN tag and
+  #     the sequence is "*"
   # @see #length
   def length!
     l = self.length()
@@ -115,4 +117,7 @@ class RGFA::Line::Segment < RGFA::Line
 end
 
 # Error raised if length of segment cannot be computed
-class RGFA::Line::Segment::UndefinedLengthError < ArgumentError; end
+class RGFA::Line::Segment::UndefinedLengthError < RGFA::Error; end
+
+# Error raised if length of segment and LN are not consistent
+class RGFA::Line::Segment::InconsistentLengthError < RGFA::Error; end

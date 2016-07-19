@@ -33,9 +33,10 @@ module RGFA::LineDestructors
   # @return [RGFA] self
   def rm(x, *args)
     if x.kind_of?(RGFA::Line)
-      raise "One argument required if first RGFA::Line" if !args.empty?
+      raise ArgumentError,
+        "One argument required if first RGFA::Line" if !args.empty?
       case x.record_type
-      when :H then raise "Cannot remove single header lines"
+      when :H then raise ArgumentError, "Cannot remove single header lines"
       when :S then delete_segment(x)
       when :P then delete_path(x)
       when :L then delete_link(x)
@@ -46,7 +47,7 @@ module RGFA::LineDestructors
         if args.empty?
           delete_segment(x)
         elsif args.size != 3
-          raise "1 or 4 arguments required if first segment name"
+          raise ArgumentError, "1 or 4 arguments required if first segment name"
         else
           delete_containments_or_links(:C, x, args[0], args[1], args[2],
                                        nil, false)
@@ -54,22 +55,30 @@ module RGFA::LineDestructors
                                        nil, false)
         end
       elsif x.kind_of?(Symbol) and @path_names.has_key?(x)
-        raise "One argument required if first path name" if !args.empty?
+        if !args.empty?
+          raise ArgumentError, "One argument required if first path name"
+        end
         delete_path(x)
       elsif x == :sequences
-        raise "One argument required if first #{x.inspect}" if !args.empty?
+        if !args.empty?
+          raise ArgumentError, "One argument required if first #{x.inspect}"
+        end
         delete_sequences
       elsif x == :headers
-        raise "One argument required if first #{x.inspect}" if !args.empty?
+        if !args.empty?
+          raise ArgumentError, "One argument required if first #{x.inspect}"
+        end
         delete_headers
       elsif x == :alignments
-        raise "One argument required if first #{x.inspect}" if !args.empty?
+        if !args.empty?
+          raise ArgumentError, "One argument required if first #{x.inspect}"
+        end
         delete_alignments
       else
         if respond_to?(x)
           rm(send(x, *args))
         else
-          raise "Cannot remove #{x.inspect}"
+          raise ArgumentError, "Cannot remove #{x.inspect}"
         end
       end
     elsif x.kind_of?(String)
@@ -79,7 +88,7 @@ module RGFA::LineDestructors
     elsif x.nil?
       return self
     else
-      raise "Cannot remove #{x.inspect}"
+      raise ArgumentError, "Cannot remove #{x.inspect}"
     end
     return self
   end
@@ -91,7 +100,9 @@ module RGFA::LineDestructors
     segment_name = segment.kind_of?(RGFA::Line::Segment) ?
       segment.name : segment.to_sym
     i = @segment_names[segment_name]
-    raise ArgumentError, "No segment has name #{segment_name}" if i.nil?
+    if i.nil?
+      raise RGFA::LineMissingError, "No segment has name #{segment_name}"
+    end
     if cascade
       connected_segments(segment_name).each do |c|
         unconnect_segments(segment_name, c)
@@ -138,7 +149,7 @@ module RGFA::LineDestructors
       from_orient = from.from_orient
       from = from.from
     else
-      raise "To segment not specified" if to.nil?
+      raise ArgumentError, "To segment not specified" if to.nil?
     end
     delete_containments_or_links(:L, from, from_orient, to,
                                  to_orient, nil, true)
@@ -161,7 +172,7 @@ module RGFA::LineDestructors
       pos = from.pos
       from = from.from
     else
-      raise "To segment not specified" if to.nil?
+      raise ArgumentError, "To segment not specified" if to.nil?
     end
     delete_containments_or_links(:C, from, from_orient, to,
                                  to_orient, pos, true)

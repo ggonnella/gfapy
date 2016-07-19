@@ -1,3 +1,5 @@
+require_relative "error"
+
 # A segment or segment name plus an additional boolean attribute
 #
 # This class shall not be initialized directly.
@@ -8,16 +10,17 @@ class RGFA::SegmentInfo < Array
   # Check that the elements of the array are compatible with the definition.
   #
   # @!macro[new] segment_info_validation_errors
-  #   @raise [ArgumentError] if size is not 2
-  #   @raise [RGFA::SegmentInfo::InvalidAttribute] if second element
+  #   @raise [RGFA::SegmentInfo::InvalidSizeError] if size is not 2
+  #   @raise [RGFA::SegmentInfo::InvalidAttributeError] if second element
   #     is not a valid info
   # @return [void]
   def validate!
     if size != 2
-      raise ArgumentError, "Wrong n of elements, 2 expected (#{inspect})"
+      raise RGFA::SegmentInfo::InvalidSizeError,
+        "Wrong n of elements, 2 expected (#{inspect})"
     end
     if !self.class::ATTR.include?(self[1])
-      raise RGFA::SegmentInfo::InvalidAttribute,
+      raise RGFA::SegmentInfo::InvalidAttributeError,
         "Invalid attribute (#{self[1].inspect})"
     end
     return nil
@@ -48,7 +51,7 @@ class RGFA::SegmentInfo < Array
   def self.other(attribute)
     i = self::ATTR.index(attribute.to_sym)
     if i.nil?
-      raise RGFA::SegmentInfo::InvalidAttribute,
+      raise RGFA::SegmentInfo::InvalidAttributeError,
         "Invalid attribute (#{self[1].inspect})"
     end
     return self::ATTR[i-1]
@@ -76,8 +79,11 @@ class RGFA::SegmentInfo < Array
 
 end
 
+# Error raised if the size of the array is wrong
+class RGFA::SegmentInfo::InvalidSizeError < RGFA::Error; end
+
 # Error raised if an unknown value for attribute is used
-class RGFA::SegmentInfo::InvalidAttribute < ArgumentError; end
+class RGFA::SegmentInfo::InvalidAttributeError < RGFA::Error; end
 
 # A representation of a segment end
 class RGFA::SegmentEnd < RGFA::SegmentInfo

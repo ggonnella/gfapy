@@ -1,3 +1,5 @@
+require_relative "error.rb"
+
 #
 # Methods for the RGFA class, which allow to modify the content of the graph
 # without requiring complex graph traversal.
@@ -29,7 +31,8 @@ module RGFA::Edit
   # @param old_name [String] the name of the segment or path to rename
   # @param new_name [String] the new name for the segment or path
   #
-  # @raise if +new_name+ is already a segment or path name
+  # @raise[RGFA::DuplicatedLabelError]
+  #   if +new_name+ is already a segment or path name
   # @return [RGFA] self
   def rename(old_name, new_name)
     old_name = old_name.to_sym
@@ -38,7 +41,8 @@ module RGFA::Edit
     is_path = @path_names.has_key?(old_name.to_sym)
     is_segment = @segment_names.has_key?(old_name.to_sym)
     if !is_path and !is_segment
-      raise "#{old_name} is not a path or segment name"
+      raise RGFA::DuplicatedLabelError,
+        "#{old_name} is not a path or segment name"
     end
     if is_segment
       s = segment!(old_name)
@@ -127,7 +131,8 @@ module RGFA::Edit
     if copy_names.kind_of?(Array)
       return copy_names
     elsif !accepted.include?(copy_names)
-      raise "copy_names shall be an array of names or one of: "+
+      raise ArgumentError,
+        "copy_names shall be an array of names or one of: "+
         accepted.inspect
     end
     retval = []

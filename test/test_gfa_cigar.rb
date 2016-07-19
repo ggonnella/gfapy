@@ -12,7 +12,7 @@ class TestRGFACigar < Test::Unit::TestCase
   end
 
   def test_cigar_operations_of_invalid_cigar_string
-    assert_raises(TypeError){"12x1D2I".cigar_operations}
+    assert_raises(RGFA::CIGAR::ValueError){"12x1D2I".cigar_operations}
   end
 
 end

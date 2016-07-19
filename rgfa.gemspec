@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/byte_array.rb',
               'lib/rgfa/cigar.rb',
               'lib/rgfa/connection_info.rb',
+              'lib/rgfa/error.rb',
               'lib/rgfa/field_writer.rb',
               'lib/rgfa/field_parser.rb',
               'lib/rgfa/field_validator.rb',

@@ -14,7 +14,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_raises(RuntimeError) do
+    assert_raises(ArgumentError) do
       gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
     s = ["S\t0\tACGA",

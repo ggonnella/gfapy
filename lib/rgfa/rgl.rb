@@ -1,6 +1,7 @@
 begin
   require "rgl/adjacency"
   require "rgl/implicit"
+  require_relative "error"
 
   #
   # Conversion to RGL graphs
@@ -53,7 +54,7 @@ begin
     # Creates an RGL graph, assuming that all links orientations
     # are "+".
     #
-    # @raise [RuntimeError] if the graph contains any link where
+    # @raise [RGFA::RGL::ValueError] if the graph contains any link where
     #   from_orient or to_orient is :-
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
     #   where vertices are RGFA::Segment objects
@@ -63,12 +64,14 @@ begin
         g.adjacent_iterator do |s, bl|
           @c.lines(:L, s, :from, :+).each do |l|
             if l.to_orient == :-
-              raise "Graph contains links with segments in reverse orientations"
+              raise RGFA::RGL::ValueError,
+                "Graph contains links with segments in reverse orientations"
             end
             bl.call(segment(l.to))
           end
           if @c.lines(:L, s, :from, :-).size > 0
-            raise "Graph contains links with segments in reverse orientations"
+            raise RGFA::RGL::ValueError,
+              "Graph contains links with segments in reverse orientations"
           end
         end
         g.directed = true
@@ -95,15 +98,20 @@ begin
       #   - String, segment representation (e.g. "S\tsegment\t*")
       #   - String, valid segment name (e.g. "segment")
       #
+      #   @raise [RGFA::RGL::InvalidFormatError] if the graph cannot be
+      #     converted
+      #
       #   @return [RGFA] a new RGFA instance
       def from_rgl(g)
         gfa = RGFA.new
         if not (g.respond_to?(:each_vertex) and
                 g.respond_to?(:each_edge))
-          raise "#{g} is not a valid RGL graph"
+          raise RGFA::RGL::InvalidFormatError,
+            "#{g} is not a valid RGL graph"
         end
         if not g.directed?
-          raise "#{g} is not a directed graph"
+          raise RGFA::RGL::InvalidFormatError,
+            "#{g} is not a directed graph"
         end
         g.each_vertex {|v| add_segment_if_new(gfa, v)}
         g.each_edge do |s, t|
@@ -169,6 +177,12 @@ begin
     end
 
   end
+
+  # Exception raised if conversion is impossible due to unexpected values
+  class RGFA::RGL::ValueError < RGFA::Error; end
+
+  # Exception raised if conversion is impossible due to general format problems
+  class RGFA::RGL::InvalidFormatError < RGFA::Error; end
 
 rescue LoadError
 

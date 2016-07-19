@@ -1,3 +1,5 @@
+require_relative "error"
+
 #
 # A numeric array representable using the data type B of the GFA specification
 #
@@ -37,7 +39,7 @@ class RGFA::NumericArray < Array
 
   # Validate the numeric array
   #
-  # @raise RGFA::NumericArray::ValueError if the array is not valid
+  # @raise [RGFA::NumericArray::ValueError] if the array is not valid
   def validate!
     compute_subtype
   end
@@ -51,7 +53,7 @@ class RGFA::NumericArray < Array
   # otherwise a signed subtype.
   # In all other cases an exception is raised.
   #
-  # @raise RGFA::NumericArray::ValueError if the array is not a valid numeric
+  # @raise [RGFA::NumericArray::ValueError] if the array is not a valid numeric
   #   array
   # @return [RGFA::NumericArray::SUBTYPE]
   def compute_subtype
@@ -121,10 +123,10 @@ end
 
 # Exception raised if a value in a numeric array is not compatible
 # with the selected subtype
-class RGFA::NumericArray::ValueError < RangeError; end
+class RGFA::NumericArray::ValueError < RGFA::Error; end
 
 # Exception raised if an invalid subtype code is found
-class RGFA::NumericArray::TypeError < ArgumentError; end
+class RGFA::NumericArray::TypeError < RGFA::Error; end
 
 #
 # Method to create a numeric array from an array
@@ -163,14 +165,15 @@ class String
     if integer
       range = RGFA::NumericArray::SUBTYPE_RANGE[subtype]
     elsif !RGFA::NumericArray::SUBTYPE.include?(subtype)
-      raise RGFA::NumericArray::TypeRror, "Subtype #{subtype} unknown"
+      raise RGFA::NumericArray::TypeError, "Subtype #{subtype} unknown"
     end
     elems.map do |e|
       begin
         if integer
           e = Integer(e)
           if validate and not range.include?(e)
-            raise "NumericArray: value is outside of subtype #{subtype} range\n"+
+            raise "NumericArray: "+
+                  "value is outside of subtype #{subtype} range\n"+
                   "Value: #{e}\n"+
                   "Range: #{range.inspect}\n"+
                   "Content: #{inspect}"

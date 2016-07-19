@@ -1,3 +1,5 @@
+require_relative "field_parser"
+
 #
 # Methods to validate the string representations of the GFA fields data
 #
@@ -32,7 +34,8 @@ module RGFA::FieldValidator
   #   the regexp for the provided datatype
   # @return [void]
   def validate_datastring(datatype, fieldname: nil)
-    regexp = DATASTRING_VALIDATION_REGEXP.fetch(datatype)
+    regexp = DATASTRING_VALIDATION_REGEXP[datatype]
+    raise RGFA::FieldParser::UnknownDatatypeError if regexp.nil?
     if (regexp !~ self)
       fieldname ||= "Value"
       raise RGFA::FieldParser::FormatError,
@@ -47,3 +50,4 @@ end
 class String
   include RGFA::FieldValidator
 end
+

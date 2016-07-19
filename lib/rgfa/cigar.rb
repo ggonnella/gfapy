@@ -1,3 +1,5 @@
+require_relative "error.rb"
+
 #
 # Extensions of the String class to handle CIGAR strings
 #
@@ -12,7 +14,7 @@ module RGFA::CIGAR
   # @raise [TypeError] if the string is not a valid CIGAR string
   def cigar_operations
     return "*" if self == "*"
-    raise TypeError if self !~ /^([0-9]+[MIDNSHPX=])+$/
+    raise RGFA::CIGAR::ValueError if self !~ /^([0-9]+[MIDNSHPX=])+$/
     scan(/[0-9]+[MIDNSHPX=]/).map do |op|
       oplen = op[0..-2].to_i
       opcode = op[-1..-1]
@@ -68,6 +70,9 @@ module RGFA::CIGAR
   end
 
 end
+
+# Exception raised by invalid cigar string content
+class RGFA::CIGAR::ValueError < RGFA::Error; end
 
 # Class representing a CIGAR operation
 class RGFA::CigarOperation < Array

@@ -1,3 +1,5 @@
+require_relative "error"
+
 #
 # Methods for the RGFA class, which allow to add lines.
 #
@@ -9,6 +11,8 @@ module RGFA::LineCreators
   #   @param [String] gfa_line_string representation of a RGFA line
   # @overload <<(gfa_line)
   #   @param [RGFA::Line] gfa_line instance of a subclass of RGFA::Line
+  # @raise [RGFA::DuplicatedLabelError] if multiple segment or path lines
+  #   with the same name are added
   # @return [RGFA] self
   def <<(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
@@ -122,8 +126,12 @@ module RGFA::LineCreators
 
   def validate_segment_and_path_name_unique!(sn)
     if @segment_names.has_key?(sn.to_sym) or @path_names.has_key?(sn.to_sym)
-      raise ArgumentError, "Segment or path name not unique '#{sn}'"
+      raise RGFA::DuplicatedLabelError,
+        "Segment or path name not unique '#{sn}'"
     end
   end
 
 end
+
+# Exception raised if a label for segment or path is duplicated
+class RGFA::DuplicatedLabelError < RGFA::Error; end

@@ -1,3 +1,5 @@
+require_relative "error"
+
 #
 # Methods for the RGFA class, which allow to retrieve specific lines.
 #
@@ -276,4 +278,4 @@ end
 
 # The error raised by banged line finders if no line respecting the criteria
 # exist in the RGFA
-class RGFA::LineMissingError < ArgumentError; end
+class RGFA::LineMissingError < RGFA::Error; end

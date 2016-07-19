@@ -22,7 +22,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
     assert_raises(RGFA::LineMissingError) { gfa.segment!("0") }
-    assert_raises(ArgumentError) { gfa << s2 }
+    assert_raises(RGFA::DuplicatedLabelError) { gfa << s2 }
   end
 
   def test_add_links
@@ -77,7 +77,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}
     assert_raises(RGFA::LineMissingError) {gfa.path!("5")}
-    assert_raises(ArgumentError) { gfa << p2 }
+    assert_raises(RGFA::DuplicatedLabelError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
   end
 
@@ -100,7 +100,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_nothing_raised { gfa << c1 }
     assert_raises(RGFA::LineMissingError) { gfa << c2 }
     assert_nothing_raised { gfa << p1 }
-    assert_raises(ArgumentError) { gfa << p2 }
+    assert_raises(RGFA::DuplicatedLabelError) { gfa << p2 }
     assert_raises(RGFA::LineMissingError) { gfa << p3 }
   end
 

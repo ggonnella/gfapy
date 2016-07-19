@@ -26,7 +26,9 @@ class TestRGFALineSegment < Test::Unit::TestCase
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
-    assert_raises(RuntimeError) { f.join("\t").to_rgfa_line }
+    assert_raises(RGFA::Line::Segment::InconsistentLengthError) do
+      f.join("\t").to_rgfa_line
+    end
     f=["S","2","ACGTCACANNN","LN:i:11"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }
     f=["S","2","*","LN:i:3"]
@@ -53,7 +55,7 @@ class TestRGFALineSegment < Test::Unit::TestCase
   def test_other_orientation
     assert_equal(:+, RGFA::OrientedSegment.other("-"))
     assert_equal(:-, RGFA::OrientedSegment.other("+"))
-    assert_raises(RGFA::SegmentInfo::InvalidAttribute) do
+    assert_raises(RGFA::SegmentInfo::InvalidAttributeError) do
       RGFA::OrientedSegment.other("x")
     end
   end
