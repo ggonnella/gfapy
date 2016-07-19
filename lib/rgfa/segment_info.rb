@@ -115,10 +115,11 @@ class Array
 
   def to_segment_info(subclass)
     return self if self.kind_of?(subclass)
-    se = subclass.new(self)
-    se.size.times do |i|
-      self[i] = self[i].to_sym
+    # support converting from gfa gem GraphVertex objects:
+    if respond_to?(:segment) and respond_to?(:orient)
+      return RGFA::OrientedSegment.new([segment.to_sym, orient.to_sym])
     end
+    se = subclass.new(map{|e|e.kind_of?(String) ? e.to_sym : e})
     se.validate!
     return se
   end
