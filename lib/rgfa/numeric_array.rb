@@ -58,7 +58,7 @@ class RGFA::NumericArray < Array
   # @return [RGFA::NumericArray::SUBTYPE]
   def compute_subtype
     if all? {|f|f.kind_of?(Float)}
-      subtype = "f"
+      return "f"
     else
       e_max = nil
       e_min = nil
@@ -71,31 +71,37 @@ class RGFA::NumericArray < Array
         e_max = e if e_max.nil? or e > e_max
         e_min = e if e_min.nil? or e < e_min
       end
-      if e_min < 0
-        subtype = nil
-        SIGNED_INT_SUBTYPE.each do |st|
-          range = RGFA::NumericArray::SUBTYPE_RANGE[st]
-          if range.include?(e_min) and range.include?(e_max)
-            subtype = st
-            break
-          end
-        end
-      else
-        UNSIGNED_INT_SUBTYPE.each do |st|
-          range = RGFA::NumericArray::SUBTYPE_RANGE[st]
-          if e_max < range.max
-            subtype = st
-            break
-          end
+      return RGFA::NumericArray.integer_type(e_min..e_max)
+    end
+  end
+
+  # Computes the subtype for integers in a given range.
+  #
+  # If all elements are non-negative, an unsigned subtype is selected,
+  # otherwise a signed subtype.
+  #
+  # @param range [Range] the integer range
+  #
+  # @raise [RGFA::NumericArray::ValueError] if the integer range is outside
+  #   all subtype ranges
+  #
+  # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
+  def self.integer_type(range)
+    if range.min < 0
+      SIGNED_INT_SUBTYPE.each do |st|
+        st_range = RGFA::NumericArray::SUBTYPE_RANGE[st]
+        if st_range.include?(range.min) and st_range.include?(range.max)
+          return st
         end
       end
-      if subtype.nil?
-        raise RGFA::NumericArray::ValueError,
-          "NumericArray: values are outside of all integer subtype ranges\n"+
-          "Content: #{inspect}"
+    else
+      UNSIGNED_INT_SUBTYPE.each do |st|
+        return st if range.max < RGFA::NumericArray::SUBTYPE_RANGE[st].max
       end
     end
-    subtype
+    raise RGFA::NumericArray::ValueError,
+      "NumericArray: values are outside of all integer subtype ranges\n"+
+      "Content: #{inspect}"
   end
 
   # Return self
