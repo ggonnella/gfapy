@@ -1,0 +1,20 @@
+== 1.1 ==
+
+- performance and code organization improvements
+- Line code rewritten:
+-- uses an Hash instead of Array for fields data
+-- support lazy parsing of some field types
+-- simpler code for subclasses
+-- define a datatype for required fields
+-- Field[Parser|Validator|Writer]
+- Optfield class replaced
+- use symbols instead of strings when appropriate
+
+== 1.0.1 ==
+
+- complete YARD documentation
+- remove redundant/unused code
+
+== 1.0 ==
+
+- initial release
