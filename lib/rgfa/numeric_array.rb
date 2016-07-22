@@ -6,13 +6,13 @@ require_relative "error"
 class RGFA::NumericArray < Array
 
   # Subtypes for signed integers, from the smallest to the largest
-  SIGNEDINT_SUBTYPE = %W[c s i]
+  SIGNED_INT_SUBTYPE = %W[c s i]
 
   # Subtypes for unsigned integers, from the smallest to the largest
-  UNSIGNED_INT_SUBTYPE = SIGNEDINT_SUBTYPE.map{|st|st.upcase}
+  UNSIGNED_INT_SUBTYPE = SIGNED_INT_SUBTYPE.map{|st|st.upcase}
 
   # Subtypes for integers
-  INT_SUBTYPE = UNSIGNED_INT_SUBTYPE + SIGNEDINT_SUBTYPE
+  INT_SUBTYPE = UNSIGNED_INT_SUBTYPE + SIGNED_INT_SUBTYPE
 
   # Subtypes for floats
   FLOAT_SUBTYPE = ["f"]
