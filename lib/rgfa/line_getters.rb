@@ -237,33 +237,43 @@ module RGFA::LineGetters
   end
 
   # Find links from the segment in the specified orientation
-  # or to the segment in opposite orientation.
+  # (or the equivalent links, i.e. to the segment in opposite orientation).
   #
   # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
+  # @param equivalent [Boolean] return also equivalent links.
   # @return [Array<RGFA::Line::Link>]
   # @note to add or remove links, use the appropriate methods;
   #   adding or removing links from the returned array will not work
-  def links_from(oriented_segment)
+  def links_from(oriented_segment, equivalent = true)
     oriented_segment = oriented_segment.to_oriented_segment
-    @c.lines(:L,oriented_segment.segment,
-             :from,oriented_segment.orient) +
-    @c.lines(:L,oriented_segment.segment,
-             :to,oriented_segment.orient_inverted)
+    retval = @c.lines(:L,oriented_segment.segment,
+             :from,oriented_segment.orient)
+    if equivalent
+      retval + @c.lines(:L,oriented_segment.segment,
+                        :to,oriented_segment.orient_inverted)
+    else
+      retval
+    end
   end
 
   # Find links to the segment in the specified orientation
-  # or from the segment in opposite orientation.
+  # (or the equivalent links, i.e. from the segment in opposite orientation).
   #
   # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
+  # @param equivalent [Boolean] return also equivalent links.
   # @return [Array<RGFA::Line::Link>]
   # @note to add or remove links, use the appropriate methods;
   #   adding or removing links from the returned array will not work
-  def links_to(oriented_segment)
+  def links_to(oriented_segment, equivalent = true)
     oriented_segment = oriented_segment.to_oriented_segment
-    @c.lines(:L,oriented_segment.segment,
-             :to,oriented_segment.orient) +
-    @c.lines(:L,oriented_segment.segment,
+    retval = @c.lines(:L,oriented_segment.segment,
+             :to,oriented_segment.orient)
+    if equivalent
+      retval + @c.lines(:L,oriented_segment.segment,
              :from,oriented_segment.orient_inverted)
+    else
+      retval
+    end
   end
 
   # Search all links from a segment S1 in a given orientation
