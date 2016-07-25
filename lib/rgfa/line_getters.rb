@@ -343,6 +343,17 @@ module RGFA::LineGetters
     return data
   end
 
+  # @return [Array<Array{Tagname,Datatype,Value}>] all header fields;
+  def headers_array
+    data = []
+    headers.each do |hline|
+      hline.optional_fieldnames.each do |of|
+        data << [of, hline.get_datatype(of), hline.send(of)]
+      end
+    end
+    return data
+  end
+
   private
 
   def each(record_type, &block)
