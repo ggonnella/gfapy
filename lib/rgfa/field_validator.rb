@@ -18,7 +18,7 @@ module RGFA::FieldValidator
                            # Integer or numeric array
     :lbl => /^[!-)+-<>-~][!-~]*$/,       # segment/path label
     :orn => /^\+|-$/,                    # segment orientation
-    :lbs => /^[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])*$/,
+    :lbs => /^[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])+$/,
                            # multiple labels with orientations, comma-sep
     :seq => /^\*$|^[A-Za-z=.]+$/,          # nucleotide sequence
     :pos => /^[0-9]*$/,                  # positive integer
