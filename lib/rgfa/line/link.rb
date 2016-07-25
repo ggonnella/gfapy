@@ -43,7 +43,7 @@ class RGFA::Line::Link < RGFA::Line
   # @see #eql?
   def hash
     from_end.hash + to_end.hash +
-      overlap(false).hash + reverse_overlap(false).hash
+      overlap.to_s.hash + reverse_overlap.to_s.hash
   end
 
   # Compares the optional fields of two links.
@@ -98,12 +98,9 @@ class RGFA::Line::Link < RGFA::Line
 
   # Compute the overlap when the strand of both sequences is inverted.
   #
-  # @param cast [Boolean] cast value?
-  # @return [String] if cast is false
-  # @return [RGFA::CIGAR] if cast is true
-  def reverse_overlap(cast=true)
-    revcig = self.overlap.reverse
-    return cast ? revcig : revcig.to_s
+  # @return [RGFA::CIGAR]
+  def reverse_overlap
+    self.overlap.reverse
   end
 
   # @return[RGFA::OrientedSegment] the oriented segment represented by the
@@ -149,12 +146,28 @@ class RGFA::Line::Link < RGFA::Line
     end
   end
 
+  # Compares a link with two oriented_segments and optionally an overlap.
+  # @param [RGFA::OrientedSegment] other_oriented_from
+  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param [RGFA::CIGAR] other_overlap compared only if not empty
+  # @return [Boolean] does the link or the reverse link go from the first oriented segment
+  #   to the second with an overlap equal to the provided one (if not empty)?
+  def compatible?(other_oriented_from, other_oriented_to, other_overlap = [])
+    other_overlap = other_overlap.to_cigar
+    return (((oriented_from == other_oriented_from and
+      oriented_to == other_oriented_to) and
+      (other_overlap.empty? or (overlap == other_overlap))) or
+      ((oriented_to == other_oriented_from.other_orient and
+      oriented_from == other_oriented_to.other_orient) and
+      (other_overlap.empty? or (reverse_overlap == other_overlap))))
+  end
+
   private
 
   def same?(other)
     (from_end == other.from_end and
       to_end == other.to_end and
-      overlap(false) == other.overlap(false))
+      overlap == other.overlap)
   end
 
   def reverse?(other)

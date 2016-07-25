@@ -236,6 +236,90 @@ module RGFA::LineGetters
     l
   end
 
+  # Find links from the segment in the specified orientation
+  # or to the segment in opposite orientation.
+  #
+  # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
+  # @return [Array<RGFA::Line::Link>]
+  # @note to add or remove links, use the appropriate methods;
+  #   adding or removing links from the returned array will not work
+  def links_from(oriented_segment)
+    oriented_segment = oriented_segment.to_oriented_segment
+    @c.lines(:L,oriented_segment.segment,
+             :from,oriented_segment.orient) +
+    @c.lines(:L,oriented_segment.segment,
+             :to,oriented_segment.orient_inverted)
+  end
+
+  # Find links to the segment in the specified orientation
+  # or from the segment in opposite orientation.
+  #
+  # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
+  # @return [Array<RGFA::Line::Link>]
+  # @note to add or remove links, use the appropriate methods;
+  #   adding or removing links from the returned array will not work
+  def links_to(oriented_segment)
+    oriented_segment = oriented_segment.to_oriented_segment
+    @c.lines(:L,oriented_segment.segment,
+             :to,oriented_segment.orient) +
+    @c.lines(:L,oriented_segment.segment,
+             :from,oriented_segment.orient_inverted)
+  end
+
+  # Search all links from a segment S1 in a given orientation
+  # to another segment S2 in a given, or the equivalent
+  # links from S2 to S1 with inverted orientations.
+  #
+  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
+  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
+  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @return [Array<RGFA::Line::Link>]
+  # @note to add or remove links, use the appropriate methods;
+  #   adding or removing links from the returned array will not work
+  def links_from_to(oriented_segment1, oriented_segment2, cigar = [])
+    oriented_segment1 = oriented_segment1.to_oriented_segment
+    oriented_segment2 = oriented_segment2.to_oriented_segment
+    links_from(oriented_segment1).select do |l|
+      l.compatible?(oriented_segment1, oriented_segment2, cigar)
+    end
+  end
+
+  # Search the link from a segment S1 in a given orientation
+  # to another segment S2 in a given, or the equivalent
+  # link from S2 to S1 with inverted orientations.
+  #
+  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
+  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
+  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @return [RGFA::Line::Link] the first link found
+  # @return [nil] if no link is found.
+  def link_from_to(oriented_segment1, oriented_segment2, cigar = [])
+    oriented_segment1 = oriented_segment1.to_oriented_segment
+    oriented_segment2 = oriented_segment2.to_oriented_segment
+    links_from(oriented_segment1).select do |l|
+      return l if l.compatible?(oriented_segment1, oriented_segment2, cigar)
+    end
+    return nil
+  end
+
+  # Search the link from a segment S1 in a given orientation
+  # to another segment S2 in a given, or the equivalent
+  # link from S2 to S1 with inverted orientations.
+  #
+  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
+  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
+  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @return [RGFA::Line::Link] the first link found
+  # @raise [RGFA::LineMissingError] if no link is found.
+  def link_from_to!(oriented_segment1, oriented_segment2)
+    l = link_from_to!(oriented_segment1, oriented_segment2)
+    raise RGFA::LineMissingError,
+      "No link was found: "+
+          "#{oriented_segment1.join(":")} -> "+
+          "#{oriented_segment2.join(":")}" if l.nil?
+    l
+  end
+
   # @return [Hash{Symbol:Object}] data contained in the header fields;
   #   the special key :multiple_values contains an array of fields for
   #   which multiple values were defined in multiple lines; in this case

@@ -26,8 +26,25 @@ class RGFA::Line::Path < RGFA::Line
     name.to_sym
   end
 
+  # Is the path circular? In this case the number of CIGARs must be
+  # equal to the number of segments.
+  # @return [Boolean]
   def circular?
     self.cigars.size == self.segment_names.size
+  end
+
+  # Is the path linear? This is the case when the number of CIGARs
+  # is equal to the number of segments minus 1, or the CIGARs are
+  # represented by a single "*".
+  def linear?
+    !circular?
+  end
+
+  # Are the cigars a single "*"? This is a compact representation of
+  # a linear path where all CIGARs are "*"
+  # @return [Boolean]
+  def undef_cigars?
+    self.cigars.size == 1 and self.cigars[0].empty?
   end
 
   private

@@ -36,18 +36,23 @@ class RGFA::SegmentInfo < Array
     self[0].kind_of?(RGFA::Line::Segment) ? self[0].name : self[0].to_sym
   end
 
+  # @return [Symbol] the attribute
   def attribute
     self[1]
   end
 
-  # @return [RGFA::SegmentInfo] same segment, inverted attribute
-  def other
-    self.class.new([self[0],
-                    self.class::ATTR[self.class::ATTR[0] == self[1] ? 1 : 0]])
+  # @return [Symbol] the other possible value of the attribute
+  def attribute_inverted
+    self.class::ATTR[self.class::ATTR[0] == self[1] ? 1 : 0]
   end
 
-  # @param [Object] attribute an attribute value
-  # @return [Object] the other attribute value
+  # @return [RGFA::SegmentInfo] same segment, inverted attribute
+  def other
+    self.class.new([self[0], self.attribute_inverted])
+  end
+
+  # @param [Symbol] attribute an attribute value
+  # @return [Symbol] the other attribute value
   def self.other(attribute)
     i = self::ATTR.index(attribute.to_sym)
     if i.nil?
@@ -91,6 +96,7 @@ class RGFA::SegmentEnd < RGFA::SegmentInfo
   ATTR = [ END_TYPE_BEGIN = :B, END_TYPE_END = :E ]
   alias_method :end_type, :attribute
   alias_method :other_end, :other
+  alias_method :end_type_inverted, :attribute_inverted
 end
 
 # A segment plus orientation
@@ -99,6 +105,7 @@ class RGFA::OrientedSegment < RGFA::SegmentInfo
   ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
   alias_method :orient, :attribute
   alias_method :other_orient, :other
+  alias_method :orient_inverted, :attribute_inverted
 end
 
 class Array

@@ -1,3 +1,0 @@
-- Paths validation: each path shall be supported by links
-  (two-tier validation, segment_first order or not)
-- Linear paths: can they be expressed as path records?

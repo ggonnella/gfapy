@@ -40,6 +40,8 @@ class TestRGFA < Test::Unit::TestCase
     gfa << "P\t3\t1+,4-\t*"
     assert_raise(RGFA::LineMissingError) { gfa.validate! }
     gfa << "S\t4\t*"
+    assert_raise(RGFA::LineMissingError) { gfa.validate! }
+    gfa << "L\t4\t+\t1\t-\t*"
     assert_nothing_raised { gfa.validate! }
   end
 

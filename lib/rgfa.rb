@@ -92,16 +92,12 @@ class RGFA
     @path_names.keys.compact
   end
 
-  # Post-validation of the RGFA; checks that L, C and P refer to
-  # existing S.
+  # Post-validation of the RGFA
   # @return [void]
   # @raise if validation fails
   def validate!
-    # todo this should also call validate in cascade to all records
-    [:L, :C].each do |rt|
-      @lines[rt].each {|l| [:from,:to].each {|e| segment!(l.send(e))}}
-    end
-    @lines[:P].each {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+    validate_segment_references!
+    validate_path_links!
   end
 
   # Creates a string representation of RGFA conforming to the current
@@ -261,6 +257,42 @@ class RGFA
     end
     q = [sln[0], sln[(n/4)-1], sln[(n/2)-1], sln[((n*3)/4)-1], sln[-1]]
     return q, n50, tlen
+  end
+
+  # Checks that L, C and P refer to existing S.
+  # @return [void]
+  # @raise if validation fails
+  def validate_segment_references!
+    [:L, :C].each do |rt|
+      each(rt) {|l| [:from,:to].each {|e| segment!(l.send(e))}}
+    end
+    each_path {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+  end
+
+  # Checks that P are supported by links.
+  # @return [void]
+  # @raise if validation fails
+  def validate_path_links!
+    each_path do |path|
+      has_undef_cigars = path.undef_cigars?
+      path.segment_names.size.times do |i|
+        j = i+1
+        if j == path.segment_names.size
+          path.circular? ? j = 0 : break
+        end
+        cigar = has_undef_cigars ? [] : path.cigars[i]
+        link = links_from_to(path.segment_names[i],
+                             path.segment_names[j],
+                             cigar)
+        if link.empty?
+          raise RGFA::LineMissingError,
+            "Path validation failed, link not found: "+
+            "#{path.segment_names[i].join(' ')} "+
+            "#{path.segment_names[j].join(' ')} "+
+            "#{has_undef_cigars ? '*' : path.cigars[i]}"
+        end
+      end
+    end
   end
 
   # for tests
