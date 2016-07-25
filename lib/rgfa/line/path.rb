@@ -26,4 +26,24 @@ class RGFA::Line::Path < RGFA::Line
     name.to_sym
   end
 
+  private
+
+  def validate_lists_size!
+    n_segments = self.segment_names.size
+    n_cigars = self.cigars.size
+    if n_cigars != (n_segments - 1)
+        raise RGFA::Line::Path::ListLengthsError,
+          "Path has #{n_segments} oriented segments "+
+          "and #{n_cigars} CIGARs"
+    end
+  end
+
+  def validate_record_type_specific_info!
+    validate_lists_size!
+  end
+
+
 end
+
+# Error raised if number of segments and cigars are not consistent
+class RGFA::Line::Path::ListLengthsError < RGFA::Error; end
