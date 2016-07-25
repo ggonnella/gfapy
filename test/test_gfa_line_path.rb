@@ -30,10 +30,10 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_nothing_raised do
       f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::Path::ListLengthsError) do
+    assert_nothing_raised do
       f=fields.dup; f[3]="9M2I3D1M,12M,12M"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::Line::Path::ListLengthsError) do
+    assert_nothing_raised do
       f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line
     end
     assert_raises(RGFA::FieldParser::FormatError) do
