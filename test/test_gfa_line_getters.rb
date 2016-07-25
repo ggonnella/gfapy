@@ -82,7 +82,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
 
   def test_paths
     s = ["S\t1\t*","S\t2\t*", "S\t3\t*"]
-    pt = ["P\t4\t1+,2+\t122M,120M", "P\t5\t1+,3+\t122M,120M"]
+    pt = ["P\t4\t1+,2+\t122M", "P\t5\t1+,3+\t120M"]
     gfa = (s+pt).to_rgfa
     assert_equal(pt, gfa.paths.map(&:to_s))
     gfa.delete_path("4")
@@ -91,7 +91,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
 
   def test_each_path
     s = ["S\t1\t*","S\t2\t*", "S\t3\t*"]
-    pt1 = ["P\t4\t1+,2+\t122M,120M", "P\t5\t1+,3+\t122M,120M"]
+    pt1 = ["P\t4\t1+,2+\t122M", "P\t5\t1+,3+\t120M"]
     gfa = (s+pt1).to_rgfa
     pt2 = []
     gfa.each_path {|pt| pt2 << pt.to_s}
@@ -113,7 +113,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
 
   def test_path
     s = ["S\t1\t*","S\t2\t*", "S\t3\t*"]
-    pt = ["P\t4\t1+,2+\t122M,120M", "P\t5\t1+,3+\t122M,120M"]
+    pt = ["P\t4\t1+,2+\t122M", "P\t5\t1+,3+\t120M"]
     gfa = (s+pt).to_rgfa
     assert_equal(pt[0],gfa.path("4").to_s)
     assert_equal(pt[0],gfa.path!("4").to_s)

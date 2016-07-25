@@ -19,16 +19,16 @@ class TestRGFAEdit < Test::Unit::TestCase
 
   def test_delete_alignments
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-,1+\t12M,12M"].to_rgfa
     assert_equal([[12,"M"]], gfa.links[0].overlap)
     assert_equal([[12,"M"]], gfa.containments[0].overlap)
     assert_equal([[[12,"M"]],[[12,"M"]]], gfa.paths[0].cigars)
     gfa.delete_alignments
     assert_equal("*", gfa.links[0].overlap)
     assert_equal("*", gfa.containments[0].overlap)
-    assert_equal(["*"], gfa.paths[0].cigars)
+    assert_equal(["*","*"], gfa.paths[0].cigars)
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M"].to_rgfa
     gfa.rm(:alignments)
     assert_equal("*", gfa.links[0].overlap)
     assert_equal("*", gfa.containments[0].overlap)
@@ -37,12 +37,12 @@ class TestRGFAEdit < Test::Unit::TestCase
 
   def test_rename
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t0\t+\t2\t+\t12M",
-    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M,12M"].to_rgfa
+    "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M"].to_rgfa
     gfa.rename("0", "X")
     assert_equal([:"X", :"1", :"2"].sort, gfa.segment_names.sort)
     assert_equal("L\tX\t+\t2\t+\t12M", gfa.links[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
-    assert_equal("P\t4\t2+,X-\t12M,12M", gfa.paths[0].to_s)
+    assert_equal("P\t4\t2+,X-\t12M", gfa.paths[0].to_s)
     assert_nothing_raised { gfa.send(:validate_connect) }
     assert_equal([], gfa.links_of(["0", :E]))
     assert_equal("L\tX\t+\t2\t+\t12M", gfa.links_of(["X", :E])[0].to_s)
@@ -50,7 +50,7 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal([], gfa.containing("0"))
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containing("X")[0].to_s)
     assert_equal([], gfa.paths_with("0"))
-    assert_equal("P\t4\t2+,X-\t12M,12M", gfa.paths_with("X")[0].to_s)
+    assert_equal("P\t4\t2+,X-\t12M", gfa.paths_with("X")[0].to_s)
   end
 
   def test_multiply_segment
@@ -61,7 +61,7 @@ class TestRGFAEdit < Test::Unit::TestCase
          "S\t2\t*\tRC:i:60000".to_rgfa_line]
     l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
     c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
-    p = "P\t3\t2+,0-\t12M,12M".to_rgfa_line
+    p = "P\t3\t2+,0-\t12M".to_rgfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
     assert_equal([l], gfa.links)

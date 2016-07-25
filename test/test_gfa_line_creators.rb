@@ -64,9 +64,9 @@ class TestRGFALineCreators < Test::Unit::TestCase
   def test_add_paths
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    p1 = "P\t4\t1+,2+\t122M,120M".to_rgfa_line
-    p2 = "P\t1\t1+,2+\t122M,120M"
-    p3 = "P\t5\t1+,3+\t122M,120M"
+    p1 = "P\t4\t1+,2+\t122M".to_rgfa_line
+    p2 = "P\t1\t1+,2+\t122M"
+    p3 = "P\t5\t1+,2+,3+\t122M,120M"
     gfa = RGFA.new
     gfa << s1
     gfa << s2
@@ -88,9 +88,9 @@ class TestRGFALineCreators < Test::Unit::TestCase
     l2 = "L\t1\t+\t3\t+\t12M"
     c1 = "C\t1\t+\t2\t+\t12\t12M"
     c2 = "C\t1\t+\t3\t+\t12\t12M"
-    p1 = "P\t4\t1+,2+\t122M,120M"
-    p2 = "P\t1\t1+,2+\t122M,120M"
-    p3 = "P\t5\t1+,3+\t122M,120M"
+    p1 = "P\t4\t1+,2+\t122M"
+    p2 = "P\t1\t1+,2+\t122M"
+    p3 = "P\t5\t1+,3+\t122M"
     gfa = RGFA.new
     gfa.require_segments_first_order
     gfa << s1

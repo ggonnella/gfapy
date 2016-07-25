@@ -22,7 +22,7 @@ module RGFA::Edit
   def delete_alignments
     @lines[:L].each {|l| l.overlap = "*"}
     @lines[:C].each {|l| l.overlap = "*"}
-    @lines[:P].each {|l| l.cigars = "*"}
+    @lines[:P].each {|l| l.cigars = Array.new(l.cigars.size){"*"}}
     self
   end
 

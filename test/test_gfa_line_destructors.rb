@@ -86,7 +86,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     s = ["S\t0\t*".to_rgfa_line, "S\t1\t*".to_rgfa_line, "S\t2\t*".to_rgfa_line]
     l = "L\t1\t+\t2\t+\t12M".to_rgfa_line
     c = "C\t1\t+\t0\t+\t12\t12M".to_rgfa_line
-    p = "P\t4\t2+,0-\t12M,12M".to_rgfa_line
+    p = "P\t4\t2+,0-\t12M".to_rgfa_line
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments)
     assert_equal([:"0", :"1", :"2"], gfa.segment_names)
