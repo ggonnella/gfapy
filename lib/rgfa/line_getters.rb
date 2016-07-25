@@ -95,6 +95,39 @@ module RGFA::LineGetters
     @c.lines(:P,segment_name)
   end
 
+  # @param [RGFA::Line::Path|Symbol] Path or path name
+  # @return [Array<RGFA::Line::Link>]
+  def path_links(path)
+    path = path!(path) if !path.kind_of?(RGFA::Line)
+    has_undef_cigars = path.undef_cigars?
+    links = []
+    path.segment_names.size.times do |i|
+      j = i+1
+      if j == path.segment_names.size
+        path.circular? ? j = 0 : break
+      end
+      cigar = has_undef_cigars ? [] : path.cigars[i]
+      link = links_from_to(path.segment_names[i],
+                           path.segment_names[j],
+                           cigar)
+      if link.empty?
+        raise RGFA::LineMissingError,
+          "Path link not found: "+
+          "#{path.segment_names[i].join(' ')} "+
+          "#{path.segment_names[j].join(' ')} "+
+          "#{has_undef_cigars ? '*' : path.cigars[i]}"
+      elsif link.size > 1
+          raise "Path link ambiguous: "+
+            "#{path.segment_names[i].join(' ')} "+
+            "#{path.segment_names[j].join(' ')} "+
+            "#{has_undef_cigars ? '*' : path.cigars[i]}"
+      else
+        links << link[0]
+      end
+    end
+    links
+  end
+
   # Find containment lines whose +from+ segment name is +segment_name+
   # @!macro segment_or_name
   # @return [Array<RGFA::Line::Containment>]

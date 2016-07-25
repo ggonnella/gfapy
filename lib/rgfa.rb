@@ -273,26 +273,7 @@ class RGFA
   # @return [void]
   # @raise if validation fails
   def validate_path_links!
-    each_path do |path|
-      has_undef_cigars = path.undef_cigars?
-      path.segment_names.size.times do |i|
-        j = i+1
-        if j == path.segment_names.size
-          path.circular? ? j = 0 : break
-        end
-        cigar = has_undef_cigars ? [] : path.cigars[i]
-        link = links_from_to(path.segment_names[i],
-                             path.segment_names[j],
-                             cigar)
-        if link.empty?
-          raise RGFA::LineMissingError,
-            "Path validation failed, link not found: "+
-            "#{path.segment_names[i].join(' ')} "+
-            "#{path.segment_names[j].join(' ')} "+
-            "#{has_undef_cigars ? '*' : path.cigars[i]}"
-        end
-      end
-    end
+    each_path {|path| path_links(path)}
   end
 
   # for tests
