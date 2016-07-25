@@ -22,8 +22,8 @@ module RGFA::FieldValidator
                            # multiple labels with orientations, comma-sep
     :seq => /^\*$|^[A-Za-z=.]+$/,          # nucleotide sequence
     :pos => /^[0-9]*$/,                  # positive integer
-    :cig => /^\*$|^([0-9]+[MIDNSHPX=])+$/, # CIGAR string
-    :cgs => /^\*$|^([0-9]+[MIDNSHPX=])+((,[0-9]+[MIDNSHPX=])+)*$/,
+    :cig => /^(\*|(([0-9]+[MIDNSHPX=])+))$/, # CIGAR string
+    :cgs => /^(\*|(([0-9]+[MIDNSHPX=])+))(,(\*|(([0-9]+[MIDNSHPX=])+)))*$/,
                                        # multiple CIGARs, comma-sep
   }
 
