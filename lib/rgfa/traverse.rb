@@ -340,13 +340,13 @@ module RGFA::Traverse
     (segpath.size-1).times do |i|
       b = other_segment_end(segpath[i+1])
       l = link!(a, b)
-      if l.overlap == "*"
+      if l.overlap == []
         cut = 0
-      elsif l.overlap.size == 1 and l.overlap[0][1] == "M"
-        cut = l.overlap[0][0]
+      elsif l.overlap.all?{|op|[:M, :"="].include?(op.code)}
+        cut = l.overlap.map(&:len).inject(:+)
       else
         raise ArgumentError,
-          "Overlaps contaning other operations than M are not supported"
+          "Merging is only allowed if all operations are M/="
       end
       total_cut += cut
       last_reversed = (b[1] == :E)

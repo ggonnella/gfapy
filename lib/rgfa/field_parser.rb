@@ -30,9 +30,9 @@ module RGFA::FieldParser
     when :J
       return JSON.parse(self)
     when :cig
-      return cigar_operations
+      return to_cigar
     when :cgs
-      return split(",").map{|c|c.cigar_operations}
+      return split(",").map{|c|c.to_cigar}
     when :lbs
       return split(",").map{|l| [l[0..-2].to_sym,
                                  l[-1].to_sym].to_oriented_segment}

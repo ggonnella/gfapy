@@ -100,10 +100,10 @@ class RGFA::Line::Link < RGFA::Line
   #
   # @param cast [Boolean] cast value?
   # @return [String] if cast is false
-  # @return [Array<RGFA::CigarOperation>] if cast is true
+  # @return [RGFA::CIGAR] if cast is true
   def reverse_overlap(cast=true)
-    get_string(:overlap).send((cast ? :reverse_cigar_operations :
-                                      :reverse_cigar))
+    revcig = self.overlap.reverse
+    return cast ? revcig : revcig.to_s
   end
 
   # @return[RGFA::OrientedSegment] the oriented segment represented by the

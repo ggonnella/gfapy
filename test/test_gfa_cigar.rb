@@ -3,16 +3,31 @@ require "test/unit"
 
 class TestRGFACigar < Test::Unit::TestCase
 
-  def test_cigar_operations
-    assert_equal([[12,"M"],[1,"D"],[2,"I"]],"12M1D2I".cigar_operations)
+  def test_from_string_nonempty
+    assert_equal(RGFA::CIGAR.new([
+      RGFA::CIGAR::Operation.new(12,:M),
+      RGFA::CIGAR::Operation.new(1,:D),
+      RGFA::CIGAR::Operation.new(2,:I)]),"12M1D2I".to_cigar)
   end
 
-  def test_cigar_operations_of_empty_cigar_string
-    assert_equal("*","*".cigar_operations)
+  def test_from_string_empty
+    assert_equal([],"*".to_cigar)
   end
 
-  def test_cigar_operations_of_invalid_cigar_string
-    assert_raises(RGFA::CIGAR::ValueError){"12x1D2I".cigar_operations}
+  def test_from_string_invalid
+    assert_raises(RGFA::CIGAR::ValueError){"12x1D2I".to_cigar}
+  end
+
+  def test_to_s_nonempty
+    assert_equal("12M1D2I",
+      RGFA::CIGAR.new([
+      RGFA::CIGAR::Operation.new(12,:M),
+      RGFA::CIGAR::Operation.new(1,:D),
+      RGFA::CIGAR::Operation.new(2,:I)]).to_s)
+  end
+
+  def test_to_s_empty
+    assert_equal("*", RGFA::CIGAR.new([]).to_s)
   end
 
 end

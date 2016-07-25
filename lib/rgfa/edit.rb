@@ -20,9 +20,9 @@ module RGFA::Edit
   #
   # @return [RGFA] self
   def delete_alignments
-    @lines[:L].each {|l| l.overlap = "*"}
-    @lines[:C].each {|l| l.overlap = "*"}
-    @lines[:P].each {|l| l.cigars = Array.new(l.cigars.size){"*"}}
+    @lines[:L].each {|l| l.overlap = RGFA::CIGAR.new()}
+    @lines[:C].each {|l| l.overlap = RGFA::CIGAR.new()}
+    @lines[:P].each {|l| l.cigars = Array.new(l.cigars.size){RGFA::CIGAR.new()}}
     self
   end
 

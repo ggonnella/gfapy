@@ -20,19 +20,21 @@ class TestRGFAEdit < Test::Unit::TestCase
   def test_delete_alignments
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
     "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-,1+\t12M,12M"].to_rgfa
-    assert_equal([[12,"M"]], gfa.links[0].overlap)
-    assert_equal([[12,"M"]], gfa.containments[0].overlap)
-    assert_equal([[[12,"M"]],[[12,"M"]]], gfa.paths[0].cigars)
+    assert_equal([RGFA::CIGAR::Operation.new(12,:M)], gfa.links[0].overlap)
+    assert_equal([RGFA::CIGAR::Operation.new(12,:M)],
+                 gfa.containments[0].overlap)
+    assert_equal([[RGFA::CIGAR::Operation.new(12,:M)],
+                  [RGFA::CIGAR::Operation.new(12,:M)]], gfa.paths[0].cigars)
     gfa.delete_alignments
-    assert_equal("*", gfa.links[0].overlap)
-    assert_equal("*", gfa.containments[0].overlap)
-    assert_equal(["*","*"], gfa.paths[0].cigars)
+    assert_equal([], gfa.links[0].overlap)
+    assert_equal([], gfa.containments[0].overlap)
+    assert_equal([[],[]], gfa.paths[0].cigars)
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t1\t+\t2\t+\t12M",
     "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M"].to_rgfa
     gfa.rm(:alignments)
-    assert_equal("*", gfa.links[0].overlap)
-    assert_equal("*", gfa.containments[0].overlap)
-    assert_equal(["*"], gfa.paths[0].cigars)
+    assert_equal([], gfa.links[0].overlap)
+    assert_equal([], gfa.containments[0].overlap)
+    assert_equal([[]], gfa.paths[0].cigars)
   end
 
   def test_rename

@@ -97,7 +97,7 @@ class Array
     when :J
       to_json
     when :cig
-      flatten.join
+      to_cigar.to_s
     when :cgs
       map{|cig|cig.to_gfa_datastring(:cig)}.join(",")
     when :lbs
