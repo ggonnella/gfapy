@@ -372,14 +372,15 @@ module RGFA::LineGetters
     data[:multiple_values] = []
     headers.each do |hline|
       hline.optional_fieldnames.each do |of|
+        value = hline.get(of)
         if data.has_key?(of)
           if !data[:multiple_values].include?(of)
             data[of] = [data[of]]
             data[:multiple_values] << of
           end
-          data[of] << hline.send(of)
+          data[of] << value
         else
-          data[of] = hline.send(of)
+          data[of] = value
         end
       end
     end
@@ -391,7 +392,7 @@ module RGFA::LineGetters
     data = []
     headers.each do |hline|
       hline.optional_fieldnames.each do |of|
-        data << [of, hline.get_datatype(of), hline.send(of)]
+        data << [of, hline.get_datatype(of), hline.get(of)]
       end
     end
     return data

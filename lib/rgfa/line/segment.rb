@@ -68,7 +68,7 @@ class RGFA::Line::Segment < RGFA::Line
   # @see #coverage!
   def coverage(count_tag: :RC, unit_length: 1)
     if optional_fieldnames.include?(count_tag) and self.length
-      return (self.send(count_tag).to_f)/(self.length-unit_length+1)
+      return (self.get(count_tag).to_f)/(self.length-unit_length+1)
     else
       return nil
     end

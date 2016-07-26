@@ -57,9 +57,7 @@ class RGFA::Line::Link < RGFA::Line
   # @see #==
   def eql_optional?(other)
     (self.optional_fieldnames.sort == other.optional_fieldnames.sort) and
-      optional_fieldnames.each do |fn|
-        self.send(fn) == other.send(fn)
-      end
+      optional_fieldnames.each {|fn| self.get(fn) == other.get(fn)}
   end
 
   # Creates a link with both strands of the sequences inverted.

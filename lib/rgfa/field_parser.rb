@@ -37,7 +37,8 @@ module RGFA::FieldParser
       return split(",").map{|l| [l[0..-2].to_sym,
                                  l[-1].to_sym].to_oriented_segment}
     else
-      raise RGFA::FieldParser::UnknownDatatype, "Datatype unknown: #{datatype}"
+      raise RGFA::FieldParser::UnknownDatatypeError,
+        "Datatype unknown: #{datatype}"
     end
   end
 

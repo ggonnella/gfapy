@@ -185,8 +185,8 @@ class RGFA::ConnectionInfo
           @connect[rt][sn][dir].keys.each do |o|
             @connect[rt][sn][dir][o].each do |li|
               l = @lines[rt][li]
-              if l.nil? or l.send(dir).to_sym != sn or
-                   l.send(:"#{dir}_orient") != o
+              if l.nil? or l.get(dir).to_sym != sn or
+                   l.get(:"#{dir}_orient") != o
                 raise RGFA::ConnectionInfo::ValidationError,
                   "Error in connect\n"+
                   "@connect[#{rt}][#{sn}][#{dir.inspect}][#{o}]=[#{li},..]\n"+

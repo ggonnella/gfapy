@@ -273,7 +273,7 @@ module RGFA::Traverse
       segs.each do |s|
         if s.optional_fieldnames.include?(count_tag)
           retval[count_tag] ||= 0
-          retval[count_tag] += s.send(count_tag)
+          retval[count_tag] += s.get(count_tag)
         end
       end
       if retval[count_tag]
@@ -367,12 +367,12 @@ module RGFA::Traverse
       end
     end
     if merged.LN.nil?
-      [:KC, :RC, :FC].each {|count_tag| merged.send(:"#{count_tag}=", nil)}
+      [:KC, :RC, :FC].each {|count_tag| merged.set(count_tag, nil)}
     else
       sum_of_counts(segpath, (options[:cut_counts] ?
                               merged.LN.to_f / (total_cut+merged.LN) : 1)).
           each do |count_tag, count|
-        merged.send(:"#{count_tag}=", count)
+        merged.set(count_tag, count)
       end
     end
     return merged, first_reversed, last_reversed

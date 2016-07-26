@@ -53,7 +53,7 @@ module RGFA::Edit
       [:L,:C].each do |rt|
         [:from,:to].each do |dir|
           @c.lines(rt, old_name, dir).each do |l|
-            l.send(:"#{dir}=", new_name)
+            l.set(dir, new_name)
           end
         end
       end
@@ -183,8 +183,8 @@ module RGFA::Edit
   def divide_counts(gfa_line, factor)
     [:KC, :RC, :FC].each do |count_tag|
       if gfa_line.optional_fieldnames.include?(count_tag)
-        value = (gfa_line.send(count_tag).to_f / factor)
-        gfa_line.send(:"#{count_tag}=", value.to_i.to_s)
+        value = (gfa_line.get(count_tag).to_f / factor)
+        gfa_line.set(count_tag, value.to_i)
       end
     end
   end
@@ -210,7 +210,7 @@ module RGFA::Edit
       [:from,:to].each do |dir|
         @c.lines(rt,segment.name,dir).each do |l|
           lc = l.clone
-          lc.send(:"#{dir}=", clone_name)
+          lc.set(dir, clone_name)
           self << lc
         end
       end

@@ -390,7 +390,7 @@ class RGFA::Line
     (o.record_type == self.record_type) and
       (o.fieldnames == self.fieldnames) and
         (o.fieldnames.all? do |fn|
-          (o.send(fn) == self.send(fn)) or
+          (o.get(fn) == self.get(fn)) or
           field_str()
         end)
   end

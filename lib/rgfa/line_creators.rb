@@ -52,7 +52,7 @@ module RGFA::LineCreators
                            !values.kind_of?(Array)
       values.each do |value|
         h = "H".to_rgfa_line
-        h.send(:"#{of}=", value)
+        h.set(of, value)
         self << h
       end
     end
@@ -107,8 +107,8 @@ module RGFA::LineCreators
     end
     @lines[rt] << gfa_line
     [:from,:to].each do |e|
-      sn = gfa_line.send(e)
-      o = gfa_line.send(:"#{e}_orient")
+      sn = gfa_line.get(e)
+      o = gfa_line.get(:"#{e}_orient")
       segment!(sn) if @segments_first_order
       @c.add(rt,@lines[rt].size-1,sn,e,o)
     end
