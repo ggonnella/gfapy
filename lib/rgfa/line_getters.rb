@@ -95,37 +95,47 @@ module RGFA::LineGetters
     @c.lines(:P,segment_name)
   end
 
+  # Return the links associated with a path, in order. For each link an
+  # array of a link object and a boolean value is returned (true
+  # if the link is used, false if the reverse link is used).
   # @param [RGFA::Line::Path|Symbol] Path or path name
-  # @return [Array<RGFA::Line::Link>]
+  # @raise [RGFA::LineMissingError] if a link does not exist
+  # @raise [RuntimeError] if more than one possible link can be used,
+  #   i.e. the path is not clearly defined
+  # @return [Array<Array<RGFA::Line::Link,Boolean>>]
   def path_links(path)
     path = path!(path) if !path.kind_of?(RGFA::Line)
     has_undef_cigars = path.undef_cigars?
-    links = []
+    retval = []
     path.segment_names.size.times do |i|
       j = i+1
       if j == path.segment_names.size
         path.circular? ? j = 0 : break
       end
       cigar = has_undef_cigars ? [] : path.cigars[i]
-      link = links_from_to(path.segment_names[i],
-                           path.segment_names[j],
-                           cigar)
-      if link.empty?
+      links = links_from_to(path.segment_names[i],
+                            path.segment_names[j],
+                            cigar)
+      if links.empty?
         raise RGFA::LineMissingError,
           "Path link not found: "+
           "#{path.segment_names[i].join(' ')} "+
           "#{path.segment_names[j].join(' ')} "+
           "#{has_undef_cigars ? '*' : path.cigars[i]}"
-      elsif link.size > 1
+      elsif links.size > 1
           raise "Path link ambiguous: "+
             "#{path.segment_names[i].join(' ')} "+
             "#{path.segment_names[j].join(' ')} "+
             "#{has_undef_cigars ? '*' : path.cigars[i]}"
       else
-        links << link[0]
+        link = links[0]
+        is_direct = link.compatible_direct?(path.segment_names[i],
+                                            path.segment_names[j],
+                                            cigar)
+        retval << [link, is_direct]
       end
     end
-    links
+    retval
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
@@ -316,14 +326,16 @@ module RGFA::LineGetters
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
   # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @param equivalent [Boolean] return also equivalent links.
   # @return [Array<RGFA::Line::Link>]
   # @note to add or remove links, use the appropriate methods;
   #   adding or removing links from the returned array will not work
-  def links_from_to(oriented_segment1, oriented_segment2, cigar = [])
+  def links_from_to(oriented_segment1, oriented_segment2,
+                    cigar = [], equivalent = true)
     oriented_segment1 = oriented_segment1.to_oriented_segment
     oriented_segment2 = oriented_segment2.to_oriented_segment
-    links_from(oriented_segment1).select do |l|
-      l.compatible?(oriented_segment1, oriented_segment2, cigar)
+    links_from(oriented_segment1, equivalent).select do |l|
+      l.compatible?(oriented_segment1, oriented_segment2, cigar, equivalent)
     end
   end
 
@@ -334,13 +346,16 @@ module RGFA::LineGetters
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
   # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @param equivalent [Boolean] return also equivalent links.
   # @return [RGFA::Line::Link] the first link found
   # @return [nil] if no link is found.
-  def link_from_to(oriented_segment1, oriented_segment2, cigar = [])
+  def link_from_to(oriented_segment1, oriented_segment2,
+                   cigar = [], equivalent = true)
     oriented_segment1 = oriented_segment1.to_oriented_segment
     oriented_segment2 = oriented_segment2.to_oriented_segment
-    links_from(oriented_segment1).select do |l|
-      return l if l.compatible?(oriented_segment1, oriented_segment2, cigar)
+    links_from(oriented_segment1, equivalent).select do |l|
+      return l if l.compatible?(oriented_segment1, oriented_segment2,
+                                cigar, equivalent)
     end
     return nil
   end
@@ -352,10 +367,13 @@ module RGFA::LineGetters
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
   # @param [RGFA::CIGAR] cigar shall match if not empty/undef
+  # @param equivalent [Boolean] return also equivalent links.
   # @return [RGFA::Line::Link] the first link found
   # @raise [RGFA::LineMissingError] if no link is found.
-  def link_from_to!(oriented_segment1, oriented_segment2)
-    l = link_from_to!(oriented_segment1, oriented_segment2)
+  def link_from_to!(oriented_segment1, oriented_segment2,
+                    cigar = [], equivalent = true)
+    l = link_from_to(oriented_segment1, oriented_segment2,
+                     cigar, equivalent)
     raise RGFA::LineMissingError,
       "No link was found: "+
           "#{oriented_segment1.join(":")} -> "+

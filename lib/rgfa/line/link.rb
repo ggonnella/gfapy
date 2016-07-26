@@ -33,6 +33,8 @@ class RGFA::Line::Link < RGFA::Line
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
+  # @see #same?
+  # @see #reverse?
   def eql?(other)
     same?(other) or reverse?(other)
   end
@@ -75,7 +77,7 @@ class RGFA::Line::Link < RGFA::Line
     l.from_orient = (to_orient == :+ ? :- : :+)
     l.to = from
     l.to_orient = (from_orient == :+ ? :- : :+)
-    l.overlap = reverse_overlap(false)
+    l.overlap = reverse_overlap
     l
   end
 
@@ -144,30 +146,83 @@ class RGFA::Line::Link < RGFA::Line
     end
   end
 
+  # Compares a link and optionally the reverse link,
+  #   with two oriented_segments and optionally an overlap.
+  # @param [RGFA::OrientedSegment] other_oriented_from
+  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param equivalent [Boolean] shall the reverse link also be considered?
+  # @param [RGFA::CIGAR] other_overlap compared only if not empty
+  # @return [Boolean] does the link or, if +equivalent+,
+  #   the reverse link go from the first
+  #   oriented segment to the second with an overlap equal to the provided one
+  #   (if not empty)?
+  def compatible?(other_oriented_from, other_oriented_to, other_overlap = [],
+                  equivalent = true)
+    other_overlap = other_overlap.to_cigar
+    is_direct = compatible_direct?(other_oriented_from, other_oriented_to,
+                                   other_overlap)
+    if is_direct
+      return true
+    elsif equivalent
+      return compatible_reverse?(other_oriented_from, other_oriented_to,
+                          other_overlap)
+    else
+      return false
+    end
+  end
+
   # Compares a link with two oriented_segments and optionally an overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to
   # @param [RGFA::CIGAR] other_overlap compared only if not empty
-  # @return [Boolean] does the link or the reverse link go from the first oriented segment
-  #   to the second with an overlap equal to the provided one (if not empty)?
-  def compatible?(other_oriented_from, other_oriented_to, other_overlap = [])
-    other_overlap = other_overlap.to_cigar
-    return (((oriented_from == other_oriented_from and
-      oriented_to == other_oriented_to) and
-      (other_overlap.empty? or (overlap == other_overlap))) or
-      ((oriented_to == other_oriented_from.other_orient and
-      oriented_from == other_oriented_to.other_orient) and
-      (other_overlap.empty? or (reverse_overlap == other_overlap))))
+  # @return [Boolean] does the link go from the first
+  #   oriented segment to the second with an overlap equal to the provided one
+  #   (if not empty)?
+  def compatible_direct?(other_oriented_from, other_oriented_to,
+                         other_overlap = [])
+    (oriented_from == other_oriented_from and
+     oriented_to == other_oriented_to) and
+     (other_overlap.empty? or (overlap == other_overlap))
   end
 
-  private
-
+  # Compares two links and determine their equivalence.
+  # Thereby, optional fields are not considered.
+  #
+  # @param other [RGFA::Line::Link] a link
+  # @return [Boolean] are self and other equivalent?
+  # @see #eql?
+  # @see #reverse?
+  # @see #==
   def same?(other)
     (from_end == other.from_end and
       to_end == other.to_end and
       overlap == other.overlap)
   end
 
+  # Compares the reverse link with two oriented_segments and optionally an
+  # overlap.
+  # @param [RGFA::OrientedSegment] other_oriented_from
+  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param [RGFA::CIGAR] other_overlap compared only if not empty
+  # @return [Boolean] does the reverse link go from the first
+  #   oriented segment to the second with an overlap equal to the provided one
+  #   (if not empty)?
+  def compatible_reverse?(other_oriented_from, other_oriented_to,
+                          other_overlap = [])
+    (oriented_to == other_oriented_from.other_orient and
+     oriented_from == other_oriented_to.other_orient) and
+     (other_overlap.empty? or (reverse_overlap == other_overlap))
+  end
+
+  # Compares the reverse of the link to another link
+  # and determine their equivalence.
+  # Thereby, optional fields are not considered.
+  #
+  # @param other [RGFA::Line::Link] the other link
+  # @return [Boolean] are the reverse of self and other equivalent?
+  # @see #eql?
+  # @see #same?
+  # @see #==
   def reverse?(other)
     (from_end == other.to_end and
       to_end == other.from_end and
