@@ -98,6 +98,7 @@ class RGFA
   def validate!
     validate_segment_references!
     validate_path_links!
+    return nil
   end
 
   # Creates a string representation of RGFA conforming to the current
@@ -267,6 +268,7 @@ class RGFA
       each(rt) {|l| [:from,:to].each {|e| segment!(l.send(e))}}
     end
     each_path {|l| l.segment_names.each {|sn, o| segment!(sn)}}
+    return nil
   end
 
   # Checks that P are supported by links.
@@ -274,11 +276,13 @@ class RGFA
   # @raise if validation fails
   def validate_path_links!
     each_path {|path| path_links(path)}
+    return nil
   end
 
   # for tests
   def validate_connect
     @c.validate!
+    return nil
   end
 
 end
