@@ -43,6 +43,9 @@ end
 # Exception raised if any value is not a positive integer <= 255
 class RGFA::ByteArray::ValueError < RGFA::Error; end
 
+# Exception raised if string is not a valid representation of byte array
+class RGFA::ByteArray::FormatError < RGFA::Error; end
+
 # Method to create a RGFA::ByteArray from an Array
 class Array
   # Create a RGFA::ByteArray from an Array instance
@@ -56,7 +59,18 @@ end
 class String
   # Convert a GFA string representation of a byte array to a byte array
   # @return [RGFA::ByteArray] the byte array
+  # @raise [RGFA::ByteArray::FormatError] if the string size is not > 0
+  #   and even
+  # @note:
+  #   as to_i accepts any string, and returns 0 if not valid,
+  #   the method does not raise an exception if the string is not valid;
+  #   you can validate it using String#validate_datastring(:H)
   def to_byte_array
+    if (size < 2) or (size % 2 == 1)
+      raise RGFA::ByteArray::FormatError,
+        "Invalid byte array string #{self}; "+
+        "each element must be represented by two letters [0-9A-F]"
+    end
     scan(/..?/).map {|x|x.to_i(16)}.to_byte_array
   end
 end

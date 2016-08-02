@@ -1,0 +1,47 @@
+require_relative "../lib/rgfa.rb"
+require "test/unit"
+
+class TestRGFAByteArray < Test::Unit::TestCase
+
+  def test_byte_array_creation
+    a, b = nil
+    assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,5]) }
+    assert_nothing_raised { b = [1,2,3,4,5].to_byte_array }
+    assert_equal(a, b)
+  end
+
+  def test_byte_array_validation
+    a = nil
+    assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,5]) }
+    assert_nothing_raised { a.validate! }
+    assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,356]) }
+    assert_raises(RGFA::ByteArray::ValueError) { a.validate! }
+  end
+
+  def test_from_string
+    a = nil
+    assert_nothing_raised { a = "12ACF4AA601C1F".to_byte_array }
+    b = [18, 172, 244, 170, 96, 28, 31].to_byte_array
+    assert_equal(b, a)
+    assert_raises(RGFA::ByteArray::FormatError) {
+      a = "12ACF4AA601C1".to_byte_array }
+    assert_raises(RGFA::ByteArray::FormatError) {
+      a = "".to_byte_array }
+    # note: unfortunately to_i accepts any string, and returns 0
+    # if not valid, therefore the following does not raise an
+    # error:
+    assert_nothing_raised { a = "12ACG4AA601C1F".to_byte_array }
+    # but in context of GFA it can be validated by regular expression:
+    assert_raises(RGFA::FieldParser::FormatError) {
+      "12ACG4AA601C1F".validate_datastring(:H) }
+  end
+
+  def test_to_string
+    a = [18, 172, 244, 170, 96, 28, 31].to_byte_array
+    b = "12ACF4AA601C1F"
+    assert_equal(b, a.to_s)
+    a = [18, 172, 280, 170, 96, 28, 31].to_byte_array
+    assert_raises(RGFA::ByteArray::ValueError) { a.to_s }
+  end
+
+end
