@@ -1,0 +1,9 @@
+S	0	GAT	TN:Z:Human
+S	1	CCC	TN:Z:Mouse
+S	2	TAC	TN:Z:Human,Mouse
+S	3	A	TN:Z:Human
+S	4	TTA	TN:Z:Mouse
+L	0	+	2	+	0M	TN:Z:Human
+L	1	+	2	+	0M	TN:Z:Mouse
+L	2	+	3	+	0M	TN:Z:Human
+L	2	+	4	+	0M	TN:Z:Mouse

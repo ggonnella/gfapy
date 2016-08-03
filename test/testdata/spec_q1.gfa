@@ -1,0 +1,8 @@
+H	VN:Z:1.0
+S	1	AGCGTA
+S	2	TAACAG
+L	1	+	2	+	0M
+P	A	1+,2+	0M
+P	B	1+,2+	0M	st:i:4	en:i:3
+P	C	1+	*	st:i:5
+P	D	2+	*	st:i:2	en:i:5

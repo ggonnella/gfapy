@@ -1,0 +1,13 @@
+H	VN:Z:1.0
+H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/23#issuecomment-166806423
+H	co:Z:is_this_okay is OK and shall be interpreted as a linear path
+S	1	AGCGTA
+S	2	TAACAG
+S	3	GTCATC
+L	1	+	2	+	2M
+L	2	+	3	+	2M
+L	3	+	1	+	2M
+P	linear_path	1+,2+,3+	*,*
+P	circular_path	1+,2+,3+	*,*,*
+P	more_than_circular	1+,2+,3+,1+	*,*,0M
+P	is_this_okay	1+,2+,3+	*
