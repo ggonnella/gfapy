@@ -47,13 +47,13 @@ class RGFA::SegmentInfo < Array
   end
 
   # @return [RGFA::SegmentInfo] same segment, inverted attribute
-  def other
+  def invert_attribute
     self.class.new([self[0], self.attribute_inverted])
   end
 
   # @param [Symbol] attribute an attribute value
   # @return [Symbol] the other attribute value
-  def self.other(attribute)
+  def self.invert(attribute)
     i = self::ATTR.index(attribute.to_sym)
     if i.nil?
       raise RGFA::SegmentInfo::InvalidAttributeError,
@@ -64,7 +64,7 @@ class RGFA::SegmentInfo < Array
 
   # @return [String] name of the segment and attribute
   def to_s
-    "#{name}:#{attribute}"
+    "#{name}#{attribute}"
   end
 
   # @return [Symbol] name of the segment and attribute
@@ -95,7 +95,7 @@ class RGFA::SegmentEnd < RGFA::SegmentInfo
   # Segment end type (begin or end)
   ATTR = [ END_TYPE_BEGIN = :B, END_TYPE_END = :E ]
   alias_method :end_type, :attribute
-  alias_method :other_end, :other
+  alias_method :invert_end_type, :invert_attribute
   alias_method :end_type_inverted, :attribute_inverted
 end
 
@@ -104,7 +104,7 @@ class RGFA::OrientedSegment < RGFA::SegmentInfo
   # Segment orientation
   ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
   alias_method :orient, :attribute
-  alias_method :other_orient, :other
+  alias_method :invert_orient, :invert_attribute
   alias_method :orient_inverted, :attribute_inverted
 end
 

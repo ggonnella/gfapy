@@ -17,11 +17,4 @@ class TestRGFASegmentReferences < Test::Unit::TestCase
     assert_equal(true, l.circular?)
   end
 
-  def test_containment_other
-    c = "C\t1\t+\t2\t-\t12\t*".to_rgfa_line
-    assert_equal(:"2", c.other(:"1"))
-    assert_equal(:"1", c.other(:"2"))
-    assert_raise(RGFA::LineMissingError){c.other(:"0")}
-  end
-
 end

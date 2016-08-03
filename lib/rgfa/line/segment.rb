@@ -15,6 +15,48 @@ class RGFA::Line::Segment < RGFA::Line
 
   define_field_methods!
 
+  attr_writer :links, :containments, :paths
+
+  def links
+    @links ||= {:from => {:+ => [], :- => []},
+                :to   => {:+ => [], :- => []}}
+    @links
+  end
+
+  def all_links
+    l = self.links
+    l[:from][:+] + l[:from][:-] + l[:to][:+] + l[:to][:-]
+  end
+
+  def containments
+    @containments ||= {:from => {:+ => [], :- => []},
+                       :to   => {:+ => [], :- => []}}
+    @containments
+  end
+
+  def all_containments
+    l = self.containments
+    l[:from][:+] + l[:from][:-] + l[:to][:+] + l[:to][:-]
+  end
+
+  def all_connections
+    all_links + all_containments
+  end
+
+  def paths
+    @paths ||= {:+ => [], :- => []}
+    @paths
+  end
+
+  def all_paths
+    pt = self.paths
+    pt[:+] + pt[:-]
+  end
+
+  def all_references
+    all_connections + all_paths
+  end
+
   # @raise [RGFA::Line::Segment::InconsistentLengthError]
   #    if sequence length and LN tag are not consistent.
   def validate_length!

@@ -1,78 +1,10 @@
 require_relative "error.rb"
 
 #
-# Methods for the RGFA class, which allow to modify the content of the graph
-# without requiring complex graph traversal.
+# Method for the RGFA class, which allow to split a segment into
+# multiple copies.
 #
-# @see RGFA::Traverse
-#
-module RGFA::Edit
-
-  # Eliminate all sequences from S lines, changing them to a "*"
-  #
-  # @return [RGFA] self
-  def delete_sequences
-    @lines[:S].each {|l| l.sequence = "*"}
-    self
-  end
-
-  # Eliminate all CIGAR from L/C/P lines, changing them to "*"
-  #
-  # @return [RGFA] self
-  def delete_alignments
-    @lines[:L].each {|l| l.overlap = RGFA::CIGAR.new()}
-    @lines[:C].each {|l| l.overlap = RGFA::CIGAR.new()}
-    @lines[:P].each {|l| l.cigars = Array.new(l.cigars.size){RGFA::CIGAR.new()}}
-    self
-  end
-
-  # Rename a segment or a path
-  #
-  # @param old_name [String] the name of the segment or path to rename
-  # @param new_name [String] the new name for the segment or path
-  #
-  # @raise[RGFA::DuplicatedLabelError]
-  #   if +new_name+ is already a segment or path name
-  # @return [RGFA] self
-  def rename(old_name, new_name)
-    old_name = old_name.to_sym
-    new_name = new_name.to_sym
-    validate_segment_and_path_name_unique!(new_name)
-    is_path = @path_names.has_key?(old_name.to_sym)
-    is_segment = @segment_names.has_key?(old_name.to_sym)
-    if !is_path and !is_segment
-      raise RGFA::DuplicatedLabelError,
-        "#{old_name} is not a path or segment name"
-    end
-    if is_segment
-      s = segment!(old_name)
-      s.name = new_name
-      i = @segment_names[old_name.to_sym]
-      @segment_names.delete(old_name.to_sym)
-      @segment_names[new_name.to_sym] = i
-      [:L,:C].each do |rt|
-        [:from,:to].each do |dir|
-          @c.lines(rt, old_name, dir).each do |l|
-            l.set(dir, new_name)
-          end
-        end
-      end
-      paths_with(old_name).each do |l|
-        l.segment_names = l.segment_names.map do |sn, o|
-          sn = new_name if sn == old_name
-          [sn, o].join("")
-        end.join(",")
-      end
-      @c.rename_segment(old_name, new_name)
-    else
-      pt = path!(old_name)
-      i = @path_names[old_name.to_sym]
-      pt.name = new_name
-      @path_names.delete(old_name.to_sym)
-      @path_names[new_name.to_sym] = i
-    end
-    self
-  end
+module RGFA::Multiplication
 
   # Create multiple copies of a segment.
   #
@@ -167,8 +99,8 @@ module RGFA::Edit
     end
     while retval.size < (factor-1)
       while retval.include?(next_name) or
-            @segment_names.has_key?(next_name.to_sym) or
-            @path_names.has_key?(next_name.to_sym)
+            @segments.has_key?(next_name.to_sym) or
+            @paths.has_key?(next_name.to_sym)
         if copy_names == :copy
           next_name += "1"
           copy_names = :number
@@ -191,12 +123,14 @@ module RGFA::Edit
 
   def divide_segment_and_connection_counts(segment, factor)
     divide_counts(segment, factor)
-    [:L,:C].each do |rt|
+    [:links,:containments].each do |rt|
       [:from,:to].each do |dir|
-        @c.lines(rt,segment.name,dir).each do |l|
-          # circular link counts shall be divided only ones
-          next if dir == :to and l.from == l.to
-          divide_counts(l, factor)
+        [:+, :-].each do |o|
+          segment.send(rt)[dir][o].each do |l|
+            # circular link counts shall be divided only ones
+            next if dir == :to and l.from == l.to
+            divide_counts(l, factor)
+          end
         end
       end
     end
@@ -206,12 +140,14 @@ module RGFA::Edit
     cpy = segment.clone
     cpy.name = clone_name
     self << cpy
-    [:L,:C].each do |rt|
+    [:links,:containments].each do |rt|
       [:from,:to].each do |dir|
-        @c.lines(rt,segment.name,dir).each do |l|
-          lc = l.clone
-          lc.set(dir, clone_name)
-          self << lc
+        [:+, :-].each do |o|
+          segment.send(rt)[dir][o].each do |l|
+            lc = l.clone
+            lc.set(dir, clone_name)
+            self << lc
+          end
         end
       end
     end

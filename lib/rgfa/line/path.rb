@@ -47,6 +47,34 @@ class RGFA::Line::Path < RGFA::Line
     self.cigars.size == 1 and self.cigars[0].empty?
   end
 
+  # The links to which the path refers; it can be an empty array
+  # (e.g. from a line which is not embedded in a graph);
+  # the boolean is true if the equivalent reverse link is used.
+  # @return [Array<RGFA::Line::Link, Boolean>]
+  def links
+    @links ||= []
+    @links
+  end
+
+  # computes the list of links which are required to support
+  # the path
+  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::Cigar]>]
+  #   an array, which elements are 3-tuples (from oriented segment,
+  #   to oriented segment, cigar)
+  def required_links
+    has_undef_cigars = self.undef_cigars?
+    retval = []
+    self.segment_names.size.times do |i|
+      j = i+1
+      if j == self.segment_names.size
+        circular? ? j = 0 : break
+      end
+      cigar = has_undef_cigars ? [] : self.cigars[i]
+      retval << [self.segment_names[i], self.segment_names[j], cigar]
+    end
+    retval
+  end
+
   private
 
   def validate_lists_size!

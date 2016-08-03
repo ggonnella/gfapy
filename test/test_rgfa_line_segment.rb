@@ -53,10 +53,11 @@ class TestRGFALineSegment < Test::Unit::TestCase
   end
 
   def test_other_orientation
-    assert_equal(:+, RGFA::OrientedSegment.other("-"))
-    assert_equal(:-, RGFA::OrientedSegment.other("+"))
+    assert_equal(:+, RGFA::OrientedSegment.invert("-"))
+    assert_equal(:-, RGFA::OrientedSegment.invert("+"))
+    assert_equal(:-, RGFA::OrientedSegment.invert(:+))
     assert_raises(RGFA::SegmentInfo::InvalidAttributeError) do
-      RGFA::OrientedSegment.other("x")
+      RGFA::OrientedSegment.invert("x")
     end
   end
 

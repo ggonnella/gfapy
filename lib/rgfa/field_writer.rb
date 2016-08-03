@@ -1,6 +1,7 @@
 require "json"
 require_relative "byte_array"
 require_relative "numeric_array"
+require_relative "line"
 
 #
 # Methods to convert ruby objects to the GFA string representations
@@ -101,7 +102,7 @@ class Array
     when :cgs
       map{|cig|cig.to_gfa_datastring(:cig)}.join(",")
     when :lbs
-      map{|os|os.to_oriented_segment.join}.join(",")
+      map{|os|os.to_oriented_segment.to_s}.join(",")
     when :H
       to_byte_array.to_s
     else
@@ -129,4 +130,10 @@ end
 class RGFA::NumericArray
   #!macro gfa_datatype
   def gfa_datatype; :B; end
+end
+
+class RGFA::Line::Segment
+  def to_gfa_datastring(datatype)
+    to_sym.to_s
+  end
 end

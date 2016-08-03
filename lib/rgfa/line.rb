@@ -36,14 +36,42 @@ class RGFA::Line
   # data types which are parsed only on access
   DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
 
+  def virtual?
+    @virtual
+  end
+
+  def data
+    @data
+  end
+  protected :data
+
+  def real!(real_line)
+    @virtual = false
+    real_line.data.each_pair do |k, v|
+      @data[k] = v
+    end
+  end
+
   # @!macro rgfa_line
   #
-  # @param data [Array<String>] the content of the line; the
-  #   array content is not preserved by this method (the array
-  #   will be empty after calling this method)
+  # @param data [Array<String>,Hash] the content of the line; if
+  #   an array of strings, this is interpreted as the splitted content
+  #   of a GFA file line; the array content is not preserved by this method
+  #   (the array will be empty after calling this method); usage with an hash
+  #   shall be considered private, as it is lower level and is not guaranteed
+  #   to deliver a valid line
   # @param validate [Boolean] <i>(default: +true+)</i>
   #   validate the content of the fields
-  #   using the regular expressions of the GFA specification
+  #   using the regular expressions of the GFA specification;
+  #   this is done on initialization if the fields are specified using an array
+  #   of strings (not if an hash); furthermore validation is run, when
+  #   the string representation is computed
+  # @param virtual [Boolean] <i>(default: +false+)</i>
+  #   mark the line as virtual, i.e. not yet found in the GFA file;
+  #   e.g. a link is allowed to refer to a segment which is not
+  #   yet created; in this case a segment marked as virtual is created,
+  #   which is replaced by a non-virtual segment, when the segment
+  #   line is later found
   #
   # <b> Constants defined by subclasses </b>
   #
@@ -66,15 +94,22 @@ class RGFA::Line
   #
   # @return [RGFA::Line]
   #
-  def initialize(data, validate: true)
+  def initialize(data, validate: true, virtual: false)
     unless self.class.const_defined?("RECORD_TYPE")
       raise RuntimeError, "This class shall not be directly instantiated"
     end
     @validate = validate
+    @virtual = virtual
     @data = {}
     if data.kind_of?(Hash)
       # cloning initialization
-      data.each_pair {|k, v| @data[k] = v.clone}
+      data.each_pair do |k, v|
+        if [Array, Hash, String].include?(v.class)
+          @data[k] = v.clone
+        else
+          @data[k] = v
+        end
+      end
     else
       # normal initialization, from array of strings
       initialize_required_fields(data)
@@ -386,14 +421,14 @@ class RGFA::Line
   #   contains the same optional fields
   #   and all required and optional fields contain the same field values?
   # @see RGFA::Line::Link#==
-  def ==(o)
-    (o.record_type == self.record_type) and
-      (o.fieldnames == self.fieldnames) and
-        (o.fieldnames.all? do |fn|
-          (o.get(fn) == self.get(fn)) or
-          field_str()
-        end)
-  end
+  #def ==(o)
+  #  (o.record_type == self.record_type) and
+  #    (o.fieldnames == self.fieldnames) and
+  #      (o.fieldnames.all? do |fn|
+  #        (o.get(fn) == self.get(fn)) or
+  #        field_str()
+  #      end)
+  #end
 
   # Validate the RGFA::Line instance
   # @raise [RGFA::FieldParser::FormatError] if any field content is not valid

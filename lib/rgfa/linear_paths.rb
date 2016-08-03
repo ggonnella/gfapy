@@ -1,26 +1,11 @@
+require_relative "segment_ends_path"
+
 #
-# Methods for the RGFA class, which involve a traversal of the graph following
-# links
+# Methods for the RGFA class, which allow to find and merge linear paths.
 #
-module RGFA::Traverse
+module RGFA::LinearPaths
 
   require "set"
-
-  # Computes the connectivity of a segment from its number of links.
-  #
-  # @param segment [String|RGFA::Line::Segment] segment name or instance
-  #
-  # @return [Array<conn_symbol,conn_symbol>]
-  #  conn. symbols respectively of the :B and :E ends of +segment+.
-  #
-  # <b>Connectivity symbol:</b> (+conn_symbol+)
-  # - Let _n_ be the number of links to an end (+:B+ or +:E+) of a segment.
-  #   Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
-  #
-  def connectivity(segment)
-    connectivity_symbols(links_of([segment, :B]).size,
-                         links_of([segment, :E]).size)
-  end
 
   # @return [Array<RGFA::SegmentEnd>]
   #
@@ -31,15 +16,15 @@ module RGFA::Traverse
   # @param segment [String|RGFA::Line::Segment] a segment name or instance
   # @param exclude [Set<String>] a set of segment names to exclude from the path
   #
-  def linear_path(segment, exclude = Set.new)
-    segment = segment.name if segment.kind_of?(RGFA::Line)
-    cs = connectivity(segment)
-    segpath = []
+  def linear_path(s, exclude = Set.new)
+    s = s.to_sym
+    cs = connectivity(s)
+    segpath = RGFA::SegmentEndsPath.new()
     [:B, :E].each_with_index do |et, i|
       if cs[i] == 1
-        exclude << segment
+        exclude << s
         segpath.pop
-        segpath += traverse_linear_path([segment, et], exclude)
+        segpath += traverse_linear_path(RGFA::SegmentEnd.new([s, et]), exclude)
       end
     end
     return (segpath.size < 2) ? nil : segpath
@@ -50,17 +35,17 @@ module RGFA::Traverse
   # @return [Array<Array<RGFA::SegmentEnd>>]
   def linear_paths
     exclude = Set.new
-    paths = []
+    retval = []
     segnames = segment_names
     progress_log_init(:linear_paths, "segments", segnames.size,
       "Detect linear paths (#{segnames.size} segments)")  if @progress
     segnames.each do |sn|
       progress_log(:linear_paths) if @progress
       next if exclude.include?(sn)
-      paths << linear_path(sn, exclude)
+      retval << linear_path(sn, exclude)
     end
     progress_log_end(:linear_paths)
-    return paths.compact
+    return retval.compact
   end
 
   # Merge a linear path, i.e. a path of segments without extra-branches
@@ -90,10 +75,11 @@ module RGFA::Traverse
     merged, first_reversed, last_reversed =
                               create_merged_segment(segpath, options)
     self << merged
-    link_merged(merged.name, other_segment_end(segpath.first), first_reversed)
+    link_merged(merged.name, segpath.first.to_segment_end.invert_end_type,
+                first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
-    segpath.each do |sn, et|
-      delete_segment(sn)
+    segpath.each do |sn_et|
+      delete_segment(sn_et[0])
       progress_log(:merge_linear_paths, 0.05) if @progress
     end
     self
@@ -117,110 +103,7 @@ module RGFA::Traverse
     self
   end
 
-  # @return [Boolean] does the removal of the link alone divide a component
-  #   of the graph into two?
-  # @param link [RGFA::Line::Link] a link
-  def cut_link?(link)
-    return false if link.circular?
-    return true if links_of(other_segment_end(link.from_end)).size == 0
-    return true if links_of(other_segment_end(link.to_end)).size == 0
-    c = {}
-    [:from, :to].each do |et|
-      c[et] = Set.new
-      visited = Set.new
-      segend = link.send(:"#{et}_end")
-      visited << segend[0]
-      visited << link.other_end(segend)[0]
-      traverse_component(segend, c[et], visited)
-    end
-    return c[:from] != c[:to]
-  end
-
-  # @return [Boolean] does the removal of the segment and its links divide a
-  #   component of the graph into two?
-  # @param segment [String, RGFA::Line::Segment] a segment name or instance
-  def cut_segment?(segment)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
-    cn = connectivity(segment_name)
-    return false if [[0,0],[0,1],[1,0]].include?(cn)
-    start_points = []
-    [:B, :E].each do |et|
-      start_points += links_of([segment_name, et]).map do |l|
-        other_segment_end(l.other_end([segment_name, et]))
-      end
-    end
-    cc = []
-    start_points.uniq.each do |start_point|
-      cc << Set.new
-      visited = Set.new
-      visited << segment_name
-      traverse_component(start_point, cc.last, visited)
-    end
-    return cc.any?{|c|c != cc[0]}
-  end
-
-  # Find the connected component of the graph in which a segment is included
-  # @return [Array<String>]
-  #   array of segment names
-  # @param segment [String, RGFA::Line::Segment] a segment name or instance
-  # @param visited [Set<String>] a set of segments to ignore during graph
-  #   traversal; all segments in the found component will be added to it
-  def segment_connected_component(segment, visited = Set.new)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
-    visited << segment_name
-    c = [segment_name]
-    traverse_component([segment_name, :B], c, visited)
-    traverse_component([segment_name, :E], c, visited)
-    return c
-  end
-
-  # Find the connected components of the graph
-  # @return [Array<Array<String>>]
-  #   array of components, each an array of segment names
-  def connected_components
-    components = []
-    visited = Set.new
-    segment_names.each do |sn|
-      next if visited.include?(sn)
-      components << segment_connected_component(sn, visited)
-    end
-    return components
-  end
-
-  # Split connected components of the graph into single-component RGFAs
-  # @return [Array<RGFA>]
-  def split_connected_components
-    retval = []
-    ccs = connected_components
-    ccs.each do |cc|
-      gfa2 = self.clone
-      gfa2.rm(gfa2.segment_names - cc)
-      retval << gfa2
-    end
-    return retval
-  end
-
   private
-
-  def traverse_component(segment_end, c, visited)
-    links_of(segment_end).each do |l|
-      oe = l.other_end(segment_end)
-      sn = oe[0]
-      next if visited.include?(sn)
-      visited << sn
-      c << sn
-      traverse_component([sn, :B], c, visited)
-      traverse_component([sn, :E], c, visited)
-    end
-  end
-
-  def connectivity_symbols(n,m)
-    [connectivity_symbol(n), connectivity_symbol(m)]
-  end
-
-  def connectivity_symbol(n)
-    n > 1 ? :M : n
-  end
 
   # Traverse the links, starting from the segment +from+ :E end if
   # +traverse_from_E_end+ is true, or :B end otherwise.
@@ -243,27 +126,27 @@ module RGFA::Traverse
   #     Otherwise the first (and possibly only) element is +from+.
   #     All elements in the index range 1..-2 are :internal.
   def traverse_linear_path(segment_end, exclude)
-    list = []
+    list = RGFA::SegmentEndsPath.new()
     current = segment_end
     loop do
       after  = links_of(current)
-      before = links_of(other_segment_end(current))
+      before = links_of(current.to_segment_end.invert_end_type)
       cs = connectivity_symbols(before.size, after.size)
       if cs == [1,1] or list.empty?
         list << current
-        exclude << current[0]
+        exclude << current[0].to_sym
         l = after.first
-        current = other_segment_end(l.other_end(current))
-        break if exclude.include?(current[0])
+        current = l.other_end(current).invert_end_type
+        break if exclude.include?(current[0].to_sym)
       elsif cs[0] == 1
         list << current
-        exclude << current[0]
+        exclude << current[0].to_sym
         break
       else
         break
       end
     end
-    return segment_end[1] == :B ? reverse_segpath(list) : list
+    return segment_end[1] == :B ? list.reverse : list
   end
 
   def sum_of_counts(segpath, multfactor = 1)
@@ -338,7 +221,7 @@ module RGFA::Traverse
                           options)
     progress_log(:merge_linear_paths, 0.95) if @progress
     (segpath.size-1).times do |i|
-      b = other_segment_end(segpath[i+1])
+      b = segpath[i+1].to_segment_end.invert_end_type
       l = link!(a, b)
       if l.overlap == []
         cut = 0
@@ -352,7 +235,7 @@ module RGFA::Traverse
       last_reversed = (b[1] == :E)
       add_segment_to_merged(merged, segment!(b[0]), last_reversed, cut, false,
                             options)
-      a = other_segment_end(b)
+      a = b.to_segment_end.invert_end_type
       if @progress
         progress_log(:merge_linear_paths, 0.95)
       end
@@ -378,22 +261,18 @@ module RGFA::Traverse
     return merged, first_reversed, last_reversed
   end
 
-  def reverse_segpath(segpath)
-    segpath.reverse.map {|segment_end| other_segment_end(segment_end)}
-  end
-
   def link_merged(merged_name, segment_end, reversed)
     links_of(segment_end).each do |l|
       l2 = l.clone
       if l2.to == segment_end.first
         l2.to = merged_name
         if reversed
-          l2.to_orient = RGFA::OrientedSegment.other(l2.to_orient)
+          l2.to_orient = RGFA::OrientedSegment.invert(l2.to_orient)
         end
       else
         l2.from = merged_name
         if reversed
-          l2.from_orient = RGFA::OrientedSegment.other(l2.from_orient)
+          l2.from_orient = RGFA::OrientedSegment.invert(l2.from_orient)
         end
       end
       self << l2

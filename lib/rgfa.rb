@@ -5,21 +5,25 @@
 RGFA = Class.new
 require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
-require_relative "./rgfa/connection_info.rb"
+require_relative "./rgfa/connectivity.rb"
+require_relative "./rgfa/containments.rb"
 require_relative "./rgfa/field_parser.rb"
 require_relative "./rgfa/field_validator.rb"
 require_relative "./rgfa/field_writer.rb"
-require_relative "./rgfa/edit.rb"
+require_relative "./rgfa/multiplication.rb"
+require_relative "./rgfa/headers.rb"
 require_relative "./rgfa/line.rb"
-require_relative "./rgfa/line_getters.rb"
-require_relative "./rgfa/line_creators.rb"
-require_relative "./rgfa/line_destructors.rb"
+require_relative "./rgfa/linear_paths.rb"
+require_relative "./rgfa/lines.rb"
+require_relative "./rgfa/links.rb"
 require_relative "./rgfa/logger.rb"
 require_relative "./rgfa/numeric_array.rb"
 require_relative "./rgfa/rgl.rb"
+require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_info.rb"
+require_relative "./rgfa/segments.rb"
+require_relative "./rgfa/paths.rb"
 require_relative "./rgfa/sequence.rb"
-require_relative "./rgfa/traverse.rb"
 
 #
 # This is the main class of the RGFA library.
@@ -27,38 +31,26 @@ require_relative "./rgfa/traverse.rb"
 # Supports creating a graph from scratch, input and output from/to file
 # or strings, as well as several operations on the graph.
 #
-# *Internals*:
-# - The main structures are the @lines arrays, one for each record_type
-#   (e.g. header => @lines["H"]); these contain +RGFA::Line+ objects of the
-#   corresponding subclass (e.g. +RGFA::Line::Header+)
-# - If an element is deleted, the position in @lines[record_type] is set to
-#   +nil+, so that the links to all other positions still function
-# - The @segment_names and @path_names arrays contain the names of
-#   the segments and paths, in the same order as @lines[:S] and @lines[:P];
-#   if a segment or path is added, its name is pushed on the @..._name array;
-#   if a segment or path is deleted, its position on the @..._name array is set
-#   to nil
-# - @c contains a RGFA::ConnectionInfo object, with hashes of indices of
-#   @lines["L"|"C"|"P"] which allow to directly
-#   find the links, containments and paths involving a given segment; @c is
-#   kept uptodate by the methods which allow to delete/rename or add links,
-#   containments or paths
 class RGFA
 
-  include RGFA::LineGetters
-  include RGFA::LineCreators
-  include RGFA::LineDestructors
-  include RGFA::Edit
-  include RGFA::Traverse
+  include RGFA::Lines
+  include RGFA::Headers
+  include RGFA::Segments
+  include RGFA::Links
+  include RGFA::Containments
+  include RGFA::Paths
+  include RGFA::LinearPaths
+  include RGFA::Connectivity
+  include RGFA::Multiplication
   include RGFA::LoggerSupport
   include RGFA::RGL
 
   def initialize
-    @lines = {}
-    RGFA::Line::RECORD_TYPES.each {|rt| @lines[rt] = []}
-    @segment_names = {}
-    @path_names = {}
-    @c = RGFA::ConnectionInfo.new(@lines)
+    @headers = {:multiple_values => []}
+    @segments = {}
+    @links = []
+    @containments = []
+    @paths = {}
     @segments_first_order = false
     @validate = true
     @progress = false
@@ -83,13 +75,13 @@ class RGFA
   # List all names of segments in the graph
   # @return [Array<String>]
   def segment_names
-    @segment_names.keys.compact
+    @segments.keys.compact
   end
 
   # List all names of path lines in the graph
   # @return [Array<String>]
   def path_names
-    @path_names.keys.compact
+    @paths.keys.compact
   end
 
   # Post-validation of the RGFA
@@ -262,12 +254,15 @@ class RGFA
 
   # Checks that L, C and P refer to existing S.
   # @return [void]
-  # @raise if validation fails
+  # @raise [RGFA::LineMissingError] if validation fails
   def validate_segment_references!
-    [:L, :C].each do |rt|
-      each(rt) {|l| [:from,:to].each {|e| segment!(l.send(e))}}
+    @segments.values.each do |s|
+      if s.virtual?
+        raise RGFA::LineMissingError, "Segment #{s.name} does not exist\n"+
+            "References to #{s.name} were found in the following lines:\n"+
+              s.all_references.map(&:to_s).join("\n")
+      end
     end
-    each_path {|l| l.segment_names.each {|sn, o| segment!(sn)}}
     return nil
   end
 
@@ -275,13 +270,15 @@ class RGFA
   # @return [void]
   # @raise if validation fails
   def validate_path_links!
-    each_path {|path| path_links(path)}
-    return nil
-  end
-
-  # for tests
-  def validate_connect
-    @c.validate!
+    @paths.values.each do |pt|
+      pt.links.each do |l, dir|
+        if l.virtual?
+          raise RGFA::LineMissingError, "Link: #{l.to_s}\n"+
+          "does not exist, but is required by the paths:\n"+
+          l.paths.map{|pt2, dir|pt2.to_s}.join("\n")
+        end
+      end
+    end
     return nil
   end
 

@@ -90,7 +90,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     assert_equal([%w[18 19 1],
                   %w[11 9 12],
                   %w[22 16 20 21 23]],
-                 gfa.linear_paths.map{|sp|sp.map{|sn,et|sn.to_s}})
+                 gfa.linear_paths.map{|sp|sp.map{|sn,et|sn.to_sym.to_s}})
   end
 
 end
