@@ -95,7 +95,7 @@ class RGFA::Line
   # @return [RGFA::Line]
   #
   def initialize(data, validate: true, virtual: false)
-    unless self.class.const_defined?("RECORD_TYPE")
+    unless self.class.const_defined?(:"RECORD_TYPE")
       raise RuntimeError, "This class shall not be directly instantiated"
     end
     @validate = validate
