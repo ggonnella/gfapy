@@ -132,7 +132,10 @@ class Array
     if respond_to?(:segment) and respond_to?(:orient)
       return RGFA::OrientedSegment.new([segment.to_sym, orient.to_sym])
     end
-    se = subclass.new(map{|e|e.kind_of?(String) ? e.to_sym : e})
+    if self[0].kind_of?(String) and self[0].untrusted?
+      self[0].validate_gfa_field(:lbl)
+    end
+    se = subclass.new(map {|e| e.kind_of?(String) ? e.to_sym : e})
     se.validate!
     return se
   end

@@ -1,4 +1,5 @@
 require_relative "field_parser"
+require_relative "line"
 
 #
 # Methods to validate the string representations of the GFA fields data
@@ -33,7 +34,7 @@ module RGFA::FieldValidator
   # @raise [RGFA::FieldParser::FormatError] if the string does not match
   #   the regexp for the provided datatype
   # @return [void]
-  def validate_gfa_field(datatype: nil, fieldname: nil)
+  def validate_gfa_field(datatype, fieldname=nil)
     regexp = DATASTRING_VALIDATION_REGEXP[datatype]
     raise RGFA::FieldParser::UnknownDatatypeError if regexp.nil?
     if (regexp !~ self)
@@ -42,6 +43,7 @@ module RGFA::FieldValidator
         "#{fieldname}: #{self.inspect}\n"+
         "Wrong format, expected: #{regexp}"
     end
+    self.trust
     return nil
   end
 
@@ -51,3 +53,85 @@ class String
   include RGFA::FieldValidator
 end
 
+class Symbol
+  def validate_gfa_field(datatype, fieldname=nil)
+    if ![:lbl, :orn].include?(datatype)
+      raise RGFA::FieldParser::FormatError
+    end
+    self.to_s.validate_gfa_field(datatype)
+  end
+end
+
+class Hash
+  def validate_gfa_field(datatype, fieldname=nil)
+    if ![:Z, :J].include?(datatype)
+      raise RGFA::FieldParser::FormatError
+    end
+  end
+end
+
+class Array
+  def validate_gfa_field(datatype, fieldname=nil)
+    case datatype
+    when :J
+      return
+    when :Z
+      return
+    when :lbs
+      map!(&:to_oriented_segment).each(&:validate!)
+    when :cig
+      to_cigar.validate!
+    when :cgs
+      map(&:to_cigar).each(&:validate!)
+    when :B
+      to_numeric_array.validate!
+    when :H
+      to_byte_array.validate!
+    else
+      raise RGFA::FieldParser::FormatError
+    end
+  end
+end
+
+class RGFA::ByteArray
+  def validate_gfa_field(datatype, fieldname=nil)
+    raise RGFA::FieldParser::FormatError if datatype != :B
+    validate!
+  end
+end
+
+class RGFA::Cigar
+  def validate_gfa_field(datatype, fieldname=nil)
+    raise RGFA::FieldParser::FormatError if datatype != :cig
+    validate!
+  end
+end
+
+class RGFA::NumericArray
+  def validate_gfa_field(datatype, fieldname=nil)
+    raise RGFA::FieldParser::FormatError if datatype != :H
+    validate!
+  end
+end
+
+class Float
+  def validate_gfa_field(datatype, fieldname=nil)
+    if ![:f, :Z].include?(datatype)
+      raise RGFA::FieldParser::FormatError
+    end
+  end
+end
+
+class Integer
+  def validate_gfa_field(datatype, fieldname=nil)
+    if (datatype == :pos and self < 0) or ![:i, :f, :Z].include?(datatype)
+      raise RGFA::FieldParser::FormatError
+    end
+  end
+end
+
+class RGFA::Line::Segment
+  def validate_gfa_field(datatype, fieldname=nil)
+    raise RGFA::FieldParser::UnknownDatatypeError if datatype != :lbl
+  end
+end

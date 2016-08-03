@@ -9,18 +9,23 @@ require_relative "error"
 #
 module RGFA::FieldParser
 
-  # Parse a string representation of a GFA field value;
-  # it is assumed that the string is valid with respect to the
-  # specified +datatype+.
+  # Parse a string representation of a GFA field value
+  # @raise [RGFA::Error] if the value is not valid
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
   def parse_gfa_field(datatype: nil)
     case datatype
     when :A, :Z, :seq
+      validate_gfa_field(datatype)
       return self
     when :lbl, :orn
+      validate_gfa_field(datatype)
       return to_sym
-    when :i, :pos
+    when :i
       return Integer(self)
+    when :pos
+      value = Integer(self)
+      raise RGFA::FieldParser::FormatError if value < 0
+      return value
     when :f
       return Float(self)
     when :H

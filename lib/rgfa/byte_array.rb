@@ -18,6 +18,8 @@ class RGFA::ByteArray < Array
           "in array: #{self.inspect}"
       end
     end
+    self.trust
+    return nil
   end
 
   # Returns self
@@ -61,16 +63,12 @@ class String
   # @return [RGFA::ByteArray] the byte array
   # @raise [RGFA::ByteArray::FormatError] if the string size is not > 0
   #   and even
-  # @note:
-  #   as to_i accepts any string, and returns 0 if not valid,
-  #   the method does not raise an exception if the string is not valid;
-  #   you can validate it using String#validate_datastring(:H)
   def to_byte_array
     if (size < 2) or (size % 2 == 1)
       raise RGFA::ByteArray::FormatError,
         "Invalid byte array string #{self}; "+
         "each element must be represented by two letters [0-9A-F]"
     end
-    scan(/..?/).map {|x|x.to_i(16)}.to_byte_array
+    scan(/..?/).map {|x|Integer(x,16)}.to_byte_array
   end
 end

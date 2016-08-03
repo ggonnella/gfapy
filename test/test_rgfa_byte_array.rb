@@ -27,13 +27,7 @@ class TestRGFAByteArray < Test::Unit::TestCase
       a = "12ACF4AA601C1".to_byte_array }
     assert_raises(RGFA::ByteArray::FormatError) {
       a = "".to_byte_array }
-    # note: unfortunately to_i accepts any string, and returns 0
-    # if not valid, therefore the following does not raise an
-    # error:
-    assert_nothing_raised { a = "12ACG4AA601C1F".to_byte_array }
-    # but in context of GFA it can be validated by regular expression:
-    assert_raises(RGFA::FieldParser::FormatError) {
-      "12ACG4AA601C1F".validate_gfa_field(datatype: :H) }
+    assert_raises(ArgumentError) { a = "12ACG4AA601C1F".to_byte_array }
   end
 
   def test_to_string

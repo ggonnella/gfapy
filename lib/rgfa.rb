@@ -275,7 +275,7 @@ class RGFA
         if l.virtual?
           raise RGFA::LineMissingError, "Link: #{l.to_s}\n"+
           "does not exist, but is required by the paths:\n"+
-          l.paths.map{|pt2, dir|pt2.to_s}.join("\n")
+          l.paths.map{|pt2, dir2|pt2.to_s}.join("\n")
         end
       end
     end

@@ -58,26 +58,17 @@ class RGFA::CIGAR < Array
     end
   end
 
+  def validate!
+    any? do |op|
+      op.to_cigar_operation.validate!
+    end
+  end
+
   # @return [RGFA::CIGAR] self
   def to_cigar
     self
   end
 
-end
-
-class Array
-  def to_cigar
-    RGFA::CIGAR.new(self)
-  end
-end
-
-class String
-  # Parse CIGAR string and return an array of CIGAR operations
-  # @return [RGFA::CIGAR] CIGAR operations (empty if string is "*")
-  # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
-  def to_cigar
-    RGFA::CIGAR.from_string(self)
-  end
 end
 
 # Exception raised by invalid cigar string content
@@ -91,4 +82,34 @@ class RGFA::CIGAR::Operation
   def to_s
     "#{len}#{code}"
   end
+
+  def validate!
+    if Integer(len) < 0 or
+         ![:M, :I, :D, :N, :S, :H, :P, :X, :"="].include?(code)
+      raise RGFA::CIGAR::ValueError
+    end
+  end
+
+  def to_cigar_operation
+    self
+  end
 end
+
+class Array
+  def to_cigar
+    RGFA::CIGAR.new(self)
+  end
+  def to_cigar_operation
+    RGFA::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
+  end
+end
+
+class String
+  # Parse CIGAR string and return an array of CIGAR operations
+  # @return [RGFA::CIGAR] CIGAR operations (empty if string is "*")
+  # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
+  def to_cigar
+    RGFA::CIGAR.from_string(self)
+  end
+end
+

@@ -26,7 +26,7 @@ class TestRGFALineContainment < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(ArgumentError) do
       f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line
     end
     assert_raises(RGFA::FieldParser::FormatError) do

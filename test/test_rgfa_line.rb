@@ -40,7 +40,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_optfield_type_error
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(ArgumentError) do
       RGFA::Line::Header.new(["zz:i:1A"])
     end
   end
@@ -137,9 +137,8 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)
-    assert_raise(ArgumentError) { l.xx = "1A"; l.xx }
-    assert_raise(ArgumentError) { l.xx = "1A"; l.xx.gfa_datatype = :Z; l.xx }
-    assert_nothing_raised { l.xx = "1A"; l.set_datatype(:xx, :Z); l.xx }
+    assert_raise(RGFA::FieldParser::FormatError) { l.xx = "1A" }
+    assert_nothing_raised { l.set_datatype(:xx, :Z); l.xx = "1A" }
     assert_equal("HI", l.VN)
     l.VN = "HO"
     assert_equal("HO", l.VN)
