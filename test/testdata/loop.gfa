@@ -1,0 +1,10 @@
+H	VN:Z:1.0
+H	ul:Z:https://github.com/sjackman/assembly-graph/raw/master/loop.gfa
+S	1	AAA
+S	2	ACG
+S	3	CAT
+S	4	TTT
+L	1	+	1	+	2M
+L	2	+	2	-	2M
+L	3	-	3	+	2M
+L	4	-	4	-	2M
