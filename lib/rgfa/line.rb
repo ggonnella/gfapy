@@ -7,6 +7,13 @@
 #     initialize instead one of its child classes, which define the concrete
 #     different record types.
 #
+# Validation:
+# - when a field is read or parsed, it is also validated
+# - when a field value is set using the set() method or using fieldname=(),
+#   it is validated
+# - if a field value is changed inplace (e.g. string, array, hash),
+#   the user is resposible for its validation (call Object#gfa_validate)
+#
 class RGFA::Line
 
   # Separator in the string representation of RGFA lines
@@ -101,6 +108,7 @@ class RGFA::Line
     @validate = validate
     @virtual = virtual
     @data = {}
+    @datatype = {}
     if data.kind_of?(Hash)
       # cloning initialization
       data.each_pair do |k, v|
@@ -181,8 +189,7 @@ class RGFA::Line
   def delete(fieldname)
     fn = fieldname.to_sym
     if optional_fieldnames.include?(fn)
-      v = @data.delete(fn)
-      return v.nil? ? nil : v[0]
+      return @data.delete(fn)
     else
       return nil
     end
@@ -194,12 +201,10 @@ class RGFA::Line
   # @param fieldname [#to_sym] the tag name of the field to validate
   # @raise [RGFA::FieldParser::FormatError] if the content of the field is
   #   not valid, according to its required type
-  # @return [nil]
+  # @return [void]
   def validate_field!(fieldname)
     fieldname = fieldname.to_sym
-    v = @data[fieldname]
-    return nil if v.nil? or v[1].nil?
-    v[0].validate_datastring(v[1], fieldname: fieldname)
+    get_string(fieldname, validate: true)
     return nil
   end
 
@@ -208,8 +213,8 @@ class RGFA::Line
   # @return [Symbol, nil] the datatype symbol or +nil+ if the field
   #   does not exist and/or the datatype is not (yet) defined
   def get_datatype(fieldname)
-    v = @data[fieldname.to_sym]
-    v.nil? ? nil : v[1]
+    fieldname = fieldname.to_sym
+    field_or_default_datatype(fieldname, @data[fieldname])
   end
 
   # @!macro [new] get_string
@@ -223,18 +228,23 @@ class RGFA::Line
   #     for the datatype
   #
   #   @param optfield [Boolean] <i>(defaults to: +false+)</i>
-  #     return the tagname:datatype:datastring representation
+  #     return the tagname:datatype:value representation
   #
   # @return [String] the string representation (an empty
   #   string if the field does not exist)
-  def get_string(fieldname, validate: true, optfield: false)
-    field = @data[fieldname.to_sym]
-    return nil if field.nil?
-    f = field[0].to_gfa_field(datatype: field[1],
-                              optfield: optfield,
-                              fieldname: fieldname,
-                              validate: validate)
-    return f
+  def get_string(fieldname, validate: @validate, optfield: false)
+    fieldname = fieldname.to_sym
+    field = @data[fieldname]
+    t = field_or_default_datatype(fieldname, field)
+    if !field.kind_of?(String)
+      field = field.to_gfa_field(datatype: t)
+      @data[fieldname] = field
+    end
+    if validate
+      field.validate_gfa_field(fieldname: fieldname,
+                                datatype: t)
+    end
+    return optfield ? field.to_gfa_optfield(fieldname, datatype: t) : field
   end
 
   # @!macro get_string
@@ -258,12 +268,11 @@ class RGFA::Line
   def set_datatype(fieldname, datatype)
     fieldname = fieldname.to_sym
     datatype = datatype.to_sym
-    unless OPTFIELD_DATATYPES.includes?(datatype)
+    unless OPTFIELD_DATATYPE.include?(datatype)
       raise RGFA::Line::UnknownDatatype, "Unknown datatype: #{datatype}"
     end
     validate_custom_optional_fieldname(fieldname)
-    @data[fieldname] ||= []
-    @data[fieldname][1] ||= datatype
+    @datatype[fieldname] = datatype
   end
 
   # Set the value of a field. The field name must be a required field,
@@ -280,13 +289,12 @@ class RGFA::Line
   # @return [void]
   def set(fieldname, value)
     fieldname = fieldname.to_sym
-    if @data.has_key?(fieldname)
-      @data[fieldname][0] = value
-    elsif predefined_optional_fieldname?(fieldname)
-      @data[fieldname] = [value, self.class::DATATYPE[fieldname]]
+    if @data.has_key?(fieldname) or predefined_optional_fieldname?(fieldname)
+      @data[fieldname] = value
     elsif valid_custom_optional_fieldname?(fieldname)
       define_field_methods(fieldname)
-      @data[fieldname] = [value]
+      @datatype[fieldname] ||= value.default_gfa_datatype
+      @data[fieldname] = value
     else
       raise RGFA::Line::FieldnameError,
         "#{fieldname} is not an existing or predefined field or a "+
@@ -300,12 +308,16 @@ class RGFA::Line
   # @return [Object,nil] value of the field
   #   or +nil+ if field is not defined
   def get(fieldname)
-    v = @data[fieldname.to_sym]
-    return nil if v.nil?
-    if not_casted?(v[0], v[1])
-      v[0] = v[0].parse_datastring(v[1])
+    fieldname = fieldname.to_sym
+    v = @data[fieldname]
+    if v.kind_of?(String)
+      t = field_or_default_datatype(fieldname, v)
+      if ![:Z, :seq, nil].include?(t)
+        v = v.parse_gfa_field(datatype: t)
+        @data[fieldname] = v
+      end
     end
-    return v[0]
+    return v
   end
 
   # Value of a field, raising an exception if it is not defined
@@ -398,7 +410,7 @@ class RGFA::Line
         raise RGFA::Line::TagMissingError,
           "No value defined for tag #{field_name}"
       when :set
-        @data[field_name] = [args[0]]
+        @data[field_name] = args[0]
         return nil
       end
     end
@@ -435,7 +447,7 @@ class RGFA::Line
   # @return [void]
   def validate!
     @data.each_pair do |fieldname, field|
-      field[0].validate_datastring(field[1], fieldname: fieldname) if field[1]
+      field.gfa_validate(fieldname: fieldname)
     end
     validate_record_type_specific_info!
   end
@@ -446,14 +458,25 @@ class RGFA::Line
     self.class::REQFIELDS.size
   end
 
-  def not_casted?(value, datatype)
-    value.kind_of?(String) and not [:A, :Z, :seq, nil].include?(datatype)
+  def field_datatype(fieldname)
+    self.class::DATATYPE.fetch(fieldname, @datatype[fieldname])
+  end
+
+  def field_or_default_datatype(fieldname, value)
+    t = field_datatype(fieldname)
+    if t.nil?
+      t = value.default_gfa_datatype
+      @datatype[fieldname] = t
+    end
+    return t
   end
 
   def init_field_value(n ,t, s)
-    s.validate_datastring(t, fieldname: n) if @validate
-    s = s.parse_datastring(t) unless DELAYED_PARSING_DATATYPES.include?(t)
-    @data[n] = [s, t]
+    s.validate_gfa_field(fieldname: n, datatype: t) if @validate
+    if !DELAYED_PARSING_DATATYPES.include?(t)
+      s = s.parse_gfa_field(datatype: t)
+    end
+    @data[n] = s
   end
 
   def initialize_required_fields(strings)
@@ -485,24 +508,22 @@ class RGFA::Line
 
   def initialize_optional_fields(strings)
     while (s = strings.shift)
-      n, t, s = s.parse_optfield
-      if @validate
-        if @data.has_key?(n)
-          raise RGFA::Line::DuplicatedOptfieldNameError,
-            "Optional field #{n} found multiple times"
+      n, t, s = s.parse_gfa_optfield
+      if @data.has_key?(n)
+        raise RGFA::Line::DuplicatedOptfieldNameError,
+          "Optional field #{n} found multiple times"
+      elsif predefined_optional_fieldname?(n)
+        unless t == self.class::DATATYPE[n]
+          raise RGFA::Line::PredefinedOptfieldTypeError,
+            "Optional field #{n} must be of type "+
+            "#{self.class::DATATYPE[n]}, #{t} found"
         end
-        if not valid_custom_optional_fieldname?(n)
-          unless predefined_optional_fieldname?(n)
-            raise RGFA::Line::CustomOptfieldNameError,
-                    "Custom-defined optional "+
-                    "fields must be lower case; found: #{n}"
-          end
-          unless t == self.class::DATATYPE[n]
-            raise RGFA::Line::PredefinedOptfieldTypeError,
-              "Optional field #{n} must be of type "+
-                "#{self.class::DATATYPE[n]}, #{t} found"
-          end
-        end
+      elsif not valid_custom_optional_fieldname?(n)
+          raise RGFA::Line::CustomOptfieldNameError,
+            "Custom-defined optional "+
+            "fields must be lower case; found: #{n}"
+      else
+        @datatype[n] = t
       end
       init_field_value(n, t, s)
     end
@@ -545,10 +566,13 @@ class RGFA::Line
       parse ? get(fieldname) : get_string(fieldname)
     end
     define_singleton_method :"#{fieldname}!" do |parse=true|
-      parse ? get!(fieldname) : get_string!(fieldname)
+      v = parse ? get(fieldname) : get_string(fieldname)
+      raise RGFA::Line::TagMissingError,
+        "No value defined for tag #{fieldname}" if v.nil?
+      return v
     end
     define_singleton_method :"#{fieldname}=" do |value|
-      set(fieldname, value)
+      @data[fieldname] = value
     end
   end
 
@@ -561,10 +585,13 @@ class RGFA::Line
         parse ? get(fieldname) : get_string(fieldname)
       end
       define_method :"#{fieldname}!" do |parse=true|
-        parse ? get!(fieldname) : get_string!(fieldname)
+        v = parse ? get(fieldname) : get_string(fieldname)
+        raise RGFA::Line::TagMissingError,
+          "No value defined for tag #{fieldname}" if v.nil?
+        return v
       end
       define_method :"#{fieldname}=" do |value|
-        set(fieldname, value)
+        @data[fieldname] = value
       end
     end
   end

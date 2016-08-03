@@ -33,7 +33,7 @@ class TestRGFAByteArray < Test::Unit::TestCase
     assert_nothing_raised { a = "12ACG4AA601C1F".to_byte_array }
     # but in context of GFA it can be validated by regular expression:
     assert_raises(RGFA::FieldParser::FormatError) {
-      "12ACG4AA601C1F".validate_datastring(:H) }
+      "12ACG4AA601C1F".validate_gfa_field(datatype: :H) }
   end
 
   def test_to_string

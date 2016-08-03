@@ -25,11 +25,11 @@ module RGFA::Paths
           l = link_from_to(from, to, cigar)
         end
         if l.nil?
-          v = RGFA::Line::Link.new({:from => [from.segment, :lbl],
-                                    :from_orient => [from.orient, :orn],
-                                    :to => [to.segment, :lbl],
-                                    :to_orient => [to.orient, :orn],
-                                    :overlap => [cigar, :cig]},
+          v = RGFA::Line::Link.new({:from => from.segment,
+                                    :from_orient => from.orient,
+                                    :to => to.segment,
+                                    :to_orient => to.orient,
+                                    :overlap => cigar},
                                    virtual: true)
           if @segments_first_order
             raise RGFA::LineMissingError, "Path: #{gfa_line}\n"+

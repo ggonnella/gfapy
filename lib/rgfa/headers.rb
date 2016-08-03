@@ -35,7 +35,7 @@ module RGFA::Headers
   # @return [Array<RGFA::Line::Header>]
   def headers
     header_fields.map do |tagname, datatype, value|
-      RGFA::Line::Header.new({tagname => [value, datatype]})
+      RGFA::Line::Header.new({tagname => value})
     end
   end
 

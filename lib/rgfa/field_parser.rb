@@ -13,7 +13,7 @@ module RGFA::FieldParser
   # it is assumed that the string is valid with respect to the
   # specified +datatype+.
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
-  def parse_datastring(datatype)
+  def parse_gfa_field(datatype: nil)
     case datatype
     when :A, :Z, :seq
       return self
@@ -38,7 +38,7 @@ module RGFA::FieldParser
                                  l[-1].to_sym].to_oriented_segment}
     else
       raise RGFA::FieldParser::UnknownDatatypeError,
-        "Datatype unknown: #{datatype}"
+        "Datatype unknown: #{datatype.inspect}"
     end
   end
 
@@ -48,7 +48,7 @@ module RGFA::FieldParser
   #   an optional field
   # @return [Array(Symbol, RGFA::Line::FIELD_DATATYPE, String)]
   #   the parsed content of the field
-  def parse_optfield
+  def parse_gfa_optfield
     if self =~ /^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$/
       return $1.to_sym, $2.to_sym, $3
     else

@@ -127,7 +127,7 @@ class TestRGFALine < Test::Unit::TestCase
   def test_field_setters_required_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
     assert_raise(RGFA::FieldParser::FormatError) { l.name = "A\t1";
-                                                 l.validate_field!(:name) }
+                                                   l.validate_field!(:name) }
     l.name = "14"
     assert_equal(:"14", l.name)
   end
@@ -138,6 +138,8 @@ class TestRGFALine < Test::Unit::TestCase
     l.xx = 15
     assert_equal(15, l.xx)
     assert_raise(ArgumentError) { l.xx = "1A"; l.xx }
+    assert_raise(ArgumentError) { l.xx = "1A"; l.xx.gfa_datatype = :Z; l.xx }
+    assert_nothing_raised { l.xx = "1A"; l.set_datatype(:xx, :Z); l.xx }
     assert_equal("HI", l.VN)
     l.VN = "HO"
     assert_equal("HO", l.VN)
@@ -147,25 +149,25 @@ class TestRGFALine < Test::Unit::TestCase
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_nothing_raised { l.zz="1" }
     assert_equal("1", l.zz)
-    assert_equal(:"Z", l.zz.gfa_datatype)
+    assert_equal(:"Z", l.zz.default_gfa_datatype)
     assert_nothing_raised { l.zi=1 }
     assert_equal(1, l.zi)
-    assert_equal(:"i", l.zi.gfa_datatype)
+    assert_equal(:"i", l.zi.default_gfa_datatype)
     assert_nothing_raised { l.zf=1.0 }
     assert_equal(1.0, l.zf)
-    assert_equal(:"f", l.zf.gfa_datatype)
+    assert_equal(:"f", l.zf.default_gfa_datatype)
     assert_nothing_raised { l.bf=[1.0,1.0] }
     assert_equal([1.0,1.0], l.bf)
-    assert_equal(:"B", l.bf.gfa_datatype)
+    assert_equal(:"B", l.bf.default_gfa_datatype)
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
-    assert_equal(:"B", l.bi.gfa_datatype)
+    assert_equal(:"B", l.bi.default_gfa_datatype)
     assert_nothing_raised { l.ba=[1.0,1] }
     assert_equal([1.0,1], l.ba)
-    assert_equal(:"J", l.ba.gfa_datatype)
+    assert_equal(:"J", l.ba.default_gfa_datatype)
     assert_nothing_raised { l.bh={:a => 1.0, :b => 1} }
     assert_equal({"a"=>1.0,"b"=>1}, l.to_s.to_rgfa_line.bh)
-    assert_equal(:"J", l.bh.gfa_datatype)
+    assert_equal(:"J", l.bh.default_gfa_datatype)
     assert_raise(NoMethodError) { l.zzz="1" }
   end
 

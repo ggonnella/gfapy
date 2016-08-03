@@ -66,10 +66,13 @@ module RGFA::Segments
   # @!macro segment
   # @raise [RGFA::LineMissingError] if no such segment exists
   def segment!(s)
-    s = segment(s)
-    raise RGFA::LineMissingError,
-      "No segment has name #{s}" if s.nil?
-    s
+    seg = segment(s)
+    if seg.nil?
+      raise RGFA::LineMissingError, "No segment has name #{s}"+
+             "#{segment_names.size < 10 ?
+               "\nSegment names: "+segment_names.inspect : ''}"
+    end
+    seg
   end
 
   # @return [Array<String>] list of names of segments connected to +segment+

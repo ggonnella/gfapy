@@ -34,7 +34,8 @@ class TestRGFATraverse < Test::Unit::TestCase
     assert_raises(RGFA::LineMissingError) {gfa.segment!("1")}
     assert_raises(RGFA::LineMissingError) {gfa.segment!("2")}
     assert_raises(RGFA::LineMissingError) {gfa.segment!("3")}
-    assert_nothing_raised {gfa.segment!("0_1_2_3")}
+    #assert_nothing_raised {gfa.segment!("0_1_2_3")}
+    gfa.segment!("0_1_2_3")
     assert_equal([], gfa.links)
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)
   end

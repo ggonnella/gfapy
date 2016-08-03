@@ -33,7 +33,7 @@ module RGFA::FieldValidator
   # @raise [RGFA::FieldParser::FormatError] if the string does not match
   #   the regexp for the provided datatype
   # @return [void]
-  def validate_datastring(datatype, fieldname: nil)
+  def validate_gfa_field(datatype: nil, fieldname: nil)
     regexp = DATASTRING_VALIDATION_REGEXP[datatype]
     raise RGFA::FieldParser::UnknownDatatypeError if regexp.nil?
     if (regexp !~ self)

@@ -16,12 +16,12 @@ class TestRGFAFieldWriter < Test::Unit::TestCase
   end
 
   def test_field_writer_H
-    assert_equal("0D0D0D", [13,13,13].to_gfa_field(datatype: :H))
+    assert_equal("0D0D0D", [13,13,13].to_byte_array.to_gfa_field)
     assert_raise(RGFA::ByteArray::ValueError) do
-      [13,13,1.3].to_gfa_field(datatype: :H)
+      [13,13,1.3].to_byte_array.to_gfa_field
     end
     assert_raise(RGFA::ByteArray::ValueError) do
-      [13,13,350].to_gfa_field(datatype: :H)
+      [13,13,350].to_byte_array.to_gfa_field
     end
   end
 
@@ -39,7 +39,7 @@ class TestRGFAFieldWriter < Test::Unit::TestCase
   end
 
   def test_field_writer_as_optfield
-    assert_equal("AA:i:13", 13.to_gfa_field(fieldname: :AA, optfield: true))
+    assert_equal("AA:i:13", 13.to_gfa_optfield(:AA))
   end
 
 end
