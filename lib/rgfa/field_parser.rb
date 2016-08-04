@@ -12,14 +12,18 @@ module RGFA::FieldParser
   # Parse a string representation of a GFA field value
   # @raise [RGFA::Error] if the value is not valid
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
-  def parse_gfa_field(datatype: nil)
+  def parse_gfa_field(datatype: nil,
+                      validate_strings: true,
+                      fieldname: nil,
+                      frozen: true)
     case datatype
     when :A, :Z, :seq
-      validate_gfa_field(datatype)
+      validate_gfa_field(datatype, fieldname: fieldname) if validate_strings
+      self.freeze if frozen
       return self
     when :lbl, :orn
-      validate_gfa_field(datatype)
-      return to_sym
+      validate_gfa_field(datatype, fieldname: fieldname) if validate_strings
+      return to_sym.freeze
     when :i
       return Integer(self)
     when :pos
@@ -29,18 +33,36 @@ module RGFA::FieldParser
     when :f
       return Float(self)
     when :H
-      return to_byte_array
+      value = to_byte_array
+      value.freeze if frozen
+      return value
     when :B
-      return to_numeric_array
+      value = to_numeric_array
+      value.freeze if frozen
+      return value
     when :J
-      return JSON.parse(self)
+      value = JSON.parse(self)
+      # no need to freeze, as any Hash or Array will be valid
+      return value
     when :cig
-      return to_cigar
+      value = to_cigar
+      value.freeze if frozen
+      return value
     when :cgs
-      return split(",").map{|c|c.to_cigar}
+      value = split(",").map do |c|
+        c = c.to_cigar
+        c.freeze if frozen
+        c
+      end
+      value.freeze if frozen
+      return value
     when :lbs
-      return split(",").map{|l| [l[0..-2].to_sym,
-                                 l[-1].to_sym].to_oriented_segment}
+      value = split(",").map do |l|
+        os = [l[0..-2].to_sym, l[-1].to_sym].to_oriented_segment
+        os.freeze if frozen
+      end
+      value.freeze if frozen
+      return value
     else
       raise RGFA::FieldParser::UnknownDatatypeError,
         "Datatype unknown: #{datatype.inspect}"
