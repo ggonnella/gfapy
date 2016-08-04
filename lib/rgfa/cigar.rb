@@ -39,12 +39,13 @@ class RGFA::CIGAR < Array
   # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
   def self.from_string(str)
     a = RGFA::CIGAR.new
-    return [] if str == "*"
-    raise RGFA::CIGAR::ValueError if str !~ /^([0-9]+[MIDNSHPX=])+$/
-    str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
-      len = op[0..-2].to_i
-      code = op[-1..-1].to_sym
-      a << RGFA::CIGAR::Operation.new(len, code)
+    if str != "*"
+      raise RGFA::CIGAR::ValueError if str !~ /^([0-9]+[MIDNSHPX=])+$/
+      str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
+        len = op[0..-2].to_i
+        code = op[-1..-1].to_sym
+        a << RGFA::CIGAR::Operation.new(len, code)
+      end
     end
     return a
   end
