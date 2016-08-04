@@ -54,8 +54,8 @@ module RGFA::Links
   #   Do not remove links if removing them breaks the graph into unconnected
   #   components.
   # @return [RGFA] self
-  def delete_other_links(segment_end, other_end,
-                         conserve_components: false)
+  def delete_other_links(segment_end, other_end, conserve_components: false)
+    other_end = other_end.to_segment_end
     links_of(segment_end).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)

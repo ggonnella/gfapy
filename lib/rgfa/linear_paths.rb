@@ -69,17 +69,18 @@ module RGFA::LinearPaths
   # @see #merge_linear_paths
   def merge_linear_path(segpath, **options)
     return if segpath.size < 2
+    segpath.map!{|se|se.to_segment_end}
     if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
       raise ArgumentError, "The specified path is not linear"
     end
     merged, first_reversed, last_reversed =
-                              create_merged_segment(segpath, options)
+      create_merged_segment(segpath, options)
     self << merged
     link_merged(merged.name, segpath.first.to_segment_end.invert_end_type,
                 first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
     segpath.each do |sn_et|
-      delete_segment(sn_et[0])
+      delete_segment(sn_et.segment)
       progress_log(:merge_linear_paths, 0.05) if @progress
     end
     self
@@ -134,19 +135,19 @@ module RGFA::LinearPaths
       cs = connectivity_symbols(before.size, after.size)
       if cs == [1,1] or list.empty?
         list << current
-        exclude << current[0].to_sym
+        exclude << current.name
         l = after.first
         current = l.other_end(current).invert_end_type
-        break if exclude.include?(current[0].to_sym)
+        break if exclude.include?(current.name)
       elsif cs[0] == 1
         list << current
-        exclude << current[0].to_sym
+        exclude << current.name
         break
       else
         break
       end
     end
-    return segment_end[1] == :B ? list.reverse : list
+    return segment_end.end_type == :B ? list.reverse : list
   end
 
   def sum_of_counts(segpath, multfactor = 1)
@@ -167,7 +168,7 @@ module RGFA::LinearPaths
   end
 
   def reverse_segment_name(name, separator)
-    name.split(separator).map do |part|
+    name.to_s.split(separator).map do |part|
       openp = part[0] == "("
       part = part[1..-1] if openp
       closep = part[-1] == ")"
@@ -207,8 +208,8 @@ module RGFA::LinearPaths
   def create_merged_segment(segpath, options)
     merged = segment!(segpath.first.first).clone
     total_cut = 0
-    a = segpath[0]
-    first_reversed = (a[1] == :B)
+    a = segpath.first
+    first_reversed = (a.end_type == :B)
     last_reversed = nil
     if options[:merged_name] == :short
       forbidden = (segment_names + path_names)
@@ -217,7 +218,7 @@ module RGFA::LinearPaths
         options[:merged_name] = options[:merged_name].next
       end
     end
-    add_segment_to_merged(merged, segment!(a[0]), first_reversed, 0, true,
+    add_segment_to_merged(merged, segment(a.segment), first_reversed, 0, true,
                           options)
     progress_log(:merge_linear_paths, 0.95) if @progress
     (segpath.size-1).times do |i|
@@ -233,8 +234,8 @@ module RGFA::LinearPaths
       end
       total_cut += cut
       last_reversed = (b[1] == :E)
-      add_segment_to_merged(merged, segment!(b[0]), last_reversed, cut, false,
-                            options)
+      add_segment_to_merged(merged, segment(b.segment), last_reversed, cut,
+                            false, options)
       a = b.to_segment_end.invert_end_type
       if @progress
         progress_log(:merge_linear_paths, 0.95)

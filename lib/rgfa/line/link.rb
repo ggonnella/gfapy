@@ -44,6 +44,11 @@ class RGFA::Line::Link < RGFA::Line
     from.to_sym == to.to_sym
   end
 
+  # @return [Boolean] is the from and to segments are equal
+  def circular_same_end?
+    from_end == to_end
+  end
+
   # @return[RGFA::OrientedSegment] the oriented segment represented by the
   #   from/from_orient fields
   def oriented_from
@@ -66,6 +71,11 @@ class RGFA::Line::Link < RGFA::Line
   #   to/to_orient fields
   def to_end
     [to, to_orient == :+ ? :B : :E].to_segment_end
+  end
+
+  # for debugging
+  def segment_ends_s
+    [from_end.to_s, to_end.to_s].join("---")
   end
 
   # @param[RGFA::SegmentEnd] segment_end one of the two segment ends
@@ -104,14 +114,14 @@ class RGFA::Line::Link < RGFA::Line
   # <b> Definition of normal link </b>
   #
   # Each link has an equivalent reverse link. Consider a link of A to B
-  # with a cigar 1M1I2M:
+  # with a overlap 1M1I2M:
   #
   # from+ to to+ (1M1I2M) == to- to from- (2M1D1M)
   # from- to to- (1M1I2M) == to+ to from+ (2M1D1M)
   # from+ to to- (1M1I2M) == to+ to from- (2M1D1M)
   # from- to to+ (1M1I2M) == to- to from+ (2M1D1M)
   #
-  # Consider also the special case, where from == to and the cigar is not
+  # Consider also the special case, where from == to and the overlap is not
   # specified, or equal to its reverse:
   #
   # from+ to from+ (*) == from- to from- (*) # left has a +; right has no +
@@ -121,8 +131,8 @@ class RGFA::Line::Link < RGFA::Line
   #
   # Thus we define a link as normal if:
   # - from < to (lexicographical comparison of segments)
-  # - from == to and cigar.to_s < reverse_cigar.to_s
-  # - from == to, cigar == reverse_cigar and at least one orientation is +
+  # - from == to and overlap.to_s < reverse_overlap.to_s
+  # - from == to, overlap == reverse_overlap and at least one orientation is +
   #
   # @return [Boolean]
   #
@@ -132,14 +142,14 @@ class RGFA::Line::Link < RGFA::Line
     elsif from_name > to_name
       return false
     else
-      cigar_s = cigar.to_s
-      reverse_cigar_s = reverse_cigar.to_s
-      if cigar_s < reverse_cigar_s
+      overlap_s = overlap.to_s
+      reverse_overlap_s = reverse_overlap.to_s
+      if overlap_s < reverse_overlap_s
         return true
-      elsif cigar_s > reverse_cigar_s
+      elsif overlap_s > reverse_overlap_s
         return false
       else
-        return [from_orient, to_orient].includes?(:+)
+        return [from_orient, to_orient].include?(:+)
       end
     end
   end
@@ -181,7 +191,7 @@ class RGFA::Line::Link < RGFA::Line
   #   from_orient = other_orient(to_orient)
   #   to = from
   #   to_orient = other_orient(from_orient)
-  #   cigar = reverse_cigar.
+  #   overlap = reverse_overlap.
   #
   # The optional fields are left unchanged.
   #

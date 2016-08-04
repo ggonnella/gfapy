@@ -276,7 +276,7 @@ class RGFA::Line
       return set_existing_field(fieldname, value)
     elsif (@validate == 0) or valid_custom_optional_fieldname?(fieldname)
       define_field_methods(fieldname)
-      if @datatype[fieldname]
+      if !@datatype[fieldname].nil?
         return set_existing_field(fieldname, value)
       elsif !value.nil?
         @datatype[fieldname] = value.default_gfa_datatype
@@ -489,6 +489,7 @@ class RGFA::Line
       @data.delete(fieldname)
     else
       if @validate >= 5
+        field_or_default_datatype(fieldname, value)
         value.validate_gfa_field!(field_datatype(fieldname), fieldname)
       end
       @data[fieldname] = value

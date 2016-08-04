@@ -33,8 +33,8 @@ module RGFA::Connectivity
       c[et] = Set.new
       visited = Set.new
       segend = link.send(:"#{et}_end")
-      visited << segend[0]
-      visited << link.other_end(segend)[0]
+      visited << segend.name
+      visited << link.other_end(segend).name
       traverse_component(segend, c[et], visited)
     end
     return c[:from] != c[:to]
@@ -109,7 +109,7 @@ module RGFA::Connectivity
   def traverse_component(segment_end, c, visited)
     links_of(segment_end).each do |l|
       oe = l.other_end(segment_end)
-      sn = oe[0].name
+      sn = oe.name
       next if visited.include?(sn)
       visited << sn
       c << sn

@@ -41,7 +41,7 @@ class TestRGFALinePath < Test::Unit::TestCase
       f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::CIGAR::ValueError) do
-      f=fields.dup; f[3]="12M|12M"; l=f.join("\t").to_rgfa_line(validate: 3)
+      f=fields.dup; f[3]="12M|12M"; f.join("\t").to_rgfa_line(validate: 3)
     end
   end
 
