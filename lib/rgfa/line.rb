@@ -221,7 +221,6 @@ class RGFA::Line
   # @raise [RGFA::Line::TagMissingError] if field is not defined
   # @return [String] the string representation
   def field_to_s(fieldname, optfield: false)
-    fieldname = fieldname.to_sym
     field = @data[fieldname]
     raise RGFA::Line::TagMissingError,
       "No value defined for tag #{fieldname}" if field.nil?
@@ -425,14 +424,19 @@ class RGFA::Line
   #   contains the same optional fields
   #   and all required and optional fields contain the same field values?
   # @see RGFA::Line::Link#==
-  #def ==(o)
-  #  (o.record_type == self.record_type) and
-  #    (o.fieldnames == self.fieldnames) and
-  #      (o.fieldnames.all? do |fn|
-  #        (o.get(fn) == self.get(fn)) or
-  #        field_str()
-  #      end)
-  #end
+  def ==(o)
+    return self.to_sym == o.to_sym if o.kind_of?(Symbol)
+    return false if (o.record_type != self.record_type)
+    return false if o.data.keys.sort != data.keys.sort
+    o.data.each do |k, v|
+      if @data[k] != o.data[k]
+        if field_to_s(k) != o.field_to_s(k)
+          return false
+        end
+      end
+    end
+    return true
+  end
 
   # Validate the RGFA::Line instance
   # @raise [RGFA::FieldParser::FormatError] if any field content is not valid
