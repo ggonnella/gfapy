@@ -20,14 +20,14 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "S\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
     assert_raises(RGFA::Line::Segment::InconsistentLengthError) do
-      f.join("\t").to_rgfa_line
+      f.join("\t").to_rgfa_line(validate: 3)
     end
     f=["S","2","ACGTCACANNN","LN:i:11"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }

@@ -110,10 +110,10 @@ class TestRGFALine < Test::Unit::TestCase
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
     assert_equal(:xx, l.fieldnames[2])
     assert_equal(:xx, l.optional_fieldnames[0])
-    assert_equal("13", l.get_string(:xx))
+    assert_equal("13", l.field_to_s(:xx))
     assert_equal(13, l.xx)
     assert_equal(13, l.xx!)
-    assert_equal("10", l.get_string(:KC))
+    assert_equal("10", l.field_to_s(:KC))
     assert_equal(10, l.KC)
     assert_equal(10, l.KC!)
   end
@@ -133,7 +133,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_field_setters_existing_optional_fields
-    l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
+    l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"], validate: 5)
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)

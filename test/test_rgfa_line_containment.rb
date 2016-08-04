@@ -21,22 +21,22 @@ class TestRGFALineContainment < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "C\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(ArgumentError) do
-      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line
-    end
-    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
-      f=fields.dup; f[7]="MQ:Z:1232"; f.join("\t").to_rgfa_line
+    assert_raises(RGFA::CIGAR::ValueError) do
+      f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
-      f=fields.dup; f[8]="NM:Z:1232"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[7]="MQ:Z:1232"; f.join("\t").to_rgfa_line(validate: 3)
+    end
+    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
+      f=fields.dup; f[8]="NM:Z:1232"; f.join("\t").to_rgfa_line(validate: 3)
     end
   end
 

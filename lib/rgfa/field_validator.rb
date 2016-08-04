@@ -203,7 +203,7 @@ class Float
   end
 end
 
-class Integer
+class Fixnum
   # @!macro [new] validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if (datatype == :pos and self < 0)

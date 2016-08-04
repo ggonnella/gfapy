@@ -15,14 +15,14 @@ module RGFA::FieldParser
   def parse_gfa_field(datatype: nil,
                       validate_strings: true,
                       fieldname: nil,
-                      frozen: true)
+                      frozen: false)
     case datatype
     when :A, :Z, :seq
-      validate_gfa_field(datatype, fieldname: fieldname) if validate_strings
+      validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       self.freeze if frozen
       return self
     when :lbl, :orn
-      validate_gfa_field(datatype, fieldname: fieldname) if validate_strings
+      validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       return to_sym.freeze
     when :i
       return Integer(self)
@@ -58,8 +58,15 @@ module RGFA::FieldParser
       return value
     when :lbs
       value = split(",").map do |l|
-        os = [l[0..-2].to_sym, l[-1].to_sym].to_oriented_segment
+        o = l[-1].to_sym
+        l = l[0..-2]
+        if validate_strings
+          l.validate_gfa_field!(:lbl, fieldname: "#{fieldname} "+
+                               "(entire field content: #{self})" )
+        end
+        os = [l.to_sym, o].to_oriented_segment
         os.freeze if frozen
+        os
       end
       value.freeze if frozen
       return value

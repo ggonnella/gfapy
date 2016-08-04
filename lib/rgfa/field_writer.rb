@@ -42,7 +42,7 @@ end
 #
 # Support of the conversion to GFA fields for Integer
 #
-class Integer
+class Fixnum
   #!macro gfa_datatype
   def default_gfa_datatype; :i; end
 end

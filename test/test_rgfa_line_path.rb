@@ -22,25 +22,26 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "P\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[2]="1+"; f.join("\t").to_rgfa_line
-    end
-    assert_nothing_raised do
-      f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line
+    assert_raises(RGFA::Line::Path::ListLengthsError) do
+      f=fields.dup; f[2]="1+"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_nothing_raised do
-      f=fields.dup; f[3]="9M2I3D1M,12M,12M"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_nothing_raised do
-      f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[3]="9M2I3D1M,12M,12M"; f.join("\t").
+        to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line
+    assert_nothing_raised do
+      f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
-      f=fields.dup; f[3]="12M|12M"; l=f.join("\t").to_rgfa_line; p l; p l.cigars
+    assert_raises(RGFA::CIGAR::ValueError) do
+      f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(validate: 3)
+    end
+    assert_raises(RGFA::CIGAR::ValueError) do
+      f=fields.dup; f[3]="12M|12M"; l=f.join("\t").to_rgfa_line(validate: 3)
     end
   end
 

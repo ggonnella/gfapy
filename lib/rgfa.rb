@@ -45,14 +45,16 @@ class RGFA
   include RGFA::LoggerSupport
   include RGFA::RGL
 
-  def initialize
+  attr_accessor :validate
+
+  def initialize(validate: 2)
     @headers = {:multiple_values => []}
     @segments = {}
     @links = []
     @containments = []
     @paths = {}
     @segments_first_order = false
-    @validate = true
+    @validate = validate
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
   end
@@ -69,7 +71,7 @@ class RGFA
   # Turns off validations. This increases the performance.
   # @return [void]
   def turn_off_validations
-    @validate = false
+    @validate = 0
   end
 
   # List all names of segments in the graph
@@ -108,25 +110,21 @@ class RGFA
     self
   end
 
-  # Create a deep copy of the RGFA instance.
+  # Create a copy of the RGFA instance.
   # @return [RGFA]
   def clone
-    cpy = to_s.to_rgfa(validate: false)
-    cpy.turn_off_validations if !@validate
+    cpy = to_s.to_rgfa(validate: 0)
+    cpy.validate = @validate
     cpy.enable_progress_logging if @progress
     cpy.require_segments_first_order if @segments_first_order
     return cpy
   end
 
   # Populates a RGFA instance reading from file with specified +filename+
-  # @param [boolean] validate <i>(default: +true+ if +#turn_off_validations+
-  #   was never called, +false+ otherwise)</i> calls #validate! after
-  #   construction of the graph (note: setting it to false does not deactivate
-  #   all validations; for this use #turn_off_validations)
   # @param [String] filename
   # @raise if file cannot be opened for reading
   # @return [self]
-  def read_file(filename, validate: @validate)
+  def read_file(filename)
     if @progress
       linecount = `wc -l #{filename}`.strip.split(" ")[0].to_i
       progress_log_init(:read_file, "lines", linecount,
@@ -137,20 +135,18 @@ class RGFA
       progress_log(:read_file) if @progress
     end
     progress_log_end(:read_file) if @progress
-    validate! if validate
+    validate! if @validate >= 1
     self
   end
 
   # Creates a RGFA instance parsing the file with specified +filename+
-  # @param [Boolean] validate <i>(default: true)</i> calls #validate! after
-  #   construction of the graph (note: setting it to false does not deactivate
-  #   all validations; for this use #turn_off_validations)
   # @param [String] filename
   # @raise if file cannot be opened for reading
+  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
   # @return [RGFA]
-  def self.from_file(filename, validate: true)
-    gfa = RGFA.new
-    gfa.read_file(filename, validate: validate)
+  def self.from_file(filename, validate: 2)
+    gfa = RGFA.new(validate: validate)
+    gfa.read_file(filename)
     return gfa
   end
 
@@ -290,13 +286,11 @@ class String
   # Converts a +String+ into a +RGFA+ instance. Each line of the string is added
   # separately to the gfa.
   # @return [RGFA]
-  # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
-  #   construction of the graph (note: setting it to false does not deactivate
-  #   all validations; for this use #turn_off_validations)
-  def to_rgfa(validate: true)
-    gfa = RGFA.new
+  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
+  def to_rgfa(validate: 2)
+    gfa = RGFA.new(validate: validate)
     split("\n").each {|line| gfa << line}
-    gfa.validate! if validate
+    gfa.validate! if validate >= 1
     return gfa
   end
 
@@ -308,13 +302,11 @@ class Array
   # Converts an +Array+ of strings or RGFA::Line instances
   # into a +RGFA+ instance.
   # @return [RGFA]
-  # @param [Boolean] validate <i>(defaults to: +true+)</i> #validate! after
-  #   construction of the graph (note: setting it to false does not deactivate
-  #   all validations; for this use #turn_off_validations)
-  def to_rgfa(validate: true)
-    gfa = RGFA.new
+  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
+  def to_rgfa(validate: 2)
+    gfa = RGFA.new(validate: validate)
     each {|line| gfa << line}
-    gfa.validate! if validate
+    gfa.validate! if validate >= 1
     return gfa
   end
 
