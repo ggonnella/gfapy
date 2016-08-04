@@ -109,7 +109,7 @@ module RGFA::Connectivity
   def traverse_component(segment_end, c, visited)
     links_of(segment_end).each do |l|
       oe = l.other_end(segment_end)
-      sn = oe[0]
+      sn = oe[0].name
       next if visited.include?(sn)
       visited << sn
       c << sn
