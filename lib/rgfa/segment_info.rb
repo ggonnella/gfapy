@@ -77,9 +77,15 @@ class RGFA::SegmentInfo < Array
   # @param [RGFA::SegmentInfo] other the other instance
   # @return [Boolean]
   def ==(other)
-    other = other.to_segment_info(self.class)
-    (self.name == other.name) and
-      (self.attribute == other.attribute)
+    to_s == other.to_segment_info(self.class).to_s
+  end
+
+  # Compare the segment names and attributes of two instances
+  #
+  # @param [RGFA::SegmentInfo] other the other instance
+  # @return [Boolean]
+  def <=>(other)
+    to_s <=> other.to_segment_info(self.class).to_s
   end
 
 end
