@@ -149,7 +149,7 @@ class RGFA::ByteArray
   end
 end
 
-class RGFA::Cigar
+class RGFA::CIGAR
   # @!macro [new] validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :cig
