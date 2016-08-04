@@ -70,6 +70,10 @@ class RGFA::CIGAR < Array
     self
   end
 
+  def clone
+    map{|x|x.clone}
+  end
+
 end
 
 # Exception raised by invalid cigar string content
