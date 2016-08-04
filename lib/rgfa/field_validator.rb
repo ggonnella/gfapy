@@ -105,14 +105,19 @@ class Array
         return
       when :lbs
         map!(&:to_oriented_segment).each(&:validate!)
+        return
       when :cig
         to_cigar.validate!
+        return
       when :cgs
         map(&:to_cigar).each(&:validate!)
+        return
       when :B
         to_numeric_array.validate!
+        return
       when :H
         to_byte_array.validate!
+        return
       end
     rescue => err
       raise RGFA::FieldParser::FormatError,
