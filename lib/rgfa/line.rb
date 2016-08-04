@@ -37,22 +37,6 @@ class RGFA::Line
   # data types which are parsed only on access
   DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
 
-  def virtual?
-    @virtual
-  end
-
-  def data
-    @data
-  end
-  protected :data
-
-  def real!(real_line)
-    @virtual = false
-    real_line.data.each_pair do |k, v|
-      @data[k] = v
-    end
-  end
-
   # @!macro rgfa_line
   #
   # @param data [Array<String>] the content of the line; if
@@ -107,24 +91,18 @@ class RGFA::Line
   # - 4: 3 + all fields are validated on writing to string
   # - 5: 4 + all fields are validated by get and set methods
   #
-  def initialize(data,
-                 validate: 2,
-                 virtual: false)
+  def initialize(data, validate: 2, virtual: false)
     unless self.class.const_defined?(:"RECORD_TYPE")
       raise RuntimeError, "This class shall not be directly instantiated"
     end
     @validate = validate
     @virtual = virtual
-    @data = {}
     @datatype = {}
+    @data = {}
     if data.kind_of?(Hash)
-      # cloning initialization
-      data.each_pair do |k, v|
-        v = v.clone if !v.kind_of?(Numeric) and !v.kind_of?(Symbol)
-        @data[k] = v
-      end
+      @data.merge!(data)
     else
-      # normal initialization, from array of strings
+      # normal initialization, data is an array of strings
       initialize_required_fields(data)
       initialize_optional_fields(data)
       validate_record_type_specific_info! if @validate >= 3
@@ -167,9 +145,31 @@ class RGFA::Line
     (@data.keys - self.class::REQFIELDS)
   end
 
-  # @return [RGFA::Line] deep copy of self (RGFA::Line subclass)
   def clone
-    self.class.new(@data, validate: @validate)
+    data_cpy = {}
+    @data.each_pair do |k, v|
+      if field_datatype(k) == :J
+        data_cpy[k] = JSON.parse(v.to_json)
+      elsif v.kind_of?(Array) or v.kind_of?(String)
+        data_cpy[k] = v.clone
+      else
+        data_cpy[k] = v
+      end
+    end
+    cpy = self.class.new(data_cpy, validate: @validate, virtual: @virtual)
+    cpy.instance_variable_set("@datatype", @datatype.clone)
+    return cpy
+  end
+
+  def virtual?
+    @virtual
+  end
+
+  def real!(real_line)
+    @virtual = false
+    real_line.data.each_pair do |k, v|
+      @data[k] = v
+    end
   end
 
   # @return [String] a string representation of self
@@ -279,7 +279,7 @@ class RGFA::Line
       define_field_methods(fieldname)
       if @datatype[fieldname]
         return set_existing_field(fieldname, value)
-      else
+      elsif !value.nil?
         @datatype[fieldname] = value.default_gfa_datatype
         return @data[fieldname] = value
       end
@@ -309,7 +309,7 @@ class RGFA::Line
       else
          v.validate_gfa_field!(t, fieldname) if (@validate >= 5)
       end
-    else
+    elsif !v.nil?
       if (@validate >= 5)
         t = field_datatype(fieldname)
         v.validate_gfa_field!(t, fieldname)
@@ -442,6 +442,16 @@ class RGFA::Line
     validate_record_type_specific_info!
   end
 
+  protected
+
+  def data
+    @data
+  end
+
+  def datatype
+    @datatype
+  end
+
   private
 
   def n_required_fields
@@ -471,10 +481,14 @@ class RGFA::Line
   end
 
   def set_existing_field(fieldname, value)
-    if @validate >= 5
-      value.validate_gfa_field!(field_datatype(fieldname), fieldname)
+    if value.nil?
+      @data.delete(fieldname)
+    else
+      if @validate >= 5
+        value.validate_gfa_field!(field_datatype(fieldname), fieldname)
+      end
+      @data[fieldname] = value
     end
-    @data[fieldname] = value
   end
 
   def initialize_required_fields(strings)
