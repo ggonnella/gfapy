@@ -31,6 +31,13 @@ class RGFA::SegmentInfo < Array
     self[0]
   end
 
+  # Set the segment
+  # @param value [Symbol, RGFA::Line::Segment] the segment instance or name
+  # @return Symbol, RGFA::Line::Segment] +value+
+  def segment=(value)
+    self[0]=value
+  end
+
   # @return [Symbol] the segment name
   def name
     self[0].kind_of?(RGFA::Line::Segment) ? self[0].name : self[0].to_sym
@@ -39,6 +46,13 @@ class RGFA::SegmentInfo < Array
   # @return [Symbol] the attribute
   def attribute
     self[1]
+  end
+
+  # Set the attribute
+  # @param value [Symbol] the attribute
+  # @return [Symbol] +value+
+  def attribute=(value)
+    self[1]=(value)
   end
 
   # @return [Symbol] the other possible value of the attribute
@@ -101,6 +115,7 @@ class RGFA::SegmentEnd < RGFA::SegmentInfo
   # Segment end type (begin or end)
   ATTR = [ END_TYPE_BEGIN = :B, END_TYPE_END = :E ]
   alias_method :end_type, :attribute
+  alias_method :end_type=, :attribute=
   alias_method :invert_end_type, :invert_attribute
   alias_method :end_type_inverted, :attribute_inverted
 end
@@ -110,6 +125,7 @@ class RGFA::OrientedSegment < RGFA::SegmentInfo
   # Segment orientation
   ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
   alias_method :orient, :attribute
+  alias_method :orient=, :attribute=
   alias_method :invert_orient, :invert_attribute
   alias_method :orient_inverted, :attribute_inverted
 end
