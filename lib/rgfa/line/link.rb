@@ -360,7 +360,7 @@ class RGFA::Line::Link < RGFA::Line
                          other_overlap = [])
     (oriented_from == other_oriented_from and
      oriented_to == other_oriented_to) and
-     (other_overlap.empty? or (overlap == other_overlap))
+     (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 
   # Compares the reverse link with two oriented_segments and optionally an
@@ -375,7 +375,7 @@ class RGFA::Line::Link < RGFA::Line
                           other_overlap = [])
     (oriented_to == other_oriented_from.invert_orient and
      oriented_from == other_oriented_to.invert_orient) and
-     (other_overlap.empty? or (reverse_overlap == other_overlap))
+     (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 
 end
