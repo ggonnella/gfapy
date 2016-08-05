@@ -1,7 +1,7 @@
 H	VN:Z:1.0
 H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/23#issuecomment-172869000
 H	co:Z:similar to spec_q3
-H co:Z:more_than_circular should be invalid, 3+/1+/0M is not supported by a link
+H	co:Z:more_than_circular should be invalid, 3+/1+/0M is not supported by a link
 S	1	AGCGTA
 S	2	TAACAG
 S	3	GTCATC
