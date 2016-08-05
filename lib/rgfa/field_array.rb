@@ -33,7 +33,7 @@ end
 class RGFA::FieldArray::Error < RGFA::Error; end
 class RGFA::FieldArray::TypeMismatchError < RGFA::Error; end
 
-def Array
+class Array
   def rgfa_field_array?
     self[-1] == "\0" and
       RGFA::Line::OPTFIELD_DATATYPE.include?(self[-2].to_sym)

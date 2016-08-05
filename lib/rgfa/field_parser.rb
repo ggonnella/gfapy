@@ -3,6 +3,7 @@ require_relative "byte_array"
 require_relative "numeric_array"
 require_relative "cigar"
 require_relative "error"
+require_relative "field_array"
 
 #
 # Methods to parse the string representations of the GFA fields
