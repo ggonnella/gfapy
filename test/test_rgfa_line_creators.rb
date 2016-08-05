@@ -102,34 +102,25 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_raises(RGFA::LineMissingError) { gfa << p3 }
   end
 
-  def test_set_header_field
+  def test_header_add
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     gfa << "H\taa:i:12\tab:Z:test1"
     gfa << "H\tac:Z:test2"
-    gfa.set_header_field(:VN, "2.0", existing: :replace)
+    gfa.header.add(:aa, 15)
     assert_equal(
       [
-        "H\tVN:Z:2.0",
-        "H\taa:i:12",
-        "H\tab:Z:test1",
-        "H\tac:Z:test2",
-      ],
-      gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 15, existing: :add)
-    assert_equal(
-      [
-        "H\tVN:Z:2.0",
+        "H\tVN:Z:1.0",
         "H\taa:i:12",
         "H\taa:i:15",
         "H\tab:Z:test1",
         "H\tac:Z:test2",
       ],
       gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 16, existing: :add)
+    gfa.header.add(:aa, 16)
     assert_equal(
       [
-        "H\tVN:Z:2.0",
+        "H\tVN:Z:1.0",
         "H\taa:i:12",
         "H\taa:i:15",
         "H\taa:i:16",
@@ -137,31 +128,11 @@ class TestRGFALineCreators < Test::Unit::TestCase
         "H\tac:Z:test2",
       ],
       gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 18, existing: :ignore)
+    gfa.header.delete(:aa)
+    gfa.header.aa = 26
     assert_equal(
       [
-        "H\tVN:Z:2.0",
-        "H\taa:i:12",
-        "H\taa:i:15",
-        "H\taa:i:16",
-        "H\tab:Z:test1",
-        "H\tac:Z:test2",
-      ],
-      gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 26)
-    assert_equal(
-      [
-        "H\tVN:Z:2.0",
-        "H\taa:i:26",
-        "H\tab:Z:test1",
-        "H\tac:Z:test2",
-      ],
-      gfa.headers.map(&:to_s).sort)
-    gfa.set_header_field(:aa, 26, existing: :add)
-    assert_equal(
-      [
-        "H\tVN:Z:2.0",
-        "H\taa:i:26",
+        "H\tVN:Z:1.0",
         "H\taa:i:26",
         "H\tab:Z:test1",
         "H\tac:Z:test2",

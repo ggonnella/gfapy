@@ -229,7 +229,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     assert_raise(RGFA::LineMissingError) { gfa.link!(["1", :E], ["2", :E]) }
   end
 
-  def test_header_fields
+  def test_header_tags
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     gfa << "H\taa:i:12\tab:Z:test1"
@@ -240,7 +240,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
                  [:aa, :i, 15],
                  [:ab, :Z, "test1"],
                  [:ac, :Z, "test2"]].sort,
-                 gfa.header_fields.sort)
+                 gfa.header.tags.sort)
   end
 
 end

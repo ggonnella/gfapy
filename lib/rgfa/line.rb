@@ -185,13 +185,25 @@ class RGFA::Line
     return a
   end
 
+  # Returns the optional fields as an array of [fieldname, datatype, value]
+  # arrays.
+  # @return [Array<[Symbol, Symbol, Object]>]
+  def tags
+    retval = []
+    optional_fieldnames.each do |of|
+      retval << [of, get_datatype(of), get(of)]
+    end
+    return retval
+  end
+
   # Remove an optional field from the line, if it exists;
   #   do nothing if it does not
   # @param fieldname [Symbol] the tag name of the optfield to remove
   # @return [Object, nil] the deleted value or nil, if the field was not defined
   def delete(fieldname)
-    if optional_fieldnames.include?(fn)
-      return @data.delete(fn)
+    if optional_fieldnames.include?(fieldname)
+      @datatype.delete(fieldname)
+      return @data.delete(fieldname)
     else
       return nil
     end
