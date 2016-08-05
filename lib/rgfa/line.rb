@@ -240,18 +240,18 @@ class RGFA::Line
     field_or_default_datatype(fieldname, @data[fieldname])
   end
 
-  # Set the datatype of a custom optional field.
+  # Set the datatype of a field.
+  #
   # If an existing field datatype is changed, its content may become
   # invalid (call #validate_field! if necessary).
-  # If a datatype for a new custom optional field is not set,
-  # the default for the value assigned to the field will be used
-  # (e.g. J for Hashes, i for Integer, etc).
+  #
+  # If the method is used for a required field or a predefined field,
+  # the line will use the specified datatype instead of the predefined
+  # one, resulting in a potentially invalid line.
   #
   # @param fieldname [Symbol] the field name (it is not required that
   #   the field exists already)
   # @param datatype [RGFA::Line::FIELD_DATATYPE] the datatype
-  # @raise [RGFA::Line::CustomOptfieldNameError] if +fieldname+ is not a
-  #   valid custom optional name (and +validate[:tags]+)
   # @raise [RGFA::Line::UnknownDatatype] if +datatype+ is not
   #   a valid datatype for optional fields
   # @return [RGFA::Line::FIELD_DATATYPE] the datatype
@@ -259,11 +259,14 @@ class RGFA::Line
     unless OPTFIELD_DATATYPE.include?(datatype)
       raise RGFA::Line::UnknownDatatype, "Unknown datatype: #{datatype}"
     end
-    validate_custom_optional_fieldname!(fieldname) if @validate >= 1
     @datatype[fieldname] = datatype
   end
 
   # Set the value of a field.
+  #
+  # If a datatype for a new custom optional field is not set,
+  # the default for the value assigned to the field will be used
+  # (e.g. J for Hashes, i for Integer, etc).
   #
   # @param fieldname [Symbol] the name of the field to set
   #   (required field, predefined optional field (uppercase) or custom optional
@@ -463,7 +466,7 @@ class RGFA::Line
   end
 
   def field_datatype(fieldname)
-    self.class::DATATYPE.fetch(fieldname, @datatype[fieldname])
+    @datatype.fetch(fieldname, self.class::DATATYPE[fieldname])
   end
 
   def field_or_default_datatype(fieldname, value)

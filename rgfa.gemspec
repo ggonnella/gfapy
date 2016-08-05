@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/connectivity.rb',
               'lib/rgfa/containments.rb',
               'lib/rgfa/error.rb',
+              'lib/rgfa/field_array.rb',
               'lib/rgfa/field_writer.rb',
               'lib/rgfa/field_parser.rb',
               'lib/rgfa/field_validator.rb',

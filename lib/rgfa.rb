@@ -48,13 +48,13 @@ class RGFA
   attr_accessor :validate
 
   def initialize(validate: 2)
-    @headers = {:multiple_values => []}
+    @validate = validate
+    init_headers
     @segments = {}
     @links = []
     @containments = []
     @paths = {}
     @segments_first_order = false
-    @validate = validate
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
   end
@@ -276,6 +276,10 @@ class RGFA
       end
     end
     return nil
+  end
+
+  def init_headers
+    @headers = RGFA::Line::Header.new([], validate: @validate)
   end
 
 end

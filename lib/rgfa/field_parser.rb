@@ -42,6 +42,10 @@ module RGFA::FieldParser
       return value
     when :J
       value = JSON.parse(self)
+      # RGFA convention for array of fields
+      if value.kind_of?(Array) and value.rgfa_field_array?
+        value = value.to_rgfa_field_array
+      end
       # no need to freeze, as any Hash or Array will be valid
       return value
     when :cig
