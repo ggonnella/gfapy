@@ -310,18 +310,7 @@ class RGFA::Line::Link < RGFA::Line
   # Thereby, optional fields are not considered.
   # @see #eql?
   def hash
-    overlap_s = overlap.to_s
-    reverse_overlap_s = reverse_overlap.to_s
-    if reverse_overlap_s < overlap_s
-      overlap_s = reverse_overlap_s
-    end
-    from_end_s = from_end.hash
-    to_end_s = to_end.hash
-    if from_end_s < to_end_s
-      from_end_s + to_end_s + overlap_s
-    else
-      to_end_s + from_end_s + overlap_s
-    end
+    from_end.hash + to_end.hash + overlap.hash + reverse_overlap.to_s.hash
   end
 
   # Compares a link and optionally the reverse link,
