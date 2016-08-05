@@ -95,13 +95,12 @@ Hamburg, Germany. This document is under CC-BY-SA license.}
   Segment length & s.length\\
   Other end of a link & link.other\_end([s1,:E])\\
   Other end of other end of link &
-  gfa.other\_segment\_end(\\
-  & \hspace{2.8cm}link.other\_end([s1,:E]))\\
+  link.other\_end([s1,:E])\\
+  & \hspace{2.8cm}.revert\_end\_type\\
   \hline
   Read req.field/tag value & segment.from; segment.LN \\
   \ldots raise if tag not available & segment.LN! \\
-  \ldots w/o casting to Ruby type & segment.from(false); segment.LN(false)\\
-  \ldots tag string & segment.optfield(:LN) \\
+  \ldots tag string & segment.field\_to\_s(:LN) \\
   \hline
   Set/create custom tag (ab, Z type) & segment.ab = "value" \\
   \ldots of i or B/i type & s.ab = 12; \ \ \ s.ab = [1,2,3]\\
@@ -119,7 +118,7 @@ Hamburg, Germany. This document is under CC-BY-SA license.}
   \hline
   Delete segment (and its links, etc) & gfa.rm("a") \\
   Delete path & gfa.rm("path1") \\
-  Delete link/containment  & gfa.rm("a","+","b","-") \\
+  Delete link/containment  & gfa.rm(gfa.link(\ldots)) \\
   Delete all headers & gfa.rm(:headers) \\
   Delete sequences (set all to \texttt{*}) & gfa.rm(:sequences) \\
   \hline
@@ -130,11 +129,11 @@ Hamburg, Germany. This document is under CC-BY-SA license.}
   Delete segments contained in s & gfa.rm(\verb/:contained_in,:s/) \\
   Delete s1-E links except to s2-B & gfa.delete\_other\_links(\verb/[s1,:E],[s2,:B]/)\\
   \hline
-  Content of headers field & gfa.headers\_data[:xx] \\
+  Content of headers field & gfa.header.xx \\
   Replace header field content & gfa.set\_header\_field(:xx, 12, \\
-                               & \hspace{4.3cm} replace: true)\\
+                               & \hspace{4.3cm})\\
   Append to header field & gfa.set\_header\_field(:xx, 12,\\
-                               & \hspace{4.3cm} duplicate: true)\\
+                               & \hspace{4.3cm}, existing: :add)\\
   \hline
   Sum of read counts & \verb/gfa.segments.map(&:RC).inject(:+)/ \\
   Highest coverage & \verb/gfa.segments.map(&:coverage).max/ \\
