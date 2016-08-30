@@ -21,10 +21,7 @@ https://github.com/ggonnella/rgfatools/.
 
 ## References
 
-Giorgio Gonnella, Stefan Kurtz, "RGFA: powerful and convenient handling of
-assembly graphs" (2016)
+The manuscript describing the library has been accepted for presentation at the German Conference on Bioinformatics 2016. Currently it is available as Peer Journal preprint (as soon as it is peer reviewed, the reference will be updated):
 
-The manuscript describing the library has been accepted for presentation at
-the German Conference on Bioinformatics 2016. The PeerJ preprint will be linked
-here, as soon as available.
+Gonnella G, Kurtz S. (2016) RGFA: powerful and convenient handling of assembly graphs. PeerJ Preprints 4:e2381v1 https://doi.org/10.7287/peerj.preprints.2381v1
 
