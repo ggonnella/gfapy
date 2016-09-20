@@ -29,7 +29,7 @@ module RGFA::Segments
 
   # Delete a segment from the RGFA graph
   # @return [RGFA] self
-  # @param segment [String, RGFA::Line::Segment] segment name or instance
+  # @param s [String, RGFA::Line::Segment] segment name or instance
   def delete_segment(s, cascade=true)
     s = segment!(s)
     if cascade

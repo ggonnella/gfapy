@@ -12,16 +12,29 @@ elements (e.g. which links connect two segments) and to manipulate the
 graph (e.g. to eliminate a link or a segment or to duplicate a segment
 distributing the read counts evenly on the copies).
 
-The API documentation is available as pdf under
-https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.1.pdf
-or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
+## Usage
 
-The RGFATools gem is available at
-https://github.com/ggonnella/rgfatools/.
+After installation of the gem (rake install), the library can be included
+in the own scripts with require "rgfa". Additional functionality, which
+requires custom tags and additional conventions, is included in a separate
+part of the code named "RGFATools" and can be accessed with require "rgfatools".
+
+## Documentation
+
+A cheatsheet is available as pdf under
+https://github.com/ggonnella/rgfa/blob/master/cheatsheet/rgfa-cheatsheet-1.2.pdf
+
+The full API documentation is available as pdf under
+https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.2.pdf
+or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
 
 ## References
 
-The manuscript describing the library has been accepted for presentation at the German Conference on Bioinformatics 2016. Currently it is available as Peer Journal preprint (as soon as it is peer reviewed, the reference will be updated):
+The manuscript describing the library has been presented at the
+German Conference on Bioinformatics 2016. Currently it is under review and
+available as a Peer Journal preprint:
 
-Gonnella G, Kurtz S. (2016) RGFA: powerful and convenient handling of assembly graphs. PeerJ Preprints 4:e2381v1 https://doi.org/10.7287/peerj.preprints.2381v1
+Gonnella G, Kurtz S. (2016) RGFA: powerful and convenient handling of
+assembly graphs. PeerJ Preprints 4:e2381v1
+https://doi.org/10.7287/peerj.preprints.2381v1
 

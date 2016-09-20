@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'rgfa'
-  s.version = '1.1'
-  s.date = '2016-07-13'
+  s.version = '1.2'
+  s.date = '2016-09-20'
   s.summary = 'Parse, edit and write GFA-format graphs in Ruby'
   s.description = <<-EOF
     The Graphical Fragment Assembly (GFA) is a proposed format which allow
@@ -49,8 +49,21 @@ Gem::Specification.new do |s|
               'lib/rgfa/segment_info.rb',
               'lib/rgfa/segments.rb',
               'lib/rgfa/sequence.rb',
+              'lib/rgfatools.rb',
+              'lib/rgfatools/artifacts.rb',
+              'lib/rgfatools/copy_number.rb',
+              'lib/rgfatools/error.rb',
+              'lib/rgfatools/invertible_segments.rb',
+              'lib/rgfatools/multiplication.rb',
+              'lib/rgfatools/superfluous_links.rb',
+              'lib/rgfatools/linear_paths.rb',
+              'lib/rgfatools/p_bubbles.rb',
+              'bin/gfadiff.rb',
+              'bin/rgfa-mergelinear.rb',
+              'bin/rgfa-simdebruijn.rb',
+              'bin/rgfa-findcrisprs.rb',
             ]
-  s.homepage = 'http://github.com/ggonnella/ruby-gfa'
+  s.homepage = 'http://github.com/ggonnella/rgfa'
   s.license = 'CC-BY-SA'
   s.required_ruby_version = '>= 2.0'
 end

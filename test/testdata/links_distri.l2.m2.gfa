@@ -1,0 +1,7 @@
+H	VN:Z:1.0
+S	1	*	or:Z:1
+S	1b	*	or:Z:1
+S	2a	*
+S	2b	*
+L	1	+	2a	+	*
+L	1b	+	2b	+	*

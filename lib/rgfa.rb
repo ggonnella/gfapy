@@ -91,6 +91,7 @@ class RGFA
     @segments_first_order = false
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
+    @extensions_enabled = false
   end
 
   # Require that the links, containments and paths referring

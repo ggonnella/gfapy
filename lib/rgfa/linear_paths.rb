@@ -13,7 +13,7 @@ module RGFA::LinearPaths
   #   includes +segment+ and excludes segments in +exclude+.
   # Any segment used in the returned path will be added to +exclude+
   #
-  # @param segment [String|RGFA::Line::Segment] a segment name or instance
+  # @param s [String|RGFA::Line::Segment] a segment name or instance
   # @param exclude [Set<String>] a set of segment names to exclude from the path
   #
   def linear_path(s, exclude = Set.new)
