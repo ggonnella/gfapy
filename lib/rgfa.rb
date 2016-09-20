@@ -27,10 +27,43 @@ require_relative "./rgfa/paths.rb"
 require_relative "./rgfa/sequence.rb"
 
 #
-# This is the main class of the RGFA library.
-# It provides a representation of the \RGFA graph.
-# Supports creating a graph from scratch, input and output from/to file
+# Main class of the RGFA library, providing a representation of a GFA graph.
+# It supports creating a graph from scratch, input and output from/to file
 # or strings, as well as several operations on the graph.
+#
+# For creating a RGFA object from scratch or from a GFA file, write the RGFA to
+# file, output the string representation or a statistics report, and control
+# the validation level, see the examples below.
+#
+# Most interaction involve using RGFA::Line objects.
+# Accessing and creating header information is done using a single header object
+# accessed via the #header method, see RGFA::Headers.
+# Other lines can be accessed as an array using the method with the record type
+# in plural (segments, links, containments, paths), or using finder methods
+# to locate a particular line, see RGFA::Segments, RGFA::Links,
+# RGFA::Containments, RGFA::Paths. Lines included in a RGFA object contain
+# references to other objects, which makes it simple to retrieve the graph
+# information by concatenation of methods,
+# e.g. +gfa.path(:P).links.first.to.sequence+ returns the sequence of the
+# +to+ segment of the first link of path P.
+#
+# @example Creating an empty RGFA object
+#   gfa = RGFA.new
+#
+# @example Parsing and writing GFA format
+#   gfa = RGFA.from_file(filename) # parse GFA file
+#   gfa.to_file(filename) # write to GFA file
+#   puts gfa # show GFA representation of RGFA object
+#
+# @example Basic statistics report
+#   puts gfa.info # print report
+#   puts gfa.info(short = true) # compact format, in one line
+#
+# @example Validation
+#   gfa = RGFA.from_file(filename, validate: 1) # default level is 2
+#   gfa.validate = 3 # change validation level
+#   gfa.turn_off_validations # equivalent to gfa.validate = 0
+#   gfa.validate! # run post-validations (e.g. check segment names in links)
 #
 class RGFA
 
