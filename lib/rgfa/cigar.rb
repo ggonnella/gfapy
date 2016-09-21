@@ -94,6 +94,7 @@ class RGFA::CIGAR::Operation
   attr_accessor :len
   attr_accessor :code
 
+  # CIGAR operation code
   CODE = [:M, :I, :D, :N, :S, :H, :P, :X, :"="]
 
   # @param len [Integer] length of the operation

@@ -15,7 +15,7 @@
 #   removing lines belonging to a RGFA instance. Specialized modules exist
 #   for each kind of line:
 #   - {RGFA::Headers}: accessing and creating header information is done
-#     using a single header line object ({headers RGFA#header})
+#     using a single header line object ({#header RGFA#header})
 #   - {RGFA::Segments}
 #   - {RGFA::Links}
 #   - {RGFA::Containments}
