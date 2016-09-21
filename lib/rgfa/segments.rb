@@ -26,6 +26,7 @@ module RGFA::Segments
       @segments[segment_name] = gfa_line
     end
   end
+  protected :add_segment
 
   # Delete a segment from the RGFA graph
   # @return [RGFA] self
@@ -46,10 +47,6 @@ module RGFA::Segments
   # @return [Array<RGFA::Line::Segment>]
   def segments
     @segments.values
-  end
-
-  def each_segment(&block)
-    segments.each(&block)
   end
 
   # @!macro [new] segment

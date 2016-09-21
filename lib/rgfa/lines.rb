@@ -135,6 +135,8 @@ module RGFA::Lines
     self
   end
 
+  private
+
   def lines
     headers + segments + links + containments + paths
   end

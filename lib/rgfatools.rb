@@ -1,20 +1,42 @@
-RGFATools = Module.new
-
 require "rgfa"
+
+#
+# Module defining additional methods for the RGFA class.
+#
+# RGFATools is an extension to the RGFA library, which allow to perform further
+# operations. Thereby additional conventions are required, with respect to the
+# GFA specification, which are compatible with it.
+#
+# The methods defined here allow, e.g., to randomly orient a segment which has
+# the same connections on both sides, to compute copy numbers and multiply or
+# delete segments according to them, to distribute the links of copies after
+# multipling a segment, or to eliminate edges in the graph which are
+# incompatible with an hamiltonian path.
+#
+# Custom optional fields are defined, such as "cn" for the copy number of a
+# segment, "or" for the original segment(s) of a duplicated or merged segment,
+# "mp" for the starting position of original segments in a merged segment, "rp"
+# for the position of possible inversions due to arbitrary orientation of some
+# segments by the program.
+#
+# Furthermore a convention for the naming of the segments is introduced, which
+# gives a special meaning to the characters "_^()".
+#
+# @developer
+#   In the main file is only the method redefinition infrastructure
+#   (private methods). The public methods are in the included modules.
+#
+module RGFATools
+end
+
 require_relative "rgfatools/artifacts"
 require_relative "rgfatools/copy_number"
-require_relative "rgfatools/error"
 require_relative "rgfatools/invertible_segments"
 require_relative "rgfatools/multiplication"
 require_relative "rgfatools/superfluous_links"
 require_relative "rgfatools/linear_paths"
 require_relative "rgfatools/p_bubbles"
 
-#
-# Module defining additional methods for the RGFA class.
-# In the main file is only the method redefinition infrastructure
-# (private methods). The public methods are in the included modules.
-#
 module RGFATools
 
   include RGFATools::Artifacts
@@ -62,16 +84,17 @@ module RGFATools
 
 end
 
-# The main class of RGFA. See the RGFA API documentation.
 class RGFA
   include RGFATools
 
-  # Enable RGFATools extensions of RGFA methods
+  # Enable {RGFATools} extensions of RGFA methods
+  # @return [void]
   def enable_extensions
     @extensions_enabled = true
   end
 
-  # Disable RGFATools extensions of RGFA methods
+  # Disable {RGFATools} extensions of RGFA methods
+  # @return [void]
   def disable_extensions
     @extensions_enabled = false
   end

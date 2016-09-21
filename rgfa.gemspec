@@ -52,7 +52,6 @@ Gem::Specification.new do |s|
               'lib/rgfatools.rb',
               'lib/rgfatools/artifacts.rb',
               'lib/rgfatools/copy_number.rb',
-              'lib/rgfatools/error.rb',
               'lib/rgfatools/invertible_segments.rb',
               'lib/rgfatools/multiplication.rb',
               'lib/rgfatools/superfluous_links.rb',

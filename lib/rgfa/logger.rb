@@ -2,6 +2,8 @@
 # This class allows to output a message to the log file or STDERR and
 # to keep track of the progress of a method which takes long time to complete.
 #
+# @api private
+#
 class RGFA::Logger
 
   # Information about the progress of a computation
@@ -165,6 +167,7 @@ module RGFA::LoggerSupport
 
   # @!macro progress_init
   # @return [RGFA] self
+  # @api private
   def progress_log_init(symbol, units, total, initmsg = nil)
     @progress.progress_init(symbol, units, total, initmsg) if @progress
     return self
@@ -172,6 +175,7 @@ module RGFA::LoggerSupport
 
   # @!macro progress_log
   # @return [RGFA] self
+  # @api private
   def progress_log(symbol, progress=1, **keyargs)
     @progress.progress_log(symbol, progress) if @progress
     return self
@@ -179,6 +183,7 @@ module RGFA::LoggerSupport
 
   # @!macro progress_end
   # @return [RGFA] self
+  # @api private
   def progress_log_end(symbol, **keyargs)
     @progress.progress_end(symbol) if @progress
     return self

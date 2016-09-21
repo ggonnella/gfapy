@@ -49,6 +49,7 @@ module RGFA::Paths
       end
     end
   end
+  protected :add_path
 
   # Delete a path from the RGFA graph
   # @return [RGFA] self
@@ -65,10 +66,6 @@ module RGFA::Paths
   # @return [Array<RGFA::Line::Path>]
   def paths
     @paths.values
-  end
-
-  def each_path(&block)
-    paths.each(&block)
   end
 
   # @!macro [new] path
@@ -93,7 +90,7 @@ module RGFA::Paths
   # @return [Array<RGFA::Line::Path>] paths whose +segment_names+ include the
   #   specified segment.
   # @!macro [new] segment_or_name
-  #   @param s [RGFA::Line::Segment, String] a segment instance or name
+  #   @param s [RGFA::Line::Segment, Symbol] a segment instance or name
   def paths_with(s)
     segment!(s).all_paths
   end

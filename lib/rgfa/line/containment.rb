@@ -17,13 +17,13 @@ class RGFA::Line::Containment < RGFA::Line
 
   define_field_methods!
 
-  # @return[RGFA::OrientedSegment] the oriented segment represented by the
+  # @return [RGFA::OrientedSegment] the oriented segment represented by the
   #   from/from_orient fields
   def oriented_from
     [from, from_orient].to_oriented_segment
   end
 
-  # @return[RGFA::OrientedSegment] the oriented segment represented by the
+  # @return [RGFA::OrientedSegment] the oriented segment represented by the
   #   to/to_orient fields
   def oriented_to
     [to, to_orient].to_oriented_segment
@@ -31,12 +31,14 @@ class RGFA::Line::Containment < RGFA::Line
 
   # The from segment name, in both cases where from is a segment name (Symbol)
   # or a segment (RGFA::Line::Segment)
+  # @return [Symbol]
   def from_name
     from.to_sym
   end
 
   # The to segment name, in both cases where to is a segment name (Symbol)
   # or a segment (RGFA::Line::Segment)
+  # @return [Symbol]
   def to_name
     to.to_sym
   end
@@ -62,10 +64,10 @@ class RGFA::Line::Containment < RGFA::Line
   # Consider a containment of B (length:8) in A (length:100) at position 9 of A
   # with a cigar 1M1I2M3D4M (i.e. rpos = 19).
   #
-  # A+ B+ 1M1I2M3D4M 9 == A- B- 4M3D2M1I1M 80
-  # A+ B- 1M1I2M3D4M 9 == A- B+ 4M3D2M1I1M 80
-  # A- B+ 1M1I2M3D4M 9 == A+ B- 4M3D2M1I1M 80
-  # A- B- 1M1I2M3D4M 9 == A+ B+ 4M3D2M1I1M 80
+  #   A+ B+ 1M1I2M3D4M 9 == A- B- 4M3D2M1I1M 80
+  #   A+ B- 1M1I2M3D4M 9 == A- B+ 4M3D2M1I1M 80
+  #   A- B+ 1M1I2M3D4M 9 == A+ B- 4M3D2M1I1M 80
+  #   A- B- 1M1I2M3D4M 9 == A+ B+ 4M3D2M1I1M 80
   #
   # Pos in the reverse is equal to the length of A minus the right pos
   # of B before reversing.

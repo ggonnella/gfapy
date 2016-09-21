@@ -21,10 +21,10 @@ class RGFA::Line::Link < RGFA::Line
   define_field_methods!
 
   # The other segment of a link
-  # @param segment [String, RGFA::Line::Segment] segment name or instance
+  # @param segment [RGFA::Line::Segment, Symbol] segment name or instance
   # @raise [RGFA::LineMissingError]
   #   if segment is not involved in the link
-  # @return [String] the name of the other segment of the link
+  # @return [Symbol] the name of the other segment of the link
   #   if circular, then +segment+
   def other(segment)
     segment_name =
@@ -49,38 +49,39 @@ class RGFA::Line::Link < RGFA::Line
     from_end == to_end
   end
 
-  # @return[RGFA::OrientedSegment] the oriented segment represented by the
+  # @return [RGFA::OrientedSegment] the oriented segment represented by the
   #   from/from_orient fields
   def oriented_from
     [from, from_orient].to_oriented_segment
   end
 
-  # @return[RGFA::OrientedSegment] the oriented segment represented by the
+  # @return [RGFA::OrientedSegment] the oriented segment represented by the
   #   to/to_orient fields
   def oriented_to
     [to, to_orient].to_oriented_segment
   end
 
-  # @return[RGFA::SegmentEnd] the segment end represented by the
+  # @return [RGFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end
     [from, from_orient == :+ ? :E : :B].to_segment_end
   end
 
-  # @return[RGFA::SegmentEnd] the segment end represented by the
+  # @return [RGFA::SegmentEnd] the segment end represented by the
   #   to/to_orient fields
   def to_end
     [to, to_orient == :+ ? :B : :E].to_segment_end
   end
 
-  # for debugging
+  # Signature of the segment ends, for debugging
+  # @api private
   def segment_ends_s
     [from_end.to_s, to_end.to_s].join("---")
   end
 
-  # @param[RGFA::SegmentEnd] segment_end one of the two segment ends
+  # @param segment_end [RGFA::SegmentEnd] one of the two segment ends
   #   of the link
-  # @return[RGFA::SegmentEnd] the other segment end
+  # @return [RGFA::SegmentEnd] the other segment end
   #
   # @raise [ArgumentError] if segment_end is not a valid segment end
   #   representation
@@ -99,35 +100,37 @@ class RGFA::Line::Link < RGFA::Line
 
   # The from segment name, in both cases where from is a segment name (Symbol)
   # or a segment (RGFA::Line::Segment)
+  # @return [Symbol]
   def from_name
     from.to_sym
   end
 
   # The to segment name, in both cases where to is a segment name (Symbol)
   # or a segment (RGFA::Line::Segment)
+  # @return [Symbol]
   def to_name
     to.to_sym
   end
 
   # Returns true if the link is normal, false otherwise
   #
-  # <b> Definition of normal link </b>
+  # == Definition of normal link
   #
   # Each link has an equivalent reverse link. Consider a link of A to B
   # with a overlap 1M1I2M:
   #
-  # from+ to to+ (1M1I2M) == to- to from- (2M1D1M)
-  # from- to to- (1M1I2M) == to+ to from+ (2M1D1M)
-  # from+ to to- (1M1I2M) == to+ to from- (2M1D1M)
-  # from- to to+ (1M1I2M) == to- to from+ (2M1D1M)
+  #   from+ to to+ (1M1I2M) == to- to from- (2M1D1M)
+  #   from- to to- (1M1I2M) == to+ to from+ (2M1D1M)
+  #   from+ to to- (1M1I2M) == to+ to from- (2M1D1M)
+  #   from- to to+ (1M1I2M) == to- to from+ (2M1D1M)
   #
   # Consider also the special case, where from == to and the overlap is not
   # specified, or equal to its reverse:
   #
-  # from+ to from+ (*) == from- to from- (*) # left has a +; right has no +
-  # from- to from- (*) == from+ to from+ (*) # left has no +; right has a +
-  # from+ to from- (*) == from+ to from- (*) # left == right
-  # from- to from+ (*) == from- to from+ (*) # left == right
+  #   from+ to from+ (*) == from- to from- (*) # left has a +; right has no +
+  #   from- to from- (*) == from+ to from+ (*) # left has no +; right has a +
+  #   from+ to from- (*) == from+ to from- (*) # left == right
+  #   from- to from+ (*) == from- to from+ (*) # left == right
   #
   # Thus we define a link as normal if:
   # - from < to (lexicographical comparison of segments)
@@ -175,7 +178,7 @@ class RGFA::Line::Link < RGFA::Line
   #   are defined, which have a ``reverse'' operation which determines
   #   their value in the equivalent but reverse link.
   #
-  # @return[RGFA::Line::Link] the inverted link.
+  # @return [RGFA::Line::Link] the inverted link.
   def reverse
     l = self.clone
     l.from = to
@@ -214,10 +217,16 @@ class RGFA::Line::Link < RGFA::Line
     return self
   end
 
-  # An array of paths for which a link is required. The array is empty
-  # is the link is not embedded in a graph. The boolean value says
-  # if the link is used in direct or reverse direction in the path.
-  # @return [Array<[GFA::Line::Path, Boolean]>]
+  # Paths for which the link is required.
+  #
+  # The return value is an empty array
+  # if the link is not embedded in a graph.
+  #
+  # Otherwise, an array of tuples path/boolean is returned.
+  # The boolean value tells
+  # if the link is used in direct (true) or reverse direction (false)
+  # in the path.
+  # @return [Array<Array<(RGFA::Line::Path, Boolean)>>]
   def paths
     @paths ||= []
     @paths
@@ -314,7 +323,7 @@ class RGFA::Line::Link < RGFA::Line
   end
 
   # Compares a link and optionally the reverse link,
-  #   with two oriented_segments and optionally an overlap.
+  # with two oriented_segments and optionally an overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to
   # @param equivalent [Boolean] shall the reverse link also be considered?
@@ -338,7 +347,7 @@ class RGFA::Line::Link < RGFA::Line
     end
   end
 
-  # Compares a link with two oriented_segments and optionally an overlap.
+  # Compares a link with two oriented segments and optionally an overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to
   # @param [RGFA::CIGAR] other_overlap compared only if not empty
@@ -352,7 +361,7 @@ class RGFA::Line::Link < RGFA::Line
      (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 
-  # Compares the reverse link with two oriented_segments and optionally an
+  # Compares the reverse link with two oriented segments and optionally an
   # overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to

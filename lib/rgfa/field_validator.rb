@@ -3,6 +3,7 @@ require_relative "line"
 
 #
 # Methods to validate the string representations of the GFA fields data
+# @api private
 #
 module RGFA::FieldValidator
 
@@ -34,6 +35,7 @@ module RGFA::FieldValidator
   # @raise [RGFA::FieldParser::FormatError] if the string does not match
   #   the regexp for the provided datatype
   # @return [void]
+  # @api private
   def validate_gfa_field!(datatype, fieldname=nil)
     regexp = DATASTRING_VALIDATION_REGEXP[datatype]
     raise RGFA::FieldParser::UnknownDatatypeError if regexp.nil?
@@ -61,6 +63,7 @@ class Object
   #   @raise [RGFA::FieldParser::FormatError] if the object type or content
   #     is not compatible to the provided datatype
   #   @return [void]
+  #   @api private
   def validate_gfa_field!(datatype, fieldname=nil)
     raise RGFA::FieldParser::FormatError,
       "Wrong type (#{self.class}) for field #{fieldname}\n"+
@@ -70,7 +73,7 @@ class Object
 end
 
 class Symbol
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :lbl and datatype != :orn and datatype != :Z
       raise RGFA::FieldParser::FormatError,
@@ -83,7 +86,7 @@ class Symbol
 end
 
 class Hash
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :J
       raise RGFA::FieldParser::FormatError,
@@ -95,7 +98,7 @@ class Hash
 end
 
 class Array
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     begin
       case datatype
@@ -134,7 +137,7 @@ class Array
 end
 
 class RGFA::ByteArray
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :H
       raise RGFA::FieldParser::FormatError,
@@ -155,7 +158,7 @@ class RGFA::ByteArray
 end
 
 class RGFA::CIGAR
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :cig
       raise RGFA::FieldParser::FormatError,
@@ -176,7 +179,7 @@ class RGFA::CIGAR
 end
 
 class RGFA::NumericArray
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :B
       raise RGFA::FieldParser::FormatError,
@@ -197,7 +200,7 @@ class RGFA::NumericArray
 end
 
 class Float
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :f and datatype != :Z
       raise RGFA::FieldParser::FormatError,
@@ -209,7 +212,7 @@ class Float
 end
 
 class Fixnum
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if (datatype == :pos and self < 0)
       raise RGFA::FieldParser::FormatError,
@@ -226,7 +229,7 @@ class Fixnum
 end
 
 class RGFA::Line::Segment
-  # @!macro [new] validate_gfa_field
+  # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :lbl
       raise RGFA::FieldParser::FormatError,

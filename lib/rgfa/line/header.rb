@@ -1,4 +1,8 @@
 # A header line of a RGFA file
+#
+# For examples on how to set the header data, see {RGFA::Headers}.
+#
+# @see RGFA::Line
 class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H
@@ -10,8 +14,10 @@ class RGFA::Line::Header < RGFA::Line
 
   define_field_methods!
 
+  # Set a header value (multi-value compatible).
+  #
   # If a field does not exist yet, set it to value. If it exists and it is a
-  # RGFA::FieldArray, add the value to the field array. If it exists and it
+  # {RGFA::FieldArray}, add the value to the field array. If it exists and it
   # is not a field array, create a field array with the previous value and
   # the new one
   # @param fieldname [Symbol]
@@ -35,10 +41,13 @@ class RGFA::Line::Header < RGFA::Line
     return self
   end
 
+  # Array of optional tags data.
+  #
   # Returns the optional fields as an array of [fieldname, datatype, value]
   # arrays. If a field is a FieldArray, this is splitted into multiple fields
   # with the same fieldname.
-  # @return [Array<[Symbol, Symbol, Object]>]
+  # @return [Array<(Symbol, Symbol, Object)>]
+  # @api private
   def tags
     retval = []
     optional_fieldnames.each do |of|
@@ -54,9 +63,12 @@ class RGFA::Line::Header < RGFA::Line
     return retval
   end
 
-  # Split the header line into header lines, each one with a single tag
+  # Split the header line into single-tag lines.
+  #
   # If a tag is a FieldArray, this is splitted into multiple fields
   # with the same fieldname.
+  # @return [Array<RGFA::Line::Header>]
+  # @api private
   def split
     tags.map do |tagname, datatype, value|
       h = RGFA::Line::Header.new([], validate: @validate)
@@ -66,10 +78,15 @@ class RGFA::Line::Header < RGFA::Line
     end
   end
 
+  # Merge an additional {RGFA::Line::Header} line into this header line.
+  # @param gfa_line [RGFA::Line::Header] the header line to merge
+  # @return [self]
+  # @api private
   def merge(gfa_line)
     gfa_line.optional_fieldnames.each do |of|
       add(of, gfa_line.get(of), gfa_line.get_datatype(of))
     end
+    self
   end
 
 end

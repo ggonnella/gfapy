@@ -8,10 +8,10 @@ module RGFA::Multiplication
 
   # Create multiple copies of a segment.
   #
-  # <b>Automatic computation of the copy names:</b>
+  # == Automatic computation of the copy names
   #
   # - Can be overridden, by providing an array of copy names.
-  # - First, itis checked if the name of the original segment ends with a
+  # - First, it is checked if the name of the original segment ends with a
   #   relevant
   #   string, i.e. a lower case letter (for +:lowcase+), an upper case letter
   #   (for +:upcase+), a digit (for +:number+), or the string +"_copy"+

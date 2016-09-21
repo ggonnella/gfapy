@@ -1,8 +1,62 @@
-#
 # (c) 2016, Giorgio Gonnella, ZBH, Uni-Hamburg <gonnella@zbh.uni-hamburg.de>
-#
 
-RGFA = Class.new
+# Main class of the RGFA library.
+#
+# RGFA provides a representation of a GFA graph.
+# It supports creating a graph from scratch, input and output from/to file
+# or strings, as well as several operations on the graph.
+# The examples below show how to create a RGFA object from scratch or
+# from a GFA file, write the RGFA to file, output the string representation or
+# a statistics report, and control the validation level.
+#
+# == Interacting with the graph
+#
+# - {RGFA::Lines}: module with methods for finding, editing, iterating over,
+#   removing lines belonging to a RGFA instance. Specialized modules exist
+#   for each kind of line:
+#   - {RGFA::Headers}: accessing and creating header information is done
+#     using a single header line object ({headers RGFA#header})
+#   - {RGFA::Segments}
+#   - {RGFA::Links}
+#   - {RGFA::Containments}
+#   - {RGFA::Paths}
+#
+# - {RGFA::Line}: most interaction with the GFA involve interacting with
+#   its record, i.e. instances of a subclass of this class. Subclasses:
+#   - {RGFA::Line::Header}
+#   - {RGFA::Line::Segment}
+#   - {RGFA::Line::Link}
+#   - {RGFA::Line::Containment}
+#   - {RGFA::Line::Path}
+#
+# - Further modules contain methods useful for interacting with the graph
+#   - {RGFA::Connectivity} analysis of the connectivity of the graph
+#   - {RGFA::LinearPaths} finding and merging of linear paths
+#   - {RGFA::Multiplication} separation of the implicit instances of a repeat
+#
+# - Additional functionality is provided by {RGFATools}
+#
+# @example Creating an empty RGFA object
+#   gfa = RGFA.new
+#
+# @example Parsing and writing GFA format
+#   gfa = RGFA.from_file(filename) # parse GFA file
+#   gfa.to_file(filename) # write to GFA file
+#   puts gfa # show GFA representation of RGFA object
+#
+# @example Basic statistics report
+#   puts gfa.info # print report
+#   puts gfa.info(short = true) # compact format, in one line
+#
+# @example Validation
+#   gfa = RGFA.from_file(filename, validate: 1) # default level is 2
+#   gfa.validate = 3 # change validation level
+#   gfa.turn_off_validations # equivalent to gfa.validate = 0
+#   gfa.validate! # run post-validations (e.g. check segment names in links)
+#
+class RGFA
+end
+
 require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
 require_relative "./rgfa/connectivity.rb"
@@ -26,45 +80,6 @@ require_relative "./rgfa/segments.rb"
 require_relative "./rgfa/paths.rb"
 require_relative "./rgfa/sequence.rb"
 
-#
-# Main class of the RGFA library, providing a representation of a GFA graph.
-# It supports creating a graph from scratch, input and output from/to file
-# or strings, as well as several operations on the graph.
-#
-# For creating a RGFA object from scratch or from a GFA file, write the RGFA to
-# file, output the string representation or a statistics report, and control
-# the validation level, see the examples below.
-#
-# Most interaction involve using RGFA::Line objects.
-# Accessing and creating header information is done using a single header object
-# accessed via the #header method, see RGFA::Headers.
-# Other lines can be accessed as an array using the method with the record type
-# in plural (segments, links, containments, paths), or using finder methods
-# to locate a particular line, see RGFA::Segments, RGFA::Links,
-# RGFA::Containments, RGFA::Paths. Lines included in a RGFA object contain
-# references to other objects, which makes it simple to retrieve the graph
-# information by concatenation of methods,
-# e.g. +gfa.path(:P).links.first.to.sequence+ returns the sequence of the
-# +to+ segment of the first link of path P.
-#
-# @example Creating an empty RGFA object
-#   gfa = RGFA.new
-#
-# @example Parsing and writing GFA format
-#   gfa = RGFA.from_file(filename) # parse GFA file
-#   gfa.to_file(filename) # write to GFA file
-#   puts gfa # show GFA representation of RGFA object
-#
-# @example Basic statistics report
-#   puts gfa.info # print report
-#   puts gfa.info(short = true) # compact format, in one line
-#
-# @example Validation
-#   gfa = RGFA.from_file(filename, validate: 1) # default level is 2
-#   gfa.validate = 3 # change validation level
-#   gfa.turn_off_validations # equivalent to gfa.validate = 0
-#   gfa.validate! # run post-validations (e.g. check segment names in links)
-#
 class RGFA
 
   include RGFA::Lines
@@ -81,6 +96,10 @@ class RGFA
 
   attr_accessor :validate
 
+  # @!macro validate
+  #   @param validate [Integer] (<i>defaults to: +2+</i>)
+  #     the validation level; see "Validation level" under
+  #     {RGFA::Line#initialize}.
   def initialize(validate: 2)
     @validate = validate
     init_headers
@@ -103,20 +122,21 @@ class RGFA
     @segments_first_order = true
   end
 
-  # Turns off validations. This increases the performance.
+  # Set the validation level to 0.
+  # See "Validation level" under {RGFA::Line#initialize}.
   # @return [void]
   def turn_off_validations
     @validate = 0
   end
 
   # List all names of segments in the graph
-  # @return [Array<String>]
+  # @return [Array<Symbol>]
   def segment_names
     @segments.keys.compact
   end
 
   # List all names of path lines in the graph
-  # @return [Array<String>]
+  # @return [Array<Symbol>]
   def path_names
     @paths.keys.compact
   end
@@ -177,7 +197,7 @@ class RGFA
   # Creates a RGFA instance parsing the file with specified +filename+
   # @param [String] filename
   # @raise if file cannot be opened for reading
-  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
+  # @!macro validate
   # @return [RGFA]
   def self.from_file(filename, validate: 2)
     gfa = RGFA.new(validate: validate)
@@ -194,6 +214,8 @@ class RGFA
     File.open(filename, "w") {|f| each_line {|l| f.puts l}}
   end
 
+  # Output basic statistics about the graph's sequence and topology
+  # information.
   #
   # @param [boolean] short compact output as a single text line
   #
@@ -205,8 +227,9 @@ class RGFA
   # - +tl+: total length of segment sequences
   # - +50+: N50 segment sequence length
   #
-  # Normal output outputs a table with the same information, plus the largest
-  # component, the shortest and largest and 1st/2nd/3rd quartiles
+  # Normal output outputs a table with the same information, plus some
+  # additional one: the length of the largest
+  # component, as well as the shortest and largest and 1st/2nd/3rd quartiles
   # of segment sequence length.
   #
   # @return [String] sequence and topology information collected from the graph.
@@ -242,8 +265,9 @@ class RGFA
     return retval
   end
 
-  # Counts the dead ends
-  # (i.e. segment ends without connections)
+  # Counts the dead ends.
+  #
+  # Dead ends are here defined as segment ends without connections.
   #
   # @return [Integer] number of dead ends in the graph
   #
@@ -254,7 +278,7 @@ class RGFA
     end
   end
 
-  # Compares two RGFA instances
+  # Compare two RGFA instances.
   # @return [Boolean] are the lines of the two instances equivalent?
   def ==(other)
     segments == other.segments and
@@ -325,7 +349,7 @@ class String
   # Converts a +String+ into a +RGFA+ instance. Each line of the string is added
   # separately to the gfa.
   # @return [RGFA]
-  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
+  # @!macro validate
   def to_rgfa(validate: 2)
     gfa = RGFA.new(validate: validate)
     split("\n").each {|line| gfa << line}
@@ -341,7 +365,7 @@ class Array
   # Converts an +Array+ of strings or RGFA::Line instances
   # into a +RGFA+ instance.
   # @return [RGFA]
-  # @param [Integer] validate <i>(defaults to: +2+)</i> Validation level
+  # @!macro validate
   def to_rgfa(validate: 2)
     gfa = RGFA.new(validate: validate)
     each {|line| gfa << line}

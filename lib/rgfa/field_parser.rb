@@ -7,6 +7,7 @@ require_relative "field_array"
 
 #
 # Methods to parse the string representations of the GFA fields
+# @api private
 #
 module RGFA::FieldParser
 

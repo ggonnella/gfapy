@@ -22,6 +22,7 @@ module RGFA::Containments
       gfa_line.send(:"#{dir}=", s)
     end
   end
+  protected :add_containment
 
   # Delete a containment
   #
@@ -33,14 +34,10 @@ module RGFA::Containments
     segment(c.to).containments[:to][c.to_orient].delete(c)
   end
 
-  # All containments of the graph
+  # All containments in the graph
   # @return [Array<RGFA::Line::Containment>]
   def containments
     @containments
-  end
-
-  def each_containment(&block)
-    @containments.each(&block)
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+
@@ -64,8 +61,8 @@ module RGFA::Containments
   #
   # @return [Array<RGFA::Line::Containment>]
   # @!macro [new] container_contained
-  #   @param container [RGFA::Line::Segment, String] a segment instance or name
-  #   @param contained [RGFA::Line::Segment, String] a segment instance or name
+  #   @param container [RGFA::Line::Segment, Symbol] a segment instance or name
+  #   @param contained [RGFA::Line::Segment, Symbol] a segment instance or name
   #
   def containments_between(container, contained)
     contained_in(container).select {|l| l.to.to_sym == contained.to_sym }
@@ -86,7 +83,7 @@ module RGFA::Containments
   end
 
   # Searches a containment of +contained+ in +container+.
-  # Raises a +RuntimeError+ if no containment was found.
+  # Raises an exception if no such containment was found.
   #
   # @return [RGFA::Line::Containment]
   # @raise [RGFA::LineMissingError] if no such containment found

@@ -1,11 +1,10 @@
 require_relative "error"
 require_relative "field_array"
 
+# Methods for accessing the GFA header information.
 #
-# Methods for the RGFA class, which allow to handle headers in the graph.
-#
-# The header is accessed using #header.
-# This returns a +RGFA::Line::Header+ object.
+# The GFA header is accessed using {#header RGFA#header},
+# which returns a {RGFA::Line::Header} object.
 #
 # @example Accessing the header information
 #   rgfa.header.VN # => “1.0”
@@ -13,11 +12,14 @@ require_relative "field_array"
 #   rgfa.header.ni = 100
 #   rgfa.header.field_to_s(:ni) # => “ni:i:100”
 #
-# The specification does not explicitely forbid to have the same tag on
-# different lines. To represent this case, a "field array" is used,
-# which is an array of instances of a tag, from different lines of the header.
+# == Multiple header lines defining the same tag
 #
-# @example Header with tags repeated on different lines (see RGFA::FieldArray)
+# The specification does not explicitely forbid to have the same tag on
+# different lines. To represent this case, a "field array"
+# ({RGFA::FieldArray RGFA::FieldArray}) is used, which is an array of
+# instances of a tag, from different lines of the header.
+#
+# @example Header with tags repeated on different lines (see {RGFA::FieldArray})
 #   rgfa.header.ni # => RGFA::FieldArray<[100,200] @datatype: :i>
 #   rgfa.header.ni[0] # 100
 #   rgfa.header.ni << 200 # “200” is also OK
@@ -33,37 +35,34 @@ module RGFA::Headers
 
   # @return [RGFA::Line::Header] an header line representing the entire header
   #   information; if multiple header line were present, and they contain the
-  #   same tag, the tag value is represented by a RGFA::FieldArray
+  #   same tag, the tag value is represented by a {RGFA::FieldArray}
   def header
     @headers
   end
 
-  # Header information of the graph in form of an array of RGFA::Line::Header
+  # Header information in single-tag-lines.
+  #
+  # Returns an array of RGFA::Line::Header
   # objects, each containing a single field of the header.
-  # @note The returned array containes copies of the original values,
-  # i.e.\ changes in the lines will not affect the RGFA object; to update the
-  # values in the RGFA use the #header method.
+  # @!macro readonly
+  #   @note Read-only! The returned array containes copies of the original
+  #     values, i.e.\ changes in the lines will not affect the RGFA object; to
+  #     update the values in the RGFA use the #header method.
   # @return [Array<RGFA::Line::Header>]
+  # @api private
   def headers
     @headers.split
   end
 
-  # Iterator over the header information of the graph, in form of
-  # RGFA::Line::Header objects, each containing a single field of the header.
-  # @note The returned array containes copies of the original values,
-  # i.e.\ changes in the lines will not affect the RGFA object; to update the
-  # values in the RGFA use the #header method.
-  # @return [Array<RGFA::Line::Header>]
-  def each_header(&block)
-    headers.each(&block)
-  end
-
   # Remove all information from the header.
   # @return [RGFA] self
+  # @api private
   def delete_headers
     init_headers
     return self
   end
+
+  protected
 
   # Add a GFA line to the header. This is useful for constructing the graph.
   # For adding values to the header, see #header.

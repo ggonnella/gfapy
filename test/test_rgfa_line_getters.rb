@@ -12,7 +12,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     h1 = ["H\tVN:Z:1.0"]
     h2 = []
     gfa = h1.to_rgfa
-    gfa.each_header {|h| h2 << h.to_s}
+    gfa.headers.each {|h| h2 << h.to_s}
     assert_equal(h1, h2)
   end
 
@@ -28,11 +28,11 @@ class TestRGFALineGetters < Test::Unit::TestCase
     s1 = ["S\t1\t*","S\t2\t*"]
     s2 = []
     gfa = s1.to_rgfa
-    gfa.each_segment {|s| s2 << s.to_s}
+    gfa.segments.each {|s| s2 << s.to_s}
     assert_equal(s1, s2)
     gfa.delete_segment("1")
     s2 = []
-    gfa.each_segment {|s| s2 << s.to_s}
+    gfa.segments.each {|s| s2 << s.to_s}
     assert_equal([s1[1]], s2)
   end
 
@@ -50,11 +50,11 @@ class TestRGFALineGetters < Test::Unit::TestCase
     l1 = ["L\t1\t+\t2\t+\t12M", "L\t1\t+\t3\t+\t12M"]
     gfa = (s+l1).to_rgfa
     l2 = []
-    gfa.each_link {|l| l2 << l.to_s}
+    gfa.links.each {|l| l2 << l.to_s}
     assert_equal(l1, l2)
     gfa.unconnect_segments("1","2")
     l2 = []
-    gfa.each_link {|l| l2 << l.to_s}
+    gfa.links.each {|l| l2 << l.to_s}
     assert_equal([l1[1]],l2)
   end
 
@@ -72,11 +72,11 @@ class TestRGFALineGetters < Test::Unit::TestCase
     c1 = ["C\t1\t+\t2\t+\t12\t12M", "C\t1\t+\t3\t+\t12\t12M"]
     gfa = (s+c1).to_rgfa
     c2 = []
-    gfa.each_containment {|c| c2 << c.to_s}
+    gfa.containments.each {|c| c2 << c.to_s}
     assert_equal(c1, c2)
     gfa.unconnect_segments("1","2")
     c2 = []
-    gfa.each_containment {|c| c2 << c.to_s}
+    gfa.containments.each {|c| c2 << c.to_s}
     assert_equal([c1[1]], c2)
   end
 
@@ -96,11 +96,11 @@ class TestRGFALineGetters < Test::Unit::TestCase
     pt1 = ["P\t4\t1+,2+\t122M", "P\t5\t1+,3+\t120M"]
     gfa = (s+l+pt1).to_rgfa
     pt2 = []
-    gfa.each_path {|pt| pt2 << pt.to_s}
+    gfa.paths.each {|pt| pt2 << pt.to_s}
     assert_equal(pt1, pt2)
     gfa.delete_path("4")
     pt2 = []
-    gfa.each_path {|pt| pt2 << pt.to_s}
+    gfa.paths.each {|pt| pt2 << pt.to_s}
     assert_equal([pt1[1]], pt2)
   end
 

@@ -7,14 +7,16 @@ module RGFA::LinearPaths
 
   require "set"
 
-  # @return [Array<RGFA::SegmentEnd>]
   #
-  # Find an eventual path without branches which
-  #   includes +segment+ and excludes segments in +exclude+.
+  # Find a path without branches.
+  #
+  # The path must
+  # include +segment+ and excludes segments in +exclude+.
   # Any segment used in the returned path will be added to +exclude+
   #
   # @param s [String|RGFA::Line::Segment] a segment name or instance
   # @param exclude [Set<String>] a set of segment names to exclude from the path
+  # @return [Array<RGFA::SegmentEnd>]
   #
   def linear_path(s, exclude = Set.new)
     s = s.to_sym
@@ -30,7 +32,7 @@ module RGFA::LinearPaths
     return (segpath.size < 2) ? nil : segpath
   end
 
-  # Find all unbranched paths of segments connected by links in the graph.
+  # Find all unbranched paths in the graph.
   #
   # @return [Array<Array<RGFA::SegmentEnd>>]
   def linear_paths

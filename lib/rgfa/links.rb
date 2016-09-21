@@ -34,6 +34,7 @@ module RGFA::Links
       return
     end
   end
+  protected :add_link
 
   # Deletes a link and all paths depending on it
   #
@@ -69,10 +70,6 @@ module RGFA::Links
   # @return [Array<RGFA::Line::Link>]
   def links
     @links
-  end
-
-  def each_link(&block)
-    @links.each(&block)
   end
 
   # Finds links of the specified end of segment.

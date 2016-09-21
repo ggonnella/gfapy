@@ -34,8 +34,15 @@ class RGFA::Line
   # A symbol representing a valid datatype
   FIELD_DATATYPE = OPTFIELD_DATATYPE + REQFIELD_DATATYPE
 
-  # data types which are parsed only on access
+  # List of data types which are parsed only on access;
+  # all other are parsed when read.
   DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
+
+  # Direction of a segment for links/containments
+  DIRECTION = [:from, :to]
+
+  # Orientation of segments in paths/links/containments
+  ORIENTATION = [:+, :-]
 
   # @!macro rgfa_line
   #
@@ -145,6 +152,8 @@ class RGFA::Line
     (@data.keys - self.class::REQFIELDS)
   end
 
+  # Deep copy of a RGFA::Line instance.
+  # @return [RGFA::Line]
   def clone
     data_cpy = {}
     @data.each_pair do |k, v|
@@ -161,10 +170,22 @@ class RGFA::Line
     return cpy
   end
 
+  # Is the line virtual?
+  #
+  # Is this RGFA::Line a virtual line repreentation
+  # (i.e. a placeholder for an expected but not encountered yet line)?
+  # @api private
+  # @return [Boolean]
   def virtual?
     @virtual
   end
 
+  # Make a virtual line real.
+  # @api private
+  # This is called when a line which is expected, and for which a virtual
+  # line has been created, is finally found. So the line is converted into
+  # a real line, by merging in the line information from the found line.
+  # @param real_line [RGFA::Line] the real line fou
   def real!(real_line)
     @virtual = false
     real_line.data.each_pair do |k, v|

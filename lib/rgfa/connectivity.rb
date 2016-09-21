@@ -21,8 +21,9 @@ module RGFA::Connectivity
                          links_of([segment, :E]).size)
   end
 
-  # @return [Boolean] does the removal of the link alone divide a component
-  #   of the graph into two?
+  # Does the removal of the link alone divide a component
+  # of the graph into two?
+  # @return [Boolean]
   # @param link [RGFA::Line::Link] a link
   def cut_link?(link)
     return false if link.circular?
@@ -40,9 +41,10 @@ module RGFA::Connectivity
     return c[:from] != c[:to]
   end
 
-  # @return [Boolean] does the removal of the segment and its links divide a
-  #   component of the graph into two?
+  # Does the removal of the segment and its links divide a
+  # component of the graph into two?
   # @param segment [String, RGFA::Line::Segment] a segment name or instance
+  # @return [Boolean]
   def cut_segment?(segment)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     cn = connectivity(segment_name)

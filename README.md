@@ -28,6 +28,9 @@ The full API documentation is available as pdf under
 https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.2.pdf
 or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
 
+The main class of the library is {RGFA}, which is a good starting point
+when reading the documentation.
+
 ## References
 
 The manuscript describing the library has been presented at the
