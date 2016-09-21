@@ -3,14 +3,16 @@ class RGFA::Line::Segment < RGFA::Line
 
   RECORD_TYPE = :S
   REQFIELDS = [:name, :sequence]
-  PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC]
+  PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
     :name => :lbl,
     :sequence => :seq,
     :LN => :i,
     :RC => :i,
     :FC => :i,
-    :KC => :i
+    :KC => :i,
+    :SH => :H,
+    :UR => :Z
   }
 
   define_field_methods!
