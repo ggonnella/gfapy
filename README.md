@@ -12,12 +12,26 @@ elements (e.g. which links connect two segments) and to manipulate the
 graph (e.g. to eliminate a link or a segment or to duplicate a segment
 distributing the read counts evenly on the copies).
 
+## Installation
+
+The latest release of the gem can be installed from the rubygems repository
+using:
+```gem install rgfa```
+
+Alternatively this git repository can be cloned or the source code
+installed from a release archive, and then the gem created and installed
+using:
+```rake install```
+
 ## Usage
 
-After installation of the gem (rake install), the library can be included
-in the own scripts with require "rgfa". Additional functionality, which
+To use the library in your Ruby scripts, just require it as follows:
+```require "rgfa"```
+
+Additional functionality, which
 requires custom tags and additional conventions, is included in a separate
-part of the code named "RGFATools" and can be accessed with require "rgfatools".
+part of the code named {RGFATools} and can be accessed with:
+```require "rgfatools"```
 
 ## Documentation
 
