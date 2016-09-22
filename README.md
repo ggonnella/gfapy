@@ -1,7 +1,7 @@
 The Graphical Fragment Assembly (GFA) is a proposed format which allow
 to describe the product of sequence assembly.
 This gem implements the proposed specifications for the GFA format
-described under https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md
+described under https://github.com/GFA-spec/GFA-spec/blob/master/GFA-spec.md
 as close as possible.
 
 The library allows to create a RGFA object from a file in the GFA format
