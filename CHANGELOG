@@ -2,6 +2,7 @@
 
 - support new segment tags SH and UR
 - update cheatsheet
+- remove .rb suffix from bin/* scripts
 
 == 1.2 ==
 
