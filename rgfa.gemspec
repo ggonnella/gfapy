@@ -57,10 +57,10 @@ Gem::Specification.new do |s|
               'lib/rgfatools/superfluous_links.rb',
               'lib/rgfatools/linear_paths.rb',
               'lib/rgfatools/p_bubbles.rb',
-              'bin/gfadiff.rb',
-              'bin/rgfa-mergelinear.rb',
-              'bin/rgfa-simdebruijn.rb',
-              'bin/rgfa-findcrisprs.rb',
+              'bin/gfadiff',
+              'bin/rgfa-mergelinear',
+              'bin/rgfa-simdebruijn',
+              'bin/rgfa-findcrisprs',
             ]
   s.homepage = 'http://github.com/ggonnella/rgfa'
   s.license = 'CC-BY-SA'

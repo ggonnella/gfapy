@@ -156,14 +156,14 @@ Hamburg, Germany. This document is under CC-BY-SA license.}
   Remove small components & gfa.remove\_small\_components(minlen) \\
   \hline
   \textit{(Command line tools)} & \\
-  Compare two GFA files & gfadiff.rb 1.gfa 2.gfa \\
-  \ldots only segments and links & gfadiff.rb -s -l 1.gfa 2.gfa \\
-  \ldots output as ruby script & gfadiff.rb -script 1.gfa 2.gfa \\
-  Merge linear paths in graph & rgfa-mergelinear.rb 2.gfa > 3.gfa \\
+  Compare two GFA files & gfadiff 1.gfa 2.gfa \\
+  \ldots only segments and links & gfadiff -s -l 1.gfa 2.gfa \\
+  \ldots output as ruby script & gfadiff -script 1.gfa 2.gfa \\
+  Merge linear paths in graph & rgfa-mergelinear 2.gfa > 3.gfa \\
   \hline
   \textit{(Case studies CLI tools)} & \\
-  Simulate de Bruijn graph & rgfa-simdebruijn.rb 27 gnm.fas > 1.gfa \\
-  \ldots and find CRISPRs candidates & rgfa-findcrisprs.rb 1.gfa \\
+  Simulate de Bruijn graph & rgfa-simdebruijn 27 gnm.fas > 1.gfa \\
+  \ldots and find CRISPRs candidates & rgfa-findcrisprs 1.gfa \\
   \hline
 \end{tabular}
 
