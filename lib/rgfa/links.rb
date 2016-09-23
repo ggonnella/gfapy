@@ -7,7 +7,7 @@ module RGFA::Links
 
   def add_link(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    gfa_line.normalize!
+    gfa_line.canonicize!
     l = nil
     if segment(gfa_line.from) and segment(gfa_line.to)
       l = link_from_to(gfa_line.oriented_from,

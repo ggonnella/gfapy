@@ -112,60 +112,50 @@ class RGFA::Line::Link < RGFA::Line
     to.to_sym
   end
 
-  # Returns true if the link is normal, false otherwise
+  # Returns true if the link is canonical, false otherwise
   #
-  # == Definition of normal link
+  # == Definition of canonical link
   #
-  # Each link has an equivalent reverse link. Consider a link of A to B
-  # with a overlap 1M1I2M:
+  # A link if canonical if:
+  # - from != to and from < to (lexicographically); or
+  # - from == to and at least one of from_orient or to_orient is +
   #
-  #   from+ to to+ (1M1I2M) == to- to from- (2M1D1M)
-  #   from- to to- (1M1I2M) == to+ to from+ (2M1D1M)
-  #   from+ to to- (1M1I2M) == to+ to from- (2M1D1M)
-  #   from- to to+ (1M1I2M) == to- to from+ (2M1D1M)
+  # === Details
   #
-  # Consider also the special case, where from == to and the overlap is not
-  # specified, or equal to its reverse:
+  # In the special case in which from == to (== s) we have the
+  # following equivalences:
   #
-  #   from+ to from+ (*) == from- to from- (*) # left has a +; right has no +
-  #   from- to from- (*) == from+ to from+ (*) # left has no +; right has a +
-  #   from+ to from- (*) == from+ to from- (*) # left == right
-  #   from- to from+ (*) == from- to from+ (*) # left == right
+  #   s + s + == s - s -
+  #   s - s - == s + s + (same as previous case)
+  #   s + s - == s + s - (equivalent to itself)
+  #   s - s + == s - s + (equivalent to itself)
   #
-  # Thus we define a link as normal if:
-  # - from < to (lexicographical comparison of segments)
-  # - from == to and overlap.to_s < reverse_overlap.to_s
-  # - from == to, overlap == reverse_overlap and at least one orientation is +
+  # Considering the values on the left, the first one can be taken as
+  # canonical, the second not, because it can be transformed in the first
+  # one; the other two values are canonical, as they are only equivalent
+  # to themselves.
   #
   # @return [Boolean]
   #
-  def normal?
+  def canonical?
     if from_name < to_name
       return true
     elsif from_name > to_name
       return false
     else
-      overlap_s = overlap.to_s
-      reverse_overlap_s = reverse_overlap.to_s
-      if overlap_s < reverse_overlap_s
-        return true
-      elsif overlap_s > reverse_overlap_s
-        return false
-      else
-        return [from_orient, to_orient].include?(:+)
-      end
+      return [from_orient, to_orient].include?(:+)
     end
   end
 
-  # Returns the unchanged link if the link is normal,
+  # Returns the unchanged link if the link is canonical,
   # otherwise reverses the link and returns it.
   #
   # @note The path references are not corrected by this method; therefore
   #   the method shall be used before the link is embedded in a graph.
   #
   # @return [RGFA::Line::Link] self
-  def normalize!
-    reverse! if !normal?
+  def canonicize!
+    reverse! if !canonical?
   end
 
   # Creates a link with both strands of the sequences inverted.

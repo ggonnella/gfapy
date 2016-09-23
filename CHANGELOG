@@ -4,6 +4,7 @@
 -- support new segment tags SH and UR
 -- change name of cigars field of paths to overlaps
 -- support comment lines (which are ignored)
+- simplified definition of canonical link (previously normal link)
 - update cheatsheet
 - remove .rb suffix from bin/* scripts
 

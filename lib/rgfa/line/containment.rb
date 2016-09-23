@@ -56,9 +56,13 @@ class RGFA::Line::Containment < RGFA::Line
     return rpos
   end
 
-  # Returns true if the containment is normal, false otherwise
+  # Returns true if the containment is canonical, false otherwise
   #
-  # <b> Definition of normal containment </b>
+  # == Definition of canonical containment
+  #
+  # A containment is canonical if the from orientation is +
+  #
+  # === Details
   #
   # Each containment has an equivalent reverse containment.
   # Consider a containment of B (length:8) in A (length:100) at position 9 of A
@@ -76,11 +80,11 @@ class RGFA::Line::Containment < RGFA::Line
   # Thus it is always possible to express the containment using a positive
   # from orientation.
   #
-  # For this reason the normality is simply defined as + from orientation.
+  # For this reason the canon is simply defined as + from orientation.
   #
   # @return [Boolean]
   #
-  def normal?
+  def canonical?
     from_orient == :+
   end
 
