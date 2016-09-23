@@ -17,7 +17,7 @@ class TestRGFALinePath < Test::Unit::TestCase
                    RGFA::CIGAR::Operation.new(3,:D),
                    RGFA::CIGAR::Operation.new(1,:M)],
                   [RGFA::CIGAR::Operation.new(12,:M)]],
-                 str.to_rgfa_line.cigars)
+                 str.to_rgfa_line.overlaps)
     assert_equal("abcd", str.to_rgfa_line.ab)
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::Line::RequiredFieldMissingError) { "P\tH".to_rgfa_line }

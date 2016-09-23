@@ -2,12 +2,12 @@
 class RGFA::Line::Path < RGFA::Line
 
   RECORD_TYPE = :P
-  REQFIELDS = [:path_name, :segment_names, :cigars]
+  REQFIELDS = [:path_name, :segment_names, :overlaps]
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :path_name => :lbl,
     :segment_names => :lbs,
-    :cigars => :cgs,
+    :overlaps => :cgs,
   }
 
   define_field_methods!
@@ -30,7 +30,7 @@ class RGFA::Line::Path < RGFA::Line
   # equal to the number of segments.
   # @return [Boolean]
   def circular?
-    self.cigars.size == self.segment_names.size
+    self.overlaps.size == self.segment_names.size
   end
 
   # Is the path linear? This is the case when the number of CIGARs
@@ -40,11 +40,11 @@ class RGFA::Line::Path < RGFA::Line
     !circular?
   end
 
-  # Are the cigars a single "*"? This is a compact representation of
+  # Are the overlaps a single "*"? This is a compact representation of
   # a linear path where all CIGARs are "*"
   # @return [Boolean]
-  def undef_cigars?
-    self.cigars.size == 1 and self.cigars[0].empty?
+  def undef_overlaps?
+    self.overlaps.size == 1 and self.overlaps[0].empty?
   end
 
   # The links to which the path refers; it can be an empty array
@@ -62,14 +62,14 @@ class RGFA::Line::Path < RGFA::Line
   #   an array, which elements are 3-tuples (from oriented segment,
   #   to oriented segment, cigar)
   def required_links
-    has_undef_cigars = self.undef_cigars?
+    has_undef_overlaps = self.undef_overlaps?
     retval = []
     self.segment_names.size.times do |i|
       j = i+1
       if j == self.segment_names.size
         circular? ? j = 0 : break
       end
-      cigar = has_undef_cigars ? [] : self.cigars[i]
+      cigar = has_undef_overlaps ? [] : self.overlaps[i]
       retval << [self.segment_names[i], self.segment_names[j], cigar]
     end
     retval
@@ -78,20 +78,20 @@ class RGFA::Line::Path < RGFA::Line
   private
 
   def validate_lists_size!
-    n_cigars = self.cigars.size
+    n_overlaps = self.overlaps.size
     n_segments = self.segment_names.size
-    if n_cigars == n_segments - 1
+    if n_overlaps == n_segments - 1
       # case 1: linear path
       return true
-    elsif n_cigars == 1 and self.cigars[0].empty?
-      # case 2: linear path, single "*" to represent cigars which are all "*"
+    elsif n_overlaps == 1 and self.overlaps[0].empty?
+      # case 2: linear path, single "*" to represent overlaps which are all "*"
       return true
-    elsif n_cigars == n_segments
+    elsif n_overlaps == n_segments
       # case 3: circular path
     else
       raise RGFA::Line::Path::ListLengthsError,
         "Path has #{n_segments} oriented segments, "+
-        "but #{n_cigars} CIGARs"
+        "but #{n_overlaps} overlaps"
     end
   end
 
@@ -102,5 +102,5 @@ class RGFA::Line::Path < RGFA::Line
 
 end
 
-# Error raised if number of segments and cigars are not consistent
+# Error raised if number of segments and overlaps are not consistent
 class RGFA::Line::Path::ListLengthsError < RGFA::Error; end
