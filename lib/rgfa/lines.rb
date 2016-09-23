@@ -28,6 +28,9 @@ module RGFA::Lines
       add_containment(gfa_line)
     when :P
       add_path(gfa_line)
+    when :"#"
+      # do nothing, as the spec says these shall be ignored
+      # maybe we want to store them and output them again in a future version
     else
       raise # this never happens, as already catched by gfa_line init
     end

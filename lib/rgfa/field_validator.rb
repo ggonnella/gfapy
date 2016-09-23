@@ -27,6 +27,7 @@ module RGFA::FieldValidator
     :cig => /^(\*|(([0-9]+[MIDNSHPX=])+))$/, # CIGAR string
     :cgs => /^(\*|(([0-9]+[MIDNSHPX=])+))(,(\*|(([0-9]+[MIDNSHPX=])+)))*$/,
                                        # multiple CIGARs, comma-sep
+    :cmt => /.*/, # content of comment line, everything is allowed
   }
 
   # Validates the string according to the provided datatype

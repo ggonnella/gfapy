@@ -1,0 +1,13 @@
+# A comment line of a RGFA file
+class RGFA::Line::Comment < RGFA::Line
+
+  RECORD_TYPE = :"#"
+  REQFIELDS = [:content]
+  PREDEFINED_OPTFIELDS = []
+  DATATYPE = {
+    :content => :cmt,
+  }
+
+  define_field_methods!
+
+end

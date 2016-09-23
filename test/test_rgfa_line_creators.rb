@@ -10,6 +10,16 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal([h], gfa.headers.map(&:to_s))
   end
 
+  def test_add_comments
+    gfa = RGFA.new
+    c1 = "#this is a comment"
+    c2 = "# this is also a comment"
+    c3 = "#and \tthis too!"
+    assert_nothing_raised { gfa << c1 }
+    assert_nothing_raised { gfa << c2 }
+    assert_nothing_raised { gfa << c3 }
+  end
+
   def test_add_segments
     gfa = RGFA.new
     s1 = "S\t1\t*".to_rgfa_line

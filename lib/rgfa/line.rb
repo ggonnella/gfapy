@@ -126,6 +126,7 @@ class RGFA::Line
     when :L then RGFA::Line::Link
     when :C then RGFA::Line::Containment
     when :P then RGFA::Line::Path
+    when :"#" then RGFA::Line::Comment
     else
       raise RGFA::Line::UnknownRecordTypeError,
         "Record type unknown: '#{record_type}'"
@@ -684,6 +685,7 @@ require_relative "line/segment.rb"
 require_relative "line/path.rb"
 require_relative "line/link.rb"
 require_relative "line/containment.rb"
+require_relative "line/comment.rb"
 
 # Extensions to the String core class.
 #
@@ -696,7 +698,11 @@ class String
   # @param validate [Integer] <i>(defaults to: 2)</i>
   #   see RGFA::Line#initialize
   def to_rgfa_line(validate: 2)
-    split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate)
+    if self[0] == "#"
+      return RGFA::Line::Comment.new([self[1..-1]], validate: 0)
+    else
+      split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate)
+    end
   end
 
 end
