@@ -4,11 +4,11 @@ require_relative "error.rb"
 # Represents the contents of a CIGAR string.
 class RGFA::CIGAR < Array
 
-  # Compute the CIGAR for the segments in reverse direction.
+  # Compute the CIGAR for the segments when these are switched.
   #
-  # @example Reversing a CIGAR
+  # @example Computing the complement CIGAR
   #
-  #   RGFA::CIGAR.from_string("2M1D3M").reverse.to_s
+  #   RGFA::CIGAR.from_string("2M1D3M").complement.to_s
   #   # => "3M1I2M"
   #
   #   # S1 + S2 + 2M1D3M
@@ -22,8 +22,8 @@ class RGFA::CIGAR < Array
   #   # S2 - S1 - 3M1I2M
   #
   # @return [RGFA::CIGAR] (empty if CIGAR string is *)
-  def reverse
-    super.map do |op|
+  def complement
+    reverse.map do |op|
       if op.code == :I
         op.code = :D
       elsif op.code == :D

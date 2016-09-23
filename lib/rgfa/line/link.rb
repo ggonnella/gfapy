@@ -148,62 +148,63 @@ class RGFA::Line::Link < RGFA::Line
   end
 
   # Returns the unchanged link if the link is canonical,
-  # otherwise reverses the link and returns it.
+  # otherwise complements the link and returns it.
   #
   # @note The path references are not corrected by this method; therefore
   #   the method shall be used before the link is embedded in a graph.
   #
   # @return [RGFA::Line::Link] self
   def canonicize!
-    reverse! if !canonical?
+    complement! if !canonical?
   end
 
-  # Creates a link with both strands of the sequences inverted.
+  # Creates the equivalent link with from/to inverted.
+  #
   # The CIGAR operations (order/type) are inverted as well.
   # Optional fields are left unchanged.
   #
-  # @note The path references are not copied to the reverse link.
+  # @note The path references are not copied to the complement link.
   #
   # @note This method shall be overridden if custom optional fields
-  #   are defined, which have a ``reverse'' operation which determines
-  #   their value in the equivalent but reverse link.
+  #   are defined, which have a ``complementation'' operation which determines
+  #   their value in the equivalent complement link.
   #
   # @return [RGFA::Line::Link] the inverted link.
-  def reverse
+  def complement
     l = self.clone
     l.from = to
     l.from_orient = (to_orient == :+ ? :- : :+)
     l.to = from
     l.to_orient = (from_orient == :+ ? :- : :+)
-    l.overlap = reverse_overlap
+    l.overlap = complement_overlap
     l
   end
 
-  # Reverses the link inplace, i.e. sets:
+  # Complements the link inplace, i.e. sets:
   #   from = to
   #   from_orient = other_orient(to_orient)
   #   to = from
   #   to_orient = other_orient(from_orient)
-  #   overlap = reverse_overlap.
+  #   overlap = complement_overlap.
   #
   # The optional fields are left unchanged.
   #
-  # @note The path references are not reversed by this method; therefore
+  # @note The path references are not complemented by this method; therefore
   #   the method shall be used before the link is embedded in a graph.
   #
   # @note This method shall be overridden if custom optional fields
-  #   are defined, which have a ``reverse'' operation which determines
-  #   their value in the equivalent but reverse link.
+  #   are defined, which have a ``complementation'' operation which determines
+  #   their value in the complement link.
   #
   # @return [RGFA::Line::Link] self
-  def reverse!
+  def complement!
     tmp = self.from
     self.from = self.to
     self.to = tmp
     tmp = self.from_orient
     self.from_orient = (self.to_orient == :+) ? :- : :+
     self.to_orient = (tmp == :+) ? :- : :+
-    self.overlap = self.reverse_overlap
+    self.overlap = self.complement_overlap
     return self
   end
 
@@ -214,7 +215,7 @@ class RGFA::Line::Link < RGFA::Line
   #
   # Otherwise, an array of tuples path/boolean is returned.
   # The boolean value tells
-  # if the link is used in direct (true) or reverse direction (false)
+  # if the link is used (true) or its complement (false)
   # in the path.
   # @return [Array<Array<(RGFA::Line::Path, Boolean)>>]
   def paths
@@ -225,8 +226,8 @@ class RGFA::Line::Link < RGFA::Line
   # Compute the overlap when the strand of both sequences is inverted.
   #
   # @return [RGFA::CIGAR]
-  def reverse_overlap
-    self.overlap.reverse
+  def complement_overlap
+    self.overlap.to_cigar.complement
   end
 
   #
@@ -234,23 +235,23 @@ class RGFA::Line::Link < RGFA::Line
   # Thereby, optional fields are not considered.
   #
   # @note Inverting the strand of both links and reversing
-  #   the CIGAR operations (order/type), one obtains a
-  #   reverse but equivalent link.
+  #   the CIGAR operations (order/type), one obtains an
+  #   equivalent complement link.
   #
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
   # @see #same?
-  # @see #reverse?
+  # @see #complement?
   def eql?(other)
-    same?(other) or reverse?(other)
+    same?(other) or complement?(other)
   end
 
   # Compares the optional fields of two links.
   #
   # @note This method shall be overridden if custom optional fields
-  #   are defined, which have a ``reverse'' operation which determines
-  #   their value in the equivalent but reverse link.
+  #   are defined, which have a ``complementation'' operation which determines
+  #   their value in the equivalent but complement link.
   #
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
@@ -281,7 +282,7 @@ class RGFA::Line::Link < RGFA::Line
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #eql?
-  # @see #reverse?
+  # @see #complement?
   # @see #==
   def same?(other)
     (from_end == other.from_end and
@@ -289,37 +290,37 @@ class RGFA::Line::Link < RGFA::Line
       overlap == other.overlap)
   end
 
-  # Compares the reverse of the link to another link
+  # Compares the link to the complement of another link
   # and determine their equivalence.
   # Thereby, optional fields are not considered.
   #
   # @param other [RGFA::Line::Link] the other link
-  # @return [Boolean] are the reverse of self and other equivalent?
+  # @return [Boolean] are self and the complement of other equivalent?
   # @see #eql?
   # @see #same?
   # @see #==
-  def reverse?(other)
+  def complement?(other)
     (from_end == other.to_end and
       to_end == other.from_end and
-      overlap == other.reverse_overlap)
+      overlap == other.complement_overlap)
   end
 
   # Computes an hash for including a link in an Hash tables,
-  # so that the hash of a link and its reverse is the same.
+  # so that the hash of a link and its complement is the same.
   # Thereby, optional fields are not considered.
   # @see #eql?
   def hash
-    from_end.hash + to_end.hash + overlap.hash + reverse_overlap.to_s.hash
+    from_end.hash + to_end.hash + overlap.hash + complement_overlap.to_s.hash
   end
 
-  # Compares a link and optionally the reverse link,
+  # Compares a link and optionally the complement link,
   # with two oriented_segments and optionally an overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to
-  # @param equivalent [Boolean] shall the reverse link also be considered?
+  # @param equivalent [Boolean] shall the complement link also be considered?
   # @param [RGFA::CIGAR] other_overlap compared only if not empty
   # @return [Boolean] does the link or, if +equivalent+,
-  #   the reverse link go from the first
+  #   the complement link go from the first
   #   oriented segment to the second with an overlap equal to the provided one
   #   (if not empty)?
   def compatible?(other_oriented_from, other_oriented_to, other_overlap = [],
@@ -330,7 +331,7 @@ class RGFA::Line::Link < RGFA::Line
     if is_direct
       return true
     elsif equivalent
-      return compatible_reverse?(other_oriented_from, other_oriented_to,
+      return compatible_complement?(other_oriented_from, other_oriented_to,
                           other_overlap)
     else
       return false
@@ -351,15 +352,15 @@ class RGFA::Line::Link < RGFA::Line
      (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 
-  # Compares the reverse link with two oriented segments and optionally an
+  # Compares the complement link with two oriented segments and optionally an
   # overlap.
   # @param [RGFA::OrientedSegment] other_oriented_from
   # @param [RGFA::OrientedSegment] other_oriented_to
   # @param [RGFA::CIGAR] other_overlap compared only if not empty
-  # @return [Boolean] does the reverse link go from the first
+  # @return [Boolean] does the complement link go from the first
   #   oriented segment to the second with an overlap equal to the provided one
   #   (if not empty)?
-  def compatible_reverse?(other_oriented_from, other_oriented_to,
+  def compatible_complement?(other_oriented_from, other_oriented_to,
                           other_overlap = [])
     (oriented_to == other_oriented_from.invert_orient and
      oriented_from == other_oriented_to.invert_orient) and

@@ -64,7 +64,7 @@ class RGFA::Line::Containment < RGFA::Line
   #
   # === Details
   #
-  # Each containment has an equivalent reverse containment.
+  # Each containment has an equivalent complement containment.
   # Consider a containment of B (length:8) in A (length:100) at position 9 of A
   # with a cigar 1M1I2M3D4M (i.e. rpos = 19).
   #
@@ -73,7 +73,7 @@ class RGFA::Line::Containment < RGFA::Line
   #   A- B+ 1M1I2M3D4M 9 == A+ B- 4M3D2M1I1M 80
   #   A- B- 1M1I2M3D4M 9 == A+ B+ 4M3D2M1I1M 80
   #
-  # Pos in the reverse is equal to the length of A minus the right pos
+  # Pos in the complement is equal to the length of A minus the right pos
   # of B before reversing.
   #
   # We require here that A != B as A == B makes no sense for containments.
