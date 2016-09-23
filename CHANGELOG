@@ -1,6 +1,7 @@
 == 1.2.1 ==
 
 - support new segment tags SH and UR
+- change name of cigars field of paths to overlaps
 - update cheatsheet
 - remove .rb suffix from bin/* scripts
 
