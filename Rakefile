@@ -1,6 +1,6 @@
 require "rake/testtask"
 
-$rgfaversion="1.2.1"
+$rgfaversion=Gem::Specification.load("rgfa.gemspec").version.to_s
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
