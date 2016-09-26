@@ -36,10 +36,10 @@ part of the code named {RGFATools} and can be accessed with:
 ## Documentation
 
 A cheatsheet is available as pdf under
-https://github.com/ggonnella/rgfa/blob/master/cheatsheet/rgfa-cheatsheet-1.2.1.pdf
+https://github.com/ggonnella/rgfa/blob/master/cheatsheet/rgfa-cheatsheet-1.3.pdf
 
 The full API documentation is available as pdf under
-https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.2.1.pdf
+https://github.com/ggonnella/rgfa/blob/master/pdfdoc/rgfa-api-1.3.pdf
 or in HTML format (http://www.rubydoc.info/github/ggonnella/rgfa/master/RGFA).
 
 The main class of the library is {RGFA}, which is a good starting point
