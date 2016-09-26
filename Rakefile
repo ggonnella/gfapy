@@ -36,10 +36,13 @@ begin
 rescue LoadError
 end
 
-desc "Create cheatsheet"
-task :cs do
-  system("latexmk cheatsheet/rgfa-cheatsheet-#$rgfaversion.tex "+
+desc "Typeset cheatsheet"
+task :cheatsheet do
+  system("echo #$rgfaversion > cheatsheet/version")
+  system("latexmk cheatsheet/rgfa-cheatsheet.tex "+
          "-pdf -outdir=cheatsheet")
+  system("mv cheatsheet/rgfa-cheatsheet.pdf"+
+         "   cheatsheet/rgfa-cheatsheet-#$rgfaversion.pdf")
 end
 
 desc "Create a PDF documentation"

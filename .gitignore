@@ -8,3 +8,4 @@ cheatsheet/*_latexmk
 cheatsheet/*.fls
 cheatsheet/*.log
 cheatsheet/*.pdf
+cheatsheet/version
