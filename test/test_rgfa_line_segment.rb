@@ -35,6 +35,18 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { f.join("\t").to_rgfa_line }
   end
 
+  def test_forbidden_segment_names
+    assert_nothing_raised { "S\tA+B\t*".to_rgfa_line }
+    assert_nothing_raised { "S\tA-B\t*".to_rgfa_line }
+    assert_nothing_raised { "S\tA,B\t*".to_rgfa_line }
+    assert_raises(RGFA::FieldParser::FormatError) do
+      "S\tA+,B\t*".to_rgfa_line
+    end
+    assert_raises(RGFA::FieldParser::FormatError) do
+      "S\tA-,B\t*".to_rgfa_line
+    end
+  end
+
   def test_coverage
     l = "S\t0\t*\tRC:i:600\tLN:i:100".to_rgfa_line
     assert_equal(6, l.coverage)

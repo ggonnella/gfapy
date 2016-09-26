@@ -50,6 +50,19 @@ module RGFA::FieldValidator
     end
   end
 
+  # Validates segment names, to check that they do not contain + or -
+  # followed by comma
+  # @raise [RGFA::FieldParser::FormatError] if the segment name is invalid
+  # @return [void]
+  # @api private
+  def validate_segment_name!
+    if self =~ /.*[+-],.*/
+      raise RGFA::FieldParser::FormatError,
+      "Segment names are not allowed to contain +/- followed by comma "+
+      "(found: #{self})"
+    end
+  end
+
 end
 
 class String

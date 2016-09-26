@@ -25,7 +25,11 @@ module RGFA::FieldParser
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       self.freeze if frozen
       return self
-    when :lbl, :orn
+    when :lbl
+      validate_segment_name!
+      validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
+      return to_sym.freeze
+    when :orn
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       return to_sym.freeze
     when :i

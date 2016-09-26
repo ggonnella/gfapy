@@ -4,6 +4,7 @@ major changes:
 - changes in GFA specification:
 -- P lines: cigars field is now overlaps
 -- comment lines
+-- forbid +, and -, in segment names
 - .rb suffix removed from bin/* scripts
 
 minor changes:
