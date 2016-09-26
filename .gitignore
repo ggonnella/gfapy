@@ -3,6 +3,7 @@ doc
 .yardoc
 pdfdoc/index.html
 pdfdoc/rgfa*.pdf
+pdfdoc/cover.html
 cheatsheet/*.aux
 cheatsheet/*_latexmk
 cheatsheet/*.fls

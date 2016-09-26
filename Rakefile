@@ -47,6 +47,10 @@ end
 
 desc "Create a PDF documentation"
 task :pdf do
+  require "erb"
+  File.open("pdfdoc/cover.html", "w") do |f|
+    f.puts ERB.new(IO.read("pdfdoc/cover.html.erb")).result(binding)
+  end
   system("yard2.0 --one-file -o pdfdoc")
   system("wkhtmltopdf cover pdfdoc/cover.html "+
                      "toc "+
