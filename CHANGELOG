@@ -1,15 +1,20 @@
+== 1.3 ==
+
+major changes:
+- changes in GFA specification:
+-- P lines: cigars field is now overlaps
+-- comment lines
+- .rb suffix removed from bin/* scripts
+
+minor changes:
+- improved links terminology
+  (normal link -> canonical; reverse link/CIGAR -> complement)
+- definition of canonical link simplified
+
 == 1.2.1 ==
 
-- update to changes in specification:
--- support new segment tags SH and UR
--- change name of cigars field of paths to overlaps
--- support comment lines (which are ignored)
-- adapt to terminology used in forum
--- canonical link instead of normal link
--- complement link instead of reverse link
-- simplified definition of canonical link
+- support new segment tags SH and UR
 - update cheatsheet
-- remove .rb suffix from bin/* scripts
 
 == 1.2 ==
 
