@@ -1,6 +1,8 @@
 *.gem
-doc
 .yardoc
+doc
+gfapy_doc/_build
+doc/_build
 pdfdoc/index.html
 pdfdoc/rgfa*.pdf
 pdfdoc/cover.html
@@ -11,3 +13,12 @@ cheatsheet/*.log
 cheatsheet/*.pdf
 cheatsheet/version
 manual/manual.pdf
+# Compiled python modules
+*.pyc
+
+# Setuptools distribution folder
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools
+/*.egg-info
+/*.egg

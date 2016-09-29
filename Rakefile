@@ -65,3 +65,9 @@ desc "Create the manual"
 task :manual do
   system("cd manual; pandoc $(cat chapters) -o manual.pdf")
 end
+
+desc "Run python tests"
+task :pytest do
+    system("python3 setup.py test")
+end
+
