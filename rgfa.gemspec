@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/field_parser.rb',
               'lib/rgfa/field_validator.rb',
               'lib/rgfa/headers.rb',
+              'lib/rgfa/line/comment.rb',
               'lib/rgfa/line/containment.rb',
               'lib/rgfa/line/header.rb',
               'lib/rgfa/line/link.rb',
