@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'rgfa'
-  s.version = '1.3'
+  s.version = '1.3.1'
   s.date = '2016-09-26'
   s.summary = 'Parse, edit and write GFA-format graphs in Ruby'
   s.description = <<-EOF
