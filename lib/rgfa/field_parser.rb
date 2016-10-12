@@ -2,8 +2,10 @@ require "json"
 require_relative "byte_array"
 require_relative "numeric_array"
 require_relative "cigar"
+require_relative "trace"
 require_relative "error"
 require_relative "field_array"
+require_relative "alignment"
 
 #
 # Methods to parse the string representations of the GFA fields
@@ -57,12 +59,16 @@ module RGFA::FieldParser
       # no need to freeze, as any Hash or Array will be valid
       return value
     when :cig
-      value = to_cigar
+      value = to_alignment(false)
+      value.freeze if frozen
+      return value
+    when :aln
+      value = to_alignment
       value.freeze if frozen
       return value
     when :cgs
       value = split(",").map do |c|
-        c = c.to_cigar
+        c = c.to_alignment(false)
         c.freeze if frozen
         c
       end
@@ -102,6 +108,7 @@ module RGFA::FieldParser
         "Expected optional field, found: #{self.inspect}"
     end
   end
+
 end
 
 # Error raised if the field content has an invalid format

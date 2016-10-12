@@ -21,7 +21,7 @@ class RGFA::CIGAR < Array
   #   #
   #   # S2 - S1 - 3M1I2M
   #
-  # @return [RGFA::CIGAR] (empty if CIGAR string is *)
+  # @return [RGFA::CIGAR]
   def complement
     reverse.map do |op|
       if op.code == :I
@@ -37,19 +37,21 @@ class RGFA::CIGAR < Array
   #
   # Each operation is represented by a {RGFA::CIGAR::Operation},
   # i.e. a tuple of operation length and operation
-  # symbol (one of MIDNSHPX=).
+  # symbol (one of MIDP).
   #
-  # @return [RGFA::CIGAR] (empty if string is *)
+  # Deprecation warning: the GFA1 specification does not forbid the
+  # other operation symbols (NSHX=); these are not allowed in GFA2 and their
+  # use is deprecated.
+  #
+  # @return [RGFA::CIGAR]
   # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
   def self.from_string(str)
     a = RGFA::CIGAR.new
-    if str != "*"
-      raise RGFA::CIGAR::ValueError if str !~ /^([0-9]+[MIDNSHPX=])+$/
-      str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
-        len = op[0..-2].to_i
-        code = op[-1..-1].to_sym
-        a << RGFA::CIGAR::Operation.new(len, code)
-      end
+    raise RGFA::CIGAR::ValueError if str !~ /^([0-9]+[MIDNSHPX=])+$/
+    str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
+      len = op[0..-2].to_i
+      code = op[-1..-1].to_sym
+      a << RGFA::CIGAR::Operation.new(len, code)
     end
     return a
   end
@@ -57,11 +59,7 @@ class RGFA::CIGAR < Array
   # String representation of the CIGAR
   # @return [String] CIGAR string
   def to_s
-    if empty?
-      return "*"
-    else
-      map(&:to_s).join
-    end
+    map(&:to_s).join
   end
 
   # Validate the instance
@@ -75,6 +73,12 @@ class RGFA::CIGAR < Array
 
   # @return [RGFA::CIGAR] self
   def to_cigar
+    self
+  end
+
+  # @param allow_traces [Boolean] ignored, for compatibility only
+  # @return [RGFA::CIGAR] self
+  def to_alignment(allow_traces = true)
     self
   end
 
@@ -153,11 +157,15 @@ class Array
 end
 
 class String
-  # Parse CIGAR string and return an array of CIGAR operations
-  # @return [RGFA::CIGAR] CIGAR operations (empty if string is "*")
+  # Parse CIGAR string
+  # @return [RGFA::CIGAR,RGFA::Placeholder] CIGAR or Placeholder (if +*+)
   # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
   def to_cigar
-    RGFA::CIGAR.from_string(self)
+    if self == "*"
+      return RGFA::Placeholder.new
+    else
+      return RGFA::CIGAR.from_string(self)
+    end
   end
 end
 

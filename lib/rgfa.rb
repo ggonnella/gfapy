@@ -76,12 +76,14 @@ require_relative "./rgfa/lines.rb"
 require_relative "./rgfa/links.rb"
 require_relative "./rgfa/logger.rb"
 require_relative "./rgfa/numeric_array.rb"
+require_relative "./rgfa/placeholder.rb"
 require_relative "./rgfa/rgl.rb"
 require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_info.rb"
 require_relative "./rgfa/segments.rb"
 require_relative "./rgfa/paths.rb"
 require_relative "./rgfa/sequence.rb"
+require_relative "./rgfa/trace.rb"
 
 class RGFA
 

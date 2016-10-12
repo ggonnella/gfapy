@@ -225,9 +225,9 @@ class RGFA::Line::Link < RGFA::Line
 
   # Compute the overlap when the strand of both sequences is inverted.
   #
-  # @return [RGFA::CIGAR]
+  # @return [RGFA::CIGAR, RGFA::Placeholder]
   def complement_overlap
-    self.overlap.to_cigar.complement
+    self.overlap.to_alignment.complement
   end
 
   #
@@ -325,7 +325,7 @@ class RGFA::Line::Link < RGFA::Line
   #   (if not empty)?
   def compatible?(other_oriented_from, other_oriented_to, other_overlap = [],
                   equivalent = true)
-    other_overlap = other_overlap.to_cigar
+    other_overlap = other_overlap.to_alignment
     is_direct = compatible_direct?(other_oriented_from, other_oriented_to,
                                    other_overlap)
     if is_direct

@@ -25,6 +25,7 @@ module RGFA::FieldValidator
     :seq => /^\*$|^[A-Za-z=.]+$/,          # nucleotide sequence
     :pos => /^[0-9]*$/,                  # positive integer
     :cig => /^(\*|(([0-9]+[MIDNSHPX=])+))$/, # CIGAR string
+    :aln => /^(\*|(([0-9]+[MIDNSHPX=])+)|((\d+)(,\d+)*))$/, # CIGAR or trace
     :cgs => /^(\*|(([0-9]+[MIDNSHPX=])+))(,(\*|(([0-9]+[MIDNSHPX=])+)))*$/,
                                        # multiple CIGARs, comma-sep
     :cmt => /.*/, # content of comment line, everything is allowed
@@ -124,10 +125,10 @@ class Array
         map!(&:to_oriented_segment).each(&:validate!)
         return
       when :cig
-        to_cigar.validate!
+        to_alignment(false).validate!
         return
       when :cgs
-        map(&:to_cigar).each(&:validate!)
+        each{|elem| elem.to_alignment(false).validate!}
         return
       when :B
         to_numeric_array.validate!
@@ -174,7 +175,7 @@ end
 class RGFA::CIGAR
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
-    if datatype != :cig
+    if datatype != :cig and datatype != :aln
       raise RGFA::FieldParser::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
@@ -188,6 +189,42 @@ class RGFA::CIGAR
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
         "Error: #{err}"
+    end
+  end
+end
+
+class RGFA::Trace
+  # @!macro validate_gfa_field
+  def validate_gfa_field!(datatype, fieldname=nil)
+    if datatype != :aln
+      raise RGFA::FieldParser::FormatError,
+          "Wrong type (#{self.class}) for field #{fieldname}\n"+
+          "Content: #{self.inspect}\n"+
+          "Datatype: #{datatype}"
+    end
+    begin
+      validate!
+    rescue => err
+      raise RGFA::FieldParser::FormatError,
+        "Invalid content for field #{fieldname}\n"+
+        "Content: #{self.inspect}\n"+
+        "Datatype: #{datatype}\n"+
+        "Error: #{err}"
+    end
+  end
+end
+
+class RGFA::Placeholder
+  # Datatypes which can be represented by a placeholder
+  DATATYPES = [:aln, :cig]
+
+  # @!macro validate_gfa_field
+  def validate_gfa_field!(datatype, fieldname=nil)
+    if !RGFA::Placeholder::DATATYPES.include?(datatype)
+      raise RGFA::FieldParser::FormatError,
+          "Wrong type (#{self.class}) for field #{fieldname}\n"+
+          "Content: #{self.inspect}\n"+
+          "Datatype: #{datatype}"
     end
   end
 end

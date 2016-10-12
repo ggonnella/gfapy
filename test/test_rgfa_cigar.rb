@@ -11,7 +11,7 @@ class TestRGFACigar < Test::Unit::TestCase
   end
 
   def test_from_string_empty
-    assert_equal([],"*".to_cigar)
+    assert_equal(RGFA::Placeholder,"*".to_cigar.class)
   end
 
   def test_from_string_invalid
@@ -24,10 +24,6 @@ class TestRGFACigar < Test::Unit::TestCase
       RGFA::CIGAR::Operation.new(12,:M),
       RGFA::CIGAR::Operation.new(1,:D),
       RGFA::CIGAR::Operation.new(2,:I)]).to_s)
-  end
-
-  def test_to_s_empty
-    assert_equal("*", RGFA::CIGAR.new([]).to_s)
   end
 
 end

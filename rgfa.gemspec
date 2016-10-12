@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.email = 'gonnella@zbh.uni-hamburg.de'
   s.files = [
               'lib/rgfa.rb',
+              'lib/rgfa/alignment.rb',
               'lib/rgfa/byte_array.rb',
               'lib/rgfa/cigar.rb',
               'lib/rgfa/connectivity.rb',
@@ -46,11 +47,13 @@ Gem::Specification.new do |s|
               'lib/rgfa/multiplication.rb',
               'lib/rgfa/numeric_array.rb',
               'lib/rgfa/paths.rb',
+              'lib/rgfa/placeholder.rb',
               'lib/rgfa/rgl.rb',
               'lib/rgfa/segment_ends_path.rb',
               'lib/rgfa/segment_info.rb',
               'lib/rgfa/segments.rb',
               'lib/rgfa/sequence.rb',
+              'lib/rgfa/trace.rb',
               'lib/rgfatools.rb',
               'lib/rgfatools/artifacts.rb',
               'lib/rgfatools/copy_number.rb',

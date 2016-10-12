@@ -69,7 +69,7 @@ class RGFA::Line::Path < RGFA::Line
       if j == self.segment_names.size
         circular? ? j = 0 : break
       end
-      cigar = has_undef_overlaps ? [] : self.overlaps[i]
+      cigar = has_undef_overlaps ? RGFA::Placeholder.new : self.overlaps[i]
       retval << [self.segment_names[i], self.segment_names[j], cigar]
     end
     retval

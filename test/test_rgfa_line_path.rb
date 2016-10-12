@@ -37,7 +37,7 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_nothing_raised do
       f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::CIGAR::ValueError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::CIGAR::ValueError) do

@@ -29,7 +29,7 @@ class TestRGFALineContainment < Test::Unit::TestCase
     assert_raises(ArgumentError) do
       f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::CIGAR::ValueError) do
+    assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do

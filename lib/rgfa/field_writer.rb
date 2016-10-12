@@ -73,10 +73,10 @@ class Array
       to_numeric_array.to_s
     when :J
       to_json
-    when :cig
-      to_cigar.to_s
+    when :aln, :cig
+      to_alignment.to_s
     when :cgs
-      map{|cig|cig.to_cigar.to_s}.join(",")
+      map{|cig|cig.to_alignment(false).to_s}.join(",")
     when :lbs
       map{|os|os.to_oriented_segment.to_s}.join(",")
     when :H
