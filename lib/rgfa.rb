@@ -104,6 +104,9 @@ class RGFA
   #   @return [Integer (0..5)] validation level
   attr_accessor :validate
 
+  # Recognized GFA specification versions
+  VERSIONS = [:"1.0", :"2.0"]
+
   # @!macro validate
   #   @param validate [Integer] (<i>defaults to: +2+</i>)
   #     the validation level; see "Validation level" under
