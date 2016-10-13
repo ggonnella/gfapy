@@ -1,9 +1,24 @@
 require_relative "error"
+require_relative "comments"
+require_relative "headers"
+require_relative "segments"
+require_relative "links"
+require_relative "containments"
+require_relative "custom_records"
+require_relative "paths"
 
 #
 # Methods for the RGFA class, which allow to handle lines of multiple types.
 #
 module RGFA::Lines
+
+  include RGFA::Comments
+  include RGFA::Headers
+  include RGFA::Segments
+  include RGFA::Links
+  include RGFA::Containments
+  include RGFA::CustomRecords
+  include RGFA::Paths
 
   # Add a line to a RGFA
   #

@@ -61,41 +61,27 @@ end
 
 require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
-require_relative "./rgfa/comments.rb"
 require_relative "./rgfa/connectivity.rb"
-require_relative "./rgfa/containments.rb"
-require_relative "./rgfa/custom_records.rb"
 require_relative "./rgfa/field_array.rb"
 require_relative "./rgfa/field_parser.rb"
 require_relative "./rgfa/field_validator.rb"
 require_relative "./rgfa/field_writer.rb"
 require_relative "./rgfa/multiplication.rb"
-require_relative "./rgfa/headers.rb"
 require_relative "./rgfa/line.rb"
 require_relative "./rgfa/linear_paths.rb"
 require_relative "./rgfa/lines.rb"
-require_relative "./rgfa/links.rb"
 require_relative "./rgfa/logger.rb"
 require_relative "./rgfa/numeric_array.rb"
 require_relative "./rgfa/placeholder.rb"
 require_relative "./rgfa/rgl.rb"
 require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_info.rb"
-require_relative "./rgfa/segments.rb"
-require_relative "./rgfa/paths.rb"
 require_relative "./rgfa/sequence.rb"
 require_relative "./rgfa/trace.rb"
 
 class RGFA
 
-  include RGFA::Comments
   include RGFA::Lines
-  include RGFA::Headers
-  include RGFA::Segments
-  include RGFA::Links
-  include RGFA::Containments
-  include RGFA::CustomRecords
-  include RGFA::Paths
   include RGFA::LinearPaths
   include RGFA::Connectivity
   include RGFA::Multiplication
