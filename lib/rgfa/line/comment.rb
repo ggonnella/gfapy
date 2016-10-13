@@ -5,7 +5,7 @@ class RGFA::Line::Comment < RGFA::Line
   REQFIELDS = [:content]
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
-    :content => :cmt,
+    :content => :any,
   }
 
   define_field_methods!

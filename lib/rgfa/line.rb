@@ -14,7 +14,7 @@ class RGFA::Line
   SEPARATOR = "\t"
 
   # List of allowed record_type values
-  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#" ]
+  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", nil ]
 
   # A symbol representing a datatype for optional fields
   OPTFIELD_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
@@ -108,9 +108,11 @@ class RGFA::Line
   end
 
   # Select a subclass based on the record type
+  # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
   # @raise [RGFA::Line::UnknownRecordTypeError] if the record_type is not valid
+  # @raise [RGFA::VersionError] if the version is unknown
   # @return [Class] a subclass of RGFA::Line
-  def self.subclass(record_type)
+  def self.subclass(record_type, version: nil)
     case record_type.to_sym
     when :H then RGFA::Line::Header
     when :S then RGFA::Line::Segment
@@ -119,8 +121,15 @@ class RGFA::Line
     when :P then RGFA::Line::Path
     when :"#" then RGFA::Line::Comment
     else
-      raise RGFA::Line::UnknownRecordTypeError,
-        "Record type unknown: '#{record_type}'"
+      if version == :"1.0"
+        raise RGFA::Line::UnknownRecordTypeError,
+          "Record type unknown: '#{record_type}'"
+      elsif version == :"2.0" or version.nil?
+        RGFA::Line::CustomRecord
+      else
+        raise RGFA::VersionError,
+          "GFA specification version unknown"
+      end
     end
   end
 
@@ -553,29 +562,32 @@ class RGFA::Line
 
   def initialize_optional_fields(strings)
     n_required_fields.upto(strings.size-1) do |i|
-      n, t, s = strings[i].parse_gfa_optfield
-      if (@validate > 0)
-        if @data.has_key?(n)
-          raise RGFA::Line::DuplicatedOptfieldNameError,
-            "Optional field #{n} found multiple times"
-        elsif predefined_optional_fieldname?(n)
-          unless t == self.class::DATATYPE[n]
-            raise RGFA::Line::PredefinedOptfieldTypeError,
-              "Optional field #{n} must be of type "+
-              "#{self.class::DATATYPE[n]}, #{t} found"
-          end
-        elsif not valid_custom_optional_fieldname?(n)
-            raise RGFA::Line::CustomOptfieldNameError,
-              "Custom-defined optional "+
-              "fields must be lower case; found: #{n}"
-        else
-          @datatype[n] = t
-        end
-      else
-        (@datatype[n] = t) if !field_datatype(t)
-      end
-      init_field_value(n, t, s)
+      initialize_optional_field(*strings[i].parse_gfa_optfield)
     end
+  end
+
+  def initialize_optional_field(n, t, s)
+    if (@validate > 0)
+      if @data.has_key?(n)
+        raise RGFA::Line::DuplicatedOptfieldNameError,
+          "Optional field #{n} found multiple times"
+      elsif predefined_optional_fieldname?(n)
+        unless t == self.class::DATATYPE[n]
+          raise RGFA::Line::PredefinedOptfieldTypeError,
+            "Optional field #{n} must be of type "+
+            "#{self.class::DATATYPE[n]}, #{t} found"
+        end
+      elsif not valid_custom_optional_fieldname?(n)
+        raise RGFA::Line::CustomOptfieldNameError,
+          "Custom-defined optional "+
+          "fields must be lower case; found: #{n}"
+      else
+        @datatype[n] = t
+      end
+    else
+      (@datatype[n] = t) if !field_datatype(t)
+    end
+    init_field_value(n, t, s)
   end
 
   def split_method_name(m)
@@ -677,6 +689,7 @@ require_relative "line/path.rb"
 require_relative "line/link.rb"
 require_relative "line/containment.rb"
 require_relative "line/comment.rb"
+require_relative "line/custom_record.rb"
 
 # Extensions to the String core class.
 #
@@ -688,11 +701,13 @@ class String
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
   # @param validate [Integer] <i>(defaults to: 2)</i>
   #   see RGFA::Line#initialize
-  def to_rgfa_line(validate: 2)
+  # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
+  def to_rgfa_line(validate: 2, version: nil)
     if self[0] == "#"
       return RGFA::Line::Comment.new([self[1..-1]], validate: 0)
     else
-      split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate)
+      split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate,
+                                                version: version)
     end
   end
 
@@ -711,8 +726,14 @@ class Array
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
   # @param validate [Integer] <i>(defaults to: 2)</i>
   #   see RGFA::Line#initialize
-  def to_rgfa_line(validate: 2)
-    RGFA::Line.subclass(shift).new(self, validate: validate)
+  # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
+  def to_rgfa_line(validate: 2, version: nil)
+    sk = RGFA::Line.subclass(self[0], version: version)
+    if sk == RGFA::Line::CustomRecord
+      sk.new(self, validate: validate)
+    else
+      sk.new(self[1..-1], validate: validate)
+    end
   end
 
 end

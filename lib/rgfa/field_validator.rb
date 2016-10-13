@@ -28,7 +28,8 @@ module RGFA::FieldValidator
     :aln => /^(\*|(([0-9]+[MIDNSHPX=])+)|((\d+)(,\d+)*))$/, # CIGAR or trace
     :cgs => /^(\*|(([0-9]+[MIDNSHPX=])+))(,(\*|(([0-9]+[MIDNSHPX=])+)))*$/,
                                        # multiple CIGARs, comma-sep
-    :cmt => /.*/, # content of comment line, everything is allowed
+    :any => /.*/, # content of comment line, everything is allowed
+    :crt => /.*/, # custom record type, everything is allowed
   }
 
   # Validates the string according to the provided datatype
@@ -90,7 +91,8 @@ end
 class Symbol
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
-    if datatype != :lbl and datatype != :orn and datatype != :Z
+    if datatype != :lbl and datatype != :orn and
+         datatype != :Z and datatype != :crt
       raise RGFA::FieldParser::FormatError,
         "Wrong type (#{self.class}) for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+

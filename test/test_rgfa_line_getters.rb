@@ -16,6 +16,17 @@ class TestRGFALineGetters < Test::Unit::TestCase
     assert_equal(h1, h2)
   end
 
+  def test_comments
+    c = ["# VN:Z:1.0", "# another comment"]
+    assert_equal(c, c.to_rgfa.comments.map(&:to_s))
+  end
+
+  def test_custom_records
+    x = ["X\tVN:Z:1.0", "Y\ttesttesttest"]
+    assert_equal(x[0..0], x.to_rgfa.custom_records[:X].map(&:to_s))
+    assert_equal(x[1..1], x.to_rgfa.custom_records[:Y].map(&:to_s))
+  end
+
   def test_segments
     s = ["S\t1\t*","S\t2\t*"]
     gfa = s.to_rgfa

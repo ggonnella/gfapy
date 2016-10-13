@@ -31,7 +31,7 @@ module RGFA::Lines
     when :"#"
       add_comment(gfa_line)
     else
-      raise # this never happens, as already catched by gfa_line init
+      add_custom_record(gfa_line)
     end
     return self
   end
@@ -42,9 +42,13 @@ module RGFA::Lines
   # @overload rm(path)
   #   @param path [String, RGFA::Line::Segment] path name or instance
   # @overload rm(link)
-  #   @param link [RGFA::Line::Link] link
+  #   @param link [RGFA::Line::Link] link line instance
   # @overload rm(containment)
-  #   @param link [RGFA::Line::Containment] containment
+  #   @param containment [RGFA::Line::Containment] containment line instance
+  # @overload rm(comment)
+  #   @param comment [RGFA::Line::Comment] comment line instance
+  # @overload rm(custom_record)
+  #   @param custom_record [RGFA::Line::CustomRecord] custom record instance
   # @overload rm(:headers)
   #   Remove all headers
   # @overload rm(array)
@@ -66,6 +70,7 @@ module RGFA::Lines
       when :L then delete_link(x)
       when :C then delete_containment(x)
       when :"#" then delete_comment(x)
+      else delete_custom_record(x)
       end
     elsif x.kind_of?(Symbol)
       if @segments.has_key?(x)
@@ -146,7 +151,8 @@ module RGFA::Lines
   private
 
   def lines
-    comments + headers + segments + links + containments + paths
+    comments + headers + segments + links +
+      containments + paths + custom_records.values
   end
 
   def each_line(&block)

@@ -32,6 +32,15 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     assert_equal([], gfa.comments)
   end
 
+  def test_delete_custom_records
+    gfa = RGFA.new
+    c = "X\tThis is a custom_record"
+    gfa << c
+    assert_equal(c, gfa.custom_records[:X][0].to_s)
+    gfa.rm(gfa.custom_records[:X][0])
+    assert_equal([], gfa.custom_records[:X])
+  end
+
   def test_delete_links
     gfa = RGFA.new
     s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]

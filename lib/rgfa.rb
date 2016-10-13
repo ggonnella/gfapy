@@ -64,6 +64,7 @@ require_relative "./rgfa/cigar.rb"
 require_relative "./rgfa/comments.rb"
 require_relative "./rgfa/connectivity.rb"
 require_relative "./rgfa/containments.rb"
+require_relative "./rgfa/custom_records.rb"
 require_relative "./rgfa/field_array.rb"
 require_relative "./rgfa/field_parser.rb"
 require_relative "./rgfa/field_validator.rb"
@@ -93,6 +94,7 @@ class RGFA
   include RGFA::Segments
   include RGFA::Links
   include RGFA::Containments
+  include RGFA::CustomRecords
   include RGFA::Paths
   include RGFA::LinearPaths
   include RGFA::Connectivity
@@ -119,6 +121,7 @@ class RGFA
     @containments = []
     @paths = {}
     @comments = []
+    @custom_records = {}
     @segments_first_order = false
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}

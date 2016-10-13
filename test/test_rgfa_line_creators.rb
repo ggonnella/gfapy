@@ -21,6 +21,14 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal([c1,c2,c3], gfa.comments.map(&:to_s))
   end
 
+  def test_add_custom_records
+    gfa = RGFA.new
+    x1 = "X\tthis is a custom record"
+    assert_nothing_raised { gfa << x1 }
+    assert_equal([:X], gfa.custom_records.keys)
+    assert_equal([x1], gfa.custom_records[:X].map(&:to_s))
+  end
+
   def test_add_segments
     gfa = RGFA.new
     s1 = "S\t1\t*".to_rgfa_line
