@@ -16,15 +16,6 @@ class RGFA::Line
   # List of allowed record_type values
   RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#" ]
 
-  # Full name of the record types
-  RECORD_TYPE_LABELS = {
-    :H => "header",
-    :S => "segment",
-    :L => "link",
-    :C => "containment",
-    :P => "path",
-  }
-
   # A symbol representing a datatype for optional fields
   OPTFIELD_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
 
