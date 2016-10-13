@@ -10,6 +10,16 @@ class TestRGFA < Test::Unit::TestCase
     assert_equal(RGFA, gfa.class)
   end
 
+  def test_version_empty
+    gfa = RGFA.new
+    assert_equal(nil, gfa.version)
+    gfa = RGFA.new(version: :"1.0")
+    assert_equal(:"1.0", gfa.version)
+    gfa = RGFA.new(version: :"2.0")
+    assert_equal(:"2.0", gfa.version)
+    assert_raises(RGFA::VersionError) { RGFA.new(version: :"0.0") }
+  end
+
   def test_segment_names
     gfa = RGFA.new
     assert_equal([], gfa.segment_names)

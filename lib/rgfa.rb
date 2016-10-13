@@ -109,11 +109,16 @@ class RGFA
   # Recognized GFA specification versions
   VERSIONS = [:"1.0", :"2.0"]
 
+  # @!attribute [r] version
+  #   @return [RGFA::VERSIONS, nil] GFA specification version
+  attr_reader :version
+
   # @!macro validate
   #   @param validate [Integer] (<i>defaults to: +2+</i>)
   #     the validation level; see "Validation level" under
   #     {RGFA::Line#initialize}.
-  def initialize(validate: 2)
+  # @param version [RGFA::VERSIONS] GFA version, nil if unknown
+  def initialize(validate: 2, version: nil)
     @validate = validate
     init_headers
     @segments = {}
@@ -126,6 +131,13 @@ class RGFA
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
     @extensions_enabled = false
+    if version.nil?
+      @version = nil
+    else
+      version = version.to_sym
+      @version = version
+      validate_version!
+    end
   end
 
   # Require that the links, containments and paths referring
@@ -350,6 +362,13 @@ class RGFA
       end
     end
     return nil
+  end
+
+  def validate_version!
+    if !@version.nil? and !RGFA::VERSIONS.include?(@version)
+      raise RGFA::VersionError,
+        "GFA specification version #{@version} not supported"
+    end
   end
 
   def init_headers
