@@ -98,6 +98,8 @@ class RGFA
   include RGFA::LoggerSupport
   include RGFA::RGL
 
+  # @!attribute [rw] validate
+  #   @return [Integer (0..5)] validation level
   attr_accessor :validate
 
   # @!macro validate

@@ -91,7 +91,13 @@ class RGFA::CIGAR::ValueError < RGFA::Error; end
 
 # An operation in a CIGAR string
 class RGFA::CIGAR::Operation
+
+  # @!attribute [rw] len
+  #   @return [Integer > 0] operation length
   attr_accessor :len
+
+  # @!attribute [rw] code
+  #   @return [RGFA::CIGAR::Operation::CODE] operation code
   attr_accessor :code
 
   # CIGAR operation code
