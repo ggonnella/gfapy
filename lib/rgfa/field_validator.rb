@@ -216,7 +216,7 @@ end
 
 class RGFA::Placeholder
   # Datatypes which can be represented by a placeholder
-  DATATYPES = [:aln, :cig]
+  DATATYPES = [:aln, :cig, :seq]
 
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)

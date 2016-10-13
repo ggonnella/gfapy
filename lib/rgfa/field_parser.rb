@@ -23,10 +23,15 @@ module RGFA::FieldParser
     case datatype
     when :cmt
       return self
-    when :A, :Z, :seq
+    when :A, :Z
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       self.freeze if frozen
       return self
+    when :seq
+      validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
+      value = self.to_sequence
+      value.freeze if frozen
+      return value
     when :lbl
       validate_segment_name!
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings

@@ -121,7 +121,7 @@ class RGFA::Line::Segment < RGFA::Line
   def length
     if self.LN
       self.LN
-    elsif sequence != "*"
+    elsif sequence != "*" and !sequence.kind_of?(RGFA::Placeholder)
       sequence.length
     else
       nil

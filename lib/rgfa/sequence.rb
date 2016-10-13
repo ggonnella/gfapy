@@ -58,6 +58,13 @@ module RGFA::Sequence
          "n"=>"n","N"=>"N","u"=>"a","U"=>"A",
          "-"=>"-","."=>".","="=>"=",
          " "=>"","\n"=>""}
+
+  # Parse a string as sequence.
+  # @return [RGFA::Placeholder, self] returns self if the string content
+  #   is other than "*", otherwise a RGFA::Placeholder object
+  def to_sequence
+    (self == "*") ? RGFA::Placeholder.new : self
+  end
 end
 
 class String
