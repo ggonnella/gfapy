@@ -15,6 +15,23 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     assert_equal([], gfa.headers)
   end
 
+  def test_delete_comments
+    gfa = RGFA.new
+    gfa << "# This is a comment"
+    gfa.delete_comments
+    assert_equal([], gfa.comments)
+    gfa = RGFA.new
+    gfa << "# This is a comment"
+    gfa.rm(:comments)
+    assert_equal([], gfa.comments)
+    gfa = RGFA.new
+    c = "# This is a comment"
+    gfa << c
+    assert_equal(c, gfa.comments[0].to_s)
+    gfa.rm(gfa.comments[0])
+    assert_equal([], gfa.comments)
+  end
+
   def test_delete_links
     gfa = RGFA.new
     s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]

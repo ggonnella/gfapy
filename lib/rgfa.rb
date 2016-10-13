@@ -20,6 +20,7 @@
 #   - {RGFA::Links}
 #   - {RGFA::Containments}
 #   - {RGFA::Paths}
+#   - {RGFA::Comments}
 #
 # - {RGFA::Line}: most interaction with the GFA involve interacting with
 #   its record, i.e. instances of a subclass of this class. Subclasses:
@@ -28,6 +29,7 @@
 #   - {RGFA::Line::Link}
 #   - {RGFA::Line::Containment}
 #   - {RGFA::Line::Path}
+#   - {RGFA::Line::Comment}
 #
 # - Further modules contain methods useful for interacting with the graph
 #   - {RGFA::Connectivity} analysis of the connectivity of the graph
@@ -59,6 +61,7 @@ end
 
 require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
+require_relative "./rgfa/comments.rb"
 require_relative "./rgfa/connectivity.rb"
 require_relative "./rgfa/containments.rb"
 require_relative "./rgfa/field_array.rb"
@@ -82,6 +85,7 @@ require_relative "./rgfa/sequence.rb"
 
 class RGFA
 
+  include RGFA::Comments
   include RGFA::Lines
   include RGFA::Headers
   include RGFA::Segments
@@ -107,6 +111,7 @@ class RGFA
     @links = []
     @containments = []
     @paths = {}
+    @comments = []
     @segments_first_order = false
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}

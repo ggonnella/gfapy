@@ -18,6 +18,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_nothing_raised { gfa << c1 }
     assert_nothing_raised { gfa << c2 }
     assert_nothing_raised { gfa << c3 }
+    assert_equal([c1,c2,c3], gfa.comments.map(&:to_s))
   end
 
   def test_add_segments

@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/cigar.rb',
               'lib/rgfa/connectivity.rb',
               'lib/rgfa/containments.rb',
+              'lib/rgfa/comments.rb',
               'lib/rgfa/error.rb',
               'lib/rgfa/field_array.rb',
               'lib/rgfa/field_writer.rb',

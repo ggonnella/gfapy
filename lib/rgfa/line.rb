@@ -14,7 +14,7 @@ class RGFA::Line
   SEPARATOR = "\t"
 
   # List of allowed record_type values
-  RECORD_TYPES = [ :H, :S, :L, :C, :P ]
+  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#" ]
 
   # Full name of the record types
   RECORD_TYPE_LABELS = {

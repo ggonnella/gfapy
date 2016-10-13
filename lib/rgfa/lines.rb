@@ -29,8 +29,7 @@ module RGFA::Lines
     when :P
       add_path(gfa_line)
     when :"#"
-      # do nothing, as the spec says these shall be ignored
-      # maybe we want to store them and output them again in a future version
+      add_comment(gfa_line)
     else
       raise # this never happens, as already catched by gfa_line init
     end
@@ -66,6 +65,7 @@ module RGFA::Lines
       when :P then delete_path(x)
       when :L then delete_link(x)
       when :C then delete_containment(x)
+      when :"#" then delete_comment(x)
       end
     elsif x.kind_of?(Symbol)
       if @segments.has_key?(x)
@@ -83,6 +83,11 @@ module RGFA::Lines
           raise ArgumentError, "One argument required if first :headers"
         end
         delete_headers
+      elsif x == :comments
+        if !args.empty?
+          raise ArgumentError, "One argument required if first :comments"
+        end
+        delete_comments
       else
         if respond_to?(x)
           rm(send(x, *args))
@@ -141,7 +146,7 @@ module RGFA::Lines
   private
 
   def lines
-    headers + segments + links + containments + paths
+    comments + headers + segments + links + containments + paths
   end
 
   def each_line(&block)

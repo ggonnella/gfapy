@@ -10,4 +10,8 @@ class RGFA::Line::Comment < RGFA::Line
 
   define_field_methods!
 
+  def to_s
+    "##{content}"
+  end
+
 end
