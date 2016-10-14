@@ -14,7 +14,7 @@ class RGFA::Line
   SEPARATOR = "\t"
 
   # List of allowed record_type values
-  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", nil ]
+  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", :G, :F, :E, :O, :U, nil ]
 
   # A symbol representing a datatype for optional fields
   OPTFIELD_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
@@ -182,41 +182,65 @@ class RGFA::Line
   # @raise [RGFA::VersionError] if the version is unknown
   # @return [Class] a subclass of RGFA::Line
   def self.subclass(record_type, version: nil)
-    if !version.nil? and !RGFA::VERSIONS.include?(version)
+    case version
+    when :"1.0"
+      subclass_GFA1(record_type)
+    when :"2.0"
+      subclass_GFA2(record_type)
+    when nil
+      subclass_unknown_version(record_type)
+    else
       raise RGFA::VersionError,
           "GFA specification version unknown (#{version})"
     end
+  end
+
+  def self.subclass_GFA1(record_type)
     case record_type.to_sym
     when :H then RGFA::Line::Header
     when :S then RGFA::Line::Segment
     when :"#" then RGFA::Line::Comment
-    when :L
-      if version.nil? or version == :"1.0"
-        RGFA::Line::Link
-      else
-        RGFA::Line::CustomRecord
-      end
-    when :C
-      if version.nil? or version == :"1.0"
-        RGFA::Line::Containment
-      else
-        RGFA::Line::CustomRecord
-      end
-    when :P
-      if version.nil? or version == :"1.0"
-        RGFA::Line::Path
-      else
-        RGFA::Line::CustomRecord
-      end
-    else
-      if version == :"1.0"
-        raise RGFA::Line::UnknownRecordTypeError,
+    when :L then RGFA::Line::Link
+    when :C then RGFA::Line::Containment
+    when :P then RGFA::Line::Path
+    else raise RGFA::Line::UnknownRecordTypeError,
           "Record type unknown: '#{record_type}'"
-      else
-        RGFA::Line::CustomRecord
-      end
     end
   end
+  private_class_method :subclass_GFA1
+
+  def self.subclass_GFA2(record_type)
+    case record_type.to_sym
+    when :H then RGFA::Line::Header
+    when :S then RGFA::Line::Segment
+    when :"#" then RGFA::Line::Comment
+    when :E then RGFA::Line::Edge
+    when :F then RGFA::Line::Fragment
+    when :G then RGFA::Line::Gap
+    when :O then RGFA::Line::OrderedGroup
+    when :U then RGFA::Line::UnorderedGroup
+    else RGFA::Line::CustomRecord
+    end
+  end
+  private_class_method :subclass_GFA2
+
+  def self.subclass_unknown_version(record_type)
+    case record_type.to_sym
+    when :H then RGFA::Line::Header
+    when :S then RGFA::Line::Segment
+    when :"#" then RGFA::Line::Comment
+    when :L then RGFA::Line::Link
+    when :C then RGFA::Line::Containment
+    when :P then RGFA::Line::Path
+    when :E then RGFA::Line::Edge
+    when :F then RGFA::Line::Fragment
+    when :G then RGFA::Line::Gap
+    when :O then RGFA::Line::OrderedGroup
+    when :U then RGFA::Line::UnorderedGroup
+    else RGFA::Line::CustomRecord
+    end
+  end
+  private_class_method :subclass_unknown_version
 
   # @return [Symbol] record type code
   def record_type
@@ -803,6 +827,11 @@ require_relative "line/link.rb"
 require_relative "line/containment.rb"
 require_relative "line/comment.rb"
 require_relative "line/custom_record.rb"
+require_relative "line/gap.rb"
+require_relative "line/fragment.rb"
+require_relative "line/edge.rb"
+require_relative "line/ordered_group.rb"
+require_relative "line/unordered_group.rb"
 
 # Extensions to the String core class.
 #

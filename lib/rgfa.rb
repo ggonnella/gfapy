@@ -21,6 +21,12 @@
 #   - {RGFA::Containments}
 #   - {RGFA::Paths}
 #   - {RGFA::Comments}
+#   - {RGFA::Gaps}
+#   - {RGFA::Fragments}
+#   - {RGFA::Edges}
+#   - {RGFA::OrderedGroups}
+#   - {RGFA::UnorderedGroups}
+#   - {RGFA::CustomRecords}
 #
 # - {RGFA::Line}: most interaction with the GFA involve interacting with
 #   its record, i.e. instances of a subclass of this class. Subclasses:
@@ -30,6 +36,12 @@
 #   - {RGFA::Line::Containment}
 #   - {RGFA::Line::Path}
 #   - {RGFA::Line::Comment}
+#   - {RGFA::Line::Gap}
+#   - {RGFA::Line::Fragment}
+#   - {RGFA::Line::Edge}
+#   - {RGFA::Line::OrderedGroup}
+#   - {RGFA::Line::UnorderedGroup}
+#   - {RGFA::Line::CustomRecord}
 #
 # - Further modules contain methods useful for interacting with the graph
 #   - {RGFA::Connectivity} analysis of the connectivity of the graph
@@ -128,6 +140,11 @@ class RGFA
       @version_guess = @version
       validate_version!
     end
+    @edges = []
+    @fragments = []
+    @gaps = []
+    @ordered_groups = []
+    @unordered_groups = []
   end
 
   # Require that the links, containments and paths referring

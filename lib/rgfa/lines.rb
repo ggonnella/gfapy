@@ -6,6 +6,11 @@ require_relative "links"
 require_relative "containments"
 require_relative "custom_records"
 require_relative "paths"
+require_relative "fragments"
+require_relative "ordered_groups"
+require_relative "unordered_groups"
+require_relative "gaps"
+require_relative "edges"
 
 #
 # Methods for the RGFA class, which allow to handle lines of multiple types.
@@ -19,6 +24,11 @@ module RGFA::Lines
   include RGFA::Containments
   include RGFA::CustomRecords
   include RGFA::Paths
+  include RGFA::Fragments
+  include RGFA::Gaps
+  include RGFA::Edges
+  include RGFA::UnorderedGroups
+  include RGFA::OrderedGroups
 
   GFA1Specific = [
                    RGFA::Line::Link,
@@ -28,11 +38,11 @@ module RGFA::Lines
 
   GFA2Specific = [
                    RGFA::Line::CustomRecord,
-                   #RGFA::Line::Fragment,
-                   #RGFA::Line::Gap,
-                   #RGFA::Line::Edge,
-                   #RGFA::Line::UnorderedGroup,
-                   #RGFA::Line::OrderedGroup,
+                   RGFA::Line::Fragment,
+                   RGFA::Line::Gap,
+                   RGFA::Line::Edge,
+                   RGFA::Line::UnorderedGroup,
+                   RGFA::Line::OrderedGroup,
                   ]
 
   # Add a line to a RGFA
@@ -154,15 +164,15 @@ module RGFA::Lines
     when :S
       add_segment(gfa_line)
     when :E
-      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Edge
+      add_edge(gfa_line)
     when :G
-      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Gap
+      add_gap(gfa_line)
     when :F
-      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Fragment
+      add_fragment(gfa_line)
     when :U
-      add_custom_record(gfa_line) # TODO: implement RGFA::Line::UnorderedGroup
+      add_unordered_group(gfa_line)
     when :O
-      add_custom_record(gfa_line) # TODO: implement RGFA::Line::OrderedGroup
+      add_ordered_group(gfa_line)
     else
       add_custom_record(gfa_line)
     end
