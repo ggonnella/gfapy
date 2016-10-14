@@ -9,8 +9,8 @@ require_relative "line"
 #
 # The default conversion is implemented in this module, which is included in
 # Object; single classes may overwrite the following methods, if necessary:
-# - {#default_gfa_datatype}, which returns the symbol of the optional
-#   field GFA datatype to use, if none is specified
+# - {#default_gfa_tag_datatype}, which returns the symbol of the tag
+#   datatype to use, if none is specified
 #   (See RGFA::Line::FIELD_DATATYPE); the default is :Z
 # - {#to_gfa_field} should return a GFA string representation,
 #   eventually depending on the specified datatype; no validation is done;
@@ -22,25 +22,25 @@ module RGFA::FieldWriter
   #   Representation of the data for GFA fields; this method
   #   does not (in general) validate the string. The method
   #   can be overwritten for a given class, and may take
-  #   the {#default_gfa_datatype} into consideration.
+  #   the {#default_gfa_tag_datatype} into consideration.
   #   @return [String]
   #   @api private
   def to_gfa_field(datatype: nil); to_s; end
 
-  # Representation of the data as an optional field
+  # Representation of the data as a tag
   # @param fieldname [Symbol] the tag name
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE] (<i>defaults to: the value
-  #  returned by {#default_gfa_datatype}</i>)
+  # @param datatype [RGFA::Line::TAG_DATATYPE] (<i>defaults to: the value
+  #  returned by {#default_gfa_tag_datatype}</i>)
   # @api private
-  def to_gfa_optfield(fieldname, datatype: default_gfa_datatype)
+  def to_gfa_tag(fieldname, datatype: default_gfa_tag_datatype)
     return "#{fieldname}:#{datatype}:#{to_gfa_field(datatype: datatype)}"
   end
 
   # @!macro [new] gfa_datatype
-  #   Optional field GFA datatype to use, if none is provided
-  #   @return [RGFA::Line::FIELD_DATATYPE]
+  #   GFA tag datatype to use, if none is provided
+  #   @return [RGFA::Line::TAG_DATATYPE]
   #   @api private
-  def default_gfa_datatype; :Z; end
+  def default_gfa_tag_datatype; :Z; end
 end
 
 class Object
@@ -49,12 +49,12 @@ end
 
 class Fixnum
   # @!macro gfa_datatype
-  def default_gfa_datatype; :i; end
+  def default_gfa_tag_datatype; :i; end
 end
 
 class Float
   # @!macro gfa_datatype
-  def default_gfa_datatype; :f; end
+  def default_gfa_tag_datatype; :f; end
 end
 
 class Hash
@@ -62,12 +62,12 @@ class Hash
   def to_gfa_field(datatype: nil); to_json; end
 
   # @!macro gfa_datatype
-  def default_gfa_datatype; :J; end
+  def default_gfa_tag_datatype; :J; end
 end
 
 class Array
   # @!macro to_gfa_field
-  def to_gfa_field(datatype: default_gfa_datatype)
+  def to_gfa_field(datatype: default_gfa_tag_datatype)
     case datatype
     when :B
       to_numeric_array.to_s
@@ -87,19 +87,19 @@ class Array
   end
 
   # @!macro gfa_datatype
-  def default_gfa_datatype
+  def default_gfa_tag_datatype
     (all?{|i|i.kind_of?(Integer)} or all?{|i|i.kind_of?(Float)}) ? :B : :J
   end
 end
 
 class RGFA::ByteArray
   # @!macro gfa_datatype
-  def default_gfa_datatype; :H; end
+  def default_gfa_tag_datatype; :H; end
 end
 
 class RGFA::NumericArray
   # @!macro gfa_datatype
-  def default_gfa_datatype; :B; end
+  def default_gfa_tag_datatype; :B; end
 end
 
 class RGFA::Line::Segment

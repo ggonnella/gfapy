@@ -2,27 +2,27 @@
 class RGFA::FieldArray < Array
   attr_reader :datatype
 
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE] the datatype to use
+  # @param datatype [RGFA::Line::TAG_DATATYPE] the datatype to use
   def initialize(datatype, data = [])
     @datatype = datatype
     super(data)
   end
 
   # Run a datatype-specific validation on each element of the array
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE]
+  # @param datatype [RGFA::Line::TAG_DATATYPE]
   def validate_gfa_field!(datatype, fieldname=nil)
     each.validate_gfa_field!(@datatype, fieldname)
   end
 
-  # Default datatype, in this case :J
+  # Default GFA tag datatype, :J
   # @api private
-  def default_gfa_datatype
+  def default_gfa_tag_datatype
     :J
   end
 
   # Representation of the field array as JSON array, with
   # two additional values: the datatype and a zero byte as "signature".
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE] (ignored, J is always used)
+  # @param datatype [RGFA::Line::TAG_DATATYPE] (ignored, J is always used)
   # @api private
   def to_gfa_field(datatype: nil)
     self << @datatype
@@ -35,7 +35,7 @@ class RGFA::FieldArray < Array
   #   of the new value does not correspond to the type of
   #   existing values
   # @param value [Object] the value to add
-  # @param type [RGFA::Line::OPTFIELD_DATATYPE, nil] the datatype to use;
+  # @param type [RGFA::Line::TAG_DATATYPE, nil] the datatype to use;
   #   if not +nil+, it will be checked that the specified datatype is the
   #   same as for previous elements of the field array;
   #   if +nil+, the value will be validated, according to the datatype
@@ -70,11 +70,11 @@ class Array
   # @return [Boolean]
   def rgfa_field_array?
     self[-1] == "\0" and
-      RGFA::Line::OPTFIELD_DATATYPE.include?(self[-2].to_sym)
+      RGFA::Line::TAG_DATATYPE.include?(self[-2].to_sym)
   end
 
   # Create a {RGFA::FieldArray} from an array
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE, nil] the datatype to use
+  # @param datatype [RGFA::Line::TAG_DATATYPE, nil] the datatype to use
   def to_rgfa_field_array(datatype=nil)
     if self.rgfa_field_array?
       RGFA::FieldArray.new(self[-2].to_sym, self[0..-3])

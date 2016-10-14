@@ -16,14 +16,14 @@ class RGFA::Line
   # List of allowed record_type values
   RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", :G, :F, :E, :O, :U, nil ]
 
-  # A symbol representing a datatype for optional fields
-  OPTFIELD_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
+  # A symbol representing a datatype for tags
+  TAG_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
 
-  # A symbol representing a datatype for required fields
-  REQFIELD_DATATYPE = [:lbl, :orn, :lbs, :seq, :pos, :cig, :cgs]
+  # A symbol representing a datatype for positional fields
+  POSFIELD_DATATYPE = [:lbl, :orn, :lbs, :seq, :pos, :cig, :cgs]
 
   # A symbol representing a valid datatype
-  FIELD_DATATYPE = OPTFIELD_DATATYPE + REQFIELD_DATATYPE
+  FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
 
   # List of data types which are parsed only on access;
   # all other are parsed when read.
@@ -68,24 +68,24 @@ class RGFA::Line
   #
   # Subclasses of RGFA::Line _must_ define the following constants:
   # - RECORD_TYPE [RGFA::Line::RECORD_TYPES]
-  # - REQFIELDS [Hash{Symbol=>(Array<Symbol>,nil)}] required fields
+  # - POSFIELDS [Hash{Symbol=>(Array<Symbol>,nil)}] positional fields
   #   for each version of the specification (nil if does not apply);
   #   use :generic instead of a version symbol for generic records
   #   (same definition in all versions)
-  # - FIELD_ALIAS [Hash{Symbol=>Symbol}] alternative names for required
+  # - FIELD_ALIAS [Hash{Symbol=>Symbol}] alternative names for positional
   #   fields
-  # - PREDEFINED_OPTFIELDS [Array<Symbol>] predefined optional fields
+  # - PREDEFINED_TAGS [Array<Symbol>] predefined tags
   # - DATATYPE [Hash{Symbol=>Symbol}]:
-  #   datatypes for the required fields and the predefined optional fields
+  #   datatypes for the positional fields and the tags
   #
-  # @raise [RGFA::Line::RequiredFieldMissingError]
-  #   if too less required fields are specified
-  # @raise [RGFA::Line::CustomOptfieldNameError]
-  #   if a non-predefined optional field uses upcase letters
-  # @raise [RGFA::Line::DuplicatedOptfieldNameError]
-  #   if an optional field tag name is used more than once
-  # @raise [RGFA::Line::PredefinedOptfieldTypeError]
-  #   if the type of a predefined optional field does not
+  # @raise [RGFA::FormatError]
+  #   if too less positional fields are specified
+  # @raise [RGFA::FormatError]
+  #   if a non-predefined tag uses upcase letters
+  # @raise [RGFA::NotUniqueError]
+  #   if a tag name is used more than once
+  # @raise [RGFA::TypeError]
+  #   if the type of a predefined tag does not
   #   respect the specified type.
   #
   # @return [RGFA::Line]
@@ -96,9 +96,9 @@ class RGFA::Line
   # responsible to call #validate_field!, if necessary.
   #
   # - 0: no validation
-  # - 1: the number of required fields must be correct; optional fields
-  #      cannot be duplicated; custom optional field names must be correct;
-  #      predefined optional fields must have the correct type; only some
+  # - 1: the number of positional fields must be correct; tags
+  #      cannot be duplicated; custom tag names must be correct;
+  #      predefined tags must have the correct type; only some
   #      fields are validated on initialization or first-time access to
   #      the field content
   # - 2: 1 + all fields are validated on initialization or first-time
@@ -125,8 +125,8 @@ class RGFA::Line
         process_unknown_version(data)
       else
         validate_version!
-        initialize_required_fields(data)
-        initialize_optional_fields(data)
+        initialize_positional_fields(data)
+        initialize_tags(data)
       end
       validate_record_type_specific_info! if @validate >= 3
       if @version.nil?
@@ -139,15 +139,15 @@ class RGFA::Line
     rt = self.class::RECORD_TYPE
     if RECORD_TYPE_VERSIONS[:generic].include?(rt)
       @version = :generic
-      initialize_required_fields(data)
-      initialize_optional_fields(data)
+      initialize_positional_fields(data)
+      initialize_tags(data)
       return
     end
     RECORD_TYPE_VERSIONS[:specific].each do |k, v|
       if v.include?(rt)
         @version = k
-        initialize_required_fields(data)
-        initialize_optional_fields(data)
+        initialize_positional_fields(data)
+        initialize_tags(data)
         return
       end
     end
@@ -157,8 +157,8 @@ class RGFA::Line
       RGFA::VERSIONS.each do |version|
         begin
           @version = version
-          initialize_required_fields(data)
-          initialize_optional_fields(data)
+          initialize_positional_fields(data)
+          initialize_tags(data)
           return
         rescue => err
           errors << "- #{version}: #{err}"
@@ -252,22 +252,22 @@ class RGFA::Line
     self.class::RECORD_TYPE
   end
 
-  # @return [Array<Symbol>] name of the required fields
+  # @return [Array<Symbol>] name of the positional fields
   # @note these names are not always the field names
   #   in the specification,
   #   as these may be implemented as aliases to cope with
   #   different names for the same content in GFA1 vs GFA2
   # @api private
-  def required_fieldnames
+  def positional_fieldnames
     if @version.nil?
       raise RGFA::VersionError, "Version is not set"
     end
-    self.class::REQFIELDS[@version]
+    self.class::POSFIELDS[@version]
   end
 
-  # @return [Array<Symbol>] name of the optional fields
-  def optional_fieldnames
-    (@data.keys - required_fieldnames)
+  # @return [Array<Symbol>] name of the defined tags
+  def tagnames
+    (@data.keys - positional_fieldnames)
   end
 
   # Deep copy of a RGFA::Line instance.
@@ -320,30 +320,29 @@ class RGFA::Line
   # @return [Array<String>] an array of string representations of the fields
   def to_a
     a = [record_type]
-    required_fieldnames.each {|fn| a << field_to_s(fn, optfield: false)}
-    optional_fieldnames.each {|fn| a << field_to_s(fn, optfield: true)}
+    positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
+    tagnames.each {|fn| a << field_to_s(fn, tag: true)}
     return a
   end
 
-  # Returns the optional fields as an array of [fieldname, datatype, value]
-  # arrays.
+  # Returns the tags as an array of [fieldname, datatype, value]
+  #   triples.
   # @return [Array<[Symbol, Symbol, Object]>]
   def tags
     retval = []
-    optional_fieldnames.each do |of|
+    tagnames.each do |of|
       retval << [of, get_datatype(of), get(of)]
     end
     return retval
   end
 
-  # Remove an optional field from the line, if it exists;
-  #   do nothing if it does not
-  # @param fieldname [Symbol] the tag name of the optfield to remove
+  # Remove a tag from the line, if it exists; do nothing if it does not
+  # @param tagname [Symbol] the tag name of the tag to remove
   # @return [Object, nil] the deleted value or nil, if the field was not defined
-  def delete(fieldname)
-    if optional_fieldnames.include?(fieldname)
-      @datatype.delete(fieldname)
-      return @data.delete(fieldname)
+  def delete(tagname)
+    if tagnames.include?(tagname)
+      @datatype.delete(tagname)
+      return @data.delete(tagname)
     else
       return nil
     end
@@ -368,22 +367,22 @@ class RGFA::Line
   #   Compute the string representation of a field.
   #
   #   @param fieldname [Symbol] the tag name of the field
-  #   @param optfield [Boolean] <i>(defaults to: +false+)</i>
+  #   @param tag [Boolean] <i>(defaults to: +false+)</i>
   #     return the tagname:datatype:value representation
   #
-  # @raise [RGFA::Line::TagMissingError] if field is not defined
+  # @raise [RGFA::NotFoundError] if field is not defined
   # @return [String] the string representation
-  def field_to_s(fieldname, optfield: false)
+  def field_to_s(fieldname, tag: false)
     fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     field = @data[fieldname]
-    raise RGFA::Line::TagMissingError,
+    raise RGFA::NotFoundError,
       "No value defined for tag #{fieldname}" if field.nil?
     t = field_or_default_datatype(fieldname, field)
     if !field.kind_of?(String)
       field = field.to_gfa_field(datatype: t)
     end
     field.validate_gfa_field!(t, fieldname) if @validate >= 4
-    return optfield ? field.to_gfa_optfield(fieldname, datatype: t) : field
+    return tag ? field.to_gfa_tag(fieldname, datatype: t) : field
   end
 
   # Returns a symbol, which specifies the datatype of a field
@@ -403,56 +402,55 @@ class RGFA::Line
   # @param fieldname [Symbol] the field name (it is not required that
   #   the field exists already)
   # @param datatype [RGFA::Line::FIELD_DATATYPE] the datatype
-  # @raise [RGFA::Line::UnknownDatatype] if +datatype+ is not
-  #   a valid datatype for optional fields
+  # @raise [RGFA::ArgumentError] if +datatype+ is not
+  #   a valid datatype for tags
   # @return [RGFA::Line::FIELD_DATATYPE] the datatype
   def set_datatype(fieldname, datatype)
-    if predefined_optional_fieldname?(fieldname)
+    if predefined_tag?(fieldname)
       if get_datatype(fieldname) != datatype
         raise RGFA::RuntimeError,
           "Cannot set the datatype of #{fieldname} to #{datatype}\n"+
           "The datatype of a predefined tag cannot be changed"
         return
       end
-    elsif !valid_custom_optional_fieldname?(fieldname)
+    elsif !valid_custom_tagname?(fieldname)
       raise RGFA::FormatError,
         "#{fieldname} is not a valid custom tag name"
     end
-    unless OPTFIELD_DATATYPE.include?(datatype)
-      raise RGFA::Line::UnknownDatatype, "Unknown datatype: #{datatype}"
+    unless TAG_DATATYPE.include?(datatype)
+      raise RGFA::ArgumentError, "Unknown datatype: #{datatype}"
     end
     @datatype[fieldname] = datatype
   end
 
   # Set the value of a field.
   #
-  # If a datatype for a new custom optional field is not set,
+  # If a datatype for a new custom tag is not set,
   # the default for the value assigned to the field will be used
   # (e.g. J for Hashes, i for Integer, etc).
   #
   # @param fieldname [Symbol] the name of the field to set
-  #   (required field, predefined optional field (uppercase) or custom optional
-  #   field name (lowercase))
+  #   (positional field, predefined tag (uppercase) or custom tag (lowercase))
   # @raise [RGFA::Line::FieldnameError] if +fieldname+ is not a
-  #   valid predefined or custom optional name (and +validate[:tags]+)
+  #   valid predefined or custom tag name (and +validate[:tags]+)
   # @return [Object] +value+
   def set(fieldname, value)
-    if @data.has_key?(fieldname) or predefined_optional_fieldname?(fieldname)
+    if @data.has_key?(fieldname) or predefined_tag?(fieldname)
       return set_existing_field(fieldname, value)
     elsif self.class::FIELD_ALIAS.has_key?(fieldname)
       return set(self.class::FIELD_ALIAS[fieldname], value)
-    elsif (@validate == 0) or valid_custom_optional_fieldname?(fieldname)
+    elsif (@validate == 0) or valid_custom_tagname?(fieldname)
       define_field_methods(fieldname)
       if !@datatype[fieldname].nil?
         return set_existing_field(fieldname, value)
       elsif !value.nil?
-        @datatype[fieldname] = value.default_gfa_datatype
+        @datatype[fieldname] = value.default_gfa_tag_datatype
         return @data[fieldname] = value
       end
     else
       raise RGFA::Line::FieldnameError,
         "#{fieldname} is not an existing or predefined field or a "+
-        "valid custom optional field"
+        "valid custom tag"
     end
   end
 
@@ -495,10 +493,10 @@ class RGFA::Line
     return v
   end
 
-  # Methods are dynamically created for non-existing but valid optional
-  # field names. Methods for predefined optional fields and required fields
-  # are created dynamically for each subclass; methods for existing optional
-  # fields are created on instance initialization.
+  # Methods are dynamically created for non-existing but valid tag names.
+  # Methods for predefined tags and positional fields
+  # are created dynamically for each subclass; methods for existing tags
+  # are created on instance initialization.
   #
   # ---
   #  - (Object) <fieldname>(parse=true)
@@ -508,7 +506,7 @@ class RGFA::Line
   #
   # <b>Returns:</b>
   # - (String, Hash, Array, Integer, Float) the parsed content of the field
-  # - (nil) if the field does not exist, but is a valid optional field name
+  # - (nil) if the field does not exist, but is a valid tag field name
   #
   # ---
   #  - (Object) <fieldname>!(parse=true)
@@ -524,9 +522,9 @@ class RGFA::Line
   # ---
   #
   #  - (self) <fieldname>=(value)
-  # Sets the value of a required or optional
-  # field, or creates a new optional field if the fieldname is
-  # non-existing but valid. See also #set, #set_datatype.
+  # Sets the value of a positional field or tag,
+  # or creates a new tag if the fieldname is
+  # non-existing but a valid tag name. See also #set, #set_datatype.
   #
   # <b>Parameters:</b>
   # - +*value*+ (String|Hash|Array|Integer|Float) value to set
@@ -588,8 +586,8 @@ class RGFA::Line
 
   # Equivalence check
   # @return [Boolean] does the line has the same record type,
-  #   contains the same optional fields
-  #   and all required and optional fields contain the same field values?
+  #   contains the same tags
+  #   and all positional fields and tags contain the same field values?
   # @see RGFA::Line::Link#==
   def ==(o)
     return self.to_sym == o.to_sym if o.kind_of?(Symbol)
@@ -625,8 +623,8 @@ class RGFA::Line
 
   private
 
-  def n_required_fields
-    self.class::REQFIELDS[@version].size
+  def n_positional_fields
+    self.class::POSFIELDS[@version].size
   end
 
   def field_datatype(fieldname)
@@ -636,7 +634,7 @@ class RGFA::Line
   def field_or_default_datatype(fieldname, value)
     t = field_datatype(fieldname)
     if t.nil?
-      t = value.default_gfa_datatype
+      t = value.default_gfa_tag_datatype
       @datatype[fieldname] = t
     end
     return t
@@ -663,58 +661,57 @@ class RGFA::Line
     end
   end
 
-  def initialize_required_fields(strings)
+  def initialize_positional_fields(strings)
     if @version.nil?
       raise RGFA::VersionError, "Version unknown"
       # this should never happen
     end
-    if (@validate >= 1) and (strings.size < n_required_fields)
-      raise RGFA::Line::RequiredFieldMissingError,
-        "#{n_required_fields} required fields expected, "+
+    if (@validate >= 1) and (strings.size < n_positional_fields)
+      raise RGFA::FormatError,
+        "#{n_positional_fields} positional fields expected, "+
         "#{strings.size}) found\n#{strings.inspect}"
     end
-    n_required_fields.times do |i|
-      n = self.class::REQFIELDS[@version][i]
+    n_positional_fields.times do |i|
+      n = self.class::POSFIELDS[@version][i]
       init_field_value(n, self.class::DATATYPE[n], strings[i])
     end
   end
 
-  def valid_custom_optional_fieldname?(fieldname)
+  def valid_custom_tagname?(fieldname)
     /^[a-z][a-z0-9]$/ =~ fieldname
   end
 
-  def validate_custom_optional_fieldname!(fieldname)
-    if not valid_custom_optional_fieldname?(fieldname)
-      raise RGFA::Line::CustomOptfieldNameError,
-        "#{fieldname} is not a valid custom optional field name"
+  def validate_custom_tagname!(fieldname)
+    if not valid_custom_tagname?(fieldname)
+      raise RGFA::FormatError,
+        "#{fieldname} is not a valid custom tag name"
     end
   end
 
-  def predefined_optional_fieldname?(fieldname)
-    self.class::PREDEFINED_OPTFIELDS.include?(fieldname)
+  def predefined_tag?(fieldname)
+    self.class::PREDEFINED_TAGS.include?(fieldname)
   end
 
-  def initialize_optional_fields(strings)
-    n_required_fields.upto(strings.size-1) do |i|
-      initialize_optional_field(*strings[i].parse_gfa_optfield)
+  def initialize_tags(strings)
+    n_positional_fields.upto(strings.size-1) do |i|
+      initialize_tag(*strings[i].parse_gfa_tag)
     end
   end
 
-  def initialize_optional_field(n, t, s)
+  def initialize_tag(n, t, s)
     if (@validate > 0)
       if @data.has_key?(n)
-        raise RGFA::Line::DuplicatedOptfieldNameError,
-          "Optional field #{n} found multiple times"
-      elsif predefined_optional_fieldname?(n)
+        raise RGFA::NotUniqueError,
+          "Tag #{n} found multiple times"
+      elsif predefined_tag?(n)
         unless t == self.class::DATATYPE[n]
-          raise RGFA::Line::PredefinedOptfieldTypeError,
-            "Optional field #{n} must be of type "+
+          raise RGFA::TypeError,
+            "Tag #{n} must be of type "+
             "#{self.class::DATATYPE[n]}, #{t} found"
         end
-      elsif not valid_custom_optional_fieldname?(n)
-        raise RGFA::Line::CustomOptfieldNameError,
-          "Custom-defined optional "+
-          "fields must be lower case; found: #{n}"
+      elsif not valid_custom_tagname?(n)
+        raise RGFA::FormatError,
+          "Custom tags must be lower case; found: #{n}"
       else
         @datatype[n] = t
       end
@@ -740,8 +737,8 @@ class RGFA::Line
       end
       if @data.has_key?(m)
         state = :existing
-      elsif self.class::PREDEFINED_OPTFIELDS.include?(m) or
-          valid_custom_optional_fieldname?(m)
+      elsif self.class::PREDEFINED_TAGS.include?(m) or
+          valid_custom_tagname?(m)
         state = :valid
       else
         state = :invalid
@@ -772,8 +769,8 @@ class RGFA::Line
   # This avoids calls to method_missing for fields which are already defined
   #
   def self.define_field_methods!
-    (self::REQFIELDS.values.flatten.compact.uniq +
-     self::PREDEFINED_OPTFIELDS).each do |fieldname|
+    (self::POSFIELDS.values.flatten.compact.uniq +
+     self::PREDEFINED_TAGS).each do |fieldname|
       define_method(fieldname) do
         get(fieldname)
       end
@@ -822,22 +819,8 @@ class RGFA::Line::UnknownDatatype             < RGFA::Error;     end
 # Error raised if an invalid fieldname symbol is found
 class RGFA::Line::FieldnameError              < RGFA::Error;     end
 
-# Error raised if optional tag is not present
+# Error raised if tag is not present
 class RGFA::Line::TagMissingError             < RGFA::Error; end
-
-# Error raised if too less required fields are specified.
-class RGFA::Line::RequiredFieldMissingError   < RGFA::Error; end
-
-# Error raised if a non-predefined optional field uses upcase
-# letters.
-class RGFA::Line::CustomOptfieldNameError     < RGFA::Error; end
-
-# Error raised if an optional field tag name is used more than once.
-class RGFA::Line::DuplicatedOptfieldNameError < RGFA::Error; end
-
-# Error raised if the type of a predefined optional field does not
-# respect the specified type.
-class RGFA::Line::PredefinedOptfieldTypeError < RGFA::Error;     end
 
 #
 # Require the child classes

@@ -9,7 +9,7 @@ class TestRGFALineHeader < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) do
       "H\tH2\tVN:Z:1.0".to_rgfa_line
     end
-    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
+    assert_raises(RGFA::TypeError) do
       "H\tVN:i:1.0".to_rgfa_line
     end
   end

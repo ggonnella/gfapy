@@ -18,11 +18,11 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(1212, str.to_rgfa_line.KC)
     assert_equal("abcd", str.to_rgfa_line.ab)
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
-    assert_raises(RGFA::Line::RequiredFieldMissingError) { "S\tH".to_rgfa_line }
+    assert_raises(RGFA::FormatError) { "S\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
+    assert_raises(RGFA::TypeError) do
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]

@@ -38,8 +38,8 @@ class TestRGFAFieldWriter < Test::Unit::TestCase
     assert_equal("{\"A\":12}", {"A" => 12}.to_gfa_field)
   end
 
-  def test_field_writer_as_optfield
-    assert_equal("AA:i:13", 13.to_gfa_optfield(:AA))
+  def test_field_writer_as_tag
+    assert_equal("AA:i:13", 13.to_gfa_tag(:AA))
   end
 
 end

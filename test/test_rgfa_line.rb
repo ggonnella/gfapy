@@ -3,59 +3,59 @@ require "test/unit"
 
 class TestRGFALine < Test::Unit::TestCase
 
-  def test_initialize_not_enough_required
+  def test_initialize_not_enough_positional_fields
     assert_nothing_raised do
       RGFA::Line::Segment.new(["1","*"])
     end
-    assert_raise(RGFA::Line::RequiredFieldMissingError) do
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Segment.new(["1"])
     end
   end
 
-  def test_initialize_too_many_required
+  def test_initialize_too_many_positionals
     assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Segment.new(["1","*","*"])
     end
   end
 
-  def test_initialize_predefined_optfield_wrong_type
+  def test_initialize_predefined_tag_wrong_type
     assert_nothing_raised do
       RGFA::Line::Header.new(["VN:Z:1"])
     end
-    assert_raise(RGFA::Line::PredefinedOptfieldTypeError) do
+    assert_raise(RGFA::TypeError) do
       RGFA::Line::Header.new(["VN:i:1"])
     end
   end
 
-  def test_initialize_wrong_optfield_format
+  def test_initialize_wrong_tag_format
     assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Header.new(["VN i:1"])
     end
   end
 
-  def test_initialize_reqfield_type_error
+  def test_initialize_positional_field_type_error
     assert_raise(RGFA::FieldParser::FormatError) do
       RGFA::Line::Segment.new(["1\t1","*","*"])
     end
   end
 
-  def test_initialize_optfield_type_error
+  def test_initialize_tag_type_error
     assert_raise(ArgumentError) do
       RGFA::Line::Header.new(["zz:i:1A"])
     end
   end
 
-  def test_initialize_duplicate_optfield
-    assert_raise(RGFA::Line::DuplicatedOptfieldNameError) do
+  def test_initialize_duplicate_tag
+    assert_raise(RGFA::NotUniqueError) do
       RGFA::Line::Header.new(["zz:i:1","zz:i:2"])
     end
-    assert_raise(RGFA::Line::DuplicatedOptfieldNameError) do
+    assert_raise(RGFA::NotUniqueError) do
       RGFA::Line::Header.new(["zz:i:1", "VN:Z:1", "zz:i:2"])
     end
   end
 
-  def test_initialize_custom_optfield
-    assert_raise(RGFA::Line::CustomOptfieldNameError) do
+  def test_initialize_custom_tag
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Header.new(["ZZ:Z:1"])
     end
   end
@@ -80,15 +80,15 @@ class TestRGFALine < Test::Unit::TestCase
     # reqfields
     assert(l.respond_to?(:from))
     assert(l.respond_to?(:from=))
-    # predefined optfields
+    # predefined tags
     assert(l.respond_to?(:KC))
     assert(l.respond_to?(:KC!))
     assert(l.respond_to?(:KC=))
-    # custom optfields
+    # custom tags
     assert(l.respond_to?(:zz))
     assert(l.respond_to?(:zz!))
     assert(l.respond_to?(:zz=))
-    # not-yet-existing optfields
+    # not-yet-existing tags
     assert(l.respond_to?(:aa))
     assert(l.respond_to?(:aa!))
     assert(l.respond_to?(:aa=))
@@ -100,15 +100,15 @@ class TestRGFALine < Test::Unit::TestCase
     assert_raise(NoMethodError) { l.record_type = "S" }
   end
 
-  def test_field_getters_required_fields
+  def test_field_getters_positional_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
     assert_equal(:"12", l.name)
     assert_raise(NoMethodError) { l.zzz }
   end
 
-  def test_field_getters_existing_optional_fields
+  def test_field_getters_existing_tags
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
-    assert_equal(:xx, l.optional_fieldnames[0])
+    assert_equal(:xx, l.tagnames[0])
     assert_equal("13", l.field_to_s(:xx))
     assert_equal(13, l.xx)
     assert_equal(13, l.xx!)
@@ -117,13 +117,13 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(10, l.KC!)
   end
 
-  def test_field_getters_not_existing_optional_fields
+  def test_field_getters_not_existing_tags
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_equal(nil, l.zz)
     assert_raise(RGFA::Line::TagMissingError) { l.zz! }
   end
 
-  def test_field_setters_required_fields
+  def test_field_setters_positional_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
     assert_raise(RGFA::FieldParser::FormatError) { l.name = "A\t1";
                                                    l.validate_field!(:name) }
@@ -131,7 +131,7 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(:"14", l.name)
   end
 
-  def test_field_setters_existing_optional_fields
+  def test_field_setters_existing_tags
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"], validate: 5)
     assert_equal(13, l.xx)
     l.xx = 15
@@ -143,33 +143,33 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal("HO", l.VN)
   end
 
-  def test_field_setters_not_existing_optional_fields
+  def test_field_setters_not_existing_tags
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_nothing_raised { l.zz="1" }
     assert_equal("1", l.zz)
-    assert_equal(:"Z", l.zz.default_gfa_datatype)
+    assert_equal(:"Z", l.zz.default_gfa_tag_datatype)
     assert_nothing_raised { l.zi=1 }
     assert_equal(1, l.zi)
-    assert_equal(:"i", l.zi.default_gfa_datatype)
+    assert_equal(:"i", l.zi.default_gfa_tag_datatype)
     assert_nothing_raised { l.zf=1.0 }
     assert_equal(1.0, l.zf)
-    assert_equal(:"f", l.zf.default_gfa_datatype)
+    assert_equal(:"f", l.zf.default_gfa_tag_datatype)
     assert_nothing_raised { l.bf=[1.0,1.0] }
     assert_equal([1.0,1.0], l.bf)
-    assert_equal(:"B", l.bf.default_gfa_datatype)
+    assert_equal(:"B", l.bf.default_gfa_tag_datatype)
     assert_nothing_raised { l.bi=[1.0,1.0] }
     assert_equal([1,1], l.bi)
-    assert_equal(:"B", l.bi.default_gfa_datatype)
+    assert_equal(:"B", l.bi.default_gfa_tag_datatype)
     assert_nothing_raised { l.ba=[1.0,1] }
     assert_equal([1.0,1], l.ba)
-    assert_equal(:"J", l.ba.default_gfa_datatype)
+    assert_equal(:"J", l.ba.default_gfa_tag_datatype)
     assert_nothing_raised { l.bh={:a => 1.0, :b => 1} }
     assert_equal({"a"=>1.0,"b"=>1}, l.to_s.to_rgfa_line.bh)
-    assert_equal(:"J", l.bh.default_gfa_datatype)
+    assert_equal(:"J", l.bh.default_gfa_tag_datatype)
     assert_raise(NoMethodError) { l.zzz="1" }
   end
 
-  def test_add_optfield
+  def test_add_tag
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_equal(nil, l.xy)
     l.set(:xy, "HI")

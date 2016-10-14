@@ -7,10 +7,10 @@ class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H
   versions = [:"1.0", :"2.0", :generic]
-  reqfields = {}
-  versions.each {|v| reqfields[v] = []}
-  REQFIELDS = reqfields
-  PREDEFINED_OPTFIELDS = [:VN]
+  posfields = {}
+  versions.each {|v| posfields[v] = []}
+  POSFIELDS = posfields
+  PREDEFINED_TAGS = [:VN]
   FIELD_ALIAS = {}
   DATATYPE = {
     :VN => :Z
@@ -26,7 +26,7 @@ class RGFA::Line::Header < RGFA::Line
   # the new one
   # @param fieldname [Symbol]
   # @param value [Object]
-  # @param datatype [RGFA::Line::OPTFIELD_DATATYPE, nil] the datatype to use;
+  # @param datatype [RGFA::Line::TAG_DATATYPE, nil] the datatype to use;
   #   the default is to determine the datatype according to the value or the
   #   previous values present int the field
   def add(fieldname, value, datatype=nil)
@@ -45,16 +45,16 @@ class RGFA::Line::Header < RGFA::Line
     return self
   end
 
-  # Array of optional tags data.
+  # Array of tags data.
   #
-  # Returns the optional fields as an array of [fieldname, datatype, value]
+  # Returns the tags as an array of [fieldname, datatype, value]
   # arrays. If a field is a FieldArray, this is splitted into multiple fields
   # with the same fieldname.
   # @return [Array<(Symbol, Symbol, Object)>]
   # @api private
   def tags
     retval = []
-    optional_fieldnames.each do |of|
+    tagnames.each do |of|
       value = get(of)
       if value.kind_of?(RGFA::FieldArray)
         value.each do |elem|
@@ -87,7 +87,7 @@ class RGFA::Line::Header < RGFA::Line
   # @return [self]
   # @api private
   def merge(gfa_line)
-    gfa_line.optional_fieldnames.each do |of|
+    gfa_line.tagnames.each do |of|
       add(of, gfa_line.get(of), gfa_line.get_datatype(of))
     end
     self

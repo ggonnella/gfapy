@@ -114,7 +114,7 @@ module RGFA::Multiplication
 
   def divide_counts(gfa_line, factor)
     [:KC, :RC, :FC].each do |count_tag|
-      if gfa_line.optional_fieldnames.include?(count_tag)
+      if gfa_line.tagnames.include?(count_tag)
         value = (gfa_line.get(count_tag).to_f / factor)
         gfa_line.set(count_tag, value.to_i)
       end

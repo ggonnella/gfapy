@@ -22,7 +22,7 @@ class TestRGFALineLink < Test::Unit::TestCase
     assert_equal(40, str.to_rgfa_line.MQ)
     assert_equal("abcd", str.to_rgfa_line.ab)
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
-    assert_raises(RGFA::Line::RequiredFieldMissingError) { "L\tH".to_rgfa_line }
+    assert_raises(RGFA::FormatError) { "L\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
@@ -32,10 +32,10 @@ class TestRGFALineLink < Test::Unit::TestCase
     assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
+    assert_raises(RGFA::TypeError) do
       f=fields.dup; f[6]="RC:Z:1232"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::Line::PredefinedOptfieldTypeError) do
+    assert_raises(RGFA::TypeError) do
       f=fields.dup; f[7]="NM:Z:1232"; f.join("\t").to_rgfa_line(validate: 3)
     end
   end

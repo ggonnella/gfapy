@@ -97,7 +97,7 @@ class TestRGFAVersion < Test::Unit::TestCase
     sv2 = "S\tB\t100\t*"
     gfa = RGFA.new()
     gfa << sv2
-    assert_raises(RGFA::Line::RequiredFieldMissingError) { gfa << sv1 }
+    assert_raises(RGFA::FormatError) { gfa << sv1 }
   end
 
   def test_version_by_GFA2_specific_line_E

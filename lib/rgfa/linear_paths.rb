@@ -157,7 +157,7 @@ module RGFA::LinearPaths
     segs = segpath.map {|sn,et|segment!(sn)}
     [:KC, :RC, :FC].each do |count_tag|
       segs.each do |s|
-        if s.optional_fieldnames.include?(count_tag)
+        if s.tagnames.include?(count_tag)
           retval[count_tag] ||= 0
           retval[count_tag] += s.get(count_tag)
         end

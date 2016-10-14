@@ -20,7 +20,7 @@ class TestRGFALinePath < Test::Unit::TestCase
                  str.to_rgfa_line.overlaps)
     assert_equal("abcd", str.to_rgfa_line.ab)
     assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
-    assert_raises(RGFA::Line::RequiredFieldMissingError) { "P\tH".to_rgfa_line }
+    assert_raises(RGFA::FormatError) { "P\tH".to_rgfa_line }
     assert_raises(RGFA::FieldParser::FormatError) do
       f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(validate: 3)
     end

@@ -71,7 +71,7 @@ if rt.include?("-h")
       puts "# Headers"
       puts
     end
-    (h1.optional_fieldnames - h2.optional_fieldnames).each do |k|
+    (h1.tagnames - h2.tagnames).each do |k|
       if out_script
         puts "gfa.header.delete_field(#{k.inspect})"
       else
@@ -83,12 +83,12 @@ if rt.include?("-h")
             puts "<\t[headers/exclusive/multivalue/#{k}]\t#{elem}"
           end
         else
-          v = h1.field_to_s(k, optfield: true)
+          v = h1.field_to_s(k, tag: true)
           puts "M\t[headers/exclusive]\t#{k.inspect}\t#{v}"
         end
       end
     end
-    (h2.optional_fieldnames - h1.optional_fieldnames).each do |k|
+    (h2.tagnames - h1.tagnames).each do |k|
       v = h2.get(k)
       if out_script
         t = h2.get_datatype(k)
@@ -110,12 +110,12 @@ if rt.include?("-h")
             puts ">\t[headers/exclusive/multivalue/#{k}]\t#{elem}"
           end
         else
-          v = h2.field_to_s(k, optfield: true)
+          v = h2.field_to_s(k, tag: true)
           puts ">\t[headers/exclusive]\t#{k.inspect}\t#{v}"
         end
       end
     end
-    (h1.optional_fieldnames & h2.optional_fieldnames).each do |k|
+    (h1.tagnames & h2.tagnames).each do |k|
       v1 = h1.get(k)
       v2 = h2.get(k)
       v1a = v1.kind_of?(RGFA::FieldArray) ? v1.sort : [v1]
@@ -192,7 +192,7 @@ def diff_segments_or_paths(gfa1,gfa2,rt,out_script,out_identical)
   (s1names & s2names).each do |sn|
     s1 = gfa1.send(rt,sn)
     s2 = gfa2.send(rt,sn)
-    s1.required_fieldnames.each do |fn|
+    s1.positional_fieldnames.each do |fn|
       v1 = s1.field_to_s(fn)
       v2 = s2.field_to_s(fn)
       if v1 != v2
@@ -200,20 +200,20 @@ def diff_segments_or_paths(gfa1,gfa2,rt,out_script,out_identical)
         if out_script
           puts "gfa.#{rt}(#{sn.inspect}).#{fn}=#{v2.inspect}"
         else
-          puts "<\t[#{rts}/reqfields/valuediff/#{sn}]\t#{v1}"
-          puts ">\t[#{rts}/reqfields/valuediff/#{sn}]\t#{v2}"
+          puts "<\t[#{rts}/posfield/valuediff/#{sn}]\t#{v1}"
+          puts ">\t[#{rts}/posfield/valuediff/#{sn}]\t#{v2}"
         end
       end
     end
-    s1f = s1.optional_fieldnames
-    s2f = s2.optional_fieldnames
+    s1f = s1.tagnames
+    s2f = s2.tagnames
     (s1f - s2f).each do |fn|
       difffound = true
       if out_script
         puts "gfa.#{rt}(#{sn.inspect}).delete_field(#{fn.inspect})"
       else
-        v = s1.field_to_s(fn, optfield: true)
-        puts "<\t[#{rts}/optfields/exclusive/#{sn}]\t#{v}"
+        v = s1.field_to_s(fn, tag: true)
+        puts "<\t[#{rts}/tag/exclusive/#{sn}]\t#{v}"
       end
     end
     (s2f - s1f).each do |fn|
@@ -224,13 +224,13 @@ def diff_segments_or_paths(gfa1,gfa2,rt,out_script,out_identical)
         puts "gfa.#{rt}(#{sn.inspect}).set_datatype(#{fn.inspect},#{t})"
         puts "gfa.#{rt}(#{sn.inspect}).#{fn}=#{v.inspect}"
       else
-        v = s2.field_to_s(fn, optfield: true)
-        puts ">\t[#{rts}/optfields/exclusive/#{sn}]\t#{v}"
+        v = s2.field_to_s(fn, tag: true)
+        puts ">\t[#{rts}/tag/exclusive/#{sn}]\t#{v}"
       end
     end
     (s1f & s2f).each do |fn|
-      v1 = s1.field_to_s(fn, optfield: true)
-      v2 = s2.field_to_s(fn, optfield: true)
+      v1 = s1.field_to_s(fn, tag: true)
+      v2 = s2.field_to_s(fn, tag: true)
       if v1 != v2
         difffound = true
         if out_script
@@ -239,8 +239,8 @@ def diff_segments_or_paths(gfa1,gfa2,rt,out_script,out_identical)
           puts "gfa.#{rt}(#{sn.inspect}).set_datatype(#{fn.inspect},#{t})"
           puts "gfa.#{rt}(#{sn.inspect}).#{fn}=#{v.inspect}"
         else
-          puts "<\t[#{rts}/optfields/valuediff/#{sn}]\t#{v1}"
-          puts ">\t[#{rts}/optfields/valuediff/#{sn}]\t#{v2}"
+          puts "<\t[#{rts}/tag/valuediff/#{sn}]\t#{v1}"
+          puts ">\t[#{rts}/tag/valuediff/#{sn}]\t#{v2}"
         end
       end
     end
@@ -259,7 +259,7 @@ if rt.include?("-s")
   diff_segments_or_paths(gfa1,gfa2, "segment",out_script,out_identical)
 end
 
-# TODO: diff of single optfields
+# TODO: diff of single fields
 if rt.include?("-l")
   difffound = false
   s1names = gfa1.segment_names.sort

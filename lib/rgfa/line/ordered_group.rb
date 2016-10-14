@@ -2,9 +2,9 @@
 class RGFA::Line::OrderedGroup < RGFA::Line
 
   RECORD_TYPE = :O
-  REQFIELDS = {:"1.0" => nil,
+  POSFIELDS = {:"1.0" => nil,
                :"2.0" => [:pid, :items]}
-  PREDEFINED_OPTFIELDS = []
+  PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {
     :pid => :any,

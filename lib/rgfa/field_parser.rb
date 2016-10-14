@@ -89,18 +89,18 @@ module RGFA::FieldParser
     end
   end
 
-  # Parses an optional field in the form tagname:datatype:value
+  # Parses a tag in the form tagname:datatype:value
   # and parses the value according to the datatype
   # @raise [RGFA::FieldParser::FormatError] if the string does not represent
-  #   an optional field
+  #   a tag
   # @return [Array(Symbol, RGFA::Line::FIELD_DATATYPE, String)]
   #   the parsed content of the field
-  def parse_gfa_optfield
+  def parse_gfa_tag
     if self =~ /^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$/
       return $1.to_sym, $2.to_sym, $3
     else
       raise RGFA::FieldParser::FormatError,
-        "Expected optional field, found: #{self.inspect}"
+        "Expected GFA tag, found: #{self.inspect}"
     end
   end
 

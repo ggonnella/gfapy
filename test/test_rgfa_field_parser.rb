@@ -3,24 +3,24 @@ require "test/unit"
 
 class TestRGFAFieldParser < Test::Unit::TestCase
 
-  def test_parse_gfa_opfield
+  def test_parse_gfa_tag
     o = "AA:i:1"
-    assert_equal([:AA,:i,"1"], o.parse_gfa_optfield)
+    assert_equal([:AA,:i,"1"], o.parse_gfa_tag)
     assert_raise(RGFA::FieldParser::FormatError) do
-      "1A:A:A".parse_gfa_optfield
+      "1A:A:A".parse_gfa_tag
     end
     assert_raise(RGFA::FieldParser::FormatError) do
-      "_A:A:A".parse_gfa_optfield
+      "_A:A:A".parse_gfa_tag
     end
     assert_raise(RGFA::FieldParser::FormatError) do
-      "A:A:A".parse_gfa_optfield
+      "A:A:A".parse_gfa_tag
     end
     assert_raise(RGFA::FieldParser::FormatError) do
-      "AAA:A:A".parse_gfa_optfield
+      "AAA:A:A".parse_gfa_tag
     end
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:C:1".parse_gfa_optfield}
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:AA:1".parse_gfa_optfield}
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:a:1".parse_gfa_optfield}
+    assert_raise(RGFA::FieldParser::FormatError) {"AA:C:1".parse_gfa_tag}
+    assert_raise(RGFA::FieldParser::FormatError) {"AA:AA:1".parse_gfa_tag}
+    assert_raise(RGFA::FieldParser::FormatError) {"AA:a:1".parse_gfa_tag}
   end
 
   def test_parse_gfa_field_A

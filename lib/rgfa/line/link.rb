@@ -3,9 +3,9 @@
 class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = :L
-  REQFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :overlap],
+  POSFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :overlap],
                :"2.0" => nil}
-  PREDEFINED_OPTFIELDS = [:MQ, :NM, :RC, :FC, :KC]
+  PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
   FIELD_ALIAS = {}
   DATATYPE = {
      :from => :lbl,
@@ -163,11 +163,11 @@ class RGFA::Line::Link < RGFA::Line
   # Creates the equivalent link with from/to inverted.
   #
   # The CIGAR operations (order/type) are inverted as well.
-  # Optional fields are left unchanged.
+  # Tags are left unchanged.
   #
   # @note The path references are not copied to the complement link.
   #
-  # @note This method shall be overridden if custom optional fields
+  # @note This method shall be overridden if custom tags
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the equivalent complement link.
   #
@@ -189,12 +189,12 @@ class RGFA::Line::Link < RGFA::Line
   #   to_orient = other_orient(from_orient)
   #   overlap = complement_overlap.
   #
-  # The optional fields are left unchanged.
+  # The tags are left unchanged.
   #
   # @note The path references are not complemented by this method; therefore
   #   the method shall be used before the link is embedded in a graph.
   #
-  # @note This method shall be overridden if custom optional fields
+  # @note This method shall be overridden if custom tags
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the complement link.
   #
@@ -234,7 +234,7 @@ class RGFA::Line::Link < RGFA::Line
 
   #
   # Compares two links and determine their equivalence.
-  # Thereby, optional fields are not considered.
+  # Thereby, tags are not considered.
   #
   # @note Inverting the strand of both links and reversing
   #   the CIGAR operations (order/type), one obtains an
@@ -249,22 +249,22 @@ class RGFA::Line::Link < RGFA::Line
     same?(other) or complement?(other)
   end
 
-  # Compares the optional fields of two links.
+  # Compares the tags of two links.
   #
-  # @note This method shall be overridden if custom optional fields
+  # @note This method shall be overridden if custom tags
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the equivalent but complement link.
   #
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
-  def eql_optional?(other)
-    (self.optional_fieldnames.sort == other.optional_fieldnames.sort) and
-      optional_fieldnames.each {|fn| self.get(fn) == other.get(fn)}
+  def eql_tags?(other)
+    (self.tagnames.sort == other.tagnames.sort) and
+      tagnames.each {|fn| self.get(fn) == other.get(fn)}
   end
 
   # Compares two links and determine their equivalence.
-  # Optional fields must have the same content.
+  # Tags must have the same content.
   #
   # @note Inverting the strand of both links and reversing
   #   the CIGAR operations (order/type), one obtains an equivalent
@@ -273,13 +273,13 @@ class RGFA::Line::Link < RGFA::Line
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #eql?
-  # @see #eql_optional?
+  # @see #eql_tags?
   #def ==(other)
-  #  eql?(other) and eql_optional?(other)
+  #  eql?(other) and eql_tags?(other)
   #end
 
   # Compares two links and determine their equivalence.
-  # Thereby, optional fields are not considered.
+  # Thereby, tags are not considered.
   #
   # @param other [RGFA::Line::Link] a link
   # @return [Boolean] are self and other equivalent?
@@ -294,7 +294,7 @@ class RGFA::Line::Link < RGFA::Line
 
   # Compares the link to the complement of another link
   # and determine their equivalence.
-  # Thereby, optional fields are not considered.
+  # Thereby, tags are not considered.
   #
   # @param other [RGFA::Line::Link] the other link
   # @return [Boolean] are self and the complement of other equivalent?
@@ -309,7 +309,7 @@ class RGFA::Line::Link < RGFA::Line
 
   # Computes an hash for including a link in an Hash tables,
   # so that the hash of a link and its complement is the same.
-  # Thereby, optional fields are not considered.
+  # Thereby, tags are not considered.
   # @see #eql?
   def hash
     from_end.hash + to_end.hash + overlap.hash + complement_overlap.to_s.hash

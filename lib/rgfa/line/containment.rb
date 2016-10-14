@@ -2,10 +2,10 @@
 class RGFA::Line::Containment < RGFA::Line
 
   RECORD_TYPE = :C
-  REQFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :pos, :overlap],
+  POSFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :pos, :overlap],
                :"2.0" => nil}
   FIELD_ALIAS = {}
-  PREDEFINED_OPTFIELDS = [:MQ, :NM]
+  PREDEFINED_TAGS = [:MQ, :NM]
   DATATYPE = {
      :from => :lbl,
      :from_orient => :orn,

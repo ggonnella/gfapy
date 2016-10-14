@@ -2,11 +2,11 @@
 class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F
-  REQFIELDS = {:"1.0" => nil,
+  POSFIELDS = {:"1.0" => nil,
                :"2.0" => [:sid, :or, :external, :s_beg, :s_end,
                           :f_beg, :f_end, :alignment]}
   FIELD_ALIAS = {}
-  PREDEFINED_OPTFIELDS = []
+  PREDEFINED_TAGS = []
   DATATYPE = {
     :sid => :any,
     :or => :any,

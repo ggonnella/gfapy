@@ -2,9 +2,9 @@
 class RGFA::Line::Segment < RGFA::Line
 
   RECORD_TYPE = :S
-  REQFIELDS = {:"1.0" => [:name, :sequence],
+  POSFIELDS = {:"1.0" => [:name, :sequence],
                :"2.0" => [:name, :slen, :sequence]}
-  PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC, :SH, :UR]
+  PREDEFINED_TAGS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
     :name => :lbl,
     :sequence => :seq,
@@ -107,7 +107,7 @@ class RGFA::Line::Segment < RGFA::Line
   # @raise [RGFA::Line::Segment::InconsistentLengthError]
   #    if sequence length and LN tag are not consistent.
   def validate_length!
-    if sequence != "*" and optional_fieldnames.include?(:LN)
+    if sequence != "*" and tagnames.include?(:LN)
       if self.LN != sequence.length
         raise RGFA::Line::Segment::InconsistentLengthError,
           "Length in LN tag (#{self.LN}) "+
@@ -156,7 +156,7 @@ class RGFA::Line::Segment < RGFA::Line
   # @return [nil] otherwise
   # @see #coverage!
   def coverage(count_tag: :RC, unit_length: 1)
-    if optional_fieldnames.include?(count_tag) and self.length
+    if tagnames.include?(count_tag) and self.length
       return (self.get(count_tag).to_f)/(self.length-unit_length+1)
     else
       return nil

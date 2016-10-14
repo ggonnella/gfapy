@@ -2,6 +2,9 @@
 
 - Trace alignments
 - Custom record types
+- More precise fields terminology:
+-- required fields => positional fields
+-- optional fields => tags
 
 == HEAD ==
 
