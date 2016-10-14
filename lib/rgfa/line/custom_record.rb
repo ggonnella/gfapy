@@ -13,7 +13,8 @@
 class RGFA::Line::CustomRecord < RGFA::Line
 
   RECORD_TYPE = nil
-  REQFIELDS = [:record_type]
+  REQFIELDS = {:"1.0" => nil,
+               :"2.0" => [:record_type]}
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :record_type => :crt,

@@ -20,6 +20,21 @@ module RGFA::Lines
   include RGFA::CustomRecords
   include RGFA::Paths
 
+  GFA1Specific = [
+                   RGFA::Line::Link,
+                   RGFA::Line::Containment,
+                   RGFA::Line::Path,
+                 ]
+
+  GFA2Specific = [
+                   RGFA::Line::CustomRecord,
+                   #RGFA::Line::Fragment,
+                   #RGFA::Line::Gap,
+                   #RGFA::Line::Edge,
+                   #RGFA::Line::UnorderedGroup,
+                   #RGFA::Line::OrderedGroup,
+                  ]
+
   # Add a line to a RGFA
   #
   # @overload <<(gfa_line_string)
@@ -28,12 +43,80 @@ module RGFA::Lines
   #   @param [RGFA::Line] gfa_line instance of a subclass of RGFA::Line
   # @raise [RGFA::DuplicatedLabelError] if multiple segment or path lines
   #   with the same name are added
+  # @raise [ArgumentError] if the argument is not a RGFA::Line or String
   # @return [RGFA] self
   def <<(gfa_line)
-    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    rt = gfa_line.record_type
+    case version
+    when :"1.0"
+      add_line_GFA1(gfa_line)
+    when :"2.0"
+      add_line_GFA2(gfa_line)
+    when nil
+      add_line_unknown_version(gfa_line)
+    else
+      raise # This point should never be reached
+    end
+    return self
+  end
+
+  def add_line_unknown_version(gfa_line)
+    if gfa_line.kind_of?(String)
+      rt = gfa_line[0].to_sym
+    elsif gfa_line.kind_of?(RGFA::Line)
+      rt = gfa_line.record_type
+    else
+      raise ArgumentError, "Only strings and RGFA::Line instances can be added"
+    end
     case rt
+    when :"#"
+      add_comment(gfa_line)
     when :H
+      gfa_line = gfa_line.to_rgfa_line(validate: @validate)
+      add_header(gfa_line)
+      if gfa_line.VN
+        @version = gfa_line.VN.to_sym
+        @version_explanation = "specified in header VN tag"
+        validate_version!
+        @line_queue.size.times {self << @line_queue.shift}
+      end
+    when :S
+      gfa_line = gfa_line.to_rgfa_line(validate: @validate)
+      @version = gfa_line.version
+      @version_explanation = "implied by: syntax of S #{gfa_line.name} line"
+      process_line_queue
+      add_segment(gfa_line)
+    when :E, :F, :G, :U, :O
+      @version = :"2.0"
+      @version_explanation = "implied by: presence of a #{rt} line"
+      process_line_queue
+      self << gfa_line
+    when :L, :C, :P
+      @version_guess = :"1.0"
+      @line_queue << gfa_line
+    else
+      @line_queue << gfa_line
+    end
+  end
+  private :add_line_unknown_version
+
+  def add_line_GFA1(gfa_line)
+    if gfa_line.kind_of?(String)
+      gfa_line = gfa_line.to_rgfa_line(version: :"1.0", validate: @validate)
+    elsif RGFA::Lines::GFA2Specific.include?(gfa_line.class)
+      raise RGFA::VersionError,
+        "Version: 1.0 (#{@version_explanation})\t"+
+        "Cannot add instance of incompatible line type (#{rt})"
+    end
+    case gfa_line.record_type
+    when :"#"
+      add_comment(gfa_line)
+    when :H
+      if gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
+        raise RGFA::VersionError,
+          "Header line specified wrong version (#{gfa_line.VN})\n"+
+          "Line: #{gfa_line}\n"+
+          "File version: 1.0 (#{@version_explanation})"
+      end
       add_header(gfa_line)
     when :S
       add_segment(gfa_line)
@@ -43,12 +126,54 @@ module RGFA::Lines
       add_containment(gfa_line)
     when :P
       add_path(gfa_line)
+    else
+      raise RGFA::Error, "Invalid record type #{rt}" # should be unreachable
+    end
+  end
+  private :add_line_GFA1
+
+  def add_line_GFA2(gfa_line)
+    if gfa_line.kind_of?(String)
+      gfa_line = gfa_line.to_rgfa_line(version: :"2.0", validate: @validate)
+    elsif RGFA::Lines::GFA1Specific.include?(gfa_line.class)
+      raise RGFA::VersionError,
+        "Version: 2.0 (#{@version_explanation})\t"+
+        "Cannot add instance of incompatible line type (#{rt})"
+    end
+    case gfa_line.record_type
     when :"#"
       add_comment(gfa_line)
+    when :H
+      if gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
+        raise RGFA::VersionError,
+          "Header line specified wrong version (#{gfa_line.VN})\n"+
+          "Line: #{gfa_line}\n"+
+          "File version: 2.0 (#{@version_explanation})"
+      end
+      add_header(gfa_line)
+    when :S
+      add_segment(gfa_line)
+    when :E
+      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Edge
+    when :G
+      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Gap
+    when :F
+      add_custom_record(gfa_line) # TODO: implement RGFA::Line::Fragment
+    when :U
+      add_custom_record(gfa_line) # TODO: implement RGFA::Line::UnorderedGroup
+    when :O
+      add_custom_record(gfa_line) # TODO: implement RGFA::Line::OrderedGroup
     else
       add_custom_record(gfa_line)
     end
-    return self
+  end
+  private :add_line_GFA2
+
+  def process_line_queue
+    if @version.nil?
+      @version = @version_guess
+    end
+    @line_queue.size.times {self << @line_queue.shift}
   end
 
   # Delete elements from the RGFA graph

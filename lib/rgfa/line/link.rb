@@ -3,7 +3,8 @@
 class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = :L
-  REQFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
+  REQFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :overlap],
+               :"2.0" => nil}
   PREDEFINED_OPTFIELDS = [:MQ, :NM, :RC, :FC, :KC]
   DATATYPE = {
      :from => :lbl,

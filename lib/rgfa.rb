@@ -117,11 +117,15 @@ class RGFA
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
     @extensions_enabled = false
+    @line_queue = []
     if version.nil?
       @version = nil
+      @version_explanation = nil
+      @version_guess = :"2.0"
     else
-      version = version.to_sym
-      @version = version
+      @version = version.to_sym
+      @version_explanation = "set during initialization"
+      @version_guess = @version
       validate_version!
     end
   end
@@ -202,6 +206,10 @@ class RGFA
       self << line.chomp
       progress_log(:read_file) if @progress
     end
+    if !@line_queue.empty?
+      @version = @version_guess
+      process_line_queue
+    end
     progress_log_end(:read_file) if @progress
     validate! if @validate >= 1
     self
@@ -211,9 +219,10 @@ class RGFA
   # @param [String] filename
   # @raise if file cannot be opened for reading
   # @!macro validate
+  # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
-  def self.from_file(filename, validate: 2)
-    gfa = RGFA.new(validate: validate)
+  def self.from_file(filename, validate: 2, version: nil)
+    gfa = RGFA.new(validate: validate, version: version)
     gfa.read_file(filename)
     return gfa
   end
@@ -373,6 +382,7 @@ class String
   def to_rgfa(validate: 2)
     gfa = RGFA.new(validate: validate)
     split("\n").each {|line| gfa << line}
+    gfa.process_line_queue
     gfa.validate! if validate >= 1
     return gfa
   end
@@ -389,6 +399,7 @@ class Array
   def to_rgfa(validate: 2)
     gfa = RGFA.new(validate: validate)
     each {|line| gfa << line}
+    gfa.process_line_queue
     gfa.validate! if validate >= 1
     return gfa
   end

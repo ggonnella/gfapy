@@ -6,7 +6,10 @@
 class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H
-  REQFIELDS = []
+  versions = [:"1.0", :"2.0", :generic]
+  reqfields = {}
+  versions.each {|v| reqfields[v] = []}
+  REQFIELDS = reqfields
   PREDEFINED_OPTFIELDS = [:VN]
   DATATYPE = {
     :VN => :Z

@@ -33,7 +33,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
   end
 
   def test_delete_custom_records
-    gfa = RGFA.new
+    gfa = RGFA.new(version: :"2.0")
     c = "X\tThis is a custom_record"
     gfa << c
     assert_equal(c, gfa.custom_records[:X][0].to_s)

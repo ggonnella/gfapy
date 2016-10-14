@@ -30,7 +30,8 @@ module RGFA::Paths
                                     :to => to.segment,
                                     :to_orient => to.orient,
                                     :overlap => cigar},
-                                   virtual: true)
+                                   virtual: true,
+                                   version: :"1.0")
           if @segments_first_order
             raise RGFA::LineMissingError, "Path: #{gfa_line}\n"+
               "requires a non-existing link:\n"+

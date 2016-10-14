@@ -22,7 +22,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
   end
 
   def test_add_custom_records
-    gfa = RGFA.new
+    gfa = RGFA.new(version: :"2.0")
     x1 = "X\tthis is a custom record"
     assert_nothing_raised { gfa << x1 }
     assert_equal([:X], gfa.custom_records.keys)

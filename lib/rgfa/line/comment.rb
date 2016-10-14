@@ -2,7 +2,10 @@
 class RGFA::Line::Comment < RGFA::Line
 
   RECORD_TYPE = :"#"
-  REQFIELDS = [:content]
+  versions = [:"1.0", :"2.0", :generic]
+  reqfields = {}
+  versions.each {|v| reqfields[v] = [:content]}
+  REQFIELDS = reqfields
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :content => :any,

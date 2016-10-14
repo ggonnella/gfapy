@@ -31,7 +31,7 @@ class TestRGFA < Test::Unit::TestCase
   end
 
   def test_path_names
-    gfa = RGFA.new
+    gfa = RGFA.new(version: :"1.0")
     assert_equal([], gfa.path_names)
     gfa << "P\t3\t1+,4-\t*"
     assert_equal([:"3"], gfa.path_names)
@@ -40,7 +40,7 @@ class TestRGFA < Test::Unit::TestCase
   end
 
   def test_validate!
-    gfa = RGFA.new
+    gfa = RGFA.new(version: :"1.0")
     gfa << "S\t1\t*"
     assert_nothing_raised { gfa.validate! }
     gfa << "L\t1\t+\t2\t-\t*"

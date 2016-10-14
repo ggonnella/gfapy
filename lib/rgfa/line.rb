@@ -35,6 +35,19 @@ class RGFA::Line
   # Orientation of segments in paths/links/containments
   ORIENTATION = [:+, :-]
 
+  # Dependency of record type from version
+  # - specific => only for a specific version
+  # - generic => same syntax for all versions
+  # - different => different syntax in different versions
+  RECORD_TYPE_VERSIONS =
+  {
+    :specific =>
+      {:"1.0" => [:C, :L, :P],
+       :"2.0" => [:E, :G, :F, :O, :U, nil]},
+    :generic => [:H, :"#"],
+    :different => [:S]
+  }
+
   # @!macro rgfa_line
   #
   # @param data [Array<String>] the content of the line; if
@@ -49,6 +62,7 @@ class RGFA::Line
   #   yet created; in this case a segment marked as virtual is created,
   #   which is replaced by a non-virtual segment, when the segment
   #   line is later found
+  # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
   #
   # <b> Constants defined by subclasses </b>
   #
@@ -89,7 +103,7 @@ class RGFA::Line
   # - 4: 3 + all fields are validated on writing to string
   # - 5: 4 + all fields are validated by get and set methods
   #
-  def initialize(data, validate: 2, virtual: false)
+  def initialize(data, validate: 2, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
       raise RuntimeError, "This class shall not be directly instantiated"
     end
@@ -97,15 +111,70 @@ class RGFA::Line
     @virtual = virtual
     @datatype = {}
     @data = {}
+    @version = version
     if data.kind_of?(Hash)
       @data.merge!(data)
     else
       # normal initialization, data is an array of strings
-      initialize_required_fields(data)
-      initialize_optional_fields(data)
+      if @version.nil?
+        process_unknown_version(data)
+      else
+        validate_version!
+        initialize_required_fields(data)
+        initialize_optional_fields(data)
+      end
       validate_record_type_specific_info! if @validate >= 3
+      if @version.nil?
+        raise "RECORD_TYPE_VERSION has no value for #{record_type}"
+      end
     end
   end
+
+  def process_unknown_version(data)
+    rt = self.class::RECORD_TYPE
+    if RECORD_TYPE_VERSIONS[:generic].include?(rt)
+      @version = :generic
+      initialize_required_fields(data)
+      initialize_optional_fields(data)
+      return
+    end
+    RECORD_TYPE_VERSIONS[:specific].each do |k, v|
+      if v.include?(rt)
+        @version = k
+        initialize_required_fields(data)
+        initialize_optional_fields(data)
+        return
+      end
+    end
+    if RECORD_TYPE_VERSIONS[:different].include?(rt)
+      errors = []
+      errklass = nil
+      RGFA::VERSIONS.each do |version|
+        begin
+          @version = version
+          initialize_required_fields(data)
+          initialize_optional_fields(data)
+          return
+        rescue => err
+          errors << "- #{version}: #{err}"
+          errklass = err.class if errklass.nil?
+          @data = {}
+          @datatype = {}
+          next
+        end
+      end
+      raise errklass,
+        "Line #{rt} #{data.join(" ")} has an invalid format"+
+        " for all known GFA specification versions. \n"+
+        "Errors:\n"+
+        errors.join("\n")
+    end
+  end
+  private :process_unknown_version
+
+  # @!attribute [r] version
+  #   @return [RGFA::VERSIONS, nil] GFA specification version
+  attr_reader :version
 
   # Select a subclass based on the record type
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
@@ -113,22 +182,38 @@ class RGFA::Line
   # @raise [RGFA::VersionError] if the version is unknown
   # @return [Class] a subclass of RGFA::Line
   def self.subclass(record_type, version: nil)
+    if !version.nil? and !RGFA::VERSIONS.include?(version)
+      raise RGFA::VersionError,
+          "GFA specification version unknown (#{version})"
+    end
     case record_type.to_sym
     when :H then RGFA::Line::Header
     when :S then RGFA::Line::Segment
-    when :L then RGFA::Line::Link
-    when :C then RGFA::Line::Containment
-    when :P then RGFA::Line::Path
     when :"#" then RGFA::Line::Comment
+    when :L
+      if version.nil? or version == :"1.0"
+        RGFA::Line::Link
+      else
+        RGFA::Line::CustomRecord
+      end
+    when :C
+      if version.nil? or version == :"1.0"
+        RGFA::Line::Containment
+      else
+        RGFA::Line::CustomRecord
+      end
+    when :P
+      if version.nil? or version == :"1.0"
+        RGFA::Line::Path
+      else
+        RGFA::Line::CustomRecord
+      end
     else
       if version == :"1.0"
         raise RGFA::Line::UnknownRecordTypeError,
           "Record type unknown: '#{record_type}'"
-      elsif version == :"2.0" or version.nil?
-        RGFA::Line::CustomRecord
       else
-        raise RGFA::VersionError,
-          "GFA specification version unknown"
+        RGFA::Line::CustomRecord
       end
     end
   end
@@ -145,12 +230,15 @@ class RGFA::Line
 
   # @return [Array<Symbol>] name of the required fields
   def required_fieldnames
-    self.class::REQFIELDS
+    if @version.nil?
+      raise RGFA::VersionError, "Version is not set"
+    end
+    self.class::REQFIELDS[@version]
   end
 
   # @return [Array<Symbol>] name of the optional fields
   def optional_fieldnames
-    (@data.keys - self.class::REQFIELDS)
+    (@data.keys - required_fieldnames)
   end
 
   # Deep copy of a RGFA::Line instance.
@@ -166,7 +254,8 @@ class RGFA::Line
         data_cpy[k] = v
       end
     end
-    cpy = self.class.new(data_cpy, validate: @validate, virtual: @virtual)
+    cpy = self.class.new(data_cpy, validate: @validate, virtual: @virtual,
+                                   version: @version)
     cpy.instance_variable_set("@datatype", @datatype.clone)
     return cpy
   end
@@ -496,7 +585,7 @@ class RGFA::Line
   private
 
   def n_required_fields
-    self.class::REQFIELDS.size
+    self.class::REQFIELDS[@version].size
   end
 
   def field_datatype(fieldname)
@@ -534,13 +623,17 @@ class RGFA::Line
   end
 
   def initialize_required_fields(strings)
+    if @version.nil?
+      raise RGFA::VersionError, "Version unknown"
+      # this should never happen
+    end
     if (@validate >= 1) and (strings.size < n_required_fields)
       raise RGFA::Line::RequiredFieldMissingError,
         "#{n_required_fields} required fields expected, "+
         "#{strings.size}) found\n#{strings.inspect}"
     end
     n_required_fields.times do |i|
-      n = self.class::REQFIELDS[i]
+      n = self.class::REQFIELDS[@version][i]
       init_field_value(n, self.class::DATATYPE[n], strings[i])
     end
   end
@@ -638,7 +731,8 @@ class RGFA::Line
   # This avoids calls to method_missing for fields which are already defined
   #
   def self.define_field_methods!
-    (self::REQFIELDS+self::PREDEFINED_OPTFIELDS).each do |fieldname|
+    (self::REQFIELDS.values.flatten.compact.uniq +
+     self::PREDEFINED_OPTFIELDS).each do |fieldname|
       define_method(fieldname) do
         get(fieldname)
       end
@@ -651,6 +745,25 @@ class RGFA::Line
     end
   end
   private_class_method :define_field_methods!
+
+  def validate_version!
+    rt = self.class::RECORD_TYPE
+    if !RGFA::VERSIONS.include?(@version)
+        raise RGFA::VersionError,
+            "GFA specification version unknown (#{version})"
+    else
+      RECORD_TYPE_VERSIONS[:specific].each do |k, v|
+        if v.include?(rt)
+          if version != k
+            raise RGFA::VersionError,
+              "Records of type #{record_type} are incompatible "+
+              "with version #{@version}"
+          end
+          return
+        end
+      end
+    end
+  end
 
 end
 
@@ -704,7 +817,8 @@ class String
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
   def to_rgfa_line(validate: 2, version: nil)
     if self[0] == "#"
-      return RGFA::Line::Comment.new([self[1..-1]], validate: 0)
+      return RGFA::Line::Comment.new([self[1..-1]], validate: 0,
+                                     version: version)
     else
       split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate,
                                                 version: version)
@@ -730,9 +844,9 @@ class Array
   def to_rgfa_line(validate: 2, version: nil)
     sk = RGFA::Line.subclass(self[0], version: version)
     if sk == RGFA::Line::CustomRecord
-      sk.new(self, validate: validate)
+      sk.new(self, validate: validate, version: version)
     else
-      sk.new(self[1..-1], validate: validate)
+      sk.new(self[1..-1], validate: validate, version: version)
     end
   end
 

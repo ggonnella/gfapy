@@ -2,11 +2,13 @@
 class RGFA::Line::Segment < RGFA::Line
 
   RECORD_TYPE = :S
-  REQFIELDS = [:name, :sequence]
+  REQFIELDS = {:"1.0" => [:name, :sequence],
+               :"2.0" => [:name, :slen, :sequence]}
   PREDEFINED_OPTFIELDS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
     :name => :lbl,
     :sequence => :seq,
+    :slen => :pos,
     :LN => :i,
     :RC => :i,
     :FC => :i,
