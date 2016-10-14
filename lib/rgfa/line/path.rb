@@ -91,7 +91,7 @@ class RGFA::Line::Path < RGFA::Line
     elsif n_overlaps == n_segments
       # case 3: circular path
     else
-      raise RGFA::Line::Path::ListLengthsError,
+      raise RGFA::InconsistencyError,
         "Path has #{n_segments} oriented segments, "+
         "but #{n_overlaps} overlaps"
     end
@@ -103,6 +103,3 @@ class RGFA::Line::Path < RGFA::Line
 
 
 end
-
-# Error raised if number of segments and overlaps are not consistent
-class RGFA::Line::Path::ListLengthsError < RGFA::Error; end

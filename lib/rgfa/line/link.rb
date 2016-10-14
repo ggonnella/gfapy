@@ -24,7 +24,7 @@ class RGFA::Line::Link < RGFA::Line
 
   # The other segment of a link
   # @param segment [RGFA::Line::Segment, Symbol] segment name or instance
-  # @raise [RGFA::LineMissingError]
+  # @raise [RGFA::NotFoundError]
   #   if segment is not involved in the link
   # @return [Symbol] the name of the other segment of the link
   #   if circular, then +segment+
@@ -36,7 +36,7 @@ class RGFA::Line::Link < RGFA::Line
     elsif segment_name == to.to_sym
       from
     else
-      raise RGFA::LineMissingError,
+      raise RGFA::NotFoundError,
         "Link #{self} does not involve segment #{segment_name}"
     end
   end
@@ -85,7 +85,7 @@ class RGFA::Line::Link < RGFA::Line
   #   of the link
   # @return [RGFA::SegmentEnd] the other segment end
   #
-  # @raise [ArgumentError] if segment_end is not a valid segment end
+  # @raise [RGFA::ArgumentError] if segment_end is not a valid segment end
   #   representation
   # @raise [RuntimeError] if segment_end is not a segment end of the link
   def other_end(segment_end)
@@ -95,7 +95,8 @@ class RGFA::Line::Link < RGFA::Line
     elsif (to_end == segment_end)
       return from_end
     else
-      raise "Segment end '#{segment_end.inspect}' not found\n"+
+      raise RGFA::ArgumentError,
+        "Segment end '#{segment_end.inspect}' not found\n"+
             "(from=#{from_end.inspect};to=#{to_end.inspect})"
     end
   end

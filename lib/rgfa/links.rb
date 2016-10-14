@@ -20,7 +20,7 @@ module RGFA::Links
         segment_name = gfa_line.send(dir).to_sym
         orient = gfa_line.send(:"#{dir}_orient").to_sym
         if !@segments.has_key?(segment_name)
-          raise RGFA::LineMissingError if @segments_first_order
+          raise RGFA::NotFoundError if @segments_first_order
           @segments[segment_name] =
             RGFA::Line::Segment.new({:name => segment_name},
                                     virtual: true)
@@ -129,10 +129,10 @@ module RGFA::Links
   end
 
   # @!macro link
-  # @raise [RGFA::LineMissingError] if no link is found.
+  # @raise [RGFA::NotFoundError] if no link is found.
   def link!(segment_end1, segment_end2)
     l = link(segment_end1, segment_end2)
-    raise RGFA::LineMissingError,
+    raise RGFA::NotFoundError,
       "No link was found: "+
           "#{segment_end1.to_s} -- "+
           "#{segment_end2.to_s}" if l.nil?
@@ -227,12 +227,12 @@ module RGFA::Links
   # @param [RGFA::CIGAR] cigar shall match if not empty/undef
   # @param equivalent [Boolean] return also equivalent links.
   # @return [RGFA::Line::Link] the first link found
-  # @raise [RGFA::LineMissingError] if no link is found.
+  # @raise [RGFA::NotFoundError] if no link is found.
   def link_from_to!(oriented_segment1, oriented_segment2,
                     cigar = [], equivalent = true)
     l = link_from_to(oriented_segment1, oriented_segment2,
                      cigar, equivalent)
-    raise RGFA::LineMissingError,
+    raise RGFA::NotFoundError,
       "No link was found: "+
           "#{oriented_segment1.join(":")} -> "+
           "#{oriented_segment2.join(":")}" if l.nil?

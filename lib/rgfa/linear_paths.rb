@@ -73,7 +73,7 @@ module RGFA::LinearPaths
     return if segpath.size < 2
     segpath.map!{|se|se.to_segment_end}
     if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
-      raise ArgumentError, "The specified path is not linear"
+      raise RGFA::ValueError, "The specified path is not linear"
     end
     merged, first_reversed, last_reversed =
       create_merged_segment(segpath, options)
@@ -231,7 +231,7 @@ module RGFA::LinearPaths
       elsif l.overlap.all?{|op|[:M, :"="].include?(op.code)}
         cut = l.overlap.map(&:len).inject(:+)
       else
-        raise ArgumentError,
+        raise RGFA::ValueError,
           "Merging is only allowed if all operations are M/="
       end
       total_cut += cut
@@ -247,7 +247,7 @@ module RGFA::LinearPaths
       if merged.LN.nil?
         merged.LN = merged.sequence.length
       elsif @validate and merged.LN != merged.sequence.length
-        raise RGFA::Line::Segment::InconsistentLengthError,
+        raise RGFA::InconsistencyError,
               "Computed sequence length #{merged.sequence.length} "+
               "and computed LN #{merged.LN} differ"
       end

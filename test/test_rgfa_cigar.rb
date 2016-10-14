@@ -15,7 +15,7 @@ class TestRGFACigar < Test::Unit::TestCase
   end
 
   def test_from_string_invalid
-    assert_raises(RGFA::CIGAR::ValueError){"12x1D2I".to_cigar}
+    assert_raises(RGFA::FormatError){"12x1D2I".to_cigar}
   end
 
   def test_to_s_nonempty

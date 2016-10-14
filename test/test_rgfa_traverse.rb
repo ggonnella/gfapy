@@ -14,7 +14,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    assert_raises(ArgumentError) do
+    assert_raises(RGFA::ValueError) do
       gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
     s = ["S\t0\tACGA",
@@ -30,10 +30,10 @@ class TestRGFATraverse < Test::Unit::TestCase
     assert_nothing_raised do
       gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
     end
-    assert_raises(RGFA::LineMissingError) {gfa.segment!("0")}
-    assert_raises(RGFA::LineMissingError) {gfa.segment!("1")}
-    assert_raises(RGFA::LineMissingError) {gfa.segment!("2")}
-    assert_raises(RGFA::LineMissingError) {gfa.segment!("3")}
+    assert_raises(RGFA::NotFoundError) {gfa.segment!("0")}
+    assert_raises(RGFA::NotFoundError) {gfa.segment!("1")}
+    assert_raises(RGFA::NotFoundError) {gfa.segment!("2")}
+    assert_raises(RGFA::NotFoundError) {gfa.segment!("3")}
     assert_nothing_raised {gfa.segment!("0_1_2_3")}
     assert_equal([], gfa.links)
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)

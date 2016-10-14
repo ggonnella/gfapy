@@ -8,12 +8,12 @@ class TestRGFASequence < Test::Unit::TestCase
     assert_equal("gCaTCgatcgt","acgatcGAtGc".rc)
     assert_equal("gcatcnatcgt","acgatngatgc".rc)
     assert_equal("gcatcYatcgt","acgatRgatgc".rc)
-    assert_raises(RuntimeError){"acgatUgatgc".rc}
+    assert_raises(RGFA::InconsistencyError){"acgatUgatgc".rc}
     assert_equal("gcaucgaucgu","acgaucgaugc".rc)
     assert_equal("===.",".===".rc)
-    assert_raises(RuntimeError){"acgatXgatgc".rc}
+    assert_raises(RGFA::ValueError){"acgatXgatgc".rc}
     assert_equal("*","*".rc)
-    assert_raises(RuntimeError){"**".rc}
+    assert_raises(RGFA::ValueError){"**".rc}
   end
 
 end

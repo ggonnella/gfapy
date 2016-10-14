@@ -14,7 +14,7 @@ require_relative "alignment"
 module RGFA::FieldParser
 
   # Parse a string representation of a GFA field value
-  # @raise [RGFA::Error] if the value is not valid
+  # @raise [RGFA::FormatError] if the value is not valid
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
   def parse_gfa_field(datatype: nil,
                       validate_strings: true,
@@ -42,7 +42,7 @@ module RGFA::FieldParser
       return Integer(self)
     when :pos
       value = Integer(self)
-      raise RGFA::FieldParser::FormatError if value < 0
+      raise RGFA::FormatError if value < 0
       return value
     when :f
       return Float(self)
@@ -84,14 +84,14 @@ module RGFA::FieldParser
       end
       return value
     else
-      raise RGFA::FieldParser::UnknownDatatypeError,
+      raise RGFA::TypeError,
         "Datatype unknown: #{datatype.inspect}"
     end
   end
 
   # Parses a tag in the form tagname:datatype:value
   # and parses the value according to the datatype
-  # @raise [RGFA::FieldParser::FormatError] if the string does not represent
+  # @raise [RGFA::FormatError] if the string does not represent
   #   a tag
   # @return [Array(Symbol, RGFA::Line::FIELD_DATATYPE, String)]
   #   the parsed content of the field
@@ -99,18 +99,12 @@ module RGFA::FieldParser
     if self =~ /^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$/
       return $1.to_sym, $2.to_sym, $3
     else
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Expected GFA tag, found: #{self.inspect}"
     end
   end
 
 end
-
-# Error raised if the field content has an invalid format
-class RGFA::FieldParser::FormatError < RGFA::Error; end
-
-# Error raised if an unknown datatype symbol is used
-class RGFA::FieldParser::UnknownDatatypeError < RGFA::Error; end
 
 class String
   include RGFA::FieldParser

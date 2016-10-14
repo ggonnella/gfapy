@@ -11,12 +11,12 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.links[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
     assert_equal("P\t4\t2+,X-\t12M", gfa.paths[0].to_s)
-    assert_raises(RGFA::LineMissingError){gfa.links_of(["0", :E])}
+    assert_raises(RGFA::NotFoundError){gfa.links_of(["0", :E])}
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.links_of(["X", :E])[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.contained_in("1")[0].to_s)
-    assert_raises(RGFA::LineMissingError){gfa.containing("0")}
+    assert_raises(RGFA::NotFoundError){gfa.containing("0")}
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containing("X")[0].to_s)
-    assert_raises(RGFA::LineMissingError){gfa.paths_with("0")}
+    assert_raises(RGFA::NotFoundError){gfa.paths_with("0")}
     assert_equal("P\t4\t2+,X-\t12M", gfa.paths_with("X")[0].to_s)
   end
 
@@ -35,8 +35,8 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)
     assert_equal(c, gfa.containment("1", "0").to_s)
-    assert_raises(RGFA::LineMissingError){gfa.link(["1a", :E], ["2", :B])}
-    assert_raises(RGFA::LineMissingError){gfa.containment("5", "0")}
+    assert_raises(RGFA::NotFoundError){gfa.link(["1a", :E], ["2", :B])}
+    assert_raises(RGFA::NotFoundError){gfa.containment("5", "0")}
     assert_equal(6000, gfa.segment("1").RC)
     gfa.multiply("1", 2)
     assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)

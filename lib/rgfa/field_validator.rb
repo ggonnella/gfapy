@@ -35,16 +35,16 @@ module RGFA::FieldValidator
   # Validates the string according to the provided datatype
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
   # @param fieldname [#to_s] Fieldname to use in the error msg
-  # @raise [RGFA::FieldParser::FormatError] if the string does not match
+  # @raise [RGFA::FormatError] if the string does not match
   #   the regexp for the provided datatype
   # @return [void]
   # @api private
   def validate_gfa_field!(datatype, fieldname=nil)
     regexp = DATASTRING_VALIDATION_REGEXP[datatype]
-    raise RGFA::FieldParser::UnknownDatatypeError if regexp.nil?
+    raise RGFA::TypeError if regexp.nil?
     if (regexp !~ self)
       fieldname ||= "Value"
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Wrong format for field #{fieldname}: \n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
@@ -54,12 +54,12 @@ module RGFA::FieldValidator
 
   # Validates segment names, to check that they do not contain + or -
   # followed by comma
-  # @raise [RGFA::FieldParser::FormatError] if the segment name is invalid
+  # @raise [RGFA::FormatError] if the segment name is invalid
   # @return [void]
   # @api private
   def validate_segment_name!
     if self =~ /.*[+-],.*/
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
       "Segment names are not allowed to contain +/- followed by comma "+
       "(found: #{self})"
     end
@@ -76,12 +76,12 @@ class Object
   #   Validates the object according to the provided datatype
   #   @param datatype [RGFA::Line::FIELD_DATATYPE]
   #   @param fieldname [#to_s] Fieldname to use in the error msg
-  #   @raise [RGFA::FieldParser::FormatError] if the object type or content
+  #   @raise [RGFA::FormatError] if the object type or content
   #     is not compatible to the provided datatype
   #   @return [void]
   #   @api private
   def validate_gfa_field!(datatype, fieldname=nil)
-    raise RGFA::FieldParser::FormatError,
+    raise RGFA::FormatError,
       "Wrong type (#{self.class}) for field #{fieldname}\n"+
       "Content: #{self.inspect}\n"+
       "Datatype: #{datatype}"
@@ -93,7 +93,7 @@ class Symbol
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :lbl and datatype != :orn and
          datatype != :Z and datatype != :crt
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Wrong type (#{self.class}) for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}"
@@ -106,7 +106,7 @@ class Hash
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :J
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Wrong type (#{self.class}) for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}"
@@ -140,13 +140,13 @@ class Array
         return
       end
     rescue => err
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
         "Error: #{err}"
     end
-    raise RGFA::FieldParser::FormatError,
+    raise RGFA::FormatError,
         "Wrong type (#{self.class}) for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}"
@@ -157,7 +157,7 @@ class RGFA::ByteArray
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :H
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -165,7 +165,7 @@ class RGFA::ByteArray
     begin
       validate!
     rescue => err
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
@@ -178,7 +178,7 @@ class RGFA::CIGAR
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :cig and datatype != :aln
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -186,7 +186,7 @@ class RGFA::CIGAR
     begin
       validate!
     rescue => err
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
@@ -199,7 +199,7 @@ class RGFA::Trace
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :aln
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -207,7 +207,7 @@ class RGFA::Trace
     begin
       validate!
     rescue => err
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
@@ -223,7 +223,7 @@ class RGFA::Placeholder
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if !RGFA::Placeholder::DATATYPES.include?(datatype)
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -235,7 +235,7 @@ class RGFA::NumericArray
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :B
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -243,7 +243,7 @@ class RGFA::NumericArray
     begin
       validate!
     rescue => err
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}\n"+
@@ -256,7 +256,7 @@ class Float
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :f and datatype != :Z
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -268,12 +268,12 @@ class Fixnum
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if (datatype == :pos and self < 0)
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Invalid content for field #{fieldname}\n"+
         "Content: #{self.inspect}\n"+
         "Datatype: #{datatype}"
     elsif ![:i, :f, :Z].include?(datatype)
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: #{self.inspect}\n"+
           "Datatype: #{datatype}"
@@ -285,7 +285,7 @@ class RGFA::Line::Segment
   # @!macro validate_gfa_field
   def validate_gfa_field!(datatype, fieldname=nil)
     if datatype != :lbl
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
           "Wrong type (#{self.class}) for field #{fieldname}\n"+
           "Content: <RGFA::Segment:#{self.to_s}>\n"+
           "Datatype: #{datatype}"

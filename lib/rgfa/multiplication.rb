@@ -63,7 +63,7 @@ module RGFA::Multiplication
     if copy_names.kind_of?(Array)
       return copy_names
     elsif !accepted.include?(copy_names)
-      raise ArgumentError,
+      raise RGFA::ArgumentError,
         "copy_names shall be an array of names or one of: "+
         accepted.inspect
     end

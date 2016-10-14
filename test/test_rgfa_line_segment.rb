@@ -17,16 +17,16 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(2321, str.to_rgfa_line.FC)
     assert_equal(1212, str.to_rgfa_line.KC)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "S\tH".to_rgfa_line }
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(RGFA::FormatError) do
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::TypeError) do
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
-    assert_raises(RGFA::Line::Segment::InconsistentLengthError) do
+    assert_raises(RGFA::InconsistencyError) do
       f.join("\t").to_rgfa_line(validate: 3)
     end
     f=["S","2","ACGTCACANNN","LN:i:11"]
@@ -39,10 +39,10 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { "S\tA+B\t*".to_rgfa_line }
     assert_nothing_raised { "S\tA-B\t*".to_rgfa_line }
     assert_nothing_raised { "S\tA,B\t*".to_rgfa_line }
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(RGFA::FormatError) do
       "S\tA+,B\t*".to_rgfa_line
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(RGFA::FormatError) do
       "S\tA-,B\t*".to_rgfa_line
     end
   end
@@ -53,13 +53,13 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(6, l.coverage!)
     l = "S\t0\t*\tRC:i:600".to_rgfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(RGFA::Line::Segment::UndefinedLengthError) {l.coverage!}
+    assert_raises(RGFA::NotFoundError) {l.coverage!}
     l = "S\t0\t*\tLN:i:100".to_rgfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(RGFA::Line::TagMissingError) {l.coverage!}
+    assert_raises(RGFA::NotFoundError) {l.coverage!}
     l = "S\t0\t*\tFC:i:600\tLN:i:100".to_rgfa_line
     assert_equal(nil, l.coverage)
-    assert_raises(RGFA::Line::TagMissingError) {l.coverage!}
+    assert_raises(RGFA::NotFoundError) {l.coverage!}
     assert_equal(6, l.coverage(count_tag: :FC))
     assert_equal(6, l.coverage!(count_tag: :FC))
   end
@@ -68,7 +68,7 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(:+, RGFA::OrientedSegment.invert("-"))
     assert_equal(:-, RGFA::OrientedSegment.invert("+"))
     assert_equal(:-, RGFA::OrientedSegment.invert(:+))
-    assert_raises(RGFA::SegmentInfo::InvalidAttributeError) do
+    assert_raises(RGFA::ValueError) do
       RGFA::OrientedSegment.invert("x")
     end
   end

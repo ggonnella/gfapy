@@ -12,7 +12,7 @@ module RGFA::Containments
       segment_name = gfa_line.send(dir)
       orient = gfa_line.send(:"#{dir}_orient")
       if !@segments.has_key?(segment_name)
-        raise RGFA::LineMissingError if @segments_first_order
+        raise RGFA::NotFoundError if @segments_first_order
         @segments[segment_name] =
           RGFA::Line::Segment.new({:name => segment_name},
                                   virtual: true)
@@ -86,11 +86,11 @@ module RGFA::Containments
   # Raises an exception if no such containment was found.
   #
   # @return [RGFA::Line::Containment]
-  # @raise [RGFA::LineMissingError] if no such containment found
+  # @raise [RGFA::NotFoundError] if no such containment found
   # @!macro container_contained
   def containment!(container, contained)
     c = containment(container, contained)
-    raise RGFA::LineMissingError, "No containment was found" if c.nil?
+    raise RGFA::NotFoundError, "No containment was found" if c.nil?
     c
   end
 

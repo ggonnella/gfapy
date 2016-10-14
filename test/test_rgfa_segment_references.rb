@@ -7,7 +7,7 @@ class TestRGFASegmentReferences < Test::Unit::TestCase
     l = "L\t1\t+\t2\t-\t*".to_rgfa_line
     assert_equal(:"2", l.other(:"1"))
     assert_equal(:"1", l.other(:"2"))
-    assert_raise(RGFA::LineMissingError){l.other(:"0")}
+    assert_raise(RGFA::NotFoundError){l.other(:"0")}
   end
 
   def test_link_circular

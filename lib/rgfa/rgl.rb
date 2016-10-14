@@ -55,7 +55,7 @@ begin
     # Creates an RGL graph, assuming that all links orientations
     # are "+".
     #
-    # @raise [RGFA::RGL::ValueError] if the graph contains any link where
+    # @raise [RGFA::ValueError] if the graph contains any link where
     #   from_orient or to_orient is :-
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
     #   where vertices are RGFA::Segment objects
@@ -66,13 +66,13 @@ begin
           s = segment(s)
           s.links[:from][:+].each do |l|
             if l.to_orient == :-
-              raise RGFA::RGL::ValueError,
+              raise RGFA::ValueError,
                 "Graph contains links with segments in reverse orientations"
             end
             bl.call(segment(l.to))
           end
           if s.links[:from][:-].size > 0
-            raise RGFA::RGL::ValueError,
+            raise RGFA::ValueError,
               "Graph contains links with segments in reverse orientations"
           end
         end
@@ -100,7 +100,7 @@ begin
       #   - String, segment representation (e.g. "S\tsegment\t*")
       #   - String, valid segment name (e.g. "segment")
       #
-      #   @raise [RGFA::RGL::InvalidFormatError] if the graph cannot be
+      #   @raise [RGFA::FormatError] if the graph cannot be
       #     converted
       #
       #   @return [RGFA] a new RGFA instance
@@ -108,11 +108,11 @@ begin
         gfa = RGFA.new
         if not (g.respond_to?(:each_vertex) and
                 g.respond_to?(:each_edge))
-          raise RGFA::RGL::InvalidFormatError,
+          raise RGFA::TypeError,
             "#{g} is not a valid RGL graph"
         end
         if not g.directed?
-          raise RGFA::RGL::InvalidFormatError,
+          raise RGFA::FormatError,
             "#{g} is not a directed graph"
         end
         g.each_vertex {|v| add_segment_if_new(gfa, v)}
@@ -179,12 +179,6 @@ begin
     end
 
   end
-
-  # Exception raised if conversion is impossible due to unexpected values
-  class RGFA::RGL::ValueError < RGFA::Error; end
-
-  # Exception raised if conversion is impossible due to general format problems
-  class RGFA::RGL::InvalidFormatError < RGFA::Error; end
 
 rescue LoadError
 

@@ -27,7 +27,7 @@ class String
           if allow_traces
             return self.to_trace
           else
-            raise RGFA::FieldParser::FormatError,
+            raise RGFA::FormatError,
               "Trace alignments are not allowed in GFA1: #{self.inspect}"
           end
         elsif char =~ /[MIDP]/
@@ -36,7 +36,7 @@ class String
       end
       break
     end
-    raise RGFA::FieldParser::FormatError,
+    raise RGFA::FormatError,
       "Alignment field contains invalid data: #{self.inspect}"
   end
 end
@@ -53,13 +53,13 @@ class Array
       if allow_traces
         return RGFA::Trace.new(self)
       else
-        raise RGFA::FieldParser::FormatError,
+        raise RGFA::FormatError,
           "Trace alignments are not allowed in GFA1: #{self.inspect}"
       end
     elsif self[0].kind_of?(RGFA::CIGAR::Operation)
       return RGFA::CIGAR.new(self)
     else
-      raise RGFA::FieldParser::FormatError,
+      raise RGFA::FormatError,
         "Array does not represent a valid alignment field: #{self.inspect}"
     end
   end

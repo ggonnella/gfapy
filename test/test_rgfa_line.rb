@@ -13,7 +13,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_too_many_positionals
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Segment.new(["1","*","*"])
     end
   end
@@ -28,13 +28,13 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_wrong_tag_format
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Header.new(["VN i:1"])
     end
   end
 
   def test_initialize_positional_field_type_error
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Segment.new(["1\t1","*","*"])
     end
   end
@@ -120,12 +120,12 @@ class TestRGFALine < Test::Unit::TestCase
   def test_field_getters_not_existing_tags
     l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"])
     assert_equal(nil, l.zz)
-    assert_raise(RGFA::Line::TagMissingError) { l.zz! }
+    assert_raise(RGFA::NotFoundError) { l.zz! }
   end
 
   def test_field_setters_positional_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
-    assert_raise(RGFA::FieldParser::FormatError) { l.name = "A\t1";
+    assert_raise(RGFA::FormatError) { l.name = "A\t1";
                                                    l.validate_field!(:name) }
     l.name = "14"
     assert_equal(:"14", l.name)
@@ -136,7 +136,7 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)
-    assert_raise(RGFA::FieldParser::FormatError) { l.xx = "1A" }
+    assert_raise(RGFA::FormatError) { l.xx = "1A" }
     assert_nothing_raised { l.set_datatype(:xx, :Z); l.xx = "1A" }
     assert_equal("HI", l.VN)
     l.VN = "HO"
@@ -183,7 +183,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_unknown_record_type
-    assert_raise(RGFA::Line::UnknownRecordTypeError) {
+    assert_raise(RGFA::TypeError) {
       "Z\txxx".to_rgfa_line(version: :"1.0")}
     assert_nothing_raised {
       "Z\txxx".to_rgfa_line(version: :"2.0")}

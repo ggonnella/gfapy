@@ -1,3 +1,5 @@
+require_relative "error"
+
 #
 # Extensions of the String class to handle nucleotidic sequences
 #
@@ -14,9 +16,9 @@ module RGFA::Sequence
   #   if true, any A and a is complemented into u and U; otherwise
   #   it is so, only if an U is found; otherwise DNA is assumed
   #
-  # @raise [RuntimeError] if not +tolerant+ and chars are found for which
+  # @raise [RGFA::ValueError] if not +tolerant+ and chars are found for which
   #   no Watson-Crick complement is defined
-  # @raise [RuntimeError] if sequence contains both U and T
+  # @raise [RGFA::InconsistencyError] if sequence contains both U and T
   #
   # @example
   #  "ACTG".rc  # => "CAGT"
@@ -35,10 +37,12 @@ module RGFA::Sequence
       if c == "U" or c == "u"
         rnasequence = true
       elsif rnasequence and (c == "T" or c == "t")
-        raise "String contains both U/u and T/t"
+        raise RGFA::InconsistencyError, "String contains both U/u and T/t"
       end
       wcc = WCC.fetch(c, tolerant ? c : nil)
-      raise "#{self}: no Watson-Crick complement for #{c}" if wcc.nil?
+      if wcc.nil?
+        raise RGFA::ValueError, "#{self}: no Watson-Crick complement for #{c}"
+      end
       wcc
     end.reverse.join
     if rnasequence

@@ -44,10 +44,10 @@ class RGFA::CIGAR < Array
   # use is deprecated.
   #
   # @return [RGFA::CIGAR]
-  # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
+  # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
   def self.from_string(str)
     a = RGFA::CIGAR.new
-    raise RGFA::CIGAR::ValueError if str !~ /^([0-9]+[MIDNSHPX=])+$/
+    raise RGFA::FormatError if str !~ /^([0-9]+[MIDNSHPX=])+$/
     str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
       len = op[0..-2].to_i
       code = op[-1..-1].to_sym
@@ -90,9 +90,6 @@ class RGFA::CIGAR < Array
 
 end
 
-# Exception raised by invalid CIGAR string content
-class RGFA::CIGAR::ValueError < RGFA::Error; end
-
 # An operation in a CIGAR string
 class RGFA::CIGAR::Operation
 
@@ -128,12 +125,12 @@ class RGFA::CIGAR::Operation
 
   # Validate the operation
   # @return [void]
-  # @raise [RGFA::CIGAR::ValueError] if the code is invalid or the length is not
+  # @raise [RGFA::ValueError] if the code is invalid or the length is not
   #   an integer larger than zero
   def validate!
     if Integer(len) <= 0 or
          !RGFA::CIGAR::Operation::CODE.include?(code)
-      raise RGFA::CIGAR::ValueError
+      raise RGFA::ValueError
     end
   end
 
@@ -159,7 +156,7 @@ end
 class String
   # Parse CIGAR string
   # @return [RGFA::CIGAR,RGFA::Placeholder] CIGAR or Placeholder (if +*+)
-  # @raise [RGFA::CIGAR::ValueError] if the string is not a valid CIGAR string
+  # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
   def to_cigar
     if self == "*"
       return RGFA::Placeholder.new

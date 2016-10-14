@@ -10,10 +10,10 @@ class TestRGFATrace < Test::Unit::TestCase
 
   def test_validation
     assert_nothing_raised{"12,12,12".to_trace.validate!}
-    assert_raises(RGFA::Trace::RangeError){
+    assert_raises(RGFA::ValueError){
                                     "12,12,12".to_trace.validate!(ts: 10)}
-    assert_raises(RGFA::Trace::RangeError){"12,-12,12".to_trace.validate!}
-    assert_raises(RGFA::Trace::TypeError){
+    assert_raises(RGFA::ValueError){"12,-12,12".to_trace.validate!}
+    assert_raises(RGFA::TypeError){
                                  RGFA::Trace.new(["12x",12,12]).validate!}
   end
 

@@ -19,12 +19,12 @@ class TestRGFALinePath < Test::Unit::TestCase
                   [RGFA::CIGAR::Operation.new(12,:M)]],
                  str.to_rgfa_line.overlaps)
     assert_equal("abcd", str.to_rgfa_line.ab)
-    assert_raises(RGFA::FieldParser::FormatError) { (str+"\tH1").to_rgfa_line }
+    assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "P\tH".to_rgfa_line }
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(RGFA::FormatError) do
       f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::Line::Path::ListLengthsError) do
+    assert_raises(RGFA::InconsistencyError) do
       f=fields.dup; f[2]="1+"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_nothing_raised do
@@ -37,10 +37,10 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_nothing_raised do
       f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::FieldParser::FormatError) do
+    assert_raises(RGFA::FormatError) do
       f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(validate: 3)
     end
-    assert_raises(RGFA::CIGAR::ValueError) do
+    assert_raises(RGFA::FormatError) do
       f=fields.dup; f[3]="12M|12M"; f.join("\t").to_rgfa_line(validate: 3)
     end
   end

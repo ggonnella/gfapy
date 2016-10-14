@@ -104,12 +104,12 @@ class RGFA::Line::Segment < RGFA::Line
     all_connections + all_paths
   end
 
-  # @raise [RGFA::Line::Segment::InconsistentLengthError]
+  # @raise [RGFA::InconsistencyError]
   #    if sequence length and LN tag are not consistent.
   def validate_length!
     if sequence != "*" and tagnames.include?(:LN)
       if self.LN != sequence.length
-        raise RGFA::Line::Segment::InconsistentLengthError,
+        raise RGFA::InconsistencyError,
           "Length in LN tag (#{self.LN}) "+
           "is different from length of sequence field (#{sequence.length})"
       end
@@ -133,12 +133,12 @@ class RGFA::Line::Segment < RGFA::Line
 
   # @!macro length
   # @!macro [new] length_needed
-  #   @raise [RGFA::Line::Segment::UndefinedLengthError] if not an LN tag and
+  #   @raise [RGFA::NotFoundError] if not an LN tag and
   #     the sequence is "*"
   # @see #length
   def length!
     l = self.length()
-    raise RGFA::Line::Segment::UndefinedLengthError,
+    raise RGFA::NotFoundError,
       "No length information available" if l.nil?
     return l
   end
@@ -165,13 +165,13 @@ class RGFA::Line::Segment < RGFA::Line
 
   # @see #coverage
   # @!macro coverage
-  # @raise [RGFA::Line::TagMissingError] if segment does not have count_tag
+  # @raise [RGFA::NotFoundError] if segment does not have count_tag
   # @!macro length_needed
   def coverage!(count_tag: :RC, unit_length: 1)
     c = coverage(count_tag: count_tag, unit_length: unit_length)
     if c.nil?
       self.length!
-      raise RGFA::Line::TagMissingError,
+      raise RGFA::NotFoundError,
         "Tag #{count_tag} undefined for segment #{name}"
     else
       return c
@@ -205,8 +205,3 @@ class RGFA::Line::Segment < RGFA::Line
 
 end
 
-# Error raised if length of segment cannot be computed
-class RGFA::Line::Segment::UndefinedLengthError < RGFA::Error; end
-
-# Error raised if length of segment and LN are not consistent
-class RGFA::Line::Segment::InconsistentLengthError < RGFA::Error; end

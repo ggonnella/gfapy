@@ -40,8 +40,8 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(s1, gfa.segment("1"))
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
-    assert_raises(RGFA::LineMissingError) { gfa.segment!("0") }
-    assert_raises(RGFA::DuplicatedLabelError) { gfa << s2 }
+    assert_raises(RGFA::NotFoundError) { gfa.segment!("0") }
+    assert_raises(RGFA::NotUniqueError) { gfa << s2 }
   end
 
   def test_add_links
@@ -58,7 +58,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(l1, gfa.link(["2", :B], ["1", :E]))
     assert_equal(nil, gfa.link(["2", :E], ["1", :B]))
     assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
-    assert_raises(RGFA::LineMissingError) {gfa.link!(["2", :E], ["1", :B])}
+    assert_raises(RGFA::NotFoundError) {gfa.link!(["2", :E], ["1", :B])}
     assert_nothing_raised { gfa << l2 }
   end
 
@@ -74,7 +74,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal([c1], gfa.containments)
     assert_equal(c1, gfa.containment("1", "2"))
     assert_nothing_raised {gfa.containment!("1",  "2")}
-    assert_raises(RGFA::LineMissingError) {gfa.containment!("2", "1")}
+    assert_raises(RGFA::NotFoundError) {gfa.containment!("2", "1")}
     assert_nothing_raised { gfa << c2 }
   end
 
@@ -93,8 +93,8 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(p1, gfa.path("4"))
     assert_equal(nil, gfa.path("5"))
     assert_nothing_raised {gfa.path!("4")}
-    assert_raises(RGFA::LineMissingError) {gfa.path!("5")}
-    assert_raises(RGFA::DuplicatedLabelError) { gfa << p2 }
+    assert_raises(RGFA::NotFoundError) {gfa.path!("5")}
+    assert_raises(RGFA::NotUniqueError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
   end
 
@@ -113,12 +113,12 @@ class TestRGFALineCreators < Test::Unit::TestCase
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << l1 }
-    assert_raises(RGFA::LineMissingError) { gfa << l2 }
+    assert_raises(RGFA::NotFoundError) { gfa << l2 }
     assert_nothing_raised { gfa << c1 }
-    assert_raises(RGFA::LineMissingError) { gfa << c2 }
+    assert_raises(RGFA::NotFoundError) { gfa << c2 }
     assert_nothing_raised { gfa << p1 }
-    assert_raises(RGFA::DuplicatedLabelError) { gfa << p2 }
-    assert_raises(RGFA::LineMissingError) { gfa << p3 }
+    assert_raises(RGFA::NotUniqueError) { gfa << p2 }
+    assert_raises(RGFA::NotFoundError) { gfa << p3 }
   end
 
   def test_header_add

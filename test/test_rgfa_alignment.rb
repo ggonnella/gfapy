@@ -19,7 +19,7 @@ class TestRGFAAlignment < Test::Unit::TestCase
   end
 
   def test_from_string_invalid
-    assert_raises(RGFA::FieldParser::FormatError){"12x1,D2I".to_alignment}
+    assert_raises(RGFA::FormatError){"12x1,D2I".to_alignment}
   end
 
   def test_from_array_cigar
@@ -37,7 +37,7 @@ class TestRGFAAlignment < Test::Unit::TestCase
   end
 
   def test_from_array_invalid
-    assert_raises(RGFA::FieldParser::FormatError){["12x1","2I"].to_alignment}
+    assert_raises(RGFA::FormatError){["12x1","2I"].to_alignment}
   end
 
 end

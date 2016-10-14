@@ -20,7 +20,7 @@ class TestRGFALineVersion < Test::Unit::TestCase
     assert_equal(:"2.0", "S\tA\t1\tNNNN".to_rgfa_line.version)
     assert_equal(:"1.0", "S\tA\tNNNN".to_rgfa_line(version: :"1.0").version)
     assert_equal(:"2.0", "S\tA\t1\tNNNN".to_rgfa_line(version: :"2.0").version)
-    assert_raises(RGFA::FieldParser::FormatError){
+    assert_raises(RGFA::FormatError){
       "S\tA\t1\tNNNN".to_rgfa_line(version: :"1.0")}
     assert_raises(RGFA::FormatError){
       "S\tA\tNNNN".to_rgfa_line(version: :"2.0")}
@@ -49,7 +49,7 @@ class TestRGFALineVersion < Test::Unit::TestCase
   def test_custom_record
     assert_equal(:"2.0", "X\tVN:Z:1.0".to_rgfa_line.version)
     assert_equal(:"2.0", "X\tVN:Z:1.0".to_rgfa_line(version: :"2.0").version)
-    assert_raises(RGFA::Line::UnknownRecordTypeError){
+    assert_raises(RGFA::TypeError){
       "X\tVN:Z:1.0".to_rgfa_line(version: :"1.0")}
     assert_raises(RGFA::VersionError){
       RGFA::Line::CustomRecord.new(["X","VN:Z:1.0"], version: :"1.0")}

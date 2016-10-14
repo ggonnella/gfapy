@@ -9,7 +9,7 @@ module RGFA::Segments
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     segment_name = gfa_line.name
     if @paths.has_key?(segment_name)
-      raise RGFA::DuplicatedLabelError,
+      raise RGFA::NotUniqueError,
         "Error when adding line: #{gfa_line}\n"+
         "a path already exists with the name: #{segment_name}\n"+
         "Path: #{@paths[segment_name]}"
@@ -17,7 +17,7 @@ module RGFA::Segments
       if @segments[segment_name].virtual?
         @segments[segment_name].real!(gfa_line)
       else
-        raise RGFA::DuplicatedLabelError,
+        raise RGFA::NotUniqueError,
           "Error when adding line: #{gfa_line}\n"+
           "a segment already exists with the name: #{segment_name}\n"+
           "Segment: #{@segments[segment_name]}"
@@ -61,11 +61,11 @@ module RGFA::Segments
   end
 
   # @!macro segment
-  # @raise [RGFA::LineMissingError] if no such segment exists
+  # @raise [RGFA::NotFoundError] if no such segment exists
   def segment!(s)
     seg = segment(s)
     if seg.nil?
-      raise RGFA::LineMissingError, "No segment has name #{s}"+
+      raise RGFA::NotFoundError, "No segment has name #{s}"+
              "#{segment_names.size < 10 ?
                "\nSegment names: "+segment_names.inspect : ''}"
     end

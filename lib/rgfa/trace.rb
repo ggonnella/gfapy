@@ -20,25 +20,25 @@ class RGFA::Trace < Array
   #   integer is specified, it will be checked that all values are < +ts+; if
   #   +nil+, then this check is skipped
   #
-  # @raise [RGFA::Trace::TypeError] if the array contains non-integer values
-  # @raise [RGFA::Trace::RangeError] if the array contains values < 0 or > +ts+
+  # @raise [RGFA::TypeError] if the array contains non-integer values
+  # @raise [RGFA::ValueError] if the array contains values < 0 or > +ts+
   #
   # @return [void]
   #
   def validate!(ts: nil)
     each do |e|
       if !e.kind_of?(Integer)
-        raise RGFA::Trace::TypeError,
+        raise RGFA::TypeError,
           "Trace contains non-integer values (#{e} found)\n"+
           "Content: #{inspect}"
       end
       if e < 0
-        raise RGFA::Trace::RangeError,
+        raise RGFA::ValueError,
           "Trace contains value < 0 (#{e} found)\n"+
           "Content: #{inspect}"
       end
       if !ts.nil? and e > ts
-        raise RGFA::Trace::RangeError,
+        raise RGFA::ValueError,
           "Trace contains value > TS (#{e} found, TS=#{ts})\n"+
         "Content: #{inspect}"
       end
@@ -65,12 +65,6 @@ class RGFA::Trace < Array
   end
 
 end
-
-# Error raised when values in a trace are not integers
-class RGFA::Trace::TypeError < RGFA::Error; end
-
-# Error raised when values in a trace are out of range
-class RGFA::Trace::RangeError < RGFA::Error; end
 
 class String
   # Parse trace string

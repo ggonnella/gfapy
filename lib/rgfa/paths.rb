@@ -8,12 +8,12 @@ module RGFA::Paths
   def add_path(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     if @segments.has_key?(gfa_line.path_name)
-      raise RGFA::DuplicatedLabelError,
+      raise RGFA::NotUniqueError,
         "Error when adding line: #{gfa_line}\n"+
         "a segment already exists with the name: #{gfa_line.path_name}\n"+
         "Segment: #{@segments[gfa_line.path_name]}"
     elsif @paths.has_key?(gfa_line.path_name)
-      raise RGFA::DuplicatedLabelError,
+      raise RGFA::NotUniqueError,
         "Error when adding line: #{gfa_line}\n"+
         "a path already exists with the name: #{gfa_line.path_name}\n"+
         "Path: #{@paths[gfa_line.path_name]}"
@@ -33,7 +33,7 @@ module RGFA::Paths
                                    virtual: true,
                                    version: :"1.0")
           if @segments_first_order
-            raise RGFA::LineMissingError, "Path: #{gfa_line}\n"+
+            raise RGFA::NotFoundError, "Path: #{gfa_line}\n"+
               "requires a non-existing link:\n"+
               "#{v}"
           end
@@ -81,10 +81,10 @@ module RGFA::Paths
   end
 
   # @!macro path
-  # @raise [RGFA::LineMissingError] if no such path exists in the RGFA instance
+  # @raise [RGFA::NotFoundError] if no such path exists in the RGFA instance
   def path!(pt)
     pt = path(pt)
-    raise RGFA::LineMissingError, "No path has name #{pt}" if pt.nil?
+    raise RGFA::NotFoundError, "No path has name #{pt}" if pt.nil?
     pt
   end
 

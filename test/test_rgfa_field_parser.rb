@@ -6,21 +6,21 @@ class TestRGFAFieldParser < Test::Unit::TestCase
   def test_parse_gfa_tag
     o = "AA:i:1"
     assert_equal([:AA,:i,"1"], o.parse_gfa_tag)
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       "1A:A:A".parse_gfa_tag
     end
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       "_A:A:A".parse_gfa_tag
     end
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       "A:A:A".parse_gfa_tag
     end
-    assert_raise(RGFA::FieldParser::FormatError) do
+    assert_raise(RGFA::FormatError) do
       "AAA:A:A".parse_gfa_tag
     end
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:C:1".parse_gfa_tag}
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:AA:1".parse_gfa_tag}
-    assert_raise(RGFA::FieldParser::FormatError) {"AA:a:1".parse_gfa_tag}
+    assert_raise(RGFA::FormatError) {"AA:C:1".parse_gfa_tag}
+    assert_raise(RGFA::FormatError) {"AA:AA:1".parse_gfa_tag}
+    assert_raise(RGFA::FormatError) {"AA:a:1".parse_gfa_tag}
   end
 
   def test_parse_gfa_field_A

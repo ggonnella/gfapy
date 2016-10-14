@@ -31,7 +31,7 @@ class RGFA::FieldArray < Array
   end
 
   # Add a value to the array and validate
-  # @raise [RGFA::FieldArray::TypeMismatchError] if the type
+  # @raise [RGFA::InconsistencyError] if the type
   #   of the new value does not correspond to the type of
   #   existing values
   # @param value [Object] the value to add
@@ -46,7 +46,7 @@ class RGFA::FieldArray < Array
     if type.nil?
       value.validate_gfa_field!(@datatype, fieldname)
     elsif type != @datatype
-      raise RGFA::FieldArray::TypeMismatchError,
+      raise RGFA::InconsistencyError,
         "Datatype mismatch error for field #{fieldname}:\n"+
         "value: #{value}\n"+
         "existing datatype: #{@datatype};\n"+
@@ -55,12 +55,6 @@ class RGFA::FieldArray < Array
     self << value
   end
 end
-
-# Generic error associated with field arrays
-class RGFA::FieldArray::Error < RGFA::Error; end
-
-# Error raised when trying to add elements with a wrong datatype
-class RGFA::FieldArray::TypeMismatchError < RGFA::Error; end
 
 class Array
   # Is this possibly a {RGFA::FieldArray} instance?
@@ -79,7 +73,7 @@ class Array
     if self.rgfa_field_array?
       RGFA::FieldArray.new(self[-2].to_sym, self[0..-3])
     elsif datatype.nil?
-      raise RGFA::FieldArray::Error, "no datatype specified"
+      raise RGFA::ArgumentError, "No datatype specified"
     else
       RGFA::FieldArray.new(datatype, self)
     end

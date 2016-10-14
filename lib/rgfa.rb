@@ -348,11 +348,11 @@ class RGFA
 
   # Checks that L, C and P refer to existing S.
   # @return [void]
-  # @raise [RGFA::LineMissingError] if validation fails
+  # @raise [RGFA::NotFoundError] if validation fails
   def validate_segment_references!
     @segments.values.each do |s|
       if s.virtual?
-        raise RGFA::LineMissingError, "Segment #{s.name} does not exist\n"+
+        raise RGFA::NotFoundError, "Segment #{s.name} does not exist\n"+
             "References to #{s.name} were found in the following lines:\n"+
               s.all_references.map(&:to_s).join("\n")
       end
@@ -367,7 +367,7 @@ class RGFA
     @paths.values.each do |pt|
       pt.links.each do |l, dir|
         if l.virtual?
-          raise RGFA::LineMissingError, "Link: #{l.to_s}\n"+
+          raise RGFA::NotFoundError, "Link: #{l.to_s}\n"+
           "does not exist, but is required by the paths:\n"+
           l.paths.map{|pt2, dir2|pt2.to_s}.join("\n")
         end

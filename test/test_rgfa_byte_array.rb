@@ -15,7 +15,7 @@ class TestRGFAByteArray < Test::Unit::TestCase
     assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,5]) }
     assert_nothing_raised { a.validate! }
     assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,356]) }
-    assert_raises(RGFA::ByteArray::ValueError) { a.validate! }
+    assert_raises(RGFA::ValueError) { a.validate! }
   end
 
   def test_from_string
@@ -23,9 +23,9 @@ class TestRGFAByteArray < Test::Unit::TestCase
     assert_nothing_raised { a = "12ACF4AA601C1F".to_byte_array }
     b = [18, 172, 244, 170, 96, 28, 31].to_byte_array
     assert_equal(b, a)
-    assert_raises(RGFA::ByteArray::FormatError) {
+    assert_raises(RGFA::FormatError) {
       a = "12ACF4AA601C1".to_byte_array }
-    assert_raises(RGFA::ByteArray::FormatError) {
+    assert_raises(RGFA::FormatError) {
       a = "".to_byte_array }
     assert_raises(ArgumentError) { a = "12ACG4AA601C1F".to_byte_array }
   end
@@ -35,7 +35,7 @@ class TestRGFAByteArray < Test::Unit::TestCase
     b = "12ACF4AA601C1F"
     assert_equal(b, a.to_s)
     a = [18, 172, 280, 170, 96, 28, 31].to_byte_array
-    assert_raises(RGFA::ByteArray::ValueError) { a.to_s }
+    assert_raises(RGFA::ValueError) { a.to_s }
   end
 
 end

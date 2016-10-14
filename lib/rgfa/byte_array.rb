@@ -7,13 +7,13 @@ require_relative "error.rb"
 class RGFA::ByteArray < Array
 
   # Validates the byte array content
-  # @raise [RGFA::ByteArray::ValueError] if any value is not a
+  # @raise [RGFA::ValueError] if any value is not a
   #   positive integer <= 255
   # @return [void]
   def validate!
     each do |x|
       unless x.kind_of?(Integer) and (0..255).include?(x)
-        raise RGFA::ByteArray::ValueError,
+        raise RGFA::ValueError,
           "Value incompatible with byte array: #{x.inspect}\n"+
           "in array: #{self.inspect}"
       end
@@ -29,7 +29,7 @@ class RGFA::ByteArray < Array
   end
 
   # GFA datatype H representation of the byte array
-  # @raise [RGFA::ByteArray::ValueError] if the
+  # @raise [RGFA::ValueError] if the
   #   array is not a valid byte array
   # @return [String]
   def to_s
@@ -41,12 +41,6 @@ class RGFA::ByteArray < Array
   end
 
 end
-
-# Exception raised if any value is not a positive integer <= 255
-class RGFA::ByteArray::ValueError < RGFA::Error; end
-
-# Exception raised if string is not a valid representation of byte array
-class RGFA::ByteArray::FormatError < RGFA::Error; end
 
 # Method to create a RGFA::ByteArray from an Array
 class Array
@@ -61,11 +55,11 @@ end
 class String
   # Convert a GFA string representation of a byte array to a byte array
   # @return [RGFA::ByteArray] the byte array
-  # @raise [RGFA::ByteArray::FormatError] if the string size is not > 0
+  # @raise [RGFA::FormatError] if the string size is not > 0
   #   and even
   def to_byte_array
     if (size < 2) or (size % 2 == 1)
-      raise RGFA::ByteArray::FormatError,
+      raise RGFA::FormatError,
         "Invalid byte array string #{self}; "+
         "each element must be represented by two letters [0-9A-F]"
     end

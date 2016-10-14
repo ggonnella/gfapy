@@ -183,7 +183,7 @@ class RGFA::Line
 
   # Select a subclass based on the record type
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
-  # @raise [RGFA::Line::UnknownRecordTypeError] if the record_type is not valid
+  # @raise [RGFA::TypeError] if the record_type is not valid
   # @raise [RGFA::VersionError] if the version is unknown
   # @return [Class] a subclass of RGFA::Line
   def self.subclass(record_type, version: nil)
@@ -208,7 +208,7 @@ class RGFA::Line
     when :L then RGFA::Line::Link
     when :C then RGFA::Line::Containment
     when :P then RGFA::Line::Path
-    else raise RGFA::Line::UnknownRecordTypeError,
+    else raise RGFA::TypeError,
           "Record type unknown: '#{record_type}'"
     end
   end
@@ -352,7 +352,7 @@ class RGFA::Line
   # the field type
   #
   # @param fieldname [Symbol] the tag name of the field to validate
-  # @raise [RGFA::FieldParser::FormatError] if the content of the field is
+  # @raise [RGFA::FormatError] if the content of the field is
   #   not valid, according to its required type
   # @return [void]
   def validate_field!(fieldname)
@@ -431,7 +431,7 @@ class RGFA::Line
   #
   # @param fieldname [Symbol] the name of the field to set
   #   (positional field, predefined tag (uppercase) or custom tag (lowercase))
-  # @raise [RGFA::Line::FieldnameError] if +fieldname+ is not a
+  # @raise [RGFA::FormatError] if +fieldname+ is not a
   #   valid predefined or custom tag name (and +validate[:tags]+)
   # @return [Object] +value+
   def set(fieldname, value)
@@ -448,7 +448,7 @@ class RGFA::Line
         return @data[fieldname] = value
       end
     else
-      raise RGFA::Line::FieldnameError,
+      raise RGFA::FormatError,
         "#{fieldname} is not an existing or predefined field or a "+
         "valid custom tag"
     end
@@ -484,11 +484,11 @@ class RGFA::Line
 
   # Value of a field, raising an exception if it is not defined
   # @param fieldname [Symbol] name of the field
-  # @raise [RGFA::Line::TagMissingError] if field is not defined
+  # @raise [RGFA::NotFoundError] if field is not defined
   # @return [Object,nil] value of the field
   def get!(fieldname)
     v = get(fieldname)
-    raise RGFA::Line::TagMissingError,
+    raise RGFA::NotFoundError,
       "No value defined for tag #{fieldname}" if v.nil?
     return v
   end
@@ -517,7 +517,7 @@ class RGFA::Line
   # - (String, Hash, Array, Integer, Float) the parsed content of the field
   #
   # <b>Raises:</b>
-  # - (RGFA::Line::TagMissingError) if the field does not exist
+  # - (RGFA::NotFoundError) if the field does not exist
   #
   # ---
   #
@@ -563,7 +563,7 @@ class RGFA::Line
       when :get
         return nil
       when :get!
-        raise RGFA::Line::TagMissingError,
+        raise RGFA::NotFoundError,
           "No value defined for tag #{field_name}"
       when :set
         set(field_name, args[0])
@@ -604,7 +604,7 @@ class RGFA::Line
   end
 
   # Validate the RGFA::Line instance
-  # @raise [RGFA::FieldParser::FormatError] if any field content is not valid
+  # @raise [RGFA::FormatError] if any field content is not valid
   # @return [void]
   def validate!
     fieldnames.each {|fieldname| validate_field!(fieldname) }
@@ -809,18 +809,6 @@ class RGFA::Line
   end
 
 end
-
-# Error raised if the record_type is not one of RGFA::Line::RECORD_TYPES
-class RGFA::Line::UnknownRecordTypeError      < RGFA::Error;     end
-
-# Error raised if an invalid datatype symbol is found
-class RGFA::Line::UnknownDatatype             < RGFA::Error;     end
-
-# Error raised if an invalid fieldname symbol is found
-class RGFA::Line::FieldnameError              < RGFA::Error;     end
-
-# Error raised if tag is not present
-class RGFA::Line::TagMissingError             < RGFA::Error; end
 
 #
 # Require the child classes

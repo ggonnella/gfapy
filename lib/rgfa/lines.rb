@@ -51,9 +51,9 @@ module RGFA::Lines
   #   @param [String] gfa_line_string representation of a RGFA line
   # @overload <<(gfa_line)
   #   @param [RGFA::Line] gfa_line instance of a subclass of RGFA::Line
-  # @raise [RGFA::DuplicatedLabelError] if multiple segment or path lines
+  # @raise [RGFA::NotUniqueError] if multiple segment or path lines
   #   with the same name are added
-  # @raise [ArgumentError] if the argument is not a RGFA::Line or String
+  # @raise [RGFA::ArgumentError] if the argument is not a RGFA::Line or String
   # @return [RGFA] self
   def <<(gfa_line)
     case version
@@ -75,7 +75,8 @@ module RGFA::Lines
     elsif gfa_line.kind_of?(RGFA::Line)
       rt = gfa_line.record_type
     else
-      raise ArgumentError, "Only strings and RGFA::Line instances can be added"
+      raise RGFA::ArgumentError,
+        "Only strings and RGFA::Line instances can be added"
     end
     case rt
     when :"#"
@@ -137,7 +138,8 @@ module RGFA::Lines
     when :P
       add_path(gfa_line)
     else
-      raise RGFA::Error, "Invalid record type #{rt}" # should be unreachable
+      raise RGFA::TypeError,
+        "Invalid record type #{rt}" # should be unreachable
     end
   end
   private :add_line_GFA1
@@ -211,10 +213,11 @@ module RGFA::Lines
   # @return [RGFA] self
   def rm(x, *args)
     if x.kind_of?(RGFA::Line)
-      raise ArgumentError,
+      raise RGFA::ArgumentError,
         "One argument required if first RGFA::Line" if !args.empty?
       case x.record_type
-      when :H then raise ArgumentError, "Cannot remove single header lines"
+      when :H then raise RGFA::ArgumentError,
+                           "Cannot remove single header lines"
       when :S then delete_segment(x)
       when :P then delete_path(x)
       when :L then delete_link(x)
@@ -225,29 +228,30 @@ module RGFA::Lines
     elsif x.kind_of?(Symbol)
       if @segments.has_key?(x)
         if !args.empty?
-          raise ArgumentError, "One arguments required if first segment name"
+          raise RGFA::ArgumentError,
+            "One arguments required if first segment name"
         end
         delete_segment(x)
       elsif @paths.has_key?(x)
         if !args.empty?
-          raise ArgumentError, "One argument required if first path name"
+          raise RGFA::ArgumentError, "One argument required if first path name"
         end
         delete_path(x)
       elsif x == :headers
         if !args.empty?
-          raise ArgumentError, "One argument required if first :headers"
+          raise RGFA::ArgumentError, "One argument required if first :headers"
         end
         delete_headers
       elsif x == :comments
         if !args.empty?
-          raise ArgumentError, "One argument required if first :comments"
+          raise RGFA::ArgumentError, "One argument required if first :comments"
         end
         delete_comments
       else
         if respond_to?(x)
           rm(send(x, *args))
         else
-          raise ArgumentError, "Cannot remove #{x.inspect}"
+          raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
         end
       end
     elsif x.kind_of?(String)
@@ -257,7 +261,7 @@ module RGFA::Lines
     elsif x.nil?
       return self
     else
-      raise ArgumentError, "Cannot remove #{x.inspect}"
+      raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
     end
     return self
   end
@@ -267,7 +271,7 @@ module RGFA::Lines
   # @param old_name [String] the name of the segment or path to rename
   # @param new_name [String] the new name for the segment or path
   #
-  # @raise[RGFA::DuplicatedLabelError]
+  # @raise[RGFA::NotUniqueError]
   #   if +new_name+ is already a segment or path name
   # @return [RGFA] self
   def rename(old_name, new_name)
@@ -278,12 +282,12 @@ module RGFA::Lines
     if s.nil?
       pt = path(old_name)
       if pt.nil?
-        raise RGFA::LineMissingError,
+        raise RGFA::NotFoundError,
           "#{old_name} is not a path or segment name"
       end
     end
     if segment(new_name) or path(new_name)
-      raise RGFA::DuplicatedLabelError,
+      raise RGFA::NotUniqueError,
         "#{new_name} is already a path or segment name"
     end
     if s
@@ -310,10 +314,3 @@ module RGFA::Lines
   end
 
 end
-
-# Exception raised if a label for segment or path is duplicated
-class RGFA::DuplicatedLabelError < RGFA::Error; end
-
-# The error raised by banged line finders if no line respecting the criteria
-# exist in the RGFA
-class RGFA::LineMissingError < RGFA::Error; end

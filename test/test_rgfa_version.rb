@@ -89,7 +89,7 @@ class TestRGFAVersion < Test::Unit::TestCase
     sv2 = "S\tB\t100\t*"
     gfa = RGFA.new()
     gfa << sv1
-    assert_raises(RGFA::FieldParser::FormatError) { gfa << sv2 }
+    assert_raises(RGFA::FormatError) { gfa << sv2 }
   end
 
   def test_GFA1_segment_in_GFA2
