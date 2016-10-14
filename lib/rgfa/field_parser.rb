@@ -18,29 +18,26 @@ module RGFA::FieldParser
   # @param datatype [RGFA::Line::FIELD_DATATYPE]
   def parse_gfa_field(datatype: nil,
                       validate_strings: true,
-                      fieldname: nil,
-                      frozen: false)
+                      fieldname: nil)
     case datatype
     when :any
       return self
     when :A, :Z
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
-      self.freeze if frozen
       return self
     when :seq
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       value = self.to_sequence
-      value.freeze if frozen
       return value
     when :crt
-      return to_sym.freeze
+      return to_sym
     when :lbl
       validate_segment_name!
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
-      return to_sym.freeze
+      return to_sym
     when :orn
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
-      return to_sym.freeze
+      return to_sym
     when :i
       return Integer(self)
     when :pos
@@ -51,11 +48,9 @@ module RGFA::FieldParser
       return Float(self)
     when :H
       value = to_byte_array
-      value.freeze if frozen
       return value
     when :B
       value = to_numeric_array
-      value.freeze if frozen
       return value
     when :J
       value = JSON.parse(self)
@@ -63,23 +58,18 @@ module RGFA::FieldParser
       if value.kind_of?(Array) and value.rgfa_field_array?
         value = value.to_rgfa_field_array
       end
-      # no need to freeze, as any Hash or Array will be valid
       return value
     when :cig
       value = to_alignment(false)
-      value.freeze if frozen
       return value
     when :aln
       value = to_alignment
-      value.freeze if frozen
       return value
     when :cgs
       value = split(",").map do |c|
         c = c.to_alignment(false)
-        c.freeze if frozen
         c
       end
-      value.freeze if frozen
       return value
     when :lbs
       value = split(",").map do |l|
@@ -90,10 +80,8 @@ module RGFA::FieldParser
                                "(entire field content: #{self})" )
         end
         os = [l.to_sym, o].to_oriented_segment
-        os.freeze if frozen
         os
       end
-      value.freeze if frozen
       return value
     else
       raise RGFA::FieldParser::UnknownDatatypeError,
