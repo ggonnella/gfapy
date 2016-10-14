@@ -11,6 +11,7 @@ class RGFA::Line::Header < RGFA::Line
   versions.each {|v| reqfields[v] = []}
   REQFIELDS = reqfields
   PREDEFINED_OPTFIELDS = [:VN]
+  FIELD_ALIAS = {}
   DATATYPE = {
     :VN => :Z
   }

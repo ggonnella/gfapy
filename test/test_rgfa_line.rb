@@ -108,7 +108,6 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_field_getters_existing_optional_fields
     l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
-    assert_equal(:xx, l.fieldnames[2])
     assert_equal(:xx, l.optional_fieldnames[0])
     assert_equal("13", l.field_to_s(:xx))
     assert_equal(13, l.xx)
@@ -199,6 +198,18 @@ class TestRGFALine < Test::Unit::TestCase
     assert_equal(RGFA::Line::Header, l.to_rgfa_line.class)
     assert_equal(str, l.to_rgfa_line.to_s)
     assert_equal(l, l.to_rgfa_line)
+  end
+
+  def test_field_alias
+    s = "S\tA\t*".to_rgfa_line
+    assert_equal(:A, s.name)
+    assert_equal(:A, s.sid)
+    assert_equal(:A, s.get(:name))
+    assert_equal(:A, s.get(:sid))
+    s.set(:name, :B)
+    assert_equal(:B, s.get(:sid))
+    s.set(:sid, :C)
+    assert_equal(:C, s.name)
   end
 
 end

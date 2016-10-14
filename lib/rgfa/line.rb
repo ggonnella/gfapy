@@ -68,7 +68,12 @@ class RGFA::Line
   #
   # Subclasses of RGFA::Line _must_ define the following constants:
   # - RECORD_TYPE [RGFA::Line::RECORD_TYPES]
-  # - REQFIELDS [Array<Symbol>] required fields
+  # - REQFIELDS [Hash{Symbol=>(Array<Symbol>,nil)}] required fields
+  #   for each version of the specification (nil if does not apply);
+  #   use :generic instead of a version symbol for generic records
+  #   (same definition in all versions)
+  # - FIELD_ALIAS [Hash{Symbol=>Symbol}] alternative names for required
+  #   fields
   # - PREDEFINED_OPTFIELDS [Array<Symbol>] predefined optional fields
   # - DATATYPE [Hash{Symbol=>Symbol}]:
   #   datatypes for the required fields and the predefined optional fields
@@ -105,7 +110,7 @@ class RGFA::Line
   #
   def initialize(data, validate: 2, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
-      raise RuntimeError, "This class shall not be directly instantiated"
+      raise RGFA::RuntimeError, "This class shall not be directly instantiated"
     end
     @validate = validate
     @virtual = virtual
@@ -247,12 +252,12 @@ class RGFA::Line
     self.class::RECORD_TYPE
   end
 
-  # @return [Array<Symbol>] fields defined for this instance
-  def fieldnames
-    @data.keys
-  end
-
   # @return [Array<Symbol>] name of the required fields
+  # @note these names are not always the field names
+  #   in the specification,
+  #   as these may be implemented as aliases to cope with
+  #   different names for the same content in GFA1 vs GFA2
+  # @api private
   def required_fieldnames
     if @version.nil?
       raise RGFA::VersionError, "Version is not set"
@@ -286,7 +291,7 @@ class RGFA::Line
 
   # Is the line virtual?
   #
-  # Is this RGFA::Line a virtual line repreentation
+  # Is this RGFA::Line a virtual line representation
   # (i.e. a placeholder for an expected but not encountered yet line)?
   # @api private
   # @return [Boolean]
@@ -352,6 +357,7 @@ class RGFA::Line
   #   not valid, according to its required type
   # @return [void]
   def validate_field!(fieldname)
+    fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     v = @data[fieldname]
     t = field_or_default_datatype(fieldname, v)
     v.validate_gfa_field!(t, fieldname)
@@ -368,6 +374,7 @@ class RGFA::Line
   # @raise [RGFA::Line::TagMissingError] if field is not defined
   # @return [String] the string representation
   def field_to_s(fieldname, optfield: false)
+    fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     field = @data[fieldname]
     raise RGFA::Line::TagMissingError,
       "No value defined for tag #{fieldname}" if field.nil?
@@ -384,17 +391,14 @@ class RGFA::Line
   # @param fieldname [Symbol] the tag name of the field
   # @return [RGFA::Line::FIELD_DATATYPE] the datatype symbol
   def get_datatype(fieldname)
+    fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     field_or_default_datatype(fieldname, @data[fieldname])
   end
 
-  # Set the datatype of a field.
+  # Set the datatype of a tag.
   #
-  # If an existing field datatype is changed, its content may become
+  # If an existing tag datatype is changed, its content may become
   # invalid (call #validate_field! if necessary).
-  #
-  # If the method is used for a required field or a predefined field,
-  # the line will use the specified datatype instead of the predefined
-  # one, resulting in a potentially invalid line.
   #
   # @param fieldname [Symbol] the field name (it is not required that
   #   the field exists already)
@@ -403,6 +407,17 @@ class RGFA::Line
   #   a valid datatype for optional fields
   # @return [RGFA::Line::FIELD_DATATYPE] the datatype
   def set_datatype(fieldname, datatype)
+    if predefined_optional_fieldname?(fieldname)
+      if get_datatype(fieldname) != datatype
+        raise RGFA::RuntimeError,
+          "Cannot set the datatype of #{fieldname} to #{datatype}\n"+
+          "The datatype of a predefined tag cannot be changed"
+        return
+      end
+    elsif !valid_custom_optional_fieldname?(fieldname)
+      raise RGFA::FormatError,
+        "#{fieldname} is not a valid custom tag name"
+    end
     unless OPTFIELD_DATATYPE.include?(datatype)
       raise RGFA::Line::UnknownDatatype, "Unknown datatype: #{datatype}"
     end
@@ -424,6 +439,8 @@ class RGFA::Line
   def set(fieldname, value)
     if @data.has_key?(fieldname) or predefined_optional_fieldname?(fieldname)
       return set_existing_field(fieldname, value)
+    elsif self.class::FIELD_ALIAS.has_key?(fieldname)
+      return set(self.class::FIELD_ALIAS[fieldname], value)
     elsif (@validate == 0) or valid_custom_optional_fieldname?(fieldname)
       define_field_methods(fieldname)
       if !@datatype[fieldname].nil?
@@ -441,12 +458,9 @@ class RGFA::Line
 
   # Get the value of a field
   # @param fieldname [Symbol] name of the field
-  # @param frozen [Boolean] <i>defaults to: +false+</i> return a frozen value;
-  #   this guarantees that a validation will not be necessary on output
-  #   if the field value has not been changed using #set
   # @return [Object,nil] value of the field
   #   or +nil+ if field is not defined
-  def get(fieldname, frozen: false)
+  def get(fieldname)
     v = @data[fieldname]
     if v.kind_of?(String)
       t = field_datatype(fieldname)
@@ -463,6 +477,9 @@ class RGFA::Line
         t = field_datatype(fieldname)
         v.validate_gfa_field!(t, fieldname)
       end
+    else
+      dealiased_fieldname = self.class::FIELD_ALIAS[fieldname]
+      return get(dealiased_fieldname) if !dealiased_fieldname.nil?
     end
     return v
   end
@@ -520,7 +537,7 @@ class RGFA::Line
     field_name, operation, state = split_method_name(m)
     if ((operation == :get or operation == :get!) and args.size > 1) or
        (operation == :set and args.size != 1)
-      raise ArgumentError, "wrong number of arguments"
+      raise RGFA::ArgumentError, "Wrong number of arguments"
     end
     case state
     when :invalid
@@ -766,6 +783,11 @@ class RGFA::Line
       define_method :"#{fieldname}=" do |value|
         set_existing_field(fieldname, value)
       end
+    end
+    self::FIELD_ALIAS.each do |k,v|
+      alias_method :"#{k}",  :"#{v}"
+      alias_method :"#{k}!", :"#{v}!"
+      alias_method :"#{k}=", :"#{v}="
     end
   end
   private_class_method :define_field_methods!

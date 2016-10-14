@@ -7,6 +7,7 @@ class RGFA::Line::Comment < RGFA::Line
   versions.each {|v| reqfields[v] = [:content]}
   REQFIELDS = reqfields
   PREDEFINED_OPTFIELDS = []
+  FIELD_ALIAS = {}
   DATATYPE = {
     :content => :any,
   }

@@ -6,6 +6,7 @@ class RGFA::Line::Link < RGFA::Line
   REQFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :overlap],
                :"2.0" => nil}
   PREDEFINED_OPTFIELDS = [:MQ, :NM, :RC, :FC, :KC]
+  FIELD_ALIAS = {}
   DATATYPE = {
      :from => :lbl,
      :from_orient => :orn,

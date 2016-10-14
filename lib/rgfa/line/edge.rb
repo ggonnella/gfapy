@@ -5,6 +5,7 @@ class RGFA::Line::Edge < RGFA::Line
   REQFIELDS = {:"1.0" => nil,
                :"2.0" => [:eid, :sid1, :or2, :sid2, :beg1,
                           :end1, :beg2, :end2, :alignment]}
+  FIELD_ALIAS = {}
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :eid => :any,

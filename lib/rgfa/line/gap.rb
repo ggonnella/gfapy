@@ -4,6 +4,7 @@ class RGFA::Line::Gap < RGFA::Line
   RECORD_TYPE = :G
   REQFIELDS = {:"1.0" => nil,
                :"2.0" => [:gid, :sid1, :or1, :sid2, :or2, :disp, :var]}
+  FIELD_ALIAS = {}
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :gid => :any,

@@ -5,6 +5,7 @@ class RGFA::Line::Fragment < RGFA::Line
   REQFIELDS = {:"1.0" => nil,
                :"2.0" => [:sid, :or, :external, :s_beg, :s_end,
                           :f_beg, :f_end, :alignment]}
+  FIELD_ALIAS = {}
   PREDEFINED_OPTFIELDS = []
   DATATYPE = {
     :sid => :any,

@@ -16,6 +16,7 @@ class RGFA::Line::Segment < RGFA::Line
     :SH => :H,
     :UR => :Z
   }
+  FIELD_ALIAS = { :sid => :name }
 
   define_field_methods!
 
