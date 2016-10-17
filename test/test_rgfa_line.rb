@@ -40,7 +40,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_initialize_tag_type_error
-    assert_raise(ArgumentError) do
+    assert_raise(RGFA::FormatError) do
       RGFA::Line::Header.new(["zz:i:1A"])
     end
   end

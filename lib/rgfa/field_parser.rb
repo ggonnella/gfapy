@@ -39,13 +39,34 @@ module RGFA::FieldParser
       validate_gfa_field!(datatype, fieldname: fieldname) if validate_strings
       return to_sym
     when :i
-      return Integer(self)
+      begin
+        return Integer(self)
+      rescue
+        raise RGFA::FormatError,
+        "Wrong value format for field #{fieldname}:\n"+
+        "Datatype: Integer\n"+
+        "Content: #{self}"
+      end
     when :pos
-      value = Integer(self)
-      raise RGFA::FormatError if value < 0
+      begin
+        value = Integer(self)
+        raise if value < 0
+      rescue
+        raise RGFA::FormatError,
+        "Wrong value format for field #{fieldname}:\n"+
+        "Datatype: Integer >= 0\n"+
+        "Content: #{self}"
+      end
       return value
     when :f
-      return Float(self)
+      begin
+        return Float(self)
+      rescue
+        raise RGFA::FormatError,
+        "Wrong value format for field #{fieldname}:\n"+
+        "Datatype: Float\n"+
+        "Content: #{self}"
+      end
     when :H
       value = to_byte_array
       return value
