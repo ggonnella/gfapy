@@ -60,7 +60,7 @@ class RGFA::Line::Path < RGFA::Line
 
   # computes the list of links which are required to support
   # the path
-  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::Cigar]>]
+  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::CIGAR]>]
   #   an array, which elements are 3-tuples (from oriented segment,
   #   to oriented segment, cigar)
   def required_links

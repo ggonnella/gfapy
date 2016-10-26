@@ -195,7 +195,7 @@ module RGFA::LinearPaths
                      segment.name : options[:merged_name])
       merged.LN = segment.LN
     else
-      (segment.sequence == "*") ? (merged.sequence = "*")
+      (segment.sequence == "*") ? (merged.sequence = RGFA::Placeholder.new)
                                 : (merged.sequence += s)
       if options[:merged_name].nil?
         merged.name = "#{merged.name}_#{segment.name}"

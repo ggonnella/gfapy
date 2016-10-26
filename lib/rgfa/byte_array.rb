@@ -23,30 +23,38 @@ class RGFA::ByteArray < Array
   end
 
   # Returns self
+  # @param valid [nil] ignored, for compatibility
   # @return [RGFA::ByteArray] self
-  def to_byte_array
+  def to_byte_array(valid: nil)
     self
   end
 
   # GFA datatype H representation of the byte array
   # @raise [RGFA::ValueError] if the
   #   array is not a valid byte array
+  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+  #   the string is guaranteed to be valid
   # @return [String]
-  def to_s
-    validate!
+  def to_s(valid: false)
+    validate! unless valid
     map do |elem|
       str = elem.to_s(16).upcase
       elem < 16 ? "0#{str}" : str
     end.join
   end
 
+  # GFA tag datatype to use, if none is provided
+  # @return [RGFA::Line::TAG_DATATYPE]
+  def default_gfa_tag_datatype; :H; end
+
 end
 
 # Method to create a RGFA::ByteArray from an Array
 class Array
   # Create a RGFA::ByteArray from an Array instance
+  # @param valid [nil] ignored, for compatibility
   # @return [RGFA::ByteArray] the byte array
-  def to_byte_array
+  def to_byte_array(valid: nil)
     RGFA::ByteArray.new(self)
   end
 end
@@ -55,10 +63,12 @@ end
 class String
   # Convert a GFA string representation of a byte array to a byte array
   # @return [RGFA::ByteArray] the byte array
+  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+  #   the string is guaranteed to be valid
   # @raise [RGFA::FormatError] if the string size is not > 0
   #   and even
-  def to_byte_array
-    if (size < 2) or (size % 2 == 1)
+  def to_byte_array(valid: false)
+    if !valid and ((size < 2) or (size % 2 == 1))
       raise RGFA::FormatError,
         "Invalid byte array string #{self}; "+
         "each element must be represented by two letters [0-9A-F]"

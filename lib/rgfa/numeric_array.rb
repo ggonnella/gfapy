@@ -105,14 +105,9 @@ class RGFA::NumericArray < Array
   end
 
   # Return self
-  # @param validate [Boolean] <i>(default: +false+)</i>
-  #   if +true+, validate the range of the numeric values, according
-  #   to the array subtype
-  # @raise [RGFA::ValueError] if validate is set and
-  #   any value is not compatible with the subtype
+  # @param valid [nil] ignored, for compatibility
   # @return [RGFA::NumericArray]
-  def to_numeric_array(validate: false)
-    validate! if validate
+  def to_numeric_array(valid: nil)
     self
   end
 
@@ -125,6 +120,10 @@ class RGFA::NumericArray < Array
     "#{subtype},#{join(",")}"
   end
 
+  # GFA tag datatype to use, if none is provided
+  # @return [RGFA::Line::TAG_DATATYPE]
+  def default_gfa_tag_datatype; :B; end
+
 end
 
 #
@@ -132,15 +131,15 @@ end
 #
 class Array
   # Create a numeric array from an Array instance
-  # @param validate [Boolean] <i>(default: +true+)</i>
-  #   if +true+, validate the range of the numeric values, according
-  #   to the array subtype
-  # @raise [RGFA::ValueError] if validate is set and
-  #   any value is not compatible with the subtype
+  # @param valid [Boolean] <i>(default: +false+)</i>
+  #   if +false+, validate the range of the numeric values, according
+  #   to the array subtype; if +true+ the string is guaranteed to be valid
+  # @raise [RGFA::ValueError] if any value is not compatible with the subtype
+  # @raise [RGFA::TypeError] if the subtype code is invalid
   # @return [RGFA::NumericArray] the numeric array
-  def to_numeric_array(validate: true)
+  def to_numeric_array(valid: false)
     na = RGFA::NumericArray.new(self)
-    na.validate! if validate
+    na.validate! if !valid
     na
   end
 end
@@ -150,14 +149,13 @@ end
 #
 class String
   # Create a numeric array from a string
-  # @param validate [Boolean] <i>(default: +true+)</i>
-  #   if +true+, validate the range of the numeric values, according
-  #   to the array subtype
-  # @raise [RGFA::NumericArray::ValueError] if validate is set and
-  #   any value is not compatible with the subtype
-  # @raise [RGFA::NumericArray::TypeError] if the subtype code is invalid
+  # @param valid [Boolean] <i>(default: +false+)</i>
+  #   if +false+, validate the range of the numeric values, according
+  #   to the array subtype; if +true+ the string is guaranteed to be valid
+  # @raise [RGFA::ValueError] if any value is not compatible with the subtype
+  # @raise [RGFA::TypeError] if the subtype code is invalid
   # @return [RGFA::NumericArray] the numeric array
-  def to_numeric_array(validate: true)
+  def to_numeric_array(valid: false)
     elems = split(",")
     subtype = elems.shift
     integer = (subtype != "f")
@@ -170,7 +168,7 @@ class String
       begin
         if integer
           e = Integer(e)
-          if validate and not range.include?(e)
+          if not valid and not range.include?(e)
             raise "NumericArray: "+
                   "value is outside of subtype #{subtype} range\n"+
                   "Value: #{e}\n"+

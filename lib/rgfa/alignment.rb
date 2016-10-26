@@ -7,7 +7,7 @@ class String
   # Parses an alignment field
   # @param allow_traces [Boolean] if false, then only CIGARs or Placeholders
   #   are considered valid; if true, also trace alignments
-  # @return [RGFA::Cigar, RGFA::Trace, RGFA::AlignentPlaceholder]
+  # @return [RGFA::CIGAR, RGFA::Trace, RGFA::AlignentPlaceholder]
   # @raise [RGFA::FieldParser::FormatError] if the content of the
   #   field cannot be parsed
   def to_alignment(allow_traces = true)
@@ -45,7 +45,7 @@ class Array
   # Converts an alignment array into a specific array type
   # @param allow_traces [Boolean] if false, then only CIGARs or Placeholders
   #   are considered valid; if true, also trace alignments
-  # @return [RGFA::Cigar, RGFA::Trace]
+  # @return [RGFA::CIGAR, RGFA::Trace]
   def to_alignment(allow_traces = true)
     if self.empty?
       return RGFA::Placeholder.new

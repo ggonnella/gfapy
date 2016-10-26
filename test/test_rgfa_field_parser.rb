@@ -24,32 +24,32 @@ class TestRGFAFieldParser < Test::Unit::TestCase
   end
 
   def test_parse_gfa_field_A
-    assert_equal("1", "1".parse_gfa_field(datatype: :A))
+    assert_equal("1", "1".parse_gfa_field(:A))
   end
 
   def test_parse_gfa_field_i
-    assert_equal(12, "12".parse_gfa_field(datatype: :i))
+    assert_equal(12, "12".parse_gfa_field(:i))
   end
 
   def test_parse_gfa_field_f
-    assert_equal(1.2, "1.2".parse_gfa_field(datatype: :f))
+    assert_equal(1.2, "1.2".parse_gfa_field(:f))
   end
 
   def test_parse_gfa_field_Z
-    assert_equal("1.2", "1.2".parse_gfa_field(datatype: :Z))
+    assert_equal("1.2", "1.2".parse_gfa_field(:Z))
   end
 
   def test_parse_gfa_field_H
-    assert_equal([26], "1A".parse_gfa_field(datatype: :H))
+    assert_equal([26], "1A".parse_gfa_field(:H))
   end
 
   def test_parse_gfa_field_B
-    assert_equal([12,12,12], "c,12,12,12".parse_gfa_field(datatype: :B))
-    assert_equal([1.2,1.2,1.2], "f,1.2,1.2,1.2".parse_gfa_field(datatype: :B))
+    assert_equal([12,12,12], "c,12,12,12".parse_gfa_field(:B))
+    assert_equal([1.2,1.2,1.2], "f,1.2,1.2,1.2".parse_gfa_field(:B))
   end
 
   def test_parse_gfa_field_J
-    assert_equal({"1" => 2}, "{\"1\":2}".parse_gfa_field(datatype: :J))
+    assert_equal({"1" => 2}, "{\"1\":2}".parse_gfa_field(:J))
   end
 
 end

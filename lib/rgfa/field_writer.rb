@@ -23,9 +23,44 @@ module RGFA::FieldWriter
   #   does not (in general) validate the string. The method
   #   can be overwritten for a given class, and may take
   #   the {#default_gfa_tag_datatype} into consideration.
+  #   @param datatype [RGFA::Line::FIELD_DATATYPE]
+  #   @param fieldname [String] fieldname, for error messages
+  #   @raise [RGFA::TypeError] if the specified datatype is unknown
+  #   @raise [RGFA::TypeError]
+  #      if the object class is not compatible with datatype
+  #   @raise [RGFA::FormatError] if the object is a string with an
+  #     invalid syntax
+  #   @raise [RGFA::ValueError] if the object value is not valid
   #   @return [String]
   #   @api private
-  def to_gfa_field(datatype: nil); to_s; end
+  def to_gfa_field(datatype: nil, safe: true, fieldname: nil)
+    datatype ||= default_gfa_tag_datatype
+    mod = RGFA::Field::FIELD_MODULE[datatype]
+    if mod.nil?
+      fieldnamemsg = fieldname ? "Field: #{fieldname}\n" : ""
+      contentmsg = "Content: #{self.inspect}\n"
+      raise RGFA::TypeError,
+        fieldnamemsg +
+        contentmsg +
+        "Datatype unknown: #{datatype.inspect}"
+    end
+    begin
+      if safe
+        mod.encode(self)
+      else
+        mod.unsafe_encode(self)
+      end
+    rescue => err
+      fieldnamemsg = fieldname ? "Field: #{fieldname}\n" : ""
+      contentmsg = "Content: #{self.inspect}\n"
+      datatypemsg = "Datatype: #{datatype}\n"
+      raise err.class,
+            fieldnamemsg +
+            datatypemsg +
+            contentmsg +
+            err.message
+    end
+  end
 
   # Representation of the data as a tag
   # @param fieldname [Symbol] the tag name
@@ -33,7 +68,8 @@ module RGFA::FieldWriter
   #  returned by {#default_gfa_tag_datatype}</i>)
   # @api private
   def to_gfa_tag(fieldname, datatype: default_gfa_tag_datatype)
-    return "#{fieldname}:#{datatype}:#{to_gfa_field(datatype: datatype)}"
+    return "#{fieldname}:#{datatype}:"+
+      "#{to_gfa_field(datatype: datatype, fieldname: fieldname)}"
   end
 
   # @!macro [new] gfa_datatype
@@ -58,51 +94,13 @@ class Float
 end
 
 class Hash
-  # @!macro to_gfa_field
-  def to_gfa_field(datatype: nil); to_json; end
-
   # @!macro gfa_datatype
   def default_gfa_tag_datatype; :J; end
 end
 
 class Array
-  # @!macro to_gfa_field
-  def to_gfa_field(datatype: default_gfa_tag_datatype)
-    case datatype
-    when :B
-      to_numeric_array.to_s
-    when :J
-      to_json
-    when :aln, :cig
-      to_alignment.to_s
-    when :cgs
-      map{|cig|cig.to_alignment(false).to_s}.join(",")
-    when :lbs
-      map{|os|os.to_oriented_segment.to_s}.join(",")
-    when :H
-      to_byte_array.to_s
-    else
-      map(&:to_s).join(",")
-    end
-  end
-
   # @!macro gfa_datatype
   def default_gfa_tag_datatype
     (all?{|i|i.kind_of?(Integer)} or all?{|i|i.kind_of?(Float)}) ? :B : :J
   end
-end
-
-class RGFA::ByteArray
-  # @!macro gfa_datatype
-  def default_gfa_tag_datatype; :H; end
-end
-
-class RGFA::NumericArray
-  # @!macro gfa_datatype
-  def default_gfa_tag_datatype; :B; end
-end
-
-class RGFA::Line::Segment
-  # @!macro to_gfa_field
-  def to_gfa_field(datatype: nil); to_sym.to_s; end
 end

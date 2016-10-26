@@ -25,7 +25,8 @@ class TestRGFALinePath < Test::Unit::TestCase
       f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::InconsistencyError) do
-      f=fields.dup; f[2]="1+"; f.join("\t").to_rgfa_line(validate: 3)
+      f=fields.dup; f[2]="1+,2+"; f[3]="9M,12M,3M";
+                    f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_nothing_raised do
       f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line(validate: 3)

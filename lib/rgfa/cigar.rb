@@ -44,10 +44,16 @@ class RGFA::CIGAR < Array
   # use is deprecated.
   #
   # @return [RGFA::CIGAR]
+  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+  #   the string is guaranteed to be valid
   # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
-  def self.from_string(str)
+  def self.from_string(str, valid: false)
     a = RGFA::CIGAR.new
-    raise RGFA::FormatError if str !~ /^([0-9]+[MIDNSHPX=])+$/
+    unless valid
+      if str !~ /^([0-9]+[MIDNSHPX=])+$/
+        raise RGFA::FormatError
+      end
+    end
     str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
       len = op[0..-2].to_i
       code = op[-1..-1].to_sym
@@ -72,7 +78,8 @@ class RGFA::CIGAR < Array
   end
 
   # @return [RGFA::CIGAR] self
-  def to_cigar
+  # @param valid [nil] ignored, for compatibility
+  def to_cigar(valid: nil)
     self
   end
 
@@ -142,8 +149,9 @@ end
 
 class Array
   # Create a {RGFA::CIGAR} instance from the content of the array.
+  # @param valid [nil] ignored, for compatibility
   # @return [RGFA::CIGAR]
-  def to_cigar
+  def to_cigar(valid: nil)
     RGFA::CIGAR.new(self)
   end
   # Create a {RGFA::CIGAR::Operation} instance from the content of the array.
@@ -156,12 +164,14 @@ end
 class String
   # Parse CIGAR string
   # @return [RGFA::CIGAR,RGFA::Placeholder] CIGAR or Placeholder (if +*+)
+  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+  #   the string is guaranteed to be valid
   # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
-  def to_cigar
+  def to_cigar(valid: false)
     if self == "*"
       return RGFA::Placeholder.new
     else
-      return RGFA::CIGAR.from_string(self)
+      return RGFA::CIGAR.from_string(self, valid: valid)
     end
   end
 end

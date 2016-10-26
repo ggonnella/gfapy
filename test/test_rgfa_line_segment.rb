@@ -40,10 +40,10 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { "S\tA-B\t*".to_rgfa_line }
     assert_nothing_raised { "S\tA,B\t*".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      "S\tA+,B\t*".to_rgfa_line
+      "S\tA+,B\t*".to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::FormatError) do
-      "S\tA-,B\t*".to_rgfa_line
+      "S\tA-,B\t*".to_rgfa_line(validate: 3)
     end
   end
 

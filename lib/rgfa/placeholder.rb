@@ -20,6 +20,12 @@ class RGFA::Placeholder
     self
   end
 
+  # For compatibility with the to_cigar method of other classes
+  # @return [self]
+  def to_cigar
+    self
+  end
+
   # A placeholder is always empty
   # return [true]
   def empty?
@@ -58,5 +64,14 @@ class RGFA::Placeholder
   def +(*anything)
     self
   end
+
+  def ==(other)
+    other.kind_of?(RGFA::Placeholder) or
+      other == :* or
+        other == "*"
+  end
+
+  alias :eql? :==
+  alias :=== :==
 
 end

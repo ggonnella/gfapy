@@ -379,7 +379,7 @@ class RGFA::Line
       "No value defined for tag #{fieldname}" if field.nil?
     t = field_or_default_datatype(fieldname, field)
     if !field.kind_of?(String)
-      field = field.to_gfa_field(datatype: t)
+      field = field.to_gfa_field(datatype: t, fieldname: fieldname)
     end
     field.validate_gfa_field!(t, fieldname) if @validate >= 4
     return tag ? field.to_gfa_tag(fieldname, datatype: t) : field
@@ -464,9 +464,7 @@ class RGFA::Line
       t = field_datatype(fieldname)
       if t != :Z and t != :seq
         # value was not parsed or was set to a string by the user
-        return (@data[fieldname] = v.parse_gfa_field(datatype: t,
-                                                     validate_strings:
-                                                       @validate >= 2))
+        return (@data[fieldname] = v.parse_gfa_field(t, safe: @validate >= 2))
       else
          v.validate_gfa_field!(t, fieldname) if (@validate >= 5)
       end
@@ -642,9 +640,9 @@ class RGFA::Line
 
   def init_field_value(n ,t, s)
     if @validate >= 3
-      s = s.parse_gfa_field(datatype: t, validate_strings: true)
+      s = s.parse_gfa_field(t, safe: true)
     elsif !DELAYED_PARSING_DATATYPES.include?(t)
-      s = s.parse_gfa_field(datatype: t, validate_strings: false)
+      s = s.parse_gfa_field(t, safe: false)
     end
     @data[n] = s
   end
