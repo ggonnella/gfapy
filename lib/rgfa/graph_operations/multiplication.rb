@@ -1,10 +1,10 @@
-require_relative "error.rb"
+require_relative "../error.rb"
 
 #
 # Method for the RGFA class, which allow to split a segment into
 # multiple copies.
 #
-module RGFA::Multiplication
+module RGFA::GraphOperations::Multiplication
 
   # Create multiple copies of a segment.
   #

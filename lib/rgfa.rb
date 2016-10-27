@@ -44,9 +44,10 @@
 #   - {RGFA::Line::CustomRecord}
 #
 # - Further modules contain methods useful for interacting with the graph
-#   - {RGFA::Connectivity} analysis of the connectivity of the graph
-#   - {RGFA::LinearPaths} finding and merging of linear paths
-#   - {RGFA::Multiplication} separation of the implicit instances of a repeat
+#   - {RGFA::GraphOperations::Connectivity} analysis of the graph connectivity
+#   - {RGFA::GraphOperations::LinearPaths} finding and merging of linear paths
+#   - {RGFA::GraphOperations::Multiplication} separation of the
+#       implicit instances of a repeat
 #
 # - Additional functionality is provided by {RGFATools}
 #
@@ -73,12 +74,10 @@ end
 
 require_relative "./rgfa/byte_array.rb"
 require_relative "./rgfa/cigar.rb"
-require_relative "./rgfa/connectivity.rb"
 require_relative "./rgfa/field_array.rb"
 require_relative "./rgfa/field.rb"
-require_relative "./rgfa/multiplication.rb"
+require_relative "./rgfa/graph_operations.rb"
 require_relative "./rgfa/line.rb"
-require_relative "./rgfa/linear_paths.rb"
 require_relative "./rgfa/lines.rb"
 require_relative "./rgfa/logger.rb"
 require_relative "./rgfa/numeric_array.rb"
@@ -92,9 +91,7 @@ require_relative "./rgfa/trace.rb"
 class RGFA
 
   include RGFA::Lines
-  include RGFA::LinearPaths
-  include RGFA::Connectivity
-  include RGFA::Multiplication
+  include RGFA::GraphOperations
   include RGFA::LoggerSupport
   include RGFA::RGL
 

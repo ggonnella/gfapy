@@ -1,9 +1,9 @@
-require_relative "segment_ends_path"
+require_relative "../segment_ends_path"
 
 #
 # Methods for the RGFA class, which allow to find and merge linear paths.
 #
-module RGFA::LinearPaths
+module RGFA::GraphOperations::LinearPaths
 
   require "set"
 

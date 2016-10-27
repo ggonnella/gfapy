@@ -1,7 +1,7 @@
 #
 # Methods which analyse the connectivity of the graph.
 #
-module RGFA::Connectivity
+module RGFA::GraphOperations::Connectivity
 
   require "set"
 
