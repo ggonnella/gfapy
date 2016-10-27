@@ -1,34 +1,37 @@
 require_relative "error"
-require_relative "comments"
-require_relative "headers"
-require_relative "segments"
-require_relative "links"
-require_relative "containments"
-require_relative "custom_records"
-require_relative "paths"
-require_relative "fragments"
-require_relative "ordered_groups"
-require_relative "unordered_groups"
-require_relative "gaps"
-require_relative "edges"
+
+RGFA::Lines = Module.new
+
+require_relative "lines/comments"
+require_relative "lines/containments"
+require_relative "lines/custom_records"
+require_relative "lines/edges"
+require_relative "lines/fragments"
+require_relative "lines/gaps"
+require_relative "lines/headers"
+require_relative "lines/links"
+require_relative "lines/ordered_groups"
+require_relative "lines/paths"
+require_relative "lines/segments"
+require_relative "lines/unordered_groups"
 
 #
 # Methods for the RGFA class, which allow to handle lines of multiple types.
 #
 module RGFA::Lines
 
-  include RGFA::Comments
-  include RGFA::Headers
-  include RGFA::Segments
-  include RGFA::Links
-  include RGFA::Containments
-  include RGFA::CustomRecords
-  include RGFA::Paths
-  include RGFA::Fragments
-  include RGFA::Gaps
-  include RGFA::Edges
-  include RGFA::UnorderedGroups
-  include RGFA::OrderedGroups
+  include RGFA::Lines::Comments
+  include RGFA::Lines::Containments
+  include RGFA::Lines::CustomRecords
+  include RGFA::Lines::Edges
+  include RGFA::Lines::Fragments
+  include RGFA::Lines::Gaps
+  include RGFA::Lines::Headers
+  include RGFA::Lines::Links
+  include RGFA::Lines::OrderedGroups
+  include RGFA::Lines::Paths
+  include RGFA::Lines::Segments
+  include RGFA::Lines::UnorderedGroups
 
   GFA1Specific = [
                    RGFA::Line::Link,

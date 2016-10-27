@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle comment lines.
 #
-module RGFA::Comments
+module RGFA::Lines::Comments
 
   def add_comment(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

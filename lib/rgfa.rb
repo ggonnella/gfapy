@@ -14,19 +14,19 @@
 # - {RGFA::Lines}: module with methods for finding, editing, iterating over,
 #   removing lines belonging to a RGFA instance. Specialized modules exist
 #   for each kind of line:
-#   - {RGFA::Headers}: accessing and creating header information is done
+#   - {RGFA::Lines::Headers}: accessing and creating header information is done
 #     using a single header line object ({#header RGFA#header})
-#   - {RGFA::Segments}
-#   - {RGFA::Links}
-#   - {RGFA::Containments}
-#   - {RGFA::Paths}
-#   - {RGFA::Comments}
-#   - {RGFA::Gaps}
-#   - {RGFA::Fragments}
-#   - {RGFA::Edges}
-#   - {RGFA::OrderedGroups}
-#   - {RGFA::UnorderedGroups}
-#   - {RGFA::CustomRecords}
+#   - {RGFA::Lines::Segments}
+#   - {RGFA::Lines::Links}
+#   - {RGFA::Lines::Containments}
+#   - {RGFA::Lines::Paths}
+#   - {RGFA::Lines::Comments}
+#   - {RGFA::Lines::Gaps}
+#   - {RGFA::Lines::Fragments}
+#   - {RGFA::Lines::Edges}
+#   - {RGFA::Lines::OrderedGroups}
+#   - {RGFA::Lines::UnorderedGroups}
+#   - {RGFA::Lines::CustomRecords}
 #
 # - {RGFA::Line}: most interaction with the GFA involve interacting with
 #   its record, i.e. instances of a subclass of this class. Subclasses:

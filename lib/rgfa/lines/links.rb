@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle links in the graph.
 #
-module RGFA::Links
+module RGFA::Lines::Links
 
   def add_link(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle edge lines.
 #
-module RGFA::Edges
+module RGFA::Lines::Edges
 
   def add_edge(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

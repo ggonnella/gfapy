@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle containments in the graph.
 #
-module RGFA::Containments
+module RGFA::Lines::Containments
 
   def add_containment(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

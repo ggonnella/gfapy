@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle paths in the graph.
 #
-module RGFA::Paths
+module RGFA::Lines::Paths
 
   def add_path(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle custom records.
 #
-module RGFA::CustomRecords
+module RGFA::Lines::CustomRecords
 
   def add_custom_record(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

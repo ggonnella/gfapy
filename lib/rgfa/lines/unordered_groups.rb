@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle unordered group lines.
 #
-module RGFA::UnorderedGroups
+module RGFA::Lines::UnorderedGroups
 
   def add_unordered_group(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

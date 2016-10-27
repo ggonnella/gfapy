@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle ordered group lines.
 #
-module RGFA::OrderedGroups
+module RGFA::Lines::OrderedGroups
 
   def add_ordered_group(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle segments in the graph.
 #
-module RGFA::Segments
+module RGFA::Lines::Segments
 
   def add_segment(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

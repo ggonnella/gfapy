@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle gap lines.
 #
-module RGFA::Gaps
+module RGFA::Lines::Gaps
 
   def add_gap(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)

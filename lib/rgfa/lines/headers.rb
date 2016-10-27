@@ -1,5 +1,4 @@
-require_relative "error"
-require_relative "field_array"
+require_relative "../field_array"
 
 # Methods for accessing the GFA header information.
 #
@@ -31,7 +30,7 @@ require_relative "field_array"
 #   rgfa.header.add(:xx, 100) # => RGFA::FieldArray<[100,100] @datatype: :i>
 #   rgfa.header.add(:xx, 100) # => RGFA::FieldArray<[100,100,100] @datatype :i>
 #
-module RGFA::Headers
+module RGFA::Lines::Headers
 
   # @return [RGFA::Line::Header] an header line representing the entire header
   #   information; if multiple header line were present, and they contain the

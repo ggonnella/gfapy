@@ -1,9 +1,7 @@
-require_relative "error"
-
 #
 # Methods for the RGFA class, which allow to handle fragment lines.
 #
-module RGFA::Fragments
+module RGFA::Lines::Fragments
 
   def add_fragment(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
