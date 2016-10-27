@@ -82,7 +82,6 @@ require_relative "./rgfa/lines.rb"
 require_relative "./rgfa/logger.rb"
 require_relative "./rgfa/numeric_array.rb"
 require_relative "./rgfa/placeholder.rb"
-require_relative "./rgfa/rgl.rb"
 require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_info.rb"
 require_relative "./rgfa/sequence.rb"
@@ -93,7 +92,6 @@ class RGFA
   include RGFA::Lines
   include RGFA::GraphOperations
   include RGFA::LoggerSupport
-  include RGFA::RGL
 
   # @!attribute [rw] validate
   #   @return [Integer (0..5)] validation level

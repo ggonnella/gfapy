@@ -9,9 +9,11 @@ RGFA::GraphOperations = Module.new
 require_relative "graph_operations/connectivity.rb"
 require_relative "graph_operations/linear_paths.rb"
 require_relative "graph_operations/multiplication.rb"
+require_relative "graph_operations/rgl.rb"
 
 module RGFA::GraphOperations
   include RGFA::GraphOperations::Connectivity
   include RGFA::GraphOperations::LinearPaths
   include RGFA::GraphOperations::Multiplication
+  include RGFA::GraphOperations::RGL
 end

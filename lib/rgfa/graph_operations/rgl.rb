@@ -6,7 +6,7 @@ begin
   #
   # Conversion to RGL graphs
   #
-  module RGFA::RGL
+  module RGFA::GraphOperations::RGL
 
     # Creates an RGL graph.
     #
@@ -182,7 +182,7 @@ begin
 
 rescue LoadError
 
-  module RGFA::RGL
+  module RGFA::GraphOperations::RGL
   end
 
 end
