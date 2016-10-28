@@ -25,6 +25,7 @@ require_relative "field/numeric_array.rb"
 require_relative "field/optional_identifier.rb"
 require_relative "field/orientation.rb"
 require_relative "field/oriented_segments.rb"
+require_relative "field/path_name.rb"
 require_relative "field/position_gfa1.rb"
 require_relative "field/position_gfa2.rb"
 require_relative "field/record_type.rb"
@@ -85,7 +86,7 @@ require_relative "field/string.rb"
 module RGFA::Field
 
   # Symbol representing a GFA1-specific datatype for positional fields
-  GFA1_POSFIELD_DATATYPE = [:cig, :cgs, :lbs, :pos, :lbl, :seq]
+  GFA1_POSFIELD_DATATYPE = [:cig, :cgs, :lbs, :pos, :lbl, :seq, :ptn]
 
   # Symbol representing a GFA2-specific datatype for positional fields
   GFA2_POSFIELD_DATATYPE = [:aln, :any, :idn, :oid, :psn, :crt, :sqn]
@@ -120,6 +121,7 @@ module RGFA::Field
     :oid => RGFA::Field::OptionalIdentifier,
     :orn => RGFA::Field::Orientation,
     :lbs => RGFA::Field::OrientedSegments,
+    :ptn => RGFA::Field::PathName,
     :pos => RGFA::Field::PositionGFA1,
     :psn => RGFA::Field::PositionGFA2,
     :crt => RGFA::Field::RecordType,

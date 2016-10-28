@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/field/optional_identifier.rb',
               'lib/rgfa/field/orientation.rb',
               'lib/rgfa/field/oriented_segments.rb',
+              'lib/rgfa/field/path_name.rb',
               'lib/rgfa/field/position_gfa1.rb',
               'lib/rgfa/field/position_gfa2.rb',
               'lib/rgfa/field/record_type.rb',
