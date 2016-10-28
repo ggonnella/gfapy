@@ -12,8 +12,8 @@ class RGFA::Line::Gap < RGFA::Line
     :or1 => :orientation,
     :sid2 => :identifier_gfa2,
     :or2 => :orientation,
-    :disp => :generic,
-    :var => :generic
+    :disp => :i,
+    :var => :optional_integer
   }
 
   define_field_methods!
