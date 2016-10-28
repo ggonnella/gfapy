@@ -16,15 +16,6 @@ class RGFA::Line
   # List of allowed record_type values
   RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", :G, :F, :E, :O, :U, nil ]
 
-  # A symbol representing a datatype for tags
-  TAG_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
-
-  # A symbol representing a datatype for positional fields
-  POSFIELD_DATATYPE = [:lbl, :orn, :lbs, :seq, :pos, :cig, :cgs]
-
-  # A symbol representing a valid datatype
-  FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
-
   # List of data types which are parsed only on access;
   # all other are parsed when read.
   DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
@@ -388,7 +379,7 @@ class RGFA::Line
   # Returns a symbol, which specifies the datatype of a field
   #
   # @param fieldname [Symbol] the tag name of the field
-  # @return [RGFA::Line::FIELD_DATATYPE] the datatype symbol
+  # @return [RGFA::Field::FIELD_DATATYPE] the datatype symbol
   def get_datatype(fieldname)
     fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     field_or_default_datatype(fieldname, @data[fieldname])
@@ -401,10 +392,10 @@ class RGFA::Line
   #
   # @param fieldname [Symbol] the field name (it is not required that
   #   the field exists already)
-  # @param datatype [RGFA::Line::FIELD_DATATYPE] the datatype
+  # @param datatype [RGFA::Field::FIELD_DATATYPE] the datatype
   # @raise [RGFA::ArgumentError] if +datatype+ is not
   #   a valid datatype for tags
-  # @return [RGFA::Line::FIELD_DATATYPE] the datatype
+  # @return [RGFA::Field::FIELD_DATATYPE] the datatype
   def set_datatype(fieldname, datatype)
     if predefined_tag?(fieldname)
       if get_datatype(fieldname) != datatype
@@ -417,7 +408,7 @@ class RGFA::Line
       raise RGFA::FormatError,
         "#{fieldname} is not a valid custom tag name"
     end
-    unless TAG_DATATYPE.include?(datatype)
+    unless RGFA::Field::TAG_DATATYPE.include?(datatype)
       raise RGFA::ArgumentError, "Unknown datatype: #{datatype}"
     end
     @datatype[fieldname] = datatype

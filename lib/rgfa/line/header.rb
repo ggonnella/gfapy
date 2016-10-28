@@ -26,7 +26,7 @@ class RGFA::Line::Header < RGFA::Line
   # the new one
   # @param fieldname [Symbol]
   # @param value [Object]
-  # @param datatype [RGFA::Line::TAG_DATATYPE, nil] the datatype to use;
+  # @param datatype [RGFA::Field::TAG_DATATYPE, nil] the datatype to use;
   #   the default is to determine the datatype according to the value or the
   #   previous values present int the field
   def add(fieldname, value, datatype=nil)

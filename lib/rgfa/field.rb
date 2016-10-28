@@ -84,6 +84,26 @@ require_relative "field/string.rb"
 #
 module RGFA::Field
 
+  # Symbol representing a GFA1-specific datatype for positional fields
+  GFA1_POSFIELD_DATATYPE = [:cig, :cgs, :lbs, :pos, :lbl, :seq]
+
+  # Symbol representing a GFA2-specific datatype for positional fields
+  GFA2_POSFIELD_DATATYPE = [:aln, :any, :idn, :oid, :psn, :crt, :sqn]
+
+  # Symbol representing a datatype for positional fields common to GFA1 and GFA2
+  GFAX_POSFIELD_DATATYPE = [:cmt, :orn]
+
+  # Symbol representing a datatype for positional fields
+  POSFIELD_DATATYPE = GFA1_POSFIELD_DATATYPE +
+                      GFA2_POSFIELD_DATATYPE +
+                      GFAX_POSFIELD_DATATYPE
+
+  # A symbol representing a datatype for tags
+  TAG_DATATYPE = [:A, :i, :f, :Z, :J, :H, :B]
+
+  # A symbol representing a valid datatype
+  FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
+
   FIELD_MODULE = {
     :cig => RGFA::Field::AlignmentGFA1,
     :aln => RGFA::Field::AlignmentGFA2,
@@ -119,7 +139,7 @@ module RGFA::Field
     # with the specified datatype, if a datatype is specified (see +datatype+),
     # e.g. Integer # for i fields.
     # @api private
-    # @param datatype [RGFA::Line::FIELD_DATATYPE] datatype to use. If no
+    # @param datatype [RGFA::Field::FIELD_DATATYPE] datatype to use. If no
     #   datatype is specified, any class will do and the default datatype
     #   will be chosen (see RGFA::DefaultDatatype module).
     # @param fieldname [String] fieldname, for error messages (optional)
@@ -166,7 +186,7 @@ module RGFA::Field
     # Representation of the data as a GFA tag +xx:d:content+, where +xx+ is
     # the tag name and +d+ is the datatype.
     # @param fieldname [Symbol] the tag name
-    # @param datatype [RGFA::Line::TAG_DATATYPE] (<i>defaults to: the value
+    # @param datatype [RGFA::Field::TAG_DATATYPE] (<i>defaults to: the value
     #  returned by {#default_gfa_tag_datatype}</i>)
     # @api private
     def to_gfa_tag(fieldname, datatype: default_gfa_tag_datatype)
@@ -180,7 +200,7 @@ module RGFA::Field
   module Parser
 
     # Parse a GFA string representation and decodes it into a Ruby object
-    # @param datatype [RGFA::Line::FIELD_DATATYPE] the datatype to use
+    # @param datatype [RGFA::Field::FIELD_DATATYPE] the datatype to use
     # @param safe [Boolean] <i>(defaults to: +true+)</i> if +true+ the safe
     #   version of the decode function for the datatype is used, which
     #   validates the content of the string; if +false+, the string is
@@ -225,7 +245,7 @@ module RGFA::Field
     # The +content+ is not decoded (see #parse_gfa_field).
     # @raise [RGFA::FormatError] if the string does not represent
     #   a valid GFA tag
-    # @return [Array(Symbol, RGFA::Line::FIELD_DATATYPE, String)]
+    # @return [Array(Symbol, RGFA::Field::FIELD_DATATYPE, String)]
     #   the parsed content of the field
     # @api private
     def parse_gfa_tag
@@ -247,7 +267,7 @@ module RGFA::Field
     # Validates a GFA string representation according to the field datatype.
     # @!macro [new] validate_gfa_field
     #   @raise [RGFA::TypeError] if an unknown datatype is specified
-    #   @param datatype [RGFA::Line::FIELD_DATATYPE] the datatype to use
+    #   @param datatype [RGFA::Field::FIELD_DATATYPE] the datatype to use
     #   @param fieldname [String] fieldname, for error messages (optional)
     #   @raise [RGFA::FormatError] if the object type or content
     #     is not compatible to the provided datatype
@@ -304,7 +324,7 @@ module RGFA::DefaultDatatypes
   module Object
     # @!macro [new] gfa_datatype
     #   GFA tag datatype to use, if none is provided
-    #   @return [RGFA::Line::TAG_DATATYPE]
+    #   @return [RGFA::Field::TAG_DATATYPE]
     #   @api private
     def default_gfa_tag_datatype; :Z; end
   end

@@ -44,7 +44,7 @@ class RGFA::ByteArray < Array
   end
 
   # GFA tag datatype to use, if none is provided
-  # @return [RGFA::Line::TAG_DATATYPE]
+  # @return [RGFA::Field::TAG_DATATYPE]
   def default_gfa_tag_datatype; :H; end
 
 end
