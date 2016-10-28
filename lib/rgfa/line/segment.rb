@@ -6,9 +6,9 @@ class RGFA::Line::Segment < RGFA::Line
                :"2.0" => [:name, :slen, :sequence]}
   PREDEFINED_TAGS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
-    :name => :lbl,
-    :sequence => :seq,
-    :slen => :pos,
+    :name => :segment_name_gfa1,
+    :sequence => :sequence_gfa1,
+    :slen => :i,
     :LN => :i,
     :RC => :i,
     :FC => :i,

@@ -1,4 +1,4 @@
-module RGFA::Field::RecordType
+module RGFA::Field::CustomRecordType
 
   def unsafe_decode(string)
     string.to_sym
@@ -12,8 +12,12 @@ module RGFA::Field::RecordType
   def validate_encoded(string)
     if string !~ /^[!-~]+$/
       raise RGFA::FormatError,
-        "#{string.inspect} is not a valid record type\n"+
+        "#{string.inspect} is not a valid custom record type\n"+
         "(it contains spaces and/or non-printable characters)"
+    elsif [:E, :G, :F, :O, :U, :H, :"#", :S].include?(string.to_sym)
+      raise RGFA::FormatError,
+        "#{string.inspect} is not a valid custom record type\n"+
+        "(it is a predefined GFA2 record type)"
     end
   end
 

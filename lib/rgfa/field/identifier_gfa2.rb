@@ -1,4 +1,4 @@
-module RGFA::Field::SegmentName
+module RGFA::Field::IdentifierGFA2
 
   def unsafe_decode(string)
     string.to_sym
@@ -10,27 +10,23 @@ module RGFA::Field::SegmentName
   end
 
   def validate_encoded(string)
-    if string !~ /^[!-)+-<>-~][!-~]*$/
+    if string !~ /^[!-~]+$/
       raise RGFA::FormatError,
-        "#{string.inspect} is not a valid GFA1 segment name\n"+
-        "(it does not match the regular expression [!-)+-<>-~][!-~]*"
-    elsif string =~ /[+-],/
-      raise RGFA::FormatError,
-        "#{string.inspect} is not a valid GFA1 segment name\n"+
-        "(it contains + or - followed by ,)"
+        "#{string.inspect} is not a valid GFA2 identifier\n"+
+        "(it contains spaces or non-printable characters)"
     end
   end
 
   def validate_decoded(object)
     case object
-    when RGFA::Line::Segment
-      validate_encoded(object.name)
+    when RGFA::Line
+      validate_encoded(object.id)
     when String, Symbol
       validate_encoded(object)
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: Symbol, String, RGFA::Line::Segment)"
+        "(accepted classes: String, Symbol, RGFA::Line)"
     end
   end
 
@@ -44,12 +40,12 @@ module RGFA::Field::SegmentName
       return object
     when Symbol
       return object.to_s
-    when RGFA::Line::Segment
-      return object.name.to_s
+    when RGFA::Line
+      return object.id.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: Symbol, String, RGFA::Line::Segment)"
+        "(accepted classes: String, Symbol, RGFA::Line)"
     end
   end
 

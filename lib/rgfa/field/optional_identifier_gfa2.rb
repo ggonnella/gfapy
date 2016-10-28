@@ -1,4 +1,4 @@
-module RGFA::Field::OptionalIdentifier
+module RGFA::Field::OptionalIdentifierGFA2
 
   def unsafe_decode(string)
     if string == "*"
@@ -20,7 +20,7 @@ module RGFA::Field::OptionalIdentifier
   def validate_encoded(string)
     if string !~ /^[!-~]+$/
       raise RGFA::FormatError,
-        "#{string.inspect} is not a valid GFA2 identifier\n"+
+        "#{string.inspect} is not a valid GFA2 optional identifier\n"+
         "(it contains spaces or non-printable characters)"
     end
   end

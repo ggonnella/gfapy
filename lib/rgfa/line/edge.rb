@@ -8,15 +8,15 @@ class RGFA::Line::Edge < RGFA::Line
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
-    :eid => :any,
-    :sid1 => :any,
-    :or2 => :any,
-    :sid2 => :any,
-    :beg1 => :any,
-    :end1 => :any,
-    :beg2 => :any,
-    :end2 => :any,
-    :alignment => :any
+    :eid => :optional_identifier_gfa2,
+    :sid1 => :identifier_gfa2,
+    :or2 => :orientation,
+    :sid2 => :identifier_gfa2,
+    :beg1 => :position_gfa2,
+    :end1 => :position_gfa2,
+    :beg2 => :position_gfa2,
+    :end2 => :position_gfa2,
+    :alignment => :alignment_gfa2,
   }
 
   define_field_methods!

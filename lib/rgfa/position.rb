@@ -19,7 +19,7 @@ class RGFA::Position
   end
 
   def self.from_string(string)
-    if string.last == "$"
+    if string[-1] == "$"
       last = true
       string = string[0..-2]
     else

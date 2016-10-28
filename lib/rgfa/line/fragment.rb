@@ -8,14 +8,14 @@ class RGFA::Line::Fragment < RGFA::Line
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
-    :sid => :any,
-    :or => :any,
-    :external => :any,
-    :s_beg => :any,
-    :s_end => :any,
-    :f_beg => :any,
-    :f_end => :any,
-    :alignment => :any
+    :sid => :identifier_gfa2,
+    :or => :orientation,
+    :external => :identifier_gfa2,
+    :s_beg => :position_gfa2,
+    :s_end => :position_gfa2,
+    :f_beg => :position_gfa2,
+    :f_end => :position_gfa2,
+    :alignment => :alignment_gfa2
   }
 
   define_field_methods!

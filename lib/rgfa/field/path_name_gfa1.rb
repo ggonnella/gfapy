@@ -1,4 +1,4 @@
-module RGFA::Field::PathName
+module RGFA::Field::PathNameGFA1
 
   def unsafe_decode(string)
     string.to_sym

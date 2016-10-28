@@ -7,13 +7,13 @@ class RGFA::Line::Gap < RGFA::Line
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
-    :gid => :any,
-    :sid1 => :any,
-    :or1 => :any,
-    :sid2 => :any,
-    :or2 => :any,
-    :disp => :any,
-    :var => :any
+    :gid => :optional_identifier_gfa2,
+    :sid1 => :identifier_gfa2,
+    :or1 => :orientation,
+    :sid2 => :identifier_gfa2,
+    :or2 => :orientation,
+    :disp => :generic,
+    :var => :generic
   }
 
   define_field_methods!

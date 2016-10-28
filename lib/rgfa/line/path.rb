@@ -7,9 +7,9 @@ class RGFA::Line::Path < RGFA::Line
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {
-    :path_name => :ptn,
-    :segment_names => :lbs,
-    :overlaps => :cgs,
+    :path_name => :path_name_gfa1,
+    :segment_names => :oriented_segments,
+    :overlaps => :alignment_list_gfa1,
   }
 
   define_field_methods!

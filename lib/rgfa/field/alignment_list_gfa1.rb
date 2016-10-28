@@ -1,4 +1,4 @@
-module RGFA::Field::CigarsList
+module RGFA::Field::AlignmentListGFA1
 
   def unsafe_decode(string)
     string.split(",").map {|c| c.to_cigar(valid: true)}

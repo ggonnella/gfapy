@@ -7,12 +7,12 @@ class RGFA::Line::Containment < RGFA::Line
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = [:MQ, :NM]
   DATATYPE = {
-     :from => :lbl,
-     :from_orient => :orn,
-     :to => :lbl,
-     :to_orient => :orn,
-     :pos => :pos,
-     :overlap => :cig,
+     :from => :segment_name_gfa1,
+     :from_orient => :orientation,
+     :to => :segment_name_gfa1,
+     :to_orient => :orientation,
+     :pos => :position_gfa1,
+     :overlap => :alignment_gfa1,
      :MQ => :i,
      :NM => :i,
   }

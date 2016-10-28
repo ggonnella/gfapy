@@ -12,24 +12,24 @@ RGFA::Field = Module.new
 
 require_relative "field/alignment_gfa1.rb"
 require_relative "field/alignment_gfa2.rb"
+require_relative "field/alignment_list_gfa1.rb"
 require_relative "field/byte_array.rb"
 require_relative "field/char.rb"
-require_relative "field/cigars_list.rb"
 require_relative "field/comment.rb"
+require_relative "field/custom_record_type.rb"
 require_relative "field/float.rb"
 require_relative "field/generic.rb"
-require_relative "field/identifier.rb"
+require_relative "field/identifier_gfa2.rb"
 require_relative "field/integer.rb"
 require_relative "field/json.rb"
 require_relative "field/numeric_array.rb"
-require_relative "field/optional_identifier.rb"
+require_relative "field/optional_identifier_gfa2.rb"
 require_relative "field/orientation.rb"
 require_relative "field/oriented_segments.rb"
-require_relative "field/path_name.rb"
+require_relative "field/path_name_gfa1.rb"
 require_relative "field/position_gfa1.rb"
 require_relative "field/position_gfa2.rb"
-require_relative "field/record_type.rb"
-require_relative "field/segment_name.rb"
+require_relative "field/segment_name_gfa1.rb"
 require_relative "field/sequence_gfa1.rb"
 require_relative "field/sequence_gfa2.rb"
 require_relative "field/string.rb"
@@ -86,13 +86,29 @@ require_relative "field/string.rb"
 module RGFA::Field
 
   # Symbol representing a GFA1-specific datatype for positional fields
-  GFA1_POSFIELD_DATATYPE = [:cig, :cgs, :lbs, :pos, :lbl, :seq, :ptn]
+  GFA1_POSFIELD_DATATYPE = [
+                             :alignment_gfa1,
+                             :alignment_list_gfa1,
+                             :oriented_segments,
+                             :position_gfa1,
+                             :segment_name_gfa1,
+                             :sequence_gfa1,
+                             :path_name_gfa1,
+                           ]
 
   # Symbol representing a GFA2-specific datatype for positional fields
-  GFA2_POSFIELD_DATATYPE = [:aln, :any, :idn, :oid, :psn, :crt, :sqn]
+  GFA2_POSFIELD_DATATYPE = [
+                             :alignment_gfa2,
+                             :generic,
+                             :identifier_gfa2,
+                             :optional_identifier_gfa2,
+                             :position_gfa2,
+                             :custom_record_type,
+                             :sequence_gfa2,
+                           ]
 
   # Symbol representing a datatype for positional fields common to GFA1 and GFA2
-  GFAX_POSFIELD_DATATYPE = [:cmt, :orn]
+  GFAX_POSFIELD_DATATYPE = [:comment, :orientation]
 
   # Symbol representing a datatype for positional fields
   POSFIELD_DATATYPE = GFA1_POSFIELD_DATATYPE +
@@ -106,29 +122,29 @@ module RGFA::Field
   FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
 
   FIELD_MODULE = {
-    :cig => RGFA::Field::AlignmentGFA1,
-    :aln => RGFA::Field::AlignmentGFA2,
-    :H   => RGFA::Field::ByteArray,
-    :A   => RGFA::Field::Char,
-    :cgs => RGFA::Field::CigarsList,
-    :cmt => RGFA::Field::Comment,
-    :f   => RGFA::Field::Float,
-    :any => RGFA::Field::Generic,
-    :idn => RGFA::Field::Identifier,
-    :i   => RGFA::Field::Integer,
-    :J   => RGFA::Field::JSON,
-    :B   => RGFA::Field::NumericArray,
-    :oid => RGFA::Field::OptionalIdentifier,
-    :orn => RGFA::Field::Orientation,
-    :lbs => RGFA::Field::OrientedSegments,
-    :ptn => RGFA::Field::PathName,
-    :pos => RGFA::Field::PositionGFA1,
-    :psn => RGFA::Field::PositionGFA2,
-    :crt => RGFA::Field::RecordType,
-    :lbl => RGFA::Field::SegmentName,
-    :seq => RGFA::Field::SequenceGFA1,
-    :sqn => RGFA::Field::SequenceGFA2,
-    :Z   => RGFA::Field::String,
+    :alignment_gfa1           => RGFA::Field::AlignmentGFA1,
+    :alignment_gfa2           => RGFA::Field::AlignmentGFA2,
+    :alignment_list_gfa1      => RGFA::Field::AlignmentListGFA1,
+    :comment                  => RGFA::Field::Comment,
+    :generic                  => RGFA::Field::Generic,
+    :identifier_gfa2          => RGFA::Field::IdentifierGFA2,
+    :optional_identifier_gfa2 => RGFA::Field::OptionalIdentifierGFA2,
+    :orientation              => RGFA::Field::Orientation,
+    :oriented_segments        => RGFA::Field::OrientedSegments,
+    :path_name_gfa1           => RGFA::Field::PathNameGFA1,
+    :position_gfa1            => RGFA::Field::PositionGFA1,
+    :position_gfa2            => RGFA::Field::PositionGFA2,
+    :custom_record_type       => RGFA::Field::CustomRecordType,
+    :segment_name_gfa1        => RGFA::Field::SegmentNameGFA1,
+    :sequence_gfa1            => RGFA::Field::SequenceGFA1,
+    :sequence_gfa2            => RGFA::Field::SequenceGFA2,
+    :H    => RGFA::Field::ByteArray,
+    :A    => RGFA::Field::Char,
+    :f    => RGFA::Field::Float,
+    :i    => RGFA::Field::Integer,
+    :J    => RGFA::Field::JSON,
+    :B    => RGFA::Field::NumericArray,
+    :Z    => RGFA::Field::String,
   }
 
   # Encoding of Ruby objects to GFA string representation

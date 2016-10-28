@@ -18,7 +18,15 @@ class RGFA::Line
 
   # List of data types which are parsed only on access;
   # all other are parsed when read.
-  DELAYED_PARSING_DATATYPES = [:cig, :cgs, :lbs, :H, :J, :B]
+  DELAYED_PARSING_DATATYPES = [
+                                :alignment_gfa1,
+                                :alignment_gfa2,
+                                :alignment_list_gfa1,
+                                :oriented_segments,
+                                :H,
+                                :J,
+                                :B,
+                              ]
 
   # Direction of a segment for links/containments
   DIRECTION = [:from, :to]

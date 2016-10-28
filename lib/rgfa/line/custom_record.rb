@@ -18,7 +18,7 @@ class RGFA::Line::CustomRecord < RGFA::Line
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
-    :record_type => :crt,
+    :record_type => :custom_record_type,
   }
 
   define_field_methods!
@@ -47,12 +47,12 @@ class RGFA::Line::CustomRecord < RGFA::Line
 
   def delayed_initialize_positional_fields(strings, n_positional_fields)
     @positional_fieldnames = []
-    init_field_value(:record_type, :crt, strings[0])
+    init_field_value(:record_type, :custom_record_type, strings[0])
     1.upto(n_positional_fields-1) do |i|
       n = :"field#{i}"
-      init_field_value(n, :any, strings[i])
+      init_field_value(n, :generic, strings[i])
       @positional_fieldnames << n
-      @datatype[n] = :any
+      @datatype[n] = :generic
     end
   end
 

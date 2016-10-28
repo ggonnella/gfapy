@@ -8,11 +8,11 @@ class RGFA::Line::Link < RGFA::Line
   PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
   FIELD_ALIAS = {}
   DATATYPE = {
-     :from => :lbl,
-     :from_orient => :orn,
-     :to => :lbl,
-     :to_orient => :orn,
-     :overlap => :cig,
+     :from => :segment_name_gfa1,
+     :from_orient => :orientation,
+     :to => :segment_name_gfa1,
+     :to_orient => :orientation,
+     :overlap => :alignment_gfa1,
      :MQ => :i,
      :NM => :i,
      :RC => :i,

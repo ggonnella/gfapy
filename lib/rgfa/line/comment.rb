@@ -9,7 +9,7 @@ class RGFA::Line::Comment < RGFA::Line
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {
-    :content => :any,
+    :content => :comment,
   }
 
   define_field_methods!
