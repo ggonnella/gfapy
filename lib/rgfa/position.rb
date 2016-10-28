@@ -42,3 +42,15 @@ class String
   end
 
 end
+
+class Integer
+
+  def value
+    self
+  end
+
+  def last
+    nil
+  end
+
+end
