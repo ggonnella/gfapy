@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/field/float.rb',
               'lib/rgfa/field/generic.rb',
               'lib/rgfa/field/identifier_gfa2.rb',
+              'lib/rgfa/field/identifier_list_gfa2.rb',
               'lib/rgfa/field/integer.rb',
               'lib/rgfa/field/json.rb',
               'lib/rgfa/field/numeric_array.rb',

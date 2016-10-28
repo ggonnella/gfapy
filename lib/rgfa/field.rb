@@ -20,6 +20,7 @@ require_relative "field/custom_record_type.rb"
 require_relative "field/float.rb"
 require_relative "field/generic.rb"
 require_relative "field/identifier_gfa2.rb"
+require_relative "field/identifier_list_gfa2.rb"
 require_relative "field/integer.rb"
 require_relative "field/json.rb"
 require_relative "field/numeric_array.rb"
@@ -102,10 +103,12 @@ module RGFA::Field
                              :alignment_gfa2,
                              :generic,
                              :identifier_gfa2,
+                             :identifier_list_gfa2,
                              :optional_identifier_gfa2,
                              :position_gfa2,
                              :custom_record_type,
                              :sequence_gfa2,
+                             :optional_integer,
                            ]
 
   # Symbol representing a datatype for positional fields common to GFA1 and GFA2
@@ -129,6 +132,7 @@ module RGFA::Field
     :comment                  => RGFA::Field::Comment,
     :generic                  => RGFA::Field::Generic,
     :identifier_gfa2          => RGFA::Field::IdentifierGFA2,
+    :identifier_list_gfa2     => RGFA::Field::IdentifierListGFA2,
     :optional_identifier_gfa2 => RGFA::Field::OptionalIdentifierGFA2,
     :optional_integer         => RGFA::Field::OptionalInteger,
     :orientation              => RGFA::Field::Orientation,

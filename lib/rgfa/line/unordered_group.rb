@@ -8,7 +8,7 @@ class RGFA::Line::UnorderedGroup < RGFA::Line
   FIELD_ALIAS = {}
   DATATYPE = {
     :pid => :optional_identifier_gfa2,
-    :items => :generic,
+    :items => :identifier_list_gfa2,
   }
 
   define_field_methods!
