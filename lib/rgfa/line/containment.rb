@@ -2,8 +2,7 @@
 class RGFA::Line::Containment < RGFA::Line
 
   RECORD_TYPE = :C
-  POSFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :pos, :overlap],
-               :"2.0" => nil}
+  POSFIELDS = [:from, :from_orient, :to, :to_orient, :pos, :overlap]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = [:MQ, :NM]
   DATATYPE = {
@@ -32,14 +31,14 @@ class RGFA::Line::Containment < RGFA::Line
   end
 
   # The from segment name, in both cases where from is a segment name (Symbol)
-  # or a segment (RGFA::Line::Segment)
+  # or a segment (RGFA::Line::SegmentGFA1)
   # @return [Symbol]
   def from_name
     from.to_sym
   end
 
   # The to segment name, in both cases where to is a segment name (Symbol)
-  # or a segment (RGFA::Line::Segment)
+  # or a segment (RGFA::Line::SegmentGFA1)
   # @return [Symbol]
   def to_name
     to.to_sym

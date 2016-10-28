@@ -2,9 +2,7 @@
 class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F
-  POSFIELDS = {:"1.0" => nil,
-               :"2.0" => [:sid, :or, :external, :s_beg, :s_end,
-                          :f_beg, :f_end, :alignment]}
+  POSFIELDS = [:sid, :or, :external, :s_beg, :s_end, :f_beg, :f_end, :alignment]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

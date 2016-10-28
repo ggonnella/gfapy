@@ -2,8 +2,7 @@
 class RGFA::Line::Path < RGFA::Line
 
   RECORD_TYPE = :P
-  POSFIELDS = {:"1.0" => [:path_name, :segment_names, :overlaps],
-               :"2.0" => nil}
+  POSFIELDS = [:path_name, :segment_names, :overlaps]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {

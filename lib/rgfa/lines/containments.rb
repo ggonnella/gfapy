@@ -12,8 +12,8 @@ module RGFA::Lines::Containments
       if !@segments.has_key?(segment_name)
         raise RGFA::NotFoundError if @segments_first_order
         @segments[segment_name] =
-          RGFA::Line::Segment.new({:name => segment_name},
-                                  virtual: true)
+          RGFA::Line::SegmentGFA1.new({:name => segment_name},
+                                      virtual: true)
       end
       s = @segments[segment_name]
       s.containments[dir][orient] << gfa_line
@@ -59,8 +59,10 @@ module RGFA::Lines::Containments
   #
   # @return [Array<RGFA::Line::Containment>]
   # @!macro [new] container_contained
-  #   @param container [RGFA::Line::Segment, Symbol] a segment instance or name
-  #   @param contained [RGFA::Line::Segment, Symbol] a segment instance or name
+  #   @param container [RGFA::Line::SegmentGFA1, Symbol]
+  #     a segment instance or name
+  #   @param contained [RGFA::Line::SegmentGFA1, Symbol]
+  #     a segment instance or name
   #
   def containments_between(container, contained)
     contained_in(container).select {|l| l.to.to_sym == contained.to_sym }

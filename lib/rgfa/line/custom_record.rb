@@ -13,8 +13,7 @@
 class RGFA::Line::CustomRecord < RGFA::Line
 
   RECORD_TYPE = nil
-  POSFIELDS = {:"1.0" => nil,
-               :"2.0" => [:record_type]}
+  POSFIELDS = [:record_type]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

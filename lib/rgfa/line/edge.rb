@@ -2,9 +2,8 @@
 class RGFA::Line::Edge < RGFA::Line
 
   RECORD_TYPE = :E
-  POSFIELDS = {:"1.0" => nil,
-               :"2.0" => [:eid, :sid1, :or2, :sid2, :beg1,
-                          :end1, :beg2, :end2, :alignment]}
+  POSFIELDS = [:eid, :sid1, :or2, :sid2, :beg1,
+               :end1, :beg2, :end2, :alignment]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

@@ -67,10 +67,7 @@ class RGFA::Line
   #
   # Subclasses of RGFA::Line _must_ define the following constants:
   # - RECORD_TYPE [RGFA::Line::RECORD_TYPES]
-  # - POSFIELDS [Hash{Symbol=>(Array<Symbol>,nil)}] positional fields
-  #   for each version of the specification (nil if does not apply);
-  #   use :generic instead of a version symbol for generic records
-  #   (same definition in all versions)
+  # - POSFIELDS [Array<Symbol>] positional fields
   # - FIELD_ALIAS [Hash{Symbol=>Symbol}] alternative names for positional
   #   fields
   # - PREDEFINED_TAGS [Array<Symbol>] predefined tags
@@ -151,27 +148,9 @@ class RGFA::Line
       end
     end
     if RECORD_TYPE_VERSIONS[:different].include?(rt)
-      errors = []
-      errklass = nil
-      RGFA::VERSIONS.each do |version|
-        begin
-          @version = version
-          initialize_positional_fields(data)
-          initialize_tags(data)
-          return
-        rescue => err
-          errors << "- #{version}: #{err}"
-          errklass = err.class if errklass.nil?
-          @data = {}
-          @datatype = {}
-          next
-        end
-      end
-      raise errklass,
-        "Line #{rt} #{data.join(" ")} has an invalid format"+
-        " for all known GFA specification versions. \n"+
-        "Errors:\n"+
-        errors.join("\n")
+      raise RGFA::RuntimeError,
+        "GFA version not specified\n"+
+        "Records of type #{rt} have different syntax according to the version"
     end
   end
   private :process_unknown_version
@@ -202,7 +181,7 @@ class RGFA::Line
   def self.subclass_GFA1(record_type)
     case record_type.to_sym
     when :H then RGFA::Line::Header
-    when :S then RGFA::Line::Segment
+    when :S then RGFA::Line::SegmentGFA1
     when :"#" then RGFA::Line::Comment
     when :L then RGFA::Line::Link
     when :C then RGFA::Line::Containment
@@ -216,7 +195,7 @@ class RGFA::Line
   def self.subclass_GFA2(record_type)
     case record_type.to_sym
     when :H then RGFA::Line::Header
-    when :S then RGFA::Line::Segment
+    when :S then RGFA::Line::SegmentGFA2
     when :"#" then RGFA::Line::Comment
     when :E then RGFA::Line::Edge
     when :F then RGFA::Line::Fragment
@@ -261,7 +240,7 @@ class RGFA::Line
     if @version.nil?
       raise RGFA::VersionError, "Version is not set"
     end
-    self.class::POSFIELDS[@version]
+    self.class::POSFIELDS
   end
 
   # @return [Array<Symbol>] name of the defined tags
@@ -621,7 +600,7 @@ class RGFA::Line
   private
 
   def n_positional_fields
-    self.class::POSFIELDS[@version].size
+    self.class::POSFIELDS.size
   end
 
   def field_datatype(fieldname)
@@ -669,7 +648,7 @@ class RGFA::Line
         "#{strings.size}) found\n#{strings.inspect}"
     end
     n_positional_fields.times do |i|
-      n = self.class::POSFIELDS[@version][i]
+      n = self.class::POSFIELDS[i]
       init_field_value(n, self.class::DATATYPE[n], strings[i])
     end
   end
@@ -766,7 +745,7 @@ class RGFA::Line
   # This avoids calls to method_missing for fields which are already defined
   #
   def self.define_field_methods!
-    (self::POSFIELDS.values.flatten.compact.uniq +
+    (self::POSFIELDS +
      self::PREDEFINED_TAGS).each do |fieldname|
       define_method(fieldname) do
         get(fieldname)
@@ -812,6 +791,8 @@ end
 #
 require_relative "line/header.rb"
 require_relative "line/segment.rb"
+require_relative "line/segment_gfa1.rb"
+require_relative "line/segment_gfa2.rb"
 require_relative "line/path.rb"
 require_relative "line/link.rb"
 require_relative "line/containment.rb"

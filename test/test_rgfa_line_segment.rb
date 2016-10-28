@@ -8,7 +8,7 @@ class TestRGFALineSegment < Test::Unit::TestCase
             "FC:i:2321","KC:i:1212"]
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
-    assert_equal(RGFA::Line::Segment, str.to_rgfa_line.class)
+    assert_equal(RGFA::Line::SegmentGFA1, str.to_rgfa_line.class)
     assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.name)
     assert_equal(fields[2], str.to_rgfa_line.sequence)
@@ -23,11 +23,11 @@ class TestRGFALineSegment < Test::Unit::TestCase
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line
+      f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line(version: :"1.0")
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
     assert_raises(RGFA::InconsistencyError) do
-      f.join("\t").to_rgfa_line(validate: 3)
+      f.join("\t").to_rgfa_line(validate: 3, version: :"1.0")
     end
     f=["S","2","ACGTCACANNN","LN:i:11"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }

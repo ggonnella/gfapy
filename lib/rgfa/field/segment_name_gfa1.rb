@@ -23,14 +23,14 @@ module RGFA::Field::SegmentNameGFA1
 
   def validate_decoded(object)
     case object
-    when RGFA::Line::Segment
+    when RGFA::Line::SegmentGFA1
       validate_encoded(object.name)
     when String, Symbol
       validate_encoded(object)
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: Symbol, String, RGFA::Line::Segment)"
+        "(accepted classes: Symbol, String, RGFA::Line::SegmentGFA1)"
     end
   end
 
@@ -44,12 +44,12 @@ module RGFA::Field::SegmentNameGFA1
       return object
     when Symbol
       return object.to_s
-    when RGFA::Line::Segment
+    when RGFA::Line::SegmentGFA1
       return object.name.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: Symbol, String, RGFA::Line::Segment)"
+        "(accepted classes: Symbol, String, RGFA::Line::SegmentGFA1)"
     end
   end
 

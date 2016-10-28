@@ -6,10 +6,7 @@
 class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H
-  versions = [:"1.0", :"2.0", :generic]
-  posfields = {}
-  versions.each {|v| posfields[v] = []}
-  POSFIELDS = posfields
+  POSFIELDS = []
   PREDEFINED_TAGS = [:VN]
   FIELD_ALIAS = {}
   DATATYPE = {

@@ -68,6 +68,8 @@ Gem::Specification.new do |s|
               'lib/rgfa/line/ordered_group.rb',
               'lib/rgfa/line/path.rb',
               'lib/rgfa/line/segment.rb',
+              'lib/rgfa/line/segment_gfa1.rb',
+              'lib/rgfa/line/segment_gfa2.rb',
               'lib/rgfa/line/unordered_group.rb',
               'lib/rgfa/line.rb',
               'lib/rgfa/lines/comments.rb',

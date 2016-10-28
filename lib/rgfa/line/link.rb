@@ -3,8 +3,7 @@
 class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = :L
-  POSFIELDS = {:"1.0" => [:from, :from_orient, :to, :to_orient, :overlap],
-               :"2.0" => nil}
+  POSFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
   PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
   FIELD_ALIAS = {}
   DATATYPE = {
@@ -23,14 +22,14 @@ class RGFA::Line::Link < RGFA::Line
   define_field_methods!
 
   # The other segment of a link
-  # @param segment [RGFA::Line::Segment, Symbol] segment name or instance
+  # @param segment [RGFA::Line::SegmentGFA1, Symbol] segment name or instance
   # @raise [RGFA::NotFoundError]
   #   if segment is not involved in the link
   # @return [Symbol] the name of the other segment of the link
   #   if circular, then +segment+
   def other(segment)
     segment_name =
-      (segment.kind_of?(RGFA::Line::Segment) ? segment.name : segment.to_sym)
+      (segment.kind_of?(RGFA::Line) ? segment.name : segment.to_sym)
     if segment_name == from.to_sym
       to
     elsif segment_name == to.to_sym
@@ -102,14 +101,14 @@ class RGFA::Line::Link < RGFA::Line
   end
 
   # The from segment name, in both cases where from is a segment name (Symbol)
-  # or a segment (RGFA::Line::Segment)
+  # or a segment (RGFA::Line::SegmentGFA1)
   # @return [Symbol]
   def from_name
     from.to_sym
   end
 
   # The to segment name, in both cases where to is a segment name (Symbol)
-  # or a segment (RGFA::Line::Segment)
+  # or a segment (RGFA::Line::SegmentGFA1)
   # @return [Symbol]
   def to_name
     to.to_sym

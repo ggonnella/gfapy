@@ -2,10 +2,7 @@
 class RGFA::Line::Comment < RGFA::Line
 
   RECORD_TYPE = :"#"
-  versions = [:"1.0", :"2.0", :generic]
-  posfields = {}
-  versions.each {|v| posfields[v] = [:content]}
-  POSFIELDS = posfields
+  POSFIELDS = [:content]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {

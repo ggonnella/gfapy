@@ -193,9 +193,12 @@ module RGFA::Lines
 
   # Delete elements from the RGFA graph
   # @overload rm(segment)
-  #   @param segment [String, RGFA::Line::Segment] segment name or instance
+  #   @param segment
+  #     [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #     segment name or instance
   # @overload rm(path)
-  #   @param path [String, RGFA::Line::Segment] path name or instance
+  #   @param path [String, Symbol, RGFA::Line::Path]
+  #     path name or instance
   # @overload rm(link)
   #   @param link [RGFA::Line::Link] link line instance
   # @overload rm(containment)
