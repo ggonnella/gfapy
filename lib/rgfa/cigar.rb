@@ -23,14 +23,14 @@ class RGFA::CIGAR < Array
   #
   # @return [RGFA::CIGAR]
   def complement
-    reverse.map do |op|
+    RGFA::CIGAR.new(reverse.map do |op|
       if op.code == :I
         op.code = :D
-      elsif op.code == :D
+      elsif op.code == :D or op.code == :N
         op.code = :I
       end
       op
-    end
+    end)
   end
 
   # Parse a CIGAR string into an array of CIGAR operations.
@@ -92,7 +92,37 @@ class RGFA::CIGAR < Array
   # Create a copy
   # @return [RGFA::CIGAR]
   def clone
-    map{|x|x.clone}
+    RGFA::CIGAR.new(map{|x|x.clone})
+  end
+
+  # Lenght of the aligned substring on the reference sequence
+  # (+from+ sequence for GFA1 links/containments;
+  #  +sid1+ sequence for GFA2 edges)
+  # @return [Integer] length of the aligned substring on the
+  #   reference sequence
+  def length_on_reference
+    l = 0
+    each do |op|
+     if [:M, :"=", :X, :D, :N].include?(op.code)
+       l += op.len
+     end
+    end
+    return l
+  end
+
+  # Lenght of the aligned substring on the query sequence
+  # (+to+ sequence for GFA1 links/containments;
+  #  +sid2+ sequence for GFA2 edges)
+  # @return [Integer] length of the aligned substring on the
+  #   query sequence
+  def length_on_query
+    l = 0
+    each do |op|
+     if [:M, :"=", :X, :I, :S].include?(op.code)
+       l += op.len
+     end
+    end
+    return l
   end
 
 end

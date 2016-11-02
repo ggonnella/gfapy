@@ -8,7 +8,6 @@ class RGFA::Line::SegmentGFA2 < RGFA::Line
     :sid => :identifier_gfa2,
     :slen => :i,
     :sequence => :sequence_gfa2,
-    :LN => :i,
     :RC => :i,
     :FC => :i,
     :KC => :i,
@@ -18,6 +17,15 @@ class RGFA::Line::SegmentGFA2 < RGFA::Line
   FIELD_ALIAS = { :name => :sid, :id => :sid }
 
   define_field_methods!
+
+  # @return [Array<String>] an array of GFA1 field strings
+  def to_gfa1_a
+    a = ["S", field_to_s(:name, tag: false),
+              field_to_s(:sequence, tag: false)]
+    a << slen.to_gfa_field(datatype: :i, fieldname: :LN)
+    tagnames.each {|fn| a << field_to_s(fn, tag: true)}
+    return a
+  end
 
   attr_writer :links, :containments, :paths
 

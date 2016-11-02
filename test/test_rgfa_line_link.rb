@@ -40,4 +40,39 @@ class TestRGFALineLink < Test::Unit::TestCase
     end
   end
 
+  def test_coords
+    g = RGFA.new(version: :"1.0")
+    g << "S\t1\t*\tLN:i:100"
+    g << "L\t1\t+\t2\t-\t1M2D10M1I"
+    assert_equal([87,100], g.links[0].from_coords)
+    assert_raises(RGFA::ValueError) {g.links[0].to_coords}
+    g << "S\t2\t*\tLN:i:100"
+    assert_equal([88,100], g.links[0].to_coords)
+    g << "L\t3\t-\t4\t+\t10M2P3D1M"
+    assert_equal([0,11], g.links[1].to_coords)
+    assert_equal([0,14], g.links[1].from_coords)
+  end
+
+  def test_to_gfa2
+    g = RGFA.new(version: :"1.0")
+    g << "S\t1\t*\tLN:i:100"
+    g << "S\t2\t*\tLN:i:100"
+    g << "S\t3\t*\tLN:i:100"
+    g << "S\t4\t*\tLN:i:100"
+    g << "L\t1\t+\t2\t+\t10M"
+    g << "L\t1\t-\t2\t-\t20M"
+    g << "L\t3\t-\t4\t+\t30M"
+    g << "L\t3\t+\t4\t-\t40M"
+    assert_equal("E	*	1	+	2	90	100$	0	10	10M",
+                 g.links[0].to_gfa2_s)
+    assert_equal("E	*	1	+	2	0	20	80	100$	20M",
+                 g.links[1].to_gfa2_s)
+    assert_equal("E	*	4	-	3	0	30	0	30	30M",
+                 g.links[2].to_gfa2_s)
+    assert_equal("E	*	3	-	4	60	100$	60	100$	40M",
+                 g.links[3].to_gfa2_s)
+    assert_equal(RGFA::Line::Link, g.links[0].to_gfa1.class)
+    assert_equal(RGFA::Line::Edge, g.links[0].to_gfa2.class)
+  end
+
 end

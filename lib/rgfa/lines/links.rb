@@ -20,7 +20,8 @@ module RGFA::Lines::Links
         if !@segments.has_key?(segment_name)
           raise RGFA::NotFoundError if @segments_first_order
           @segments[segment_name] =
-            RGFA::Line::SegmentGFA1.new({:name => segment_name},
+            RGFA::Line::SegmentGFA1.new({:name => segment_name,
+                                         :sequence => "*"},
                                         virtual: true)
         end
         @segments[segment_name].links[dir][orient] << gfa_line
