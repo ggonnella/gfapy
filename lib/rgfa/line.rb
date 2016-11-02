@@ -92,17 +92,15 @@ class RGFA::Line
   # responsible to call #validate_field!, if necessary.
   #
   # - 0: no validation
-  # - 1: the number of positional fields must be correct; tags
-  #      cannot be duplicated; custom tag names must be correct;
-  #      predefined tags must have the correct type; only some
-  #      fields are validated on initialization or first-time access to
-  #      the field content
-  # - 2: 1 + all fields are validated on initialization or first-time
-  #      access to the field content
-  # - 3: 2 + all fields are validated on initialization and record-specific
-  #      validations are run (e.g. compare segment LN tag and sequence lenght)
-  # - 4: 3 + all fields are validated on writing to string
-  # - 5: 4 + all fields are validated by get and set methods
+  # - 1: basic validations (number of positional fields,
+  #      duplicated tags, tag types); some field contents are validated
+  # - 2: basic validations; initialization or first-access validation
+  #      of all fields
+  # - 3: as 2, plus record-type specific cross-field validations
+  #      (e.g. compare GFA1 segment LN tag and sequence lenght)
+  # - 4: as 3, plus field validation on writing to string
+  # - 5: complete validation;
+  #      as 4, plus field validation on all access (get/set)
   #
   def initialize(data, validate: 2, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
@@ -642,7 +640,7 @@ class RGFA::Line
     if @validate >= 3
       s = s.parse_gfa_field(t, safe: true)
     elsif !DELAYED_PARSING_DATATYPES.include?(t)
-      s = s.parse_gfa_field(t, safe: false)
+      s = s.parse_gfa_field(t, safe: @validate >= 2)
     end
     @data[n] = s
   end
@@ -839,7 +837,9 @@ class String
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
   def to_rgfa_line(validate: 2, version: nil)
     if self[0] == "#"
-      return RGFA::Line::Comment.new([self[1..-1]], validate: 0,
+      self =~ /^#(\s*)(.*)$/
+      return RGFA::Line::Comment.new([$2, $1],
+                                     validate: validate,
                                      version: version)
     else
       split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate,
