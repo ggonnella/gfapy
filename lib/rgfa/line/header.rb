@@ -15,99 +15,12 @@ class RGFA::Line::Header < RGFA::Line
 
   define_field_methods!
 
-  # Return the string representation of the tags, changing the value
-  #   of the VN tag to 2.0, if this is present
-  # @return [Array<String>] array of strings representing the tags
-  def to_gfa2_a
-    a = ["H"]
-    (a << "VN:Z:2.0") if self.VN
-    (tagnames-:VN).each {|fn| a << field_to_s(fn, tag: true)}
-    return a
-  end
+end
 
-  # Return the string representation of the tags, changing the value
-  #   of the VN tag to 1.0, if this is present
-  # @return [Array<String>] array of strings representing the tags
-  def to_gfa1_a
-    a = ["H"]
-    (a << "VN:Z:1.0") if self.VN
-    (tagnames-:VN).each {|fn| a << field_to_s(fn, tag: true)}
-    return a
-  end
+require_relative "header/version_conversion.rb"
+require_relative "header/multiline.rb"
 
-  # Set a header value (multi-value compatible).
-  #
-  # If a field does not exist yet, set it to value. If it exists and it is a
-  # {RGFA::FieldArray}, add the value to the field array. If it exists and it
-  # is not a field array, create a field array with the previous value and
-  # the new one
-  # @param fieldname [Symbol]
-  # @param value [Object]
-  # @param datatype [RGFA::Field::TAG_DATATYPE, nil] the datatype to use;
-  #   the default is to determine the datatype according to the value or the
-  #   previous values present int the field
-  def add(fieldname, value, datatype=nil)
-    fieldname = fieldname.to_sym
-    prev = get(fieldname)
-    if prev.nil?
-      set_datatype(fieldname, datatype) if datatype
-      set(fieldname, value)
-      return self
-    elsif !prev.kind_of?(RGFA::FieldArray)
-      prev = RGFA::FieldArray.new(get_datatype(fieldname), [prev])
-      set_datatype(fieldname, :J)
-      set(fieldname,prev)
-    end
-    prev.push_with_validation(value, datatype, fieldname)
-    return self
-  end
-
-  # Array of tags data.
-  #
-  # Returns the tags as an array of [fieldname, datatype, value]
-  # arrays. If a field is a FieldArray, this is splitted into multiple fields
-  # with the same fieldname.
-  # @return [Array<(Symbol, Symbol, Object)>]
-  # @api private
-  def tags
-    retval = []
-    tagnames.each do |of|
-      value = get(of)
-      if value.kind_of?(RGFA::FieldArray)
-        value.each do |elem|
-          retval << [of, value.datatype, elem]
-        end
-      else
-        retval << [of, get_datatype(of), value]
-      end
-    end
-    return retval
-  end
-
-  # Split the header line into single-tag lines.
-  #
-  # If a tag is a FieldArray, this is splitted into multiple fields
-  # with the same fieldname.
-  # @return [Array<RGFA::Line::Header>]
-  # @api private
-  def split
-    tags.map do |tagname, datatype, value|
-      h = RGFA::Line::Header.new([], validate: @validate)
-      h.set_datatype(tagname, datatype)
-      h.set(tagname, value)
-      h
-    end
-  end
-
-  # Merge an additional {RGFA::Line::Header} line into this header line.
-  # @param gfa_line [RGFA::Line::Header] the header line to merge
-  # @return [self]
-  # @api private
-  def merge(gfa_line)
-    gfa_line.tagnames.each do |of|
-      add(of, gfa_line.get(of), gfa_line.get_datatype(of))
-    end
-    self
-  end
-
+class RGFA::Line::Header
+  include RGFA::Line::Header::VersionConversion
+  include RGFA::Line::Header::Multiline
 end

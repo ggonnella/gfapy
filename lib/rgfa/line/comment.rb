@@ -81,42 +81,14 @@ class RGFA::Line::Comment < RGFA::Line
   FIELD_ALIAS = {}
 
   define_field_methods!
+end
 
-  def to_s
-    "##{spacer}#{content}"
-  end
+require_relative "comment/init.rb"
+require_relative "comment/tags.rb"
+require_relative "comment/writer.rb"
 
-  def to_a
-    ["#", content, spacer]
-  end
-
-  def method_missing(m, *args, &block)
-    raise NoMethodError,
-      "undefined method `#{m}' for #{self.inspect}"
-  end
-
-  def set(fieldname, value)
-    if [:comment, :sp].include?(fieldname.to_sym)
-      super
-    else
-      raise RGFA::RuntimeError,
-        "Tags of comment lines cannot be set"
-    end
-  end
-
-  private
-
-  def initialize_positional_fields(strings)
-    init_field_value(:content, :comment, strings[0])
-    sp = strings.size > 1 ? strings[1] : " "
-    init_field_value(:spacer, :comment, sp)
-  end
-
-  def initialize_tags(strings)
-    if strings.size > 2
-      raise RGFA::ValueError,
-        "Comment lines do not support tags"
-    end
-  end
-
+class RGFA::Line::Comment
+  include RGFA::Line::Comment::Init
+  include RGFA::Line::Comment::Tags
+  include RGFA::Line::Comment::Writer
 end
