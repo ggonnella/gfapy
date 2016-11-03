@@ -8,9 +8,8 @@ module RGFA::Lines::Links
     gfa_line.canonicize!
     l = nil
     if segment(gfa_line.from) and segment(gfa_line.to)
-      l = link_from_to(gfa_line.oriented_from,
-                       gfa_line.oriented_to,
-                       gfa_line.overlap)
+      l = search_link(gfa_line.oriented_from, gfa_line.oriented_to,
+                      gfa_line.overlap)
     end
     if l.nil?
       @links << gfa_line
@@ -147,7 +146,7 @@ module RGFA::Lines::Links
   # @param [RGFA::CIGAR] cigar
   # @return [RGFA::Line::Link] the first link found
   # @return [nil] if no link is found.
-  def link_from_to(oriented_segment1, oriented_segment2, cigar)
+  def search_link(oriented_segment1, oriented_segment2, cigar)
     oriented_segment1 = oriented_segment1.to_oriented_segment
     oriented_segment2 = oriented_segment2.to_oriented_segment
     s = segment!(oriented_segment1.segment)

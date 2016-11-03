@@ -310,7 +310,7 @@ if rt.include?("-l")
   end
   (difflinks1b-difflinks1).uniq.each do |l|
     if out_script
-      puts "gfa.rm(gfa.link_from_to(#{l.from.to_sym.inspect}, "+
+      puts "gfa.rm(gfa.search_link(#{l.from.to_sym.inspect}, "+
                                    "#{l.from_orient.inspect}, "+
                                    "#{l.to.to_sym.inspect}, "+
                                    "#{l.to_orient.inspect}, "+

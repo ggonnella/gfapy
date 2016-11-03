@@ -20,7 +20,7 @@ module RGFA::Lines::Paths
       gfa_line.required_links.each do |from,to,cigar|
         l = nil
         if segment(from.segment) and segment(to.segment)
-          l = link_from_to(from, to, cigar)
+          l = search_link(from, to, cigar)
         end
         if l.nil?
           v = RGFA::Line::Link.new({:from => from.segment,
@@ -28,8 +28,8 @@ module RGFA::Lines::Paths
                                     :to => to.segment,
                                     :to_orient => to.orient,
                                     :overlap => cigar},
-                                   virtual: true,
-                                   version: :"1.0")
+                                    virtual: true,
+                                    version: :"1.0")
           if @segments_first_order
             raise RGFA::NotFoundError, "Path: #{gfa_line}\n"+
               "requires a non-existing link:\n"+
