@@ -138,104 +138,26 @@ module RGFA::Lines::Links
     l
   end
 
-  # Find links from the segment in the specified orientation
-  # (or the equivalent links, i.e. to the segment in opposite orientation).
-  #
-  # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
-  # @param equivalent [Boolean] return also equivalent links.
-  # @return [Array<RGFA::Line::Link>]
-  # @note to add or remove links, use the appropriate methods;
-  #   adding or removing links from the returned array will not work
-  def links_from(oriented_segment, equivalent = true)
-    oriented_segment = oriented_segment.to_oriented_segment
-    s = segment!(oriented_segment.segment)
-    retval = s.links[:from][oriented_segment.orient]
-    if equivalent
-      retval + s.links[:to][oriented_segment.orient_inverted]
-    else
-      retval
-    end
-  end
-
-  # Find links to the segment in the specified orientation
-  # (or the equivalent links, i.e. from the segment in opposite orientation).
-  #
-  # @param [RGFA::OrientedSegment] oriented_segment a segment with orientation
-  # @param equivalent [Boolean] return also equivalent links.
-  # @return [Array<RGFA::Line::Link>]
-  # @note to add or remove links, use the appropriate methods;
-  #   adding or removing links from the returned array will not work
-  def links_to(oriented_segment, equivalent = true)
-    oriented_segment = oriented_segment.to_oriented_segment
-    s = segment!(oriented_segment.segment)
-    retval = s.links[:to][oriented_segment.orient]
-    if equivalent
-      retval + s.links[:from][oriented_segment.orient_inverted]
-    else
-      retval
-    end
-  end
-
-  # Search all links from a segment S1 in a given orientation
-  # to another segment S2 in a given, or the equivalent
-  # links from S2 to S1 with inverted orientations.
-  #
-  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
-  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
-  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
-  # @param equivalent [Boolean] return also equivalent links.
-  # @return [Array<RGFA::Line::Link>]
-  # @note to add or remove links, use the appropriate methods;
-  #   adding or removing links from the returned array will not work
-  def links_from_to(oriented_segment1, oriented_segment2,
-                    cigar = [], equivalent = true)
-    oriented_segment1 = oriented_segment1.to_oriented_segment
-    oriented_segment2 = oriented_segment2.to_oriented_segment
-    links_from(oriented_segment1, equivalent).select do |l|
-      l.compatible?(oriented_segment1, oriented_segment2, cigar, equivalent)
-    end
-  end
-
   # Search the link from a segment S1 in a given orientation
   # to another segment S2 in a given, or the equivalent
   # link from S2 to S1 with inverted orientations.
   #
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
-  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
-  # @param equivalent [Boolean] return also equivalent links.
+  # @param [RGFA::CIGAR] cigar
   # @return [RGFA::Line::Link] the first link found
   # @return [nil] if no link is found.
-  def link_from_to(oriented_segment1, oriented_segment2,
-                   cigar = [], equivalent = true)
+  def link_from_to(oriented_segment1, oriented_segment2, cigar)
     oriented_segment1 = oriented_segment1.to_oriented_segment
     oriented_segment2 = oriented_segment2.to_oriented_segment
-    links_from(oriented_segment1, equivalent).select do |l|
-      return l if l.compatible?(oriented_segment1, oriented_segment2,
-                                cigar, equivalent)
+    s = segment!(oriented_segment1.segment)
+    ls = s.links[:from][oriented_segment1.orient] +
+         s.links[:to][oriented_segment1.orient_inverted]
+    ls.select do |l|
+      return l if l.compatible?(oriented_segment1,
+                                oriented_segment2, cigar, true)
     end
     return nil
-  end
-
-  # Search the link from a segment S1 in a given orientation
-  # to another segment S2 in a given, or the equivalent
-  # link from S2 to S1 with inverted orientations.
-  #
-  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
-  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
-  # @param [RGFA::CIGAR] cigar shall match if not empty/undef
-  # @param equivalent [Boolean] return also equivalent links.
-  # @return [RGFA::Line::Link] the first link found
-  # @raise [RGFA::NotFoundError] if no link is found.
-  def link_from_to!(oriented_segment1, oriented_segment2,
-                    cigar = [], equivalent = true)
-    l = link_from_to(oriented_segment1, oriented_segment2,
-                     cigar, equivalent)
-    raise RGFA::NotFoundError,
-      "No link was found: "+
-          "#{oriented_segment1.join(":")} -> "+
-          "#{oriented_segment2.join(":")}" if l.nil?
-    l
   end
 
 end
