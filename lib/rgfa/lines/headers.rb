@@ -70,6 +70,7 @@ module RGFA::Lines::Headers
   def add_header(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     @headers.merge(gfa_line)
+    gfa_line.__set_rgfa(self)
   end
 
 end

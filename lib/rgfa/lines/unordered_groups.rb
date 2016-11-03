@@ -6,6 +6,7 @@ module RGFA::Lines::UnorderedGroups
   def add_unordered_group(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     @unordered_groups << gfa_line
+    gfa_line.__set_rgfa(self)
   end
   protected :add_unordered_group
 

@@ -14,6 +14,7 @@ module RGFA::Lines::Segments
     elsif @segments.has_key?(segment_name)
       if @segments[segment_name].virtual?
         @segments[segment_name].real!(gfa_line)
+        @segments[segment_name].__set_rgfa(self)
       else
         raise RGFA::NotUniqueError,
           "Error when adding line: #{gfa_line}\n"+
@@ -21,6 +22,7 @@ module RGFA::Lines::Segments
           "Segment: #{@segments[segment_name]}"
       end
     else
+      gfa_line.__set_rgfa(self)
       @segments[segment_name] = gfa_line
     end
   end

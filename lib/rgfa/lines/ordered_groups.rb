@@ -6,6 +6,7 @@ module RGFA::Lines::OrderedGroups
   def add_ordered_group(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     @ordered_groups << gfa_line
+    gfa_line.__set_rgfa(self)
   end
   protected :add_ordered_group
 

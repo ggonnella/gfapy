@@ -6,6 +6,7 @@ module RGFA::Lines::Fragments
   def add_fragment(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     @fragments << gfa_line
+    gfa_line.__set_rgfa(self)
   end
   protected :add_fragment
 

@@ -19,6 +19,7 @@ module RGFA::Lines::Containments
       s.containments[dir][orient] << gfa_line
       gfa_line.send(:"#{dir}=", s)
     end
+    gfa_line.__set_rgfa(self)
   end
   protected :add_containment
 

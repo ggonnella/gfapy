@@ -38,6 +38,12 @@ class RGFA::Line
     self
   end
 
+  # Set the RGFA to which this line belong
+  # @api private
+  def __set_rgfa(rgfa)
+    @rgfa = rgfa
+  end
+
 end
 
 # submodules of RGFA::Line::Common define methods which are included

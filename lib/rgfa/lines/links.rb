@@ -21,13 +21,14 @@ module RGFA::Lines::Links
           @segments[segment_name] =
             RGFA::Line::SegmentGFA1.new({:name => segment_name,
                                          :sequence => "*"},
-                                        virtual: true)
+                                         virtual: true)
         end
         @segments[segment_name].links[dir][orient] << gfa_line
         gfa_line.send(:"#{dir}=", @segments[segment_name])
       end
     elsif l.virtual?
       l.real!(gfa_line)
+      l.__set_rgfa(self)
     else
       return
     end

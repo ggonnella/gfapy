@@ -46,6 +46,7 @@ module RGFA::Lines::Paths
         sn_with_o[0] = segment(sn_with_o[0])
         sn_with_o[0].paths[sn_with_o[1]] << gfa_line
       end
+      gfa_line.__set_rgfa(self)
     end
   end
   protected :add_path

@@ -6,6 +6,7 @@ module RGFA::Lines::Gaps
   def add_gap(gfa_line)
     gfa_line = gfa_line.to_rgfa_line(validate: @validate)
     @gaps << gfa_line
+    gfa_line.__set_rgfa(self)
   end
   protected :add_gap
 
