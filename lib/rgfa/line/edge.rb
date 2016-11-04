@@ -4,6 +4,7 @@ class RGFA::Line::Edge < RGFA::Line
   RECORD_TYPE = :E
   POSFIELDS = [:eid, :sid1, :or2, :sid2, :beg1,
                :end1, :beg2, :end2, :alignment]
+  REFERENCE_FIELDS = [:sid1, :or2, :sid2, :beg1, :end1, :beg2, :end2]
   PREDEFINED_TAGS = []
   DATATYPE = {
     :eid => :optional_identifier_gfa2,

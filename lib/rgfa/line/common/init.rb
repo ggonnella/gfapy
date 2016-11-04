@@ -86,6 +86,7 @@ module RGFA::Line::Common::Init
     @virtual = virtual
     @datatype = {}
     @data = {}
+    @rgfa = nil
     @version = version
     if data.kind_of?(Hash)
       @data.merge!(data)

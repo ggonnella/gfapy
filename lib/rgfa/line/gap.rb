@@ -3,6 +3,7 @@ class RGFA::Line::Gap < RGFA::Line
 
   RECORD_TYPE = :G
   POSFIELDS = [:gid, :sid1, :d1, :d2, :sid2, :disp, :var]
+  REFERENCE_FIELDS = [:sid1, :d1, :d2, :sid2]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

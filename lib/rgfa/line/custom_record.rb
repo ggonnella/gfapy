@@ -14,6 +14,7 @@ class RGFA::Line::CustomRecord < RGFA::Line
 
   RECORD_TYPE = nil
   POSFIELDS = [:record_type]
+  REFERENCE_FIELDS = []
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

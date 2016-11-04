@@ -3,6 +3,7 @@ class RGFA::Line::Containment < RGFA::Line
 
   RECORD_TYPE = :C
   POSFIELDS = [:from, :from_orient, :to, :to_orient, :pos, :overlap]
+  REFERENCE_FIELDS = [:from, :from_orient, :to, :to_orient]
   FIELD_ALIAS = {:container => :from,
                  :contained => :to,
                  :container_orient => :from_orient,

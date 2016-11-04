@@ -3,6 +3,7 @@ class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = :L
   POSFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
+  REFERENCE_FIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
   PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
   FIELD_ALIAS = {}
   DATATYPE = {

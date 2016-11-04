@@ -79,6 +79,7 @@ class RGFA::Line::Comment < RGFA::Line
     :spacer => :comment,
   }
   FIELD_ALIAS = {}
+  REFERENCE_FIELDS = []
 
   define_field_methods!
 end

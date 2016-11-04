@@ -3,6 +3,7 @@ class RGFA::Line::SegmentGFA1 < RGFA::Line
 
   RECORD_TYPE = :S
   POSFIELDS = [:name, :sequence]
+  REFERENCE_FIELDS = []
   PREDEFINED_TAGS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
     :name => :segment_name_gfa1,

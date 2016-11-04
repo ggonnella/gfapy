@@ -3,6 +3,7 @@ class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F
   POSFIELDS = [:sid, :or, :external, :s_beg, :s_end, :f_beg, :f_end, :alignment]
+  REFERENCE_FIELDS = [:sid]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {

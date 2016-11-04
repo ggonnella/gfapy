@@ -3,6 +3,7 @@ class RGFA::Line::UnorderedGroup < RGFA::Line
 
   RECORD_TYPE = :U
   POSFIELDS = [:pid, :items]
+  REFERENCE_FIELDS = [:items]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {}
   DATATYPE = {
