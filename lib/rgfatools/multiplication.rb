@@ -175,7 +175,7 @@ module RGFATools::Multiplication
       links_of([sn, end_type]).each do |l|
         l_sig = l.other_end([sn, end_type]).join
         to_save = links_signatures[i..i+diff].to_a
-        delete_link(l) unless to_save.include?(l_sig)
+        l.disconnect! unless to_save.include?(l_sig)
       end
     end
   end

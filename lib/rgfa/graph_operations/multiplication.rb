@@ -46,7 +46,7 @@ module RGFA::GraphOperations::Multiplication
     if factor < 2
       return self if factor == 1
       return self if cut_segment?(segment_name) and conserve_components
-      return delete_segment(segment_name)
+      return rm(segment_name)
     end
     s = segment!(segment_name)
     divide_segment_and_connection_counts(s, factor)
@@ -99,8 +99,7 @@ module RGFA::GraphOperations::Multiplication
     end
     while retval.size < (factor-1)
       while retval.include?(next_name) or
-            @segments.has_key?(next_name.to_sym) or
-            @paths.has_key?(next_name.to_sym)
+            search_by_id(next_name.to_sym)
         if copy_names == :copy
           next_name += "1"
           copy_names = :number

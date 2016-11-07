@@ -20,6 +20,7 @@ class RGFA::Line::Link < RGFA::Line
   }
 
   define_field_methods!
+
 end
 
 require_relative "connection/alignment_type"

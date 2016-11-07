@@ -38,12 +38,6 @@ class RGFA::Line
     self
   end
 
-  # Set the RGFA to which this line belong
-  # @api private
-  def __set_rgfa(rgfa)
-    @rgfa = rgfa
-  end
-
 end
 
 # submodules of RGFA::Line::Common define methods which are included
@@ -58,11 +52,12 @@ require_relative "line/common/field_datatype"
 require_relative "line/common/field_data"
 require_relative "line/common/equivalence"
 require_relative "line/common/cloning"
-require_relative "line/common/virtual"
+require_relative "line/common/connection"
 require_relative "line/common/validate"
 
 class RGFA::Line
   include RGFA::Line::Common::Init
+  include RGFA::Line::Common::Connection
   include RGFA::Line::Common::DynamicFields
   include RGFA::Line::Common::Writer
   include RGFA::Line::Common::VersionConversion
@@ -70,7 +65,6 @@ class RGFA::Line
   include RGFA::Line::Common::FieldData
   include RGFA::Line::Common::Equivalence
   include RGFA::Line::Common::Cloning
-  include RGFA::Line::Common::Virtual
   include RGFA::Line::Common::Validate
 
   # TODO: can this be moved to dynamic fields

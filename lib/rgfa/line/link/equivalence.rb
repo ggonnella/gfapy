@@ -136,4 +136,11 @@ module RGFA::Line::Link::Equivalence
      (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 
+  private
+
+  def complement_ends?(other)
+    (from_end == other.to_end and
+      to_end == other.from_end)
+  end
+
 end

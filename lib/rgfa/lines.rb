@@ -83,10 +83,10 @@ module RGFA::Lines
     end
     case rt
     when :"#"
-      add_comment(gfa_line)
+      gfa_line.to_rgfa_line.connect(self)
     when :H
       gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-      add_header(gfa_line)
+      header.merge(gfa_line)
       if gfa_line.VN
         @version = gfa_line.VN.to_sym
         @version_explanation = "specified in header VN tag"
@@ -98,12 +98,13 @@ module RGFA::Lines
       @version = gfa_line.version
       @version_explanation = "implied by: syntax of S #{gfa_line.name} line"
       process_line_queue
-      add_segment(gfa_line)
+      gfa_line.connect(self)
     when :E, :F, :G, :U, :O
+      gfa_line = gfa_line.to_rgfa_line(validate: @validate, version: version)
       @version = :"2.0"
       @version_explanation = "implied by: presence of a #{rt} line"
       process_line_queue
-      self << gfa_line
+      gfa_line.connect(self)
     when :L, :C, :P
       @version_guess = :"1.0"
       @line_queue << gfa_line
@@ -122,8 +123,6 @@ module RGFA::Lines
         "Cannot add instance of incompatible line type (#{rt})"
     end
     case gfa_line.record_type
-    when :"#"
-      add_comment(gfa_line)
     when :H
       if gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
         raise RGFA::VersionError,
@@ -131,15 +130,9 @@ module RGFA::Lines
           "Line: #{gfa_line}\n"+
           "File version: 1.0 (#{@version_explanation})"
       end
-      add_header(gfa_line)
-    when :S
-      add_segment(gfa_line)
-    when :L
-      add_link(gfa_line)
-    when :C
-      add_containment(gfa_line)
-    when :P
-      add_path(gfa_line)
+      header.merge(gfa_line)
+    when :S, :L, :P, :C, :"#"
+      gfa_line.connect(self)
     else
       raise RGFA::TypeError,
         "Invalid record type #{rt}" # should be unreachable
@@ -156,8 +149,6 @@ module RGFA::Lines
         "Cannot add instance of incompatible line type (#{rt})"
     end
     case gfa_line.record_type
-    when :"#"
-      add_comment(gfa_line)
     when :H
       if gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
         raise RGFA::VersionError,
@@ -165,21 +156,10 @@ module RGFA::Lines
           "Line: #{gfa_line}\n"+
           "File version: 2.0 (#{@version_explanation})"
       end
-      add_header(gfa_line)
-    when :S
-      add_segment(gfa_line)
-    when :E
-      add_edge(gfa_line)
-    when :G
-      add_gap(gfa_line)
-    when :F
-      add_fragment(gfa_line)
-    when :U
-      add_unordered_group(gfa_line)
-    when :O
-      add_ordered_group(gfa_line)
+      gfa_line.connect(self)
+      header.merge(gfa_line)
     else
-      add_custom_record(gfa_line)
+      gfa_line.connect(self)
     end
   end
   private :add_line_GFA2
@@ -207,8 +187,6 @@ module RGFA::Lines
   #   @param comment [RGFA::Line::Comment] comment line instance
   # @overload rm(custom_record)
   #   @param custom_record [RGFA::Line::CustomRecord] custom record instance
-  # @overload rm(:headers)
-  #   Remove all headers
   # @overload rm(array)
   #   Calls {#rm} using each element of the array as argument
   #   @param array [Array]
@@ -218,41 +196,25 @@ module RGFA::Lines
   #   @param args arguments of the method
   # @return [RGFA] self
   def rm(x, *args)
-    if x.kind_of?(RGFA::Line)
+    case x
+    when RGFA::Line
       raise RGFA::ArgumentError,
         "One argument required if first RGFA::Line" if !args.empty?
       case x.record_type
       when :H then raise RGFA::ArgumentError,
                            "Cannot remove single header lines"
-      when :S then delete_segment(x)
-      when :P then delete_path(x)
-      when :L then delete_link(x)
-      when :C then delete_containment(x)
-      when :"#" then delete_comment(x)
-      else delete_custom_record(x)
+      else
+        x.disconnect!
       end
-    elsif x.kind_of?(Symbol)
-      if @segments.has_key?(x)
+    when Symbol, String
+      x = x.to_sym
+      l = search_by_id(x)
+      if l
         if !args.empty?
           raise RGFA::ArgumentError,
-            "One arguments required if first segment name"
+            "One arguments required if first argument is an ID"
         end
-        delete_segment(x)
-      elsif @paths.has_key?(x)
-        if !args.empty?
-          raise RGFA::ArgumentError, "One argument required if first path name"
-        end
-        delete_path(x)
-      elsif x == :headers
-        if !args.empty?
-          raise RGFA::ArgumentError, "One argument required if first :headers"
-        end
-        delete_headers
-      elsif x == :comments
-        if !args.empty?
-          raise RGFA::ArgumentError, "One argument required if first :comments"
-        end
-        delete_comments
+        l.disconnect!
       else
         if respond_to?(x)
           rm(send(x, *args))
@@ -260,11 +222,9 @@ module RGFA::Lines
           raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
         end
       end
-    elsif x.kind_of?(String)
-      rm(x.to_sym, *args)
-    elsif x.kind_of?(Array)
+    when Array
       x.each {|elem| rm(elem, *args)}
-    elsif x.nil?
+    when nil, RGFA::Placeholder
       return self
     else
       raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
@@ -274,8 +234,8 @@ module RGFA::Lines
 
   # Rename a segment or a path
   #
-  # @param old_name [String] the name of the segment or path to rename
-  # @param new_name [String] the new name for the segment or path
+  # @param old_name [String, Symbol] the name of the segment or path to rename
+  # @param new_name [String, Symbol] the new name for the segment or path
   #
   # @raise[RGFA::NotUniqueError]
   #   if +new_name+ is already a segment or path name
@@ -283,32 +243,97 @@ module RGFA::Lines
   def rename(old_name, new_name)
     old_name = old_name.to_sym
     new_name = new_name.to_sym
-    s = segment(old_name)
-    pt = nil
-    if s.nil?
-      pt = path(old_name)
-      if pt.nil?
-        raise RGFA::NotFoundError,
-          "#{old_name} is not a path or segment name"
-      end
-    end
-    if segment(new_name) or path(new_name)
+    l = search_by_id(new_name)
+    if l
       raise RGFA::NotUniqueError,
-        "#{new_name} is already a path or segment name"
+        "#{new_name} is not unique\n"+
+        "Matching line: #{l}"
     end
-    if s
-      s.name = new_name
-      @segments.delete(old_name)
-      @segments[new_name] = s
-    else
-      pt.path_name = new_name
-      @paths.delete(old_name)
-      @paths[new_name] = pt
+    l = search_by_id(old_name)
+    if l.nil?
+      raise RGFA::NotFoundError,
+        "No line has ID '#{old_name}'"
     end
+    l.id = new_name
+    @records[l.record_type].delete(old_name)
+    @records[l.record_type][new_name] = l
     self
   end
 
+  # @api private
+  def register_line(gfa_line)
+    api_private_check_gfa_line(gfa_line, "register_line")
+    case gfa_line.record_type
+    when :H
+      @records[:H].merge(gfa_line)
+    when :E, :S, :P, :U, :G, :O
+      if gfa_line.id.empty?
+        @records[gfa_line.record_type][nil] << gfa_line
+      else
+        @records[gfa_line.record_type][gfa_line.id] = gfa_line
+      end
+    else
+      @records[gfa_line.record_type] ||= []
+      @records[gfa_line.record_type] << gfa_line
+    end
+  end
+
+  # @api private
+  def unregister_line(gfa_line)
+    api_private_check_gfa_line(gfa_line, "unregister_line")
+    case gfa_line.record_type
+    when :H
+      raise # This should not happen
+    when :E, :S, :P, :U, :G, :O
+      if gfa_line.id.empty?
+        @records[gfa_line.record_type][nil].delete(gfa_line)
+      else
+        @records[gfa_line.record_type].delete(gfa_line.id)
+      end
+    else
+      @records[gfa_line.record_type].delete(gfa_line)
+    end
+  end
+
+  # @api private
+  def search_duplicate(gfa_line)
+    case gfa_line.record_type
+    when :L
+      search_link(gfa_line.oriented_from,
+                  gfa_line.oriented_to, gfa_line.alignment)
+    when :E, :S, :P, :U, :G, :O
+      return search_by_id(gfa_line.id)
+    end
+  end
+
+  # @api private
+  def search_by_id(id)
+    if id.kind_of?(RGFA::Placeholder)
+      return nil
+    end
+    id = id.to_sym
+    [:E, :S, :P, :U, :G, :O].each do |rt|
+      found = @records[rt][id]
+      return found if !found.nil?
+    end
+    return nil
+  end
+
   private
+
+  def api_private_check_gfa_line(gfa_line, callermeth)
+    if !gfa_line.kind_of?(RGFA::Line)
+      raise RGFA::TypeError,
+        "Note: ##{callermeth} is API private, do not call it directly!\n"+
+        "Error: line class is #{gfa_line.class} and not RGFA::Line"
+    elsif gfa_line.rgfa != self
+      raise RGFA::RuntimeError,
+        "Note: ##{callermeth} is API private, do not call it directly!\n"+
+        "Error: line.rgfa is "+
+        "#{gfa_line.rgfa.class}:#{gfa_line.rgfa.object_id} and not "+
+        "RGFA:#{self.object_id}"
+    end
+  end
 
   def lines
     comments + headers + segments + links +

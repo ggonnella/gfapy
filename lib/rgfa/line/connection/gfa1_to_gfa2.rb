@@ -7,9 +7,10 @@ require_relative "../connection"
 module RGFA::Line::Connection::GFA1ToGFA2
 
   def id
-    i = get_field(:ID)
+    i = get(:ID)
     if i.nil?
-      i = "#{from_name}#{from_orient},#{to_name}#{to_orient},#{overlap}"
+      return RGFA::Placeholder.new
+      #i = "#{from_name}#{from_orient} #{to_name}#{to_orient} #{overlap}"
     end
     return i
   end

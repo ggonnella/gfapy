@@ -90,5 +90,62 @@ module RGFA::Line::Segment::References
     all_connections + all_paths
   end
 
+  private
+
+  def merge_virtual(previous)
+    merge_virtual_process_links(previous)
+    merge_virtual_process_containments(previous)
+    merge_virtual_process_paths(previous)
+  end
+
+  def merge_virtual_process_links(previous)
+    @links = previous.links
+    [:from, :to].each do |d|
+      [:+, :-].each do |o|
+        @links[d][o].each do |l|
+          l.send(:set_existing_field, d, self, set_reference: true)
+        end
+      end
+    end
+  end
+
+  def merge_virtual_process_containments(previous)
+    @containments = previous.containments
+    [:from, :to].each do |d|
+      [:+, :-].each do |o|
+        @containments[d][o].each do |l|
+          l.send(:set_existing_field, d, self, set_reference: true)
+        end
+      end
+    end
+  end
+
+  def merge_virtual_process_paths(previous)
+    @paths = previous.paths
+    [:+, :-].each do |o|
+      @paths[o].each do |l|
+        l.send(:update_segment_references, previous, self)
+      end
+    end
+  end
+
+
+  # Delete a segment from the RGFA graph
+  # @return [RGFA] self
+  # @param s [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   segment name or instance
+  def remove_references
+    links
+    containments
+    paths
+    [:+, :-].each do |o|
+      [:from, :to].each do |d|
+        @links[d][o].each {|l| l.disconnect!}
+        @containments[d][o].each {|l| l.disconnect!}
+      end
+      @paths[o].each {|l| l.disconnect!}
+    end
+  end
+
 end
 

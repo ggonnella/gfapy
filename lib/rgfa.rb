@@ -112,13 +112,11 @@ class RGFA
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   def initialize(validate: 2, version: nil)
     @validate = validate
-    init_headers
-    @segments = {}
-    @links = []
-    @containments = []
-    @paths = {}
-    @comments = []
-    @custom_records = {}
+    @records = {}
+    @records[:H] = RGFA::Line::Header.new([], validate: @validate)
+    [:S, :P].each {|rt| @records[rt] = {}}
+    [:E, :U, :G, :O].each {|rt| @records[rt] = {nil => []}}
+    [:C, :L, :"#", :F].each {|rt| @records[rt] = []}
     @segments_first_order = false
     @progress = false
     @default = {:count_tag => :RC, :unit_length => 1}
@@ -150,23 +148,13 @@ class RGFA
     @segments_first_order = true
   end
 
+  attr_reader :segments_first_order
+
   # Set the validation level to 0.
   # See "Validation level" under {RGFA::Line#initialize}.
   # @return [void]
   def turn_off_validations
     @validate = 0
-  end
-
-  # List all names of segments in the graph
-  # @return [Array<Symbol>]
-  def segment_names
-    @segments.keys.compact
-  end
-
-  # List all names of path lines in the graph
-  # @return [Array<Symbol>]
-  def path_names
-    @paths.keys.compact
   end
 
   # Post-validation of the RGFA
@@ -344,7 +332,7 @@ class RGFA
   # @return [void]
   # @raise [RGFA::NotFoundError] if validation fails
   def validate_segment_references!
-    @segments.values.each do |s|
+    @records[:S].values.each do |s|
       if s.virtual?
         raise RGFA::NotFoundError, "Segment #{s.name} does not exist\n"+
             "References to #{s.name} were found in the following lines:\n"+
@@ -358,7 +346,7 @@ class RGFA
   # @return [void]
   # @raise if validation fails
   def validate_path_links!
-    @paths.values.each do |pt|
+    @records[:P].values.each do |pt|
       pt.links.each do |l, dir|
         if l.virtual?
           raise RGFA::NotFoundError, "Link: #{l.to_s}\n"+
@@ -375,10 +363,6 @@ class RGFA
       raise RGFA::VersionError,
         "GFA specification version #{@version} not supported"
     end
-  end
-
-  def init_headers
-    @headers = RGFA::Line::Header.new([], validate: @validate)
   end
 
 end

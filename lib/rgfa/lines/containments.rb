@@ -3,40 +3,10 @@
 #
 module RGFA::Lines::Containments
 
-  def add_containment(gfa_line)
-    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    @containments << gfa_line
-    [:from, :to].each do |dir|
-      segment_name = gfa_line.send(dir)
-      orient = gfa_line.send(:"#{dir}_orient")
-      if !@segments.has_key?(segment_name)
-        raise RGFA::NotFoundError if @segments_first_order
-        @segments[segment_name] =
-          RGFA::Line::SegmentGFA1.new({:name => segment_name},
-                                      virtual: true)
-      end
-      s = @segments[segment_name]
-      s.containments[dir][orient] << gfa_line
-      gfa_line.send(:"#{dir}=", s)
-    end
-    gfa_line.__set_rgfa(self)
-  end
-  protected :add_containment
-
-  # Delete a containment
-  #
-  # @param c [RGFA::Line::Containment] containment instance
-  # @return [RGFA] self
-  def delete_containment(c)
-    @containments.delete(c)
-    segment(c.from).containments[:from][c.from_orient].delete(c)
-    segment(c.to).containments[:to][c.to_orient].delete(c)
-  end
-
   # All containments in the graph
   # @return [Array<RGFA::Line::Containment>]
   def containments
-    @containments
+    @records[:C]
   end
 
   # Find containment lines whose +from+ segment name is +segment_name+

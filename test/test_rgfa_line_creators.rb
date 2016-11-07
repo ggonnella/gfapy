@@ -41,7 +41,7 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal(nil, gfa.segment("0"))
     assert_nothing_raised { gfa.segment!("1") }
     assert_raises(RGFA::NotFoundError) { gfa.segment!("0") }
-    assert_raises(RGFA::NotUniqueError) { gfa << s2 }
+    assert_raises(RGFA::NotUniqueError) { gfa << s2.clone }
   end
 
   def test_add_links

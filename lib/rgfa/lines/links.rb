@@ -3,49 +3,6 @@
 #
 module RGFA::Lines::Links
 
-  def add_link(gfa_line)
-    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    gfa_line.canonicize!
-    l = nil
-    if segment(gfa_line.from) and segment(gfa_line.to)
-      l = search_link(gfa_line.oriented_from, gfa_line.oriented_to,
-                      gfa_line.overlap)
-    end
-    if l.nil?
-      @links << gfa_line
-      [:from, :to].each do |dir|
-        segment_name = gfa_line.send(dir).to_sym
-        orient = gfa_line.send(:"#{dir}_orient").to_sym
-        if !@segments.has_key?(segment_name)
-          raise RGFA::NotFoundError if @segments_first_order
-          @segments[segment_name] =
-            RGFA::Line::SegmentGFA1.new({:name => segment_name,
-                                         :sequence => "*"},
-                                         virtual: true)
-        end
-        @segments[segment_name].links[dir][orient] << gfa_line
-        gfa_line.send(:"#{dir}=", @segments[segment_name])
-      end
-    elsif l.virtual?
-      l.real!(gfa_line)
-      l.__set_rgfa(self)
-    else
-      return
-    end
-  end
-  protected :add_link
-
-  # Deletes a link and all paths depending on it
-  #
-  # @param l [RGFA::Line::Link] link instance
-  # @return [RGFA] self
-  def delete_link(l)
-    @links.delete(l)
-    segment(l.from).links[:from][l.from_orient].delete(l)
-    segment(l.to).links[:to][l.to_orient].delete(l)
-    l.paths.each {|pt, orient| delete_path(pt)}
-  end
-
   # Remove all links of a segment end end except that to the other specified
   # segment end.
   # @param segment_end [RGFA::SegmentEnd] the segment end
@@ -59,7 +16,7 @@ module RGFA::Lines::Links
     links_of(segment_end).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)
-          delete_link(l)
+          l.disconnect!
         end
       end
     end
@@ -68,7 +25,7 @@ module RGFA::Lines::Links
   # All links of the graph
   # @return [Array<RGFA::Line::Link>]
   def links
-    @links
+    @records[:L]
   end
 
   # Finds links of the specified end of segment.
@@ -150,12 +107,13 @@ module RGFA::Lines::Links
   def search_link(oriented_segment1, oriented_segment2, cigar)
     oriented_segment1 = oriented_segment1.to_oriented_segment
     oriented_segment2 = oriented_segment2.to_oriented_segment
-    s = segment!(oriented_segment1.segment)
+    s = segment(oriented_segment1.segment)
+    return nil if s.nil?
     ls = s.links[:from][oriented_segment1.orient] +
          s.links[:to][oriented_segment1.orient_inverted]
     ls.select do |l|
-      return l if l.compatible?(oriented_segment1,
-                                oriented_segment2, cigar, true)
+      return l if l.compatible?(oriented_segment1, oriented_segment2, cigar,
+                                true)
     end
     return nil
   end

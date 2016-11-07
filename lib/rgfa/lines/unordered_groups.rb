@@ -3,26 +3,10 @@
 #
 module RGFA::Lines::UnorderedGroups
 
-  def add_unordered_group(gfa_line)
-    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    @unordered_groups << gfa_line
-    gfa_line.__set_rgfa(self)
-  end
-  protected :add_unordered_group
-
-  # Delete an unordered group line from the RGFA object
-  # @return [RGFA] self
-  # @param unordered_group [RGFA::Line::UnorderedGroup]
-  #   unordered group line instance
-  def delete_unordered_group(line)
-    @unordered_groups.delete(line)
-    return self
-  end
-
   # All unordered_group lines of the graph
   # @return [Array<RGFA::Line::UnorderedGroup>]
   def unordered_groups
-    @unordered_groups
+    @records[:U].values.flatten
   end
 
 end

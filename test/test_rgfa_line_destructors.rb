@@ -3,27 +3,7 @@ require "test/unit"
 
 class TestRGFALineDestructors < Test::Unit::TestCase
 
-  def test_delete_headers
-    gfa = RGFA.new
-    gfa << "H\tVN:Z:1.0"
-    assert_equal(["H\tVN:Z:1.0"], gfa.headers.map(&:to_s))
-    gfa.delete_headers
-    assert_equal([], gfa.headers)
-    gfa = RGFA.new
-    gfa << "H\tVN:Z:1.0"
-    gfa.rm(:headers)
-    assert_equal([], gfa.headers)
-  end
-
   def test_delete_comments
-    gfa = RGFA.new
-    gfa << "# This is a comment"
-    gfa.delete_comments
-    assert_equal([], gfa.comments)
-    gfa = RGFA.new
-    gfa << "# This is a comment"
-    gfa.rm(:comments)
-    assert_equal([], gfa.comments)
     gfa = RGFA.new
     c = "# This is a comment"
     gfa << c
@@ -49,7 +29,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     (s + [l,c]).each {|line| gfa << line }
     assert_equal([l], gfa.links.map(&:to_s))
     assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)
-    gfa.delete_link(gfa.search_link(["1", "+"], ["2", "+"], "12M"))
+    gfa.search_link(["1", "+"], ["2", "+"], "12M").disconnect!
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link(["1", :E], ["2", :B]))
     assert_equal([c], gfa.containments.map(&:to_s))
@@ -66,7 +46,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     l = "L\t1\t+\t2\t+\t12M"
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
-    gfa.delete_containment(gfa.containment("1", "0"))
+    gfa.containment("1", "0").disconnect!
     assert_equal([], gfa.containments)
     assert_equal(nil, gfa.containment("1", "0"))
     gfa << c
@@ -102,14 +82,14 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal([p], gfa.paths.map(&:to_s))
     assert_equal([:"4"], gfa.path_names)
-    gfa.delete_segment("0")
+    gfa.segment("0").disconnect!
     assert_equal([s[1],s[2]], gfa.segments.map(&:to_s))
     assert_equal([:"1", :"2"], gfa.segment_names)
     assert_equal([l], gfa.links.select{|n|!n.virtual?}.map(&:to_s))
     assert_equal([], gfa.containments.map(&:to_s))
     assert_equal([], gfa.paths.map(&:to_s))
     assert_equal([], gfa.path_names)
-    gfa.delete_segment("1")
+    gfa.segment("1").disconnect!
     assert_equal([s[2]], gfa.segments.map(&:to_s))
     assert_equal([], gfa.links)
     gfa.rm("2")

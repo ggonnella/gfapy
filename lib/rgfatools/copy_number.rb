@@ -40,12 +40,10 @@ module RGFATools::CopyNumber
   def delete_low_coverage_segments(mincov,
                                    count_tag: @default[:count_tag],
                                    unit_length: @default[:unit_length])
-    segments.map do |s|
+    segments.each do |s|
       cov = s.coverage(count_tag: count_tag,
                        unit_length: unit_length)
-      cov < mincov ? s.name : nil
-    end.compact.each do |sn|
-      delete_segment(sn)
+      s.disconnect! if cov < mincov
     end
     self
   end

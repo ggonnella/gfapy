@@ -36,7 +36,7 @@ module RGFA::Lines::Headers
   #   information; if multiple header line were present, and they contain the
   #   same tag, the tag value is represented by a {RGFA::FieldArray}
   def header
-    @headers
+    @records[:H]
   end
 
   # Header information in single-tag-lines.
@@ -50,27 +50,7 @@ module RGFA::Lines::Headers
   # @return [Array<RGFA::Line::Header>]
   # @api private
   def headers
-    @headers.split
-  end
-
-  # Remove all information from the header.
-  # @return [RGFA] self
-  # @api private
-  def delete_headers
-    init_headers
-    return self
-  end
-
-  protected
-
-  # Add a GFA line to the header. This is useful for constructing the graph.
-  # For adding values to the header, see #header.
-  # @param gfa_line [String, RGFA::Line::Header] a string representing a valid
-  #   header line, or a RGFA header line object
-  def add_header(gfa_line)
-    gfa_line = gfa_line.to_rgfa_line(validate: @validate)
-    @headers.merge(gfa_line)
-    gfa_line.__set_rgfa(self)
+    @records[:H].split
   end
 
 end

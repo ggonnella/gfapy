@@ -27,6 +27,7 @@ require_relative "connection/alignment_type"
 require_relative "connection/ends_gfa1"
 require_relative "connection/gfa1_to_gfa2"
 require_relative "containment/canonical.rb"
+require_relative "containment/references.rb"
 require_relative "containment/pos.rb"
 
 class RGFA::Line::Containment
@@ -34,5 +35,6 @@ class RGFA::Line::Containment
   include RGFA::Line::Connection::GFA1ToGFA2
   include RGFA::Line::Connection::AlignmentType
   include RGFA::Line::Containment::Canonical
+  include RGFA::Line::Containment::References
   include RGFA::Line::Containment::Pos
 end

@@ -60,7 +60,7 @@ module RGFATools::PBubbles
     coverages = alternatives.map{|s|segment!(s[0]).coverage(
       count_tag: count_tag, unit_length: unit_length)}
     alternatives.delete_at(coverages.index(coverages.max))
-    alternatives.each {|s| delete_segment(s[0])}
+    alternatives.each {|s| segment(s[0]).disconnect!}
   end
 
 end

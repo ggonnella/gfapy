@@ -42,7 +42,8 @@ module RGFA::Line::Common::DynamicFields
     field_name, operation, state = split_method_name(m)
     if ((operation == :get or operation == :get!) and args.size > 1) or
        (operation == :set and args.size != 1)
-      raise RGFA::ArgumentError, "Wrong number of arguments"
+      raise RGFA::ArgumentError, "Wrong number of arguments \n"+
+        "(method: #{m}; args.size = #{args.size})"
     end
     case state
     when :invalid
