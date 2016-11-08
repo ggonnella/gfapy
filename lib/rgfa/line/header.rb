@@ -7,12 +7,14 @@ class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H
   POSFIELDS = []
-  REFERENCE_FIELDS = []
   PREDEFINED_TAGS = [:VN]
   FIELD_ALIAS = {}
   DATATYPE = {
     :VN => :Z
   }
+  REFERENCE_FIELDS = []
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 

@@ -122,15 +122,12 @@ module RGFA::GraphOperations::Multiplication
 
   def divide_segment_and_connection_counts(segment, factor)
     divide_counts(segment, factor)
-    [:links,:containments].each do |rt|
-      [:from,:to].each do |dir|
-        [:+, :-].each do |o|
-          segment.send(rt)[dir][o].each do |l|
-            # circular link counts shall be divided only ones
-            next if dir == :to and l.from == l.to
-            divide_counts(l, factor)
-          end
-        end
+    processed_circulars = Set.new
+    (segment.dovetails + segment.containments).each do |l|
+      # circular link counts shall be divided only ones
+      if !l.circular? or !processed_circular.include?(l)
+        divide_counts(l, factor)
+        processed_circulars << l if l.circular?
       end
     end
   end
@@ -138,17 +135,12 @@ module RGFA::GraphOperations::Multiplication
   def clone_segment_and_connections(segment, clone_name)
     cpy = segment.clone
     cpy.name = clone_name
-    self << cpy
-    [:links,:containments].each do |rt|
-      [:from,:to].each do |dir|
-        [:+, :-].each do |o|
-          segment.send(rt)[dir][o].each do |l|
-            lc = l.clone
-            lc.set(dir, clone_name)
-            self << lc
-          end
-        end
-      end
+    cpy.connect(self)
+    (segment.dovetails + segment.containments).each do |l|
+      lc = l.clone
+      lc.from = clone_name if lc.from == segment.name
+      lc.to = clone_name if lc.to == segment.name
+      lc.connect(self)
     end
   end
 

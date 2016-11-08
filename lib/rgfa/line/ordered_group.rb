@@ -3,13 +3,15 @@ class RGFA::Line::OrderedGroup < RGFA::Line
 
   RECORD_TYPE = :O
   POSFIELDS = [:pid, :items]
-  REFERENCE_FIELDS = [:items]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {:id => :pid}
   DATATYPE = {
     :pid => :optional_identifier_gfa2,
     :items => :identifier_list_gfa2,
   }
+  REFERENCE_FIELDS = [:items]
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 

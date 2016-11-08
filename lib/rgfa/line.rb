@@ -52,12 +52,14 @@ require_relative "line/common/field_datatype"
 require_relative "line/common/field_data"
 require_relative "line/common/equivalence"
 require_relative "line/common/cloning"
-require_relative "line/common/connection"
+require_relative "line/common/references_creation"
+require_relative "line/common/references_import"
+require_relative "line/common/references_update"
+require_relative "line/common/references_deletion"
 require_relative "line/common/validate"
 
 class RGFA::Line
   include RGFA::Line::Common::Init
-  include RGFA::Line::Common::Connection
   include RGFA::Line::Common::DynamicFields
   include RGFA::Line::Common::Writer
   include RGFA::Line::Common::VersionConversion
@@ -65,6 +67,10 @@ class RGFA::Line
   include RGFA::Line::Common::FieldData
   include RGFA::Line::Common::Equivalence
   include RGFA::Line::Common::Cloning
+  include RGFA::Line::Common::ReferencesCreation
+  include RGFA::Line::Common::ReferencesImport
+  include RGFA::Line::Common::ReferencesUpdate
+  include RGFA::Line::Common::ReferencesDeletion
   include RGFA::Line::Common::Validate
 
   # TODO: can this be moved to dynamic fields
@@ -89,6 +95,15 @@ class RGFA::Line
       alias_method :"#{k}",  :"#{v}"
       alias_method :"#{k}!", :"#{v}!"
       alias_method :"#{k}=", :"#{v}="
+    end
+    (self::NONDEPENDENT_REFERENCES +
+     self::DEPENDENT_REFERENCES).each do |k|
+      define_method(k) do
+        refs[k] ||= [].freeze
+      end
+    end
+    define_method :all_references do
+      refs.values.flatten
     end
   end
   private_class_method :define_field_methods!

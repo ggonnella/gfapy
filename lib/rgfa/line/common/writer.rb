@@ -46,4 +46,22 @@ module RGFA::Line::Common::Writer
     return retval
   end
 
+  def inspect
+    if instance_variable_defined?(:@refs) and !@refs.nil?
+      local_refs = @refs
+      @refs = {}
+      local_refs.each do |k, v|
+        @refs[k] ||= []
+        v.each {|l| @refs[k] << l.to_s.gsub("\t"," ")}
+      end
+    end
+    if !@rgfa.nil?
+      local_rgfa = @rgfa
+      @rgfa = "<RGFA:#{local_rgfa.object_id}>"
+    end
+    retval = super
+    @refs = local_refs if local_refs
+    @rgfa = local_rgfa if local_rgfa
+    retval
+  end
 end

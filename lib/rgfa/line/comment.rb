@@ -80,6 +80,8 @@ class RGFA::Line::Comment < RGFA::Line
   }
   FIELD_ALIAS = {}
   REFERENCE_FIELDS = []
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 end

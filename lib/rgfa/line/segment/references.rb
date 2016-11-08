@@ -2,150 +2,58 @@ require_relative "../segment"
 
 module RGFA::Line::Segment::References
 
-  def self.included(klass)
-    klass.class_eval do
-      attr_writer :links, :containments, :paths
+  # References to the graph lines which involve the segment as dovetail overlap
+  # @param extremity [:L,:R, nil] left of right extremity of the segment
+  #   (default: both)
+  # @return [Array<RGFA::Line>] an array of lines; the lines themselves can be
+  #   modified, but the array is frozen
+  # @note to add a dovetail overlap, create a L (GFA1) or E (GFA2) line and
+  #   connect it to the graph; to remove a dovetail overlap, call
+  #   RGFA::Line#disconnect! on the corresponding L or E line
+  def dovetails(extremity = nil)
+    if extremity
+      send(:"dovetails_#{extremity}")
+    else
+      dovetails_L + dovetails_R
     end
   end
 
-  # References to the links in which the segment is involved.
-  #
-  # @!macro references_table
-  #   The references are in four arrays which are
-  #   accessed from a nested hash table. The first key is
-  #   the direction (from or to), the second is the orientation
-  #   (+ or -).
-  #
-  # @example
-  #   segment.links[:from][:+]
-  #
-  # @return [Hash{RGFA::Line::DIRECTION => Hash{RGFA::Line::ORIENTATION => Array<RGFA::Line::Link>}}]
-  def links
-    @links ||= {:from => {:+ => [], :- => []},
-                :to   => {:+ => [], :- => []}}
-    @links
+  # References to the graph lines which involve the segment as dovetail overlap
+  # @param extremity [:L,:R, nil] left of right extremity of the segment
+  #   (default: both)
+  def gaps(extremity)
+    if extremity
+      send(:"gaps_#{extremity}")
+    else
+      gaps_L + gaps_R
+    end
   end
 
-  # References to the containments in which the segment is involved.
-  # @!macro references_table
-  #
-  # @example
-  #   segment.containments[:from][:+]
-  #
-  # @return [Hash{RGFA::Line::DIRECTION => Hash{RGFA::Line::ORIENTATION => Array<RGFA::Line::Containment>}}]
   def containments
-    @containments ||= {:from => {:+ => [], :- => []},
-                       :to   => {:+ => [], :- => []}}
-    @containments
-  end
-
-  # References to the containments in which the segment is involved.
-  #
-  # The references are in two arrays which are
-  # accessed from a hash table. The key is the orientation
-  # (+ or -).
-  #
-  # @example
-  #   segment.paths[:+]
-  #
-  # @return [Hash{RGFA::Line::ORIENTATION => Array<RGFA::Line::Path>}]
-  def paths
-    @paths ||= {:+ => [], :- => []}
-    @paths
-  end
-
-  # All containments where a segment is involved.
-  # @!macro this_is_a_copy
-  #   @note the list shall be considered read-only, as this
-  #     is a copy of the original arrays of references, concatenated
-  #     to each other.
-  def all_containments
-    l = self.containments
-    l[:from][:+] + l[:from][:-] + l[:to][:+] + l[:to][:-]
-  end
-
-  # All links where the segment is involved.
-  # @!macro this_is_a_copy
-  def all_links
-    l = self.links
-    l[:from][:+] + l[:from][:-] + l[:to][:+] + l[:to][:-]
-  end
-
-  # All links and containments where the segment is involved.
-  # @!macro this_is_a_copy
-  def all_connections
-    all_links + all_containments
-  end
-
-  # All paths where the segment is involved.
-  # @!macro this_is_a_copy
-  def all_paths
-    pt = self.paths
-    pt[:+] + pt[:-]
-  end
-
-  # All paths, links and containments where the segment is involved.
-  # @!macro this_is_a_copy
-  def all_references
-    all_connections + all_paths
+    contained + containers
   end
 
   private
 
-  def merge_virtual(previous)
-    merge_virtual_process_links(previous)
-    merge_virtual_process_containments(previous)
-    merge_virtual_process_paths(previous)
-  end
-
-  def merge_virtual_process_links(previous)
-    @links = previous.links
-    [:from, :to].each do |d|
-      [:+, :-].each do |o|
-        @links[d][o].each do |l|
-          l.send(:set_existing_field, d, self, set_reference: true)
-        end
-      end
-    end
-  end
-
-  def merge_virtual_process_containments(previous)
-    @containments = previous.containments
-    [:from, :to].each do |d|
-      [:+, :-].each do |o|
-        @containments[d][o].each do |l|
-          l.send(:set_existing_field, d, self, set_reference: true)
-        end
-      end
-    end
-  end
-
-  def merge_virtual_process_paths(previous)
-    @paths = previous.paths
-    [:+, :-].each do |o|
-      @paths[o].each do |l|
-        l.send(:update_segment_references, previous, self)
-      end
-    end
-  end
-
-
-  # Delete a segment from the RGFA graph
-  # @return [RGFA] self
-  # @param s [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
-  #   segment name or instance
-  def remove_references
-    links
-    containments
-    paths
-    [:+, :-].each do |o|
-      [:from, :to].each do |d|
-        @links[d][o].each {|l| l.disconnect!}
-        @containments[d][o].each {|l| l.disconnect!}
-      end
-      @paths[o].each {|l| l.disconnect!}
+  def backreference_keys(ref, key_in_ref)
+    case ref.record_type
+    when :E
+      [:dovetails_L, :dovetails_R, :internals, :containers, :contained]
+    when :L
+      [:dovetails_L, :dovetails_R]
+    when :C
+      (key_in_ref == :from) ? [:contained] : [:containers]
+    when :G
+      [:gaps_L, :gaps_R]
+    when :F
+      [:fragments]
+    when :O, :P
+      [:paths]
+    when :U
+      [:subgraphs]
+    else
+      []
     end
   end
 
 end
-

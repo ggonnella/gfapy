@@ -3,7 +3,6 @@ class RGFA::Line::Link < RGFA::Line
 
   RECORD_TYPE = :L
   POSFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
-  REFERENCE_FIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
   PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
   FIELD_ALIAS = {}
   DATATYPE = {
@@ -18,6 +17,9 @@ class RGFA::Line::Link < RGFA::Line
      :FC => :i,
      :KC => :i,
   }
+  REFERENCE_FIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
+  DEPENDENT_REFERENCES = [:paths]
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 
@@ -26,6 +28,7 @@ end
 require_relative "connection/alignment_type"
 require_relative "connection/ends_gfa1"
 require_relative "connection/gfa1_to_gfa2"
+require_relative "connection/references_gfa1"
 require_relative "link/canonical"
 require_relative "link/complement"
 require_relative "link/equivalence"
@@ -35,6 +38,7 @@ class RGFA::Line::Link
   include RGFA::Line::Connection::EndsGFA1
   include RGFA::Line::Connection::GFA1ToGFA2
   include RGFA::Line::Connection::AlignmentType
+  include RGFA::Line::Connection::ReferencesGFA1
   include RGFA::Line::Link::Canonical
   include RGFA::Line::Link::Complement
   include RGFA::Line::Link::Equivalence

@@ -4,7 +4,6 @@ class RGFA::Line::Edge < RGFA::Line
   RECORD_TYPE = :E
   POSFIELDS = [:eid, :sid1, :or2, :sid2, :beg1,
                :end1, :beg2, :end2, :alignment]
-  REFERENCE_FIELDS = [:sid1, :or2, :sid2, :beg1, :end1, :beg2, :end2]
   PREDEFINED_TAGS = []
   DATATYPE = {
     :eid => :optional_identifier_gfa2,
@@ -18,6 +17,9 @@ class RGFA::Line::Edge < RGFA::Line
     :alignment => :alignment_gfa2,
   }
   FIELD_ALIAS = { :id => :eid }
+  REFERENCE_FIELDS = [:sid1, :or2, :sid2, :beg1, :end1, :beg2, :end2]
+  DEPENDENT_REFERENCES = [:paths, :subgraphs]
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 

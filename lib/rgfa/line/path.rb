@@ -8,7 +8,6 @@ class RGFA::Line::Path < RGFA::Line
 
   RECORD_TYPE = :P
   POSFIELDS = [:path_name, :segment_names, :overlaps]
-  REFERENCE_FIELDS = [:segment_names, :overlaps]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {:id => :path_name}
   DATATYPE = {
@@ -16,6 +15,9 @@ class RGFA::Line::Path < RGFA::Line
     :segment_names => :oriented_segments,
     :overlaps => :alignment_list_gfa1,
   }
+  REFERENCE_FIELDS = [:segment_names, :overlaps]
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = [:links, :segments]
 
   define_field_methods!
 

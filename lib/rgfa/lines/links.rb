@@ -28,6 +28,8 @@ module RGFA::Lines::Links
     @records[:L]
   end
 
+  # CHANGE2: calling code shall directly use segment.dovetails
+  #
   # Finds links of the specified end of segment.
   #
   # @param [RGFA::SegmentEnd] segment_end a segment end
@@ -37,15 +39,17 @@ module RGFA::Lines::Links
   # @return [Array<RGFA::Line::Link>] if segment_end[1] == :B,
   #   links to sn with to_orient + and from sn with from_orient -
   #
+  # CHANGE1:
   # @note to add or remove links, use the appropriate methods;
   #   adding or removing links from the returned array will not work
   def links_of(segment_end)
     segment_end = segment_end.to_segment_end
     s = segment!(segment_end.segment)
-    o = segment_end.end_type == :E ? [:+,:-] : [:-,:+]
-    s.links[:from][o[0]] + s.links[:to][o[1]]
+    s.dovetails(segment_end.end_type == :B ? :L : :R)
   end
 
+  # CHANGE2: directly use segment.dovetails
+  #
   # Finds segment ends connected to the specified segment end.
   #
   # @param [RGFA::SegmentEnd] segment_end a segment end
@@ -53,9 +57,15 @@ module RGFA::Lines::Links
   # @return [Array<RGFA::SegmentEnd>>] segment ends connected by links
   #   to +segment_end+
   def neighbours(segment_end)
-    links_of(segment_end).map {|l| l.other_end(segment_end) }
+    s = segment!(segment_end.segment)
+    s.dovetails(segment_end.end_type == :B ? :L : :R).map do |l|
+      l.other_end(segment_end)
+    end
   end
 
+  # CHANGE2: directly use segment.dovetails
+  # CHANGE2: rename to something like dovetails_between
+  #
   # Searches all links between +segment_end1+ and +segment_end2+
   #
   # @!macro [new] two_segment_ends
@@ -70,6 +80,11 @@ module RGFA::Lines::Links
     end
   end
 
+  # CHANGE2: directly use segment.dovetails
+  # CHANGE2: rename to something like dovetail()
+  # CHANGE3: how often is this used; this method has problems (multiple links)
+  #          and something like the above links_between shall be used instead
+  #
   # @!macro [new] link
   #   Searches a link between +segment_end1+ and +segment_end2+
   #   @!macro two_segment_ends
@@ -84,6 +99,11 @@ module RGFA::Lines::Links
     return nil
   end
 
+  # CHANGE2: directly use segment.dovetails
+  # CHANGE2: rename to something like dovetail!()
+  # CHANGE3: how often is this used; this method has problems (multiple links)
+  #          and something like the above links_between shall be used instead
+  #
   # @!macro link
   # @raise [RGFA::NotFoundError] if no link is found.
   def link!(segment_end1, segment_end2)
@@ -95,6 +115,9 @@ module RGFA::Lines::Links
     l
   end
 
+  # CHANGE1: use segment.dovetails instead of segment.links
+  # CHANGE2: rename to search_dovetail_as_link() or something similar
+  #
   # Search the link from a segment S1 in a given orientation
   # to another segment S2 in a given, or the equivalent
   # link from S2 to S1 with inverted orientations.
@@ -109,11 +132,9 @@ module RGFA::Lines::Links
     oriented_segment2 = oriented_segment2.to_oriented_segment
     s = segment(oriented_segment1.segment)
     return nil if s.nil?
-    ls = s.links[:from][oriented_segment1.orient] +
-         s.links[:to][oriented_segment1.orient_inverted]
-    ls.select do |l|
-      return l if l.compatible?(oriented_segment1, oriented_segment2, cigar,
-                                true)
+    (s.dovetails(:L) + s.dovetails(:R)).select do |l|
+      return l if l.kind_of?(RGFA::Line::Link) and
+        l.compatible?(oriented_segment1, oriented_segment2, cigar, true)
     end
     return nil
   end

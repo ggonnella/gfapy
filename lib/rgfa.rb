@@ -336,7 +336,7 @@ class RGFA
       if s.virtual?
         raise RGFA::NotFoundError, "Segment #{s.name} does not exist\n"+
             "References to #{s.name} were found in the following lines:\n"+
-              s.all_references.map(&:to_s).join("\n")
+            s.all_references.map(&:to_s).join("\n")
       end
     end
     return nil
@@ -350,8 +350,8 @@ class RGFA
       pt.links.each do |l, dir|
         if l.virtual?
           raise RGFA::NotFoundError, "Link: #{l.to_s}\n"+
-          "does not exist, but is required by the paths:\n"+
-          l.paths.map{|pt2, dir2|pt2.to_s}.join("\n")
+          "does not exist, but is required by the following paths:\n"+
+          l.paths.map(&:to_s).join("\n")
         end
       end
     end

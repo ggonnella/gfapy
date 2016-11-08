@@ -140,9 +140,9 @@ class TestRGFALineGetters < Test::Unit::TestCase
     s = (0..3).map{|i| "S\t#{i}\t*".to_rgfa_line}
     p = "P\t4\t2+,0-\t*"
     (s + [p]).each {|line| gfa << line }
-    assert_equal([p], gfa.paths_with("0").map(&:to_s))
-    assert_equal([p], gfa.paths_with("2").map(&:to_s))
-    assert_equal([], gfa.paths_with("1").map(&:to_s))
+    assert_equal([p], gfa.segment("0").paths.map(&:to_s))
+    assert_equal([p], gfa.segment("2").paths.map(&:to_s))
+    assert_equal([], gfa.segment("1").paths.map(&:to_s))
   end
 
   def test_containing

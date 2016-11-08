@@ -3,7 +3,6 @@ class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F
   POSFIELDS = [:sid, :or, :external, :s_beg, :s_end, :f_beg, :f_end, :alignment]
-  REFERENCE_FIELDS = [:sid]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
@@ -16,6 +15,9 @@ class RGFA::Line::Fragment < RGFA::Line
     :f_end => :position_gfa2,
     :alignment => :alignment_gfa2
   }
+  REFERENCE_FIELDS = [:sid]
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 

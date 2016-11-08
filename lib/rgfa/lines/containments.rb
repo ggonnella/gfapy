@@ -14,7 +14,7 @@ module RGFA::Lines::Containments
   # @return [Array<RGFA::Line::Containment>]
   def contained_in(s)
     s = segment!(s)
-    s.containments[:from][:+] + s.containments[:from][:-]
+    s.contained
   end
 
   # Find containment lines whose +to+ segment name is +segment_name+
@@ -22,7 +22,7 @@ module RGFA::Lines::Containments
   # @!macro segment_or_name
   def containing(s)
     s = segment!(s)
-    s.containments[:to][:+] + s.containments[:to][:-]
+    s.containers
   end
 
   # Searches all containments of +contained+ in +container+.

@@ -20,6 +20,8 @@ class RGFA::Line::CustomRecord < RGFA::Line
   DATATYPE = {
     :record_type => :custom_record_type,
   }
+  DEPENDENT_REFERENCES = []
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 end

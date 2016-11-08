@@ -15,6 +15,8 @@ class RGFA::Line::Gap < RGFA::Line
     :disp => :i,
     :var => :optional_integer
   }
+  DEPENDENT_REFERENCES = [:paths, :subgraphs]
+  NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
 

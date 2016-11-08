@@ -37,15 +37,15 @@ begin
         end
         g.adjacent_iterator do |oriented_segment, block|
           s = segment(oriented_segment.segment)
-          o = oriented_segment.orient
-          s.links[:from][o].each do |l|
-            os = [segment(l.to), l.to_orient].to_oriented_segment
-            block.call(os)
-          end
-          o = oriented_segment.invert_orient
-          s.links[:to][o].each do |l|
-            os = [segment(l.from), l.from_orient].to_oriented_segment
-            block.call(os.invert_orient)
+          s.dovetails.each do |l|
+            if l.from == s and l.from_orient == oriented_segment.orient
+              os = [segment(l.to), l.to_orient].to_oriented_segment
+              block.call(os)
+            end
+            if l.to == s and l.to_orient == oriented_segment.orient_inverted
+              os = [segment(l.from), l.from_orient].to_oriented_segment
+              block.call(os.invert_orient)
+            end
           end
         end
         g.directed = true
@@ -64,16 +64,12 @@ begin
         g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
         g.adjacent_iterator do |s, bl|
           s = segment(s)
-          s.links[:from][:+].each do |l|
-            if l.to_orient == :-
+          s.dovetails.each do |l|
+            if l.from_orient == :- or to_orient == :-
               raise RGFA::ValueError,
                 "Graph contains links with segments in reverse orientations"
             end
-            bl.call(segment(l.to))
-          end
-          if s.links[:from][:-].size > 0
-            raise RGFA::ValueError,
-              "Graph contains links with segments in reverse orientations"
+            bl.call(segment(l.to)) if (l.from == s)
           end
         end
         g.directed = true

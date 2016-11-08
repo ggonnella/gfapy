@@ -16,6 +16,10 @@ class RGFA::Line::SegmentGFA2 < RGFA::Line
     :UR => :Z
   }
   FIELD_ALIAS = { :name => :sid, :id => :sid, :length => :slen }
+  DEPENDENT_REFERENCES = [:dovetails_L, :dovetails_R, :gaps_L, :gaps_R,
+                          :contained, :containers, :fragments,
+                          :unordered_groups, :ordered_groups]
+  NONDEPENDENT_REFERENCES = [:paths]
 
   define_field_methods!
 

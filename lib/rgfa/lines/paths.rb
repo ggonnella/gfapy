@@ -34,12 +34,4 @@ module RGFA::Lines::Paths
     pt
   end
 
-  # @return [Array<RGFA::Line::Path>] paths whose +segment_names+ include the
-  #   specified segment.
-  # @!macro [new] segment_or_name
-  #   @param s [RGFA::Line::SegmentGFA1, Symbol] a segment instance or name
-  def paths_with(s)
-    segment!(s).all_paths
-  end
-
 end

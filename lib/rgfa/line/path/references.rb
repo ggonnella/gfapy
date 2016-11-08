@@ -1,13 +1,6 @@
 module RGFA::Line::Path::References
 
-  # The links to which the path refers; it can be an empty array
-  # (e.g. from a line which is not embedded in a graph);
-  # the boolean is true if the equivalent reverse link is used.
-  # @return [Array<RGFA::Line::Link, Boolean>]
-  def links
-    @links ||= []
-    @links
-  end
+  private
 
   # computes the list of links which are required to support
   # the path
@@ -29,8 +22,6 @@ module RGFA::Line::Path::References
     retval
   end
 
-  private
-
   # Are the overlaps a single "*"? This is a compact representation of
   # a linear path where all CIGARs are "*"
   # @return [Boolean]
@@ -39,44 +30,20 @@ module RGFA::Line::Path::References
     overlaps.size == 1 and overlaps[0].empty?
   end
 
-  # @note: called by RGFA::Line::Link#merge_virtual
-  def update_link_reference(old_link, new_link)
-    l = @links.delete(old_link)
-    if l.nil?
-      raise RGFA::NotFoundError,
-        "\nLink to delete: #{old_link.map(&:to_s)}\n"+
-        "Links: #{links.map{|ln,dir|[ln.to_s,dir]}}"
-    end
-    @links << new_link
-  end
-
-  # @note: called by RGFA::Line::Segment#merge_virtual
-  def update_segment_references(old_segment, new_segment)
-    found_at_least_once = false
-    segment_names.each do |s_o|
-      if s_o[0] == old_segment
-        found_at_least_once = true
-        s_o[0] = new_segment
-      end
-    end
-    if !found_at_least_once
-      raise RGFA::NotFoundError,
-        "\nSegment to delete: #{old_segment}\n"+
-        "Segments: #{segment_names.map{|s,o|[s.name,o]}}"
+  def update_reference_in_field(field, oldref, newref)
+    case field
+    when :segment_names
+      segment_names.each {|s_o| s_o[0] = newref if s_o[0] == oldref }
     end
   end
-  def create_references
-    connect_links
-    connect_segments
+
+  def initialize_references
+    initialize_links
+    initialize_segments
   end
 
-  def remove_references
-    disconnect_links
-    disconnect_segments
-  end
-
-  def connect_links
-    @links = []
+  def initialize_links
+    refs[:links] = []
     required_links.each do |from,to,cigar|
       l = nil
       if @rgfa.segment(from.segment) and @rgfa.segment(to.segment)
@@ -97,25 +64,30 @@ module RGFA::Line::Path::References
                                   version: :"1.0")
         l.connect(@rgfa)
       end
-      direct = l.compatible_direct?(from, to, cigar)
-      @links << [l, direct]
-      l.paths << [self, direct]
+      @refs[:links] << l
+      l.add_reference(self, :paths)
     end
   end
 
-  def connect_segments
+  def initialize_segments
     segment_names.each do |sn_with_o|
-      sn_with_o[0] = rgfa.segment(sn_with_o[0])
-      sn_with_o[0].paths[sn_with_o[1]] << self
+      s = @rgfa.segment(sn_with_o[0])
+      sn_with_o[0] = s
+      s.add_reference(self, :paths)
     end
   end
 
-  def disconnect_links
-    @links.each {|l, dir| l.paths.delete([self, dir])}
+  def disconnect_field_references
+    segment_names.each {|s, o| s.update_references(self, nil, :paths)}
   end
 
-  def disconnect_segments
-    segment_names.each {|s, o| s.paths[o].delete(self)}
+  def backreference_keys(ref, key_in_ref)
+    case ref.record_type
+    when :L
+      [:links]
+    when :S
+      [:segment_names]
+    end
   end
 
 end

@@ -3,7 +3,6 @@ class RGFA::Line::SegmentGFA1 < RGFA::Line
 
   RECORD_TYPE = :S
   POSFIELDS = [:name, :sequence]
-  REFERENCE_FIELDS = []
   PREDEFINED_TAGS = [:LN, :RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
     :name => :segment_name_gfa1,
@@ -16,6 +15,13 @@ class RGFA::Line::SegmentGFA1 < RGFA::Line
     :UR => :Z
   }
   FIELD_ALIAS = { :sid => :name, :id => :name }
+  REFERENCE_FIELDS = []
+  DEPENDENT_REFERENCES = [:dovetails_L, :dovetails_R, :gaps_L, :gaps_R,
+                          :contained, :containers, :fragments,
+                          :unordered_groups, :ordered_groups]
+                          # some are always empty but still here
+                          # so that the interface remains compatible with GFA2
+  NONDEPENDENT_REFERENCES = [:paths]
 
   define_field_methods!
 
