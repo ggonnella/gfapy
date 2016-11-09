@@ -20,8 +20,8 @@ module RGFA::GraphOperations::LinearPaths
   # @return [Array<RGFA::SegmentEnd>]
   #
   def linear_path(s, exclude = Set.new)
+    cs = segment(s).connectivity
     s = s.to_sym
-    cs = connectivity(s)
     segpath = RGFA::SegmentEndsPath.new()
     [:B, :E].each_with_index do |et, i|
       if cs[i] == 1
@@ -73,7 +73,7 @@ module RGFA::GraphOperations::LinearPaths
   def merge_linear_path(segpath, **options)
     return if segpath.size < 2
     segpath.map!{|se|se.to_segment_end}
-    if segpath[1..-2].any? {|sn,et| connectivity(sn) != [1,1]}
+    if segpath[1..-2].any? {|sn,et| segment(sn).connectivity != [1,1]}
       raise RGFA::ValueError, "The specified path is not linear"
     end
     merged, first_reversed, last_reversed =
@@ -135,14 +135,13 @@ module RGFA::GraphOperations::LinearPaths
     loop do
       after  = links_of(current)
       before = links_of(current.to_segment_end.invert_end_type)
-      cs = connectivity_symbols(before.size, after.size)
-      if cs == [1,1] or list.empty?
+      if (before.size == 1 and after.size == 1) or list.empty?
         list << current
         exclude << current.name
         l = after.first
         current = l.other_end(current).invert_end_type
         break if exclude.include?(current.name)
-      elsif cs[0] == 1
+      elsif before.size == 1
         list << current
         exclude << current.name
         break

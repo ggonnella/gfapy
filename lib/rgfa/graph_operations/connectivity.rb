@@ -5,24 +5,6 @@ module RGFA::GraphOperations::Connectivity
 
   require "set"
 
-  # Computes the connectivity of a segment from its number of links.
-  #
-  # @param segment
-  #   [String, Symbol, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
-  #   segment name or instance
-  #
-  # @return [Array<conn_symbol,conn_symbol>]
-  #  conn. symbols respectively of the :B and :E ends of +segment+.
-  #
-  # <b>Connectivity symbol:</b> (+conn_symbol+)
-  # - Let _n_ be the number of links to an end (+:B+ or +:E+) of a segment.
-  #   Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
-  #
-  def connectivity(segment)
-    connectivity_symbols(links_of([segment, :B]).size,
-                         links_of([segment, :E]).size)
-  end
-
   # Does the removal of the link alone divide a component
   # of the graph into two?
   # @return [Boolean]
@@ -51,8 +33,8 @@ module RGFA::GraphOperations::Connectivity
   # @return [Boolean]
   def cut_segment?(segment)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
-    cn = connectivity(segment_name)
-    return false if [[0,0],[0,1],[1,0]].include?(cn)
+    segment = segment!(segment)
+    return false if [[0,0],[0,1],[1,0]].include?(segment.connectivity)
     start_points = []
     [:B, :E].each do |et|
       start_points += links_of([segment_name, et]).map do |l|
@@ -124,14 +106,6 @@ module RGFA::GraphOperations::Connectivity
       traverse_component([sn, :B], c, visited)
       traverse_component([sn, :E], c, visited)
     end
-  end
-
-  def connectivity_symbols(n,m)
-    [connectivity_symbol(n), connectivity_symbol(m)]
-  end
-
-  def connectivity_symbol(n)
-    n > 1 ? :M : n
   end
 
 end

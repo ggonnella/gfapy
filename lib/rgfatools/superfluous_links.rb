@@ -18,15 +18,14 @@ module RGFATools::SuperfluousLinks
       se[et] = [sn, et]
       l[et] = links_of(se[et])
     end
-    cs = connectivity_symbols(l[:B].size, l[:E].size)
-    if cs == [1, 1]
+    if l[:B].size == 1 and l[:E].size == 1
       oe = {}
       [:B, :E].each {|et| oe[et] = l[et][0].other_end(se[et])}
       return if oe[:B] == oe[:E]
       [:B, :E].each {|et| delete_other_links(oe[et], se[et],
                                     conserve_components: conserve_components)}
     else
-      i = cs.index(1)
+      i = (l[:B].size == 1) ? 0 : ((l[:E].size == 1) ? 1 : nil)
       return if i.nil?
       et = [:B, :E][i]
       oe = l[et][0].other_end(se[et])

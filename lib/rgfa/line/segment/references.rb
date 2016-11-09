@@ -31,7 +31,33 @@ module RGFA::Line::Segment::References
     contained + containers
   end
 
+  # Computes the connectivity of a segment from its number of dovetail overlaps.
+  #
+  # @return [Array<conn_symbol,conn_symbol>]
+  #  conn. symbols respectively of the :L and :R ends of +segment+.
+  #
+  # <b>Connectivity symbol:</b> (+conn_symbol+)
+  # - Let _n_ be the number of links to an end (+:B+ or +:E+) of a segment.
+  #   Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
+  #
+  def connectivity
+    if !connected?
+      raise RGFA::ArgumentError,
+        "Cannot compute the connectivity of #{self}\n"+
+        "Segment is not connected to a RGFA instance"
+    end
+    connectivity_symbols(dovetails_L.size, dovetails_R.size)
+  end
+
   private
+
+  def connectivity_symbols(n,m)
+    [connectivity_symbol(n), connectivity_symbol(m)]
+  end
+
+  def connectivity_symbol(n)
+    n > 1 ? :M : n
+  end
 
   def backreference_keys(ref, key_in_ref)
     case ref.record_type

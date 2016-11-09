@@ -18,7 +18,7 @@ module RGFATools::Artifacts
   # @return [RGFA] self
   def remove_dead_ends(minlen)
     segments.each do |s|
-      c = connectivity(s)
+      c = s.connectivity
       rm(s) if s.length < minlen and
         (c[0] == 0 or c[1] == 0) and
           !cut_segment?(s)

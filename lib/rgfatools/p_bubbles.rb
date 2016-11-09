@@ -10,9 +10,10 @@ module RGFATools::PBubbles
   # @return [RGFA] self
   def remove_p_bubbles
     visited = Set.new
-    segment_names.each do |sn|
+    segments.each do |s|
+      sn = s.name
       next if visited.include?(sn)
-      if connectivity(sn) == [1,1]
+      if s.connectivity == [1,1]
         s1 = neighbours([sn, :B])[0]
         s2 = neighbours([sn, :E])[0]
         n1 = neighbours(s1).sort
@@ -45,7 +46,7 @@ module RGFATools::PBubbles
     n1 = neighbours(segment_end1).sort
     n2 = neighbours(segment_end2).sort
     raise if n1 != n2.map{|se| se.invert_end_type}
-    raise if n1.any? {|se| connectivity(se[0]) != [1,1]}
+    raise if n1.any? {|se| se[0].connectivity != [1,1]}
     remove_proven_p_bubble(segment_end1, segment_end2, n1,
                            count_tag: count_tag,
                            unit_length: unit_length)
