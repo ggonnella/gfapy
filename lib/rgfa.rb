@@ -133,11 +133,6 @@ class RGFA
       @version_guess = @version
       validate_version!
     end
-    @edges = []
-    @fragments = []
-    @gaps = []
-    @ordered_groups = []
-    @unordered_groups = []
   end
 
   # Require that the links, containments and paths referring
