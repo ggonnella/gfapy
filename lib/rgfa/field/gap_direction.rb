@@ -1,4 +1,4 @@
-module RGFA::Field::Direction
+module RGFA::Field::GapDirection
 
   def unsafe_decode(string)
     string.to_sym
@@ -13,7 +13,7 @@ module RGFA::Field::Direction
   def validate_decoded(symbol)
     if symbol != :">" and symbol != :"<"
       raise RGFA::FormatError,
-        "#{symbol.inspect} is not a valid direction\n"+
+        "#{symbol.inspect} is not a valid gap direction\n"+
         "(it must be > or <)"
     end
     return symbol
@@ -22,7 +22,7 @@ module RGFA::Field::Direction
   def validate_encoded(string)
     if string != ">" and string != "<"
       raise RGFA::FormatError,
-        "#{string.inspect} is not a valid orientation\n"+
+        "#{string.inspect} is not a valid gap direction\n"+
         "(it must be > or <)"
     end
     return string

@@ -9,8 +9,8 @@ class RGFA::Line::Gap < RGFA::Line
   DATATYPE = {
     :gid => :optional_identifier_gfa2,
     :sid1 => :identifier_gfa2,
-    :d1 => :direction,
-    :d2 => :direction,
+    :d1 => :gap_direction,
+    :d2 => :gap_direction,
     :sid2 => :identifier_gfa2,
     :disp => :i,
     :var => :optional_integer
@@ -20,4 +20,10 @@ class RGFA::Line::Gap < RGFA::Line
 
   define_field_methods!
 
+end
+
+require_relative "gap/references.rb"
+
+class RGFA::Line::Gap
+  include RGFA::Line::Gap::References
 end

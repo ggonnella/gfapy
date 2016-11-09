@@ -22,3 +22,9 @@ class RGFA::Line::Fragment < RGFA::Line
   define_field_methods!
 
 end
+
+require_relative "fragment/references.rb"
+
+class RGFA::Line::Fragment
+  include RGFA::Line::Fragment::References
+end

@@ -1,10 +1,8 @@
-module RGFA::Line::Edge::GFA2::References
+module RGFA::Line::Gap::References
 
   private
 
   def initialize_references
-    st1 = substring_type(beg1, end1)[0]
-    st2 = substring_type(beg2, end2)[0]
     [1,2].each do |snum|
       sid = :"sid#{snum}"
       s = @rgfa.segment(get(sid))
@@ -18,31 +16,23 @@ module RGFA::Line::Edge::GFA2::References
         s.connect(@rgfa)
       end
       set_existing_field(sid, s, set_reference: true)
-      s.add_reference(self, refkey_for_s(snum, st1, st2))
+      s.add_reference(self, refkey_for_s(snum))
     end
   end
 
-  def refkey_for_s(snum, st1, st2)
-    if st1 == :whole
-      return snum == 1 ? :contained : :containers
-    elsif st2 == :whole
-      return snum == 1 ? :containers : :contained
-    elsif or2 == :+
-      if (st1 == :pfx and st2 == :sfx)
-        return snum == 1 ? :dovetails_L : :dovetails_R
-      elsif (st1 == :sfx and st2 == :pfx)
-        return snum == 1 ? :dovetails_R : :dovetails_L
-      else
-        return :internals
-      end
+  def refkey_for_s(snum)
+    case [d1, d2]
+    when [:">", :">"]
+      return (snum == 1) ? :gaps_R : :gaps_L
+    when [:">", :"<"]
+      return :gaps_R
+    when [:"<", :">"]
+      return :gaps_L
+    when [:"<", :"<"]
+      return (snum == 1) ? :gaps_L : :gaps_R
     else
-      if (st1 == :pfx and st2 == :pfx)
-        return :dovetails_L
-      elsif (st1 == :sfx and st2 == :sfx)
-        return :dovetails_R
-      else
-        return :internals
-      end
+      raise RGFA::RuntimeError,
+        "This should never happen"
     end
   end
 

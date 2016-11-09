@@ -17,8 +17,8 @@ require_relative "field/byte_array.rb"
 require_relative "field/char.rb"
 require_relative "field/comment.rb"
 require_relative "field/custom_record_type.rb"
-require_relative "field/direction.rb"
 require_relative "field/float.rb"
+require_relative "field/gap_direction.rb"
 require_relative "field/generic.rb"
 require_relative "field/identifier_gfa2.rb"
 require_relative "field/identifier_list_gfa2.rb"
@@ -110,7 +110,7 @@ module RGFA::Field
                              :custom_record_type,
                              :sequence_gfa2,
                              :optional_integer,
-                             :direction,
+                             :gap_direction,
                            ]
 
   # Symbol representing a datatype for positional fields common to GFA1 and GFA2
@@ -133,7 +133,7 @@ module RGFA::Field
     :alignment_list_gfa1      => RGFA::Field::AlignmentListGFA1,
     :comment                  => RGFA::Field::Comment,
     :custom_record_type       => RGFA::Field::CustomRecordType,
-    :direction                => RGFA::Field::Direction,
+    :gap_direction            => RGFA::Field::GapDirection,
     :generic                  => RGFA::Field::Generic,
     :identifier_gfa2          => RGFA::Field::IdentifierGFA2,
     :identifier_list_gfa2     => RGFA::Field::IdentifierListGFA2,
