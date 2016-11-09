@@ -28,8 +28,12 @@ module RGFA::Line::Common::ReferencesImport
   # This is called when a virtual line (previous) is
   # substituted by a real line
   def import_references(previous)
-    import_field_references(previous)
-    update_field_backreferences(previous)
+    if previous.kind_of?(RGFA::Line::Unknown)
+      import_field_references(previous)
+      update_field_backreferences(previous)
+    else
+      initialize_references
+    end
     import_nonfield_references(previous)
     update_nonfield_backreferences(previous)
   end

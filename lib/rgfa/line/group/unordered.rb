@@ -16,3 +16,9 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
   define_field_methods!
 
 end
+
+require_relative "gfa2/references"
+
+class RGFA::Line::Group::Unordered
+  include RGFA::Line::Group::GFA2::References
+end

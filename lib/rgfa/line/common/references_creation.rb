@@ -23,7 +23,7 @@ module RGFA::Line::Common::ReferencesCreation
     end
     previous = rgfa.search_duplicate(self)
     if !previous.nil?
-      if previous.record_type == record_type and previous.virtual?
+      if previous.virtual?
         return substitute_virtual_line(previous)
       else
         return process_not_unique(previous)

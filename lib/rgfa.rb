@@ -115,7 +115,7 @@ class RGFA
     @validate = validate
     @records = {}
     @records[:H] = RGFA::Line::Header.new([], validate: @validate)
-    [:S, :P].each {|rt| @records[rt] = {}}
+    [:S, :P, nil].each {|rt| @records[rt] = {}}
     [:E, :U, :G, :O].each {|rt| @records[rt] = {nil => []}}
     [:C, :L, :"#", :F].each {|rt| @records[rt] = []}
     @segments_first_order = false

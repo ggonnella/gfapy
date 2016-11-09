@@ -7,7 +7,8 @@ module RGFA::Lines::CustomRecords
   # @return [Array<RGFA::Line::Comment>]
   def custom_records
     cr = {}
-    (@records.keys - [:H, :C, :L, :"#", :F, :E, :G, :O, :U, :S, :P]).each do |k|
+    (@records.keys -
+       [:H, :C, :L, :"#", :F, :E, :G, :O, :U, :S, :P, nil]).each do |k|
       cr[k] = @records[k]
     end
     cr.freeze

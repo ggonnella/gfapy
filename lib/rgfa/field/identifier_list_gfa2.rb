@@ -1,12 +1,12 @@
 module RGFA::Field::IdentifierListGFA2
 
   def unsafe_decode(string)
-    string.to_sym
+    string.split(" ").map(&:to_sym)
   end
 
   def decode(string)
     validate_encoded(string)
-    string.to_sym
+    unsafe_decode(string)
   end
 
   def validate_encoded(string)

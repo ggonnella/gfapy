@@ -46,6 +46,7 @@ module RGFA::Lines
                    RGFA::Line::Edge::GFA2,
                    RGFA::Line::Group::Unordered,
                    RGFA::Line::Group::Ordered,
+                   RGFA::Line::Unknown,
                   ]
 
   # Add a line to a RGFA
@@ -266,7 +267,9 @@ module RGFA::Lines
     case gfa_line.record_type
     when :H
       @records[:H].merge(gfa_line)
-    when :E, :S, :P, :U, :G, :O
+    when :S, :P, nil
+      @records[gfa_line.record_type][gfa_line.id] = gfa_line
+    when :E, :U, :G, :O
       if gfa_line.id.empty?
         @records[gfa_line.record_type][nil] << gfa_line
       else
@@ -314,7 +317,7 @@ module RGFA::Lines
       return nil
     end
     id = id.to_sym
-    [:E, :S, :P, :U, :G, :O].each do |rt|
+    [:E, :S, :P, :U, :G, :O, nil].each do |rt|
       found = @records[rt][id]
       return found if !found.nil?
     end

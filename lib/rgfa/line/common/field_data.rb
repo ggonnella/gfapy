@@ -34,6 +34,8 @@ module RGFA::Line::Common::FieldData
       return set_existing_field(fieldname, value)
     elsif self.class::FIELD_ALIAS.has_key?(fieldname)
       return set(self.class::FIELD_ALIAS[fieldname], value)
+    elsif virtual?
+      raise RGFA::RuntimeError, "Virtual lines do not have tags"
     elsif (@validate == 0) or valid_custom_tagname?(fieldname)
       define_field_methods(fieldname)
       if !@datatype[fieldname].nil?

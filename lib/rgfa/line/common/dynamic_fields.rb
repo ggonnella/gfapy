@@ -39,6 +39,7 @@ module RGFA::Line::Common::DynamicFields
   # ---
   #
   def method_missing(m, *args, &block)
+    super if virtual?
     field_name, operation, state = split_method_name(m)
     if ((operation == :get or operation == :get!) and args.size > 1) or
        (operation == :set and args.size != 1)
