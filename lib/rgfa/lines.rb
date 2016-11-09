@@ -303,6 +303,8 @@ module RGFA::Lines
                   gfa_line.oriented_to, gfa_line.alignment)
     when :E, :S, :P, :U, :G, :O
       return search_by_id(gfa_line.id)
+    else
+      return nil
     end
   end
 
@@ -336,8 +338,10 @@ module RGFA::Lines
   end
 
   def lines
-    comments + headers + segments + links +
-      containments + paths + custom_records.values
+    comments + headers + segments +
+      links + containments + edges +
+        paths + ordered_groups + unordered_groups +
+          gaps + fragments + custom_records.values
   end
 
   def each_line(&block)

@@ -18,7 +18,7 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
   }
   FIELD_ALIAS = { :id => :eid }
   REFERENCE_FIELDS = [:sid1, :or2, :sid2, :beg1, :end1, :beg2, :end2]
-  DEPENDENT_REFERENCES = [:paths, :subgraphs]
+  DEPENDENT_REFERENCES = [:ordered_groups, :unordered_groups]
   NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
@@ -29,10 +29,12 @@ require_relative "common/from_to.rb"
 require_relative "common/alignment_type.rb"
 require_relative "gfa2/to_gfa1.rb"
 require_relative "gfa2/alignment_type.rb"
+require_relative "gfa2/references.rb"
 
 class RGFA::Line::Edge::GFA2
   include RGFA::Line::Edge::Common::FromTo
   include RGFA::Line::Edge::Common::AlignmentType
   include RGFA::Line::Edge::GFA2::AlignmentType
   include RGFA::Line::Edge::GFA2::ToGFA1
+  include RGFA::Line::Edge::GFA2::References
 end
