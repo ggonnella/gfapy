@@ -1,4 +1,4 @@
-module RGFA::Line::Path::Validation
+module RGFA::Line::Group::Path::Validation
 
   private
 

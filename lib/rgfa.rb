@@ -35,13 +35,13 @@
 #   - {RGFA::Line::Segment::GFA2}
 #   - {RGFA::Line::Edge::Link}
 #   - {RGFA::Line::Edge::Containment}
-#   - {RGFA::Line::Path}
+#   - {RGFA::Line::Edge::GFA2}
+#   - {RGFA::Line::Group::Path}
+#   - {RGFA::Line::Group::Ordered}
+#   - {RGFA::Line::Group::Unordered}
 #   - {RGFA::Line::Comment}
 #   - {RGFA::Line::Gap}
 #   - {RGFA::Line::Fragment}
-#   - {RGFA::Line::Edge::GFA2}
-#   - {RGFA::Line::OrderedGroup}
-#   - {RGFA::Line::UnorderedGroup}
 #   - {RGFA::Line::CustomRecord}
 #
 # - Further modules contain methods useful for interacting with the graph

@@ -115,11 +115,9 @@ end
 #
 require_relative "line/header.rb"
 require_relative "line/segment.rb"
-require_relative "line/path.rb"
 require_relative "line/comment.rb"
 require_relative "line/custom_record.rb"
 require_relative "line/gap.rb"
 require_relative "line/fragment.rb"
 require_relative "line/edge.rb"
-require_relative "line/ordered_group.rb"
-require_relative "line/unordered_group.rb"
+require_relative "line/group.rb"

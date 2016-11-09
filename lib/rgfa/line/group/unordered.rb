@@ -1,7 +1,7 @@
-# An ordered group line of a GFA2 file
-class RGFA::Line::OrderedGroup < RGFA::Line
+# An unordered group line of a GFA2 file
+class RGFA::Line::Group::Unordered < RGFA::Line::Group
 
-  RECORD_TYPE = :O
+  RECORD_TYPE = :U
   POSFIELDS = [:pid, :items]
   PREDEFINED_TAGS = []
   FIELD_ALIAS = {:id => :pid}

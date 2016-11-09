@@ -245,7 +245,7 @@ module RGFA::Line::Common::Init
       when :"#" then RGFA::Line::Comment
       when :L then RGFA::Line::Edge::Link
       when :C then RGFA::Line::Edge::Containment
-      when :P then RGFA::Line::Path
+      when :P then RGFA::Line::Group::Path
       else raise RGFA::TypeError,
             "Record type unknown: '#{record_type}'"
       end
@@ -259,8 +259,8 @@ module RGFA::Line::Common::Init
       when :E then RGFA::Line::Edge::GFA2
       when :F then RGFA::Line::Fragment
       when :G then RGFA::Line::Gap
-      when :O then RGFA::Line::OrderedGroup
-      when :U then RGFA::Line::UnorderedGroup
+      when :O then RGFA::Line::Group::Ordered
+      when :U then RGFA::Line::Group::Unordered
       else RGFA::Line::CustomRecord
       end
     end
@@ -272,12 +272,12 @@ module RGFA::Line::Common::Init
       when :"#" then RGFA::Line::Comment
       when :L then RGFA::Line::Edge::Link
       when :C then RGFA::Line::Edge::Containment
-      when :P then RGFA::Line::Path
+      when :P then RGFA::Line::Group::Path
       when :E then RGFA::Line::Edge::GFA2
       when :F then RGFA::Line::Fragment
       when :G then RGFA::Line::Gap
-      when :O then RGFA::Line::OrderedGroup
-      when :U then RGFA::Line::UnorderedGroup
+      when :O then RGFA::Line::Group::Ordered
+      when :U then RGFA::Line::Group::Unordered
       else RGFA::Line::CustomRecord
       end
     end

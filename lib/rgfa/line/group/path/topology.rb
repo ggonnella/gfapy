@@ -1,4 +1,4 @@
-module RGFA::Line::Path::Topology
+module RGFA::Line::Group::Path::Topology
 
   # Is the path circular? In this case the number of CIGARs must be
   # equal to the number of segments.

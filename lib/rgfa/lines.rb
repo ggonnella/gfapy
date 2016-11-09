@@ -36,7 +36,7 @@ module RGFA::Lines
   GFA1Specific = [
                    RGFA::Line::Edge::Link,
                    RGFA::Line::Edge::Containment,
-                   RGFA::Line::Path,
+                   RGFA::Line::Group::Path,
                  ]
 
   GFA2Specific = [
@@ -44,8 +44,8 @@ module RGFA::Lines
                    RGFA::Line::Fragment,
                    RGFA::Line::Gap,
                    RGFA::Line::Edge::GFA2,
-                   RGFA::Line::UnorderedGroup,
-                   RGFA::Line::OrderedGroup,
+                   RGFA::Line::Group::Unordered,
+                   RGFA::Line::Group::Ordered,
                   ]
 
   # Add a line to a RGFA

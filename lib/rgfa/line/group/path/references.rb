@@ -1,4 +1,4 @@
-module RGFA::Line::Path::References
+module RGFA::Line::Group::Path::References
 
   private
 

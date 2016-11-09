@@ -1,10 +1,6 @@
 # A path line of a GFA1 file
 #
-# @note The field names are derived from the RGFA specification at:
-#   https://github.com/pmelsted/RGFA-spec/blob/master/RGFA-spec.md#path-line
-#   and were made all downcase with _ separating words
-#
-class RGFA::Line::Path < RGFA::Line
+class RGFA::Line::Group::Path < RGFA::Line::Group
 
   RECORD_TYPE = :P
   POSFIELDS = [:path_name, :segment_names, :overlaps]
@@ -29,8 +25,8 @@ require_relative "path/topology"
 require_relative "path/references"
 require_relative "path/validation"
 
-class RGFA::Line::Path
-  include RGFA::Line::Path::Topology
-  include RGFA::Line::Path::References
-  include RGFA::Line::Path::Validation
+class RGFA::Line::Group::Path
+  include RGFA::Line::Group::Path::Topology
+  include RGFA::Line::Group::Path::References
+  include RGFA::Line::Group::Path::Validation
 end
