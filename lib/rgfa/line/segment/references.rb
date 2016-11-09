@@ -1,5 +1,3 @@
-require_relative "../segment"
-
 module RGFA::Line::Segment::References
 
   # References to the graph lines which involve the segment as dovetail overlap

@@ -65,21 +65,21 @@ module RGFA::Line::Connection::EndsGFA1
   end
 
   # The from segment name, in both cases where from is a segment name (Symbol)
-  # or a segment (RGFA::Line::SegmentGFA1)
+  # or a segment (RGFA::Line::Segment::GFA1)
   # @return [Symbol]
   def from_name
     from.to_sym
   end
 
   # The to segment name, in both cases where to is a segment name (Symbol)
-  # or a segment (RGFA::Line::SegmentGFA1)
+  # or a segment (RGFA::Line::Segment::GFA1)
   # @return [Symbol]
   def to_name
     to.to_sym
   end
 
   # The other segment of a connection line
-  # @param segment [RGFA::Line::SegmentGFA1, Symbol] segment name or instance
+  # @param segment [RGFA::Line::Segment::GFA1, Symbol] segment name or instance
   # @raise [RGFA::NotFoundError]
   #   if segment is not involved in the connection
   # @return [Symbol] the name of the other segment of the connection

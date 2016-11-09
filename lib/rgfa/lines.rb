@@ -174,7 +174,7 @@ module RGFA::Lines
   # Delete elements from the RGFA graph
   # @overload rm(segment)
   #   @param segment
-  #     [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #     [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #     segment name or instance
   # @overload rm(path)
   #   @param path [String, Symbol, RGFA::Line::Path]

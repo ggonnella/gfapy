@@ -5,16 +5,16 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_initialize_not_enough_positional_fields
     assert_nothing_raised do
-      RGFA::Line::Segment.new(["1","*"])
+      RGFA::Line::Segment::Factory.new(["1","*"])
     end
     assert_raise(RGFA::FormatError) do
-      RGFA::Line::Segment.new(["1"])
+      RGFA::Line::Segment::Factory.new(["1"])
     end
   end
 
   def test_initialize_too_many_positionals
     assert_raise(RGFA::FormatError) do
-      RGFA::Line::Segment.new(["1","*","*"])
+      RGFA::Line::Segment::Factory.new(["1","*","*"])
     end
   end
 
@@ -35,7 +35,7 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_initialize_positional_field_type_error
     assert_raise(RGFA::FormatError) do
-      RGFA::Line::Segment.new(["1\t1","*","*"])
+      RGFA::Line::Segment::Factory.new(["1\t1","*","*"])
     end
   end
 
@@ -101,13 +101,13 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_field_getters_positional_fields
-    l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
+    l = RGFA::Line::Segment::Factory.new(["12","*","xx:i:13","KC:i:10"])
     assert_equal(:"12", l.name)
     assert_raise(NoMethodError) { l.zzz }
   end
 
   def test_field_getters_existing_tags
-    l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:10"])
+    l = RGFA::Line::Segment::Factory.new(["12","*","xx:i:13","KC:i:10"])
     assert_equal(:xx, l.tagnames[0])
     assert_equal("13", l.field_to_s(:xx))
     assert_equal(13, l.xx)
@@ -124,7 +124,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_field_setters_positional_fields
-    l = RGFA::Line::Segment.new(["12","*","xx:i:13","KC:i:1200"])
+    l = RGFA::Line::Segment::Factory.new(["12","*","xx:i:13","KC:i:1200"])
     assert_raise(RGFA::FormatError) { l.name = "A\t1";
                                                    l.validate_field!(:name) }
     l.name = "14"

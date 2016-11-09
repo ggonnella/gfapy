@@ -30,9 +30,9 @@ module RGFA::Lines::Containments
   #
   # @return [Array<RGFA::Line::Containment>]
   # @!macro [new] container_contained
-  #   @param container [RGFA::Line::SegmentGFA1, Symbol]
+  #   @param container [RGFA::Line::Segment::GFA1, Symbol]
   #     a segment instance or name
-  #   @param contained [RGFA::Line::SegmentGFA1, Symbol]
+  #   @param contained [RGFA::Line::Segment::GFA1, Symbol]
   #     a segment instance or name
   #
   def containments_between(container, contained)

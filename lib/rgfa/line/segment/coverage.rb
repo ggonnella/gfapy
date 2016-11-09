@@ -1,5 +1,3 @@
-require_relative "../segment"
-
 module RGFA::Line::Segment::Coverage
 
   # @!macro [new] coverage

@@ -1,5 +1,3 @@
-require_relative "../segment"
-
 module RGFA::Line::Segment::LengthGFA1
 
   # @!macro [new] length

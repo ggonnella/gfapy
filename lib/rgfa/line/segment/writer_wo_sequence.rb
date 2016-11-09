@@ -1,5 +1,3 @@
-require_relative "../segment"
-
 module RGFA::Line::Segment::WriterWoSequence
 
   # @return string representation of the segment

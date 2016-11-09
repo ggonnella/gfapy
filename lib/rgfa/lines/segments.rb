@@ -4,7 +4,7 @@
 module RGFA::Lines::Segments
 
   # All segment lines of the graph
-  # @return [Array<RGFA::Line::SegmentGFA1,RGFA::Line::SegmentGFA2>]
+  # @return [Array<RGFA::Line::Segment::GFA1,RGFA::Line::Segment::GFA2>]
   def segments
     @records[:S].values
   end
@@ -18,9 +18,9 @@ module RGFA::Lines::Segments
   # @!macro [new] segment
   #   Searches the segment with name equal to +segment_name+.
   #   @param s
-  #     [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #     [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #     segment name or instance
-  #   @return [RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   @return [RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #     if a segment is found
   # @return [nil] if no such segment exists in the RGFA instance
   #
@@ -53,10 +53,10 @@ module RGFA::Lines::Segments
   # Delete all links/containments involving two segments
   # @return [RGFA] self
   # @param segment1
-  #   [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   segment 1 name or instance
   # @param segment2
-  #   [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   segment 2 name or instance
   def unconnect_segments(segment1, segment2)
     containments_between(segment1, segment2).each {|c| c.disconnect!}

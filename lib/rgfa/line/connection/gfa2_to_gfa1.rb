@@ -69,7 +69,7 @@ module RGFA::Line::Connection::GFA2ToGFA1
     overlap.complement
   end
 
-  # @return [Symbol, RGFA::Line::SegmentGFA2] value of the GFA1 +from+ field,
+  # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +from+ field,
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def from
@@ -78,7 +78,7 @@ module RGFA::Line::Connection::GFA2ToGFA1
   end
 
   # Set the field which will be returned by calling from
-  # @param value [Symbol, RGFA::Line::SegmentGFA2]
+  # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def from=(value)
     check_not_internal(:from)
@@ -93,7 +93,7 @@ module RGFA::Line::Connection::GFA2ToGFA1
     beg1.first ? or2 : :"+"
   end
 
-  # @return [Symbol, RGFA::Line::SegmentGFA2] value of the GFA1 +to+ field,
+  # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +to+ field,
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def to
@@ -102,7 +102,7 @@ module RGFA::Line::Connection::GFA2ToGFA1
   end
 
   # Set the field which will be returned by calling to
-  # @param value [Symbol, RGFA::Line::SegmentGFA2]
+  # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def to=(value)
     check_not_internal(:to)

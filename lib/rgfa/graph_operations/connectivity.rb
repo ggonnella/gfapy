@@ -8,7 +8,7 @@ module RGFA::GraphOperations::Connectivity
   # Computes the connectivity of a segment from its number of links.
   #
   # @param segment
-  #   [String, Symbol, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [String, Symbol, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   segment name or instance
   #
   # @return [Array<conn_symbol,conn_symbol>]
@@ -46,7 +46,7 @@ module RGFA::GraphOperations::Connectivity
   # Does the removal of the segment and its links divide a
   # component of the graph into two?
   # @param segment
-  #   [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   a segment name or instance
   # @return [Boolean]
   def cut_segment?(segment)
@@ -73,7 +73,7 @@ module RGFA::GraphOperations::Connectivity
   # @return [Array<String>]
   #   array of segment names
   # @param segment
-  #   [Symbol, String, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   a segment name or instance
   # @param visited [Set<String>] a set of segments to ignore during graph
   #   traversal; all segments in the found component will be added to it

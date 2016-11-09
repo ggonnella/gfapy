@@ -31,7 +31,8 @@
 # - {RGFA::Line}: most interaction with the GFA involve interacting with
 #   its record, i.e. instances of a subclass of this class. Subclasses:
 #   - {RGFA::Line::Header}
-#   - {RGFA::Line::Segment}
+#   - {RGFA::Line::Segment::GFA1}
+#   - {RGFA::Line::Segment::GFA2}
 #   - {RGFA::Line::Link}
 #   - {RGFA::Line::Containment}
 #   - {RGFA::Line::Path}

@@ -115,8 +115,6 @@ end
 #
 require_relative "line/header.rb"
 require_relative "line/segment.rb"
-require_relative "line/segment_gfa1.rb"
-require_relative "line/segment_gfa2.rb"
 require_relative "line/path.rb"
 require_relative "line/link.rb"
 require_relative "line/containment.rb"

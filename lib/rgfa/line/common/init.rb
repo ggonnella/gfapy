@@ -241,7 +241,7 @@ module RGFA::Line::Common::Init
     def subclass_GFA1(record_type)
       case record_type.to_sym
       when :H then RGFA::Line::Header
-      when :S then RGFA::Line::SegmentGFA1
+      when :S then RGFA::Line::Segment::GFA1
       when :"#" then RGFA::Line::Comment
       when :L then RGFA::Line::Link
       when :C then RGFA::Line::Containment
@@ -254,7 +254,7 @@ module RGFA::Line::Common::Init
     def subclass_GFA2(record_type)
       case record_type.to_sym
       when :H then RGFA::Line::Header
-      when :S then RGFA::Line::SegmentGFA2
+      when :S then RGFA::Line::Segment::GFA2
       when :"#" then RGFA::Line::Comment
       when :E then RGFA::Line::Edge
       when :F then RGFA::Line::Fragment
@@ -268,7 +268,7 @@ module RGFA::Line::Common::Init
     def subclass_unknown_version(record_type)
       case record_type.to_sym
       when :H then RGFA::Line::Header
-      when :S then RGFA::Line::Segment
+      when :S then RGFA::Line::Segment::Factory
       when :"#" then RGFA::Line::Comment
       when :L then RGFA::Line::Link
       when :C then RGFA::Line::Containment

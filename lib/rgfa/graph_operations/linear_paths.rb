@@ -14,7 +14,7 @@ module RGFA::GraphOperations::LinearPaths
   # include +segment+ and excludes segments in +exclude+.
   # Any segment used in the returned path will be added to +exclude+
   #
-  # @param s [String,Symbol,RGFA::Line::SegmentGFA1,RGFA::Line::SegmentGFA2]
+  # @param s [String,Symbol,RGFA::Line::Segment::GFA1,RGFA::Line::Segment::GFA2]
   #   a segment name or instance
   # @param exclude [Set<String>] a set of segment names to exclude from the path
   # @return [Array<RGFA::SegmentEnd>]

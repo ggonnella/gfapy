@@ -26,7 +26,7 @@ class RGFA::SegmentInfo < Array
     return nil
   end
 
-  # @return [Symbol, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  # @return [Symbol, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #    the segment instance or name
   def segment
     self[0]
@@ -34,9 +34,9 @@ class RGFA::SegmentInfo < Array
 
   # Set the segment
   # @param value
-  #   [Symbol, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  #   [Symbol, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   the segment instance or name
-  # @return [Symbol, RGFA::Line::SegmentGFA1, RGFA::Line::SegmentGFA2]
+  # @return [Symbol, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   +value+
   def segment=(value)
     self[0]=value

@@ -1,5 +1,3 @@
-require_relative "../segment"
-
 module RGFA::Line::Segment::GFA1ToGFA2
 
   # @return [Array<String>] an array of GFA2 field strings

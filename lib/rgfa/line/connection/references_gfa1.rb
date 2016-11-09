@@ -7,7 +7,7 @@ module RGFA::Line::Connection::ReferencesGFA1
       s = @rgfa.segment(get(dir))
       if s.nil?
         raise RGFA::NotFoundError if @rgfa.segments_first_order
-        s = RGFA::Line::SegmentGFA1.new({:name => get(dir),
+        s = RGFA::Line::Segment::GFA1.new({:name => get(dir),
                                          :sequence => "*"},
                                          version: :"1.0",
                                          virtual: true)

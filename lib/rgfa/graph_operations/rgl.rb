@@ -24,7 +24,7 @@ begin
     # Creates an RGL graph, including links orientations.
     #
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
-    #   where vertices are [RGFA::SegmentGFA1, orientation] pairs
+    #   where vertices are [RGFA::Segment::GFA1, orientation] pairs
     #   (instances of the RGFA::OrientedSegment subclass of Array)
     def to_rgl_oriented
       RGL::ImplicitGraph.new do |g|
@@ -58,7 +58,7 @@ begin
     # @raise [RGFA::ValueError] if the graph contains any link where
     #   from_orient or to_orient is :-
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
-    #   where vertices are RGFA::SegmentGFA1 objects
+    #   where vertices are RGFA::Segment::GFA1 objects
     def to_rgl_unoriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator {|block| self.each_segment {|s| block.call(s)}}
@@ -92,7 +92,7 @@ begin
       #   - <i>segment specifier</i> alone: the orientation is assumed to be :+
       #
       #   The <i>segment specifier</i> can be:
-      #   - RGFA::SegmentGFA1 instance
+      #   - RGFA::Segment::GFA1 instance
       #   - String, segment representation (e.g. "S\tsegment\t*")
       #   - String, valid segment name (e.g. "segment")
       #
@@ -128,17 +128,17 @@ begin
         if v.kind_of?(Symbol)
           # segment name as symbol
           return if gfa.segment_names.include?(v)
-          v = RGFA::Line::SegmentGFA1.new([v.to_s, "*"])
+          v = RGFA::Line::Segment::GFA1.new([v.to_s, "*"])
         elsif v.kind_of?(String)
           a = v.split("\t")
           if a[0] == "S"
             # string representation of segment
             return if gfa.segment_names.include?(a[1].to_sym)
-            v = RGFA::Line::SegmentGFA1.new(a[1..-1])
+            v = RGFA::Line::Segment::GFA1.new(a[1..-1])
           else
             # segment name as string
             return if gfa.segment_names.include?(v.to_sym)
-            v = RGFA::Line::SegmentGFA1.new([v, "*"])
+            v = RGFA::Line::Segment::GFA1.new([v, "*"])
           end
         end
         return if gfa.segment_names.include?(v.name)
