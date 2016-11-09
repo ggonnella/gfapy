@@ -23,7 +23,7 @@ module RGFA::Lines::Links
   end
 
   # All links of the graph
-  # @return [Array<RGFA::Line::Link>]
+  # @return [Array<RGFA::Line::Edge::Link>]
   def links
     @records[:L]
   end
@@ -34,9 +34,9 @@ module RGFA::Lines::Links
   #
   # @param [RGFA::SegmentEnd] segment_end a segment end
   #
-  # @return [Array<RGFA::Line::Link>] if segment_end[1] == :E,
+  # @return [Array<RGFA::Line::Edge::Link>] if segment_end[1] == :E,
   #   links from sn with from_orient + and to sn with to_orient -
-  # @return [Array<RGFA::Line::Link>] if segment_end[1] == :B,
+  # @return [Array<RGFA::Line::Edge::Link>] if segment_end[1] == :B,
   #   links to sn with to_orient + and from sn with from_orient -
   #
   # CHANGE1:
@@ -71,7 +71,7 @@ module RGFA::Lines::Links
   # @!macro [new] two_segment_ends
   #   @param segment_end1 [RGFA::SegmentEnd] a segment end
   #   @param segment_end2 [RGFA::SegmentEnd] a segment end
-  # @return [Array<RGFA::Line::Link>] (possibly empty)
+  # @return [Array<RGFA::Line::Edge::Link>] (possibly empty)
   def links_between(segment_end1, segment_end2)
     segment_end1 = segment_end1.to_segment_end
     segment_end2 = segment_end2.to_segment_end
@@ -88,7 +88,7 @@ module RGFA::Lines::Links
   # @!macro [new] link
   #   Searches a link between +segment_end1+ and +segment_end2+
   #   @!macro two_segment_ends
-  #   @return [RGFA::Line::Link] the first link found
+  #   @return [RGFA::Line::Edge::Link] the first link found
   # @return [nil] if no link is found.
   def link(segment_end1, segment_end2)
     segment_end1 = segment_end1.to_segment_end
@@ -125,7 +125,7 @@ module RGFA::Lines::Links
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
   # @param [RGFA::CIGAR] cigar
-  # @return [RGFA::Line::Link] the first link found
+  # @return [RGFA::Line::Edge::Link] the first link found
   # @return [nil] if no link is found.
   def search_link(oriented_segment1, oriented_segment2, cigar)
     oriented_segment1 = oriented_segment1.to_oriented_segment
@@ -133,7 +133,7 @@ module RGFA::Lines::Links
     s = segment(oriented_segment1.segment)
     return nil if s.nil?
     (s.dovetails(:L) + s.dovetails(:R)).select do |l|
-      return l if l.kind_of?(RGFA::Line::Link) and
+      return l if l.kind_of?(RGFA::Line::Edge::Link) and
         l.compatible?(oriented_segment1, oriented_segment2, cigar, true)
     end
     return nil

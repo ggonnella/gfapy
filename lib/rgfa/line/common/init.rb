@@ -243,8 +243,8 @@ module RGFA::Line::Common::Init
       when :H then RGFA::Line::Header
       when :S then RGFA::Line::Segment::GFA1
       when :"#" then RGFA::Line::Comment
-      when :L then RGFA::Line::Link
-      when :C then RGFA::Line::Containment
+      when :L then RGFA::Line::Edge::Link
+      when :C then RGFA::Line::Edge::Containment
       when :P then RGFA::Line::Path
       else raise RGFA::TypeError,
             "Record type unknown: '#{record_type}'"
@@ -256,7 +256,7 @@ module RGFA::Line::Common::Init
       when :H then RGFA::Line::Header
       when :S then RGFA::Line::Segment::GFA2
       when :"#" then RGFA::Line::Comment
-      when :E then RGFA::Line::Edge
+      when :E then RGFA::Line::Edge::GFA2
       when :F then RGFA::Line::Fragment
       when :G then RGFA::Line::Gap
       when :O then RGFA::Line::OrderedGroup
@@ -270,10 +270,10 @@ module RGFA::Line::Common::Init
       when :H then RGFA::Line::Header
       when :S then RGFA::Line::Segment::Factory
       when :"#" then RGFA::Line::Comment
-      when :L then RGFA::Line::Link
-      when :C then RGFA::Line::Containment
+      when :L then RGFA::Line::Edge::Link
+      when :C then RGFA::Line::Edge::Containment
       when :P then RGFA::Line::Path
-      when :E then RGFA::Line::Edge
+      when :E then RGFA::Line::Edge::GFA2
       when :F then RGFA::Line::Fragment
       when :G then RGFA::Line::Gap
       when :O then RGFA::Line::OrderedGroup

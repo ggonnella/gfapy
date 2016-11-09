@@ -4,7 +4,7 @@ module RGFA::Line::Common::Equivalence
   # @return [Boolean] does the line has the same record type,
   #   contains the same tags
   #   and all positional fields and tags contain the same field values?
-  # @see RGFA::Line::Link#==
+  # @see RGFA::Line::Edge::Link#==
   def ==(o)
     return self.to_sym == o.to_sym if o.kind_of?(Symbol)
     return false if (o.record_type != self.record_type)

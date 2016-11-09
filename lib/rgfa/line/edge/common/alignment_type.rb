@@ -1,9 +1,9 @@
-require_relative "../connection"
+RGFA::Line::Edge::Common ||= Module.new
 
 #
 # Requirements: +alignment_type+
 #
-module RGFA::Line::Connection::AlignmentType
+module RGFA::Line::Edge::Common::AlignmentType
 
   # @return [Boolean] does the line represent an internal
   #   overlap (GFA2 edge, not representable in GFA1)?

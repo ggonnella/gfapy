@@ -33,7 +33,7 @@ class TestRGFALineVersion < Test::Unit::TestCase
     l = "L\tA\t+\tB\t-\t*".to_rgfa_line(version: :"2.0")
     assert_equal(RGFA::Line::CustomRecord, l.class)
     assert_raises(RGFA::VersionError){
-      RGFA::Line::Link.new(["A","+","B","-","*"], version: :"2.0")}
+      RGFA::Line::Edge::Link.new(["A","+","B","-","*"], version: :"2.0")}
   end
 
   def test_containment
@@ -43,7 +43,7 @@ class TestRGFALineVersion < Test::Unit::TestCase
     c = "C\tA\t+\tB\t-\t10\t*".to_rgfa_line(version: :"2.0")
     assert_equal(RGFA::Line::CustomRecord, c.class)
     assert_raises(RGFA::VersionError){
-      RGFA::Line::Containment.new(["A","+","B","-","10","*"], version: :"2.0")}
+      RGFA::Line::Edge::Containment.new(["A","+","B","-","10","*"], version: :"2.0")}
   end
 
   def test_custom_record

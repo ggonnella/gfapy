@@ -17,13 +17,13 @@
 #   - {RGFA::Lines::Headers}: accessing and creating header information is done
 #     using a single header line object ({#header RGFA#header})
 #   - {RGFA::Lines::Segments}
-#   - {RGFA::Lines::Links}
-#   - {RGFA::Lines::Containments}
+#   - {RGFA::Lines::Edge::Links}
+#   - {RGFA::Lines::Edge::Containments}
 #   - {RGFA::Lines::Paths}
 #   - {RGFA::Lines::Comments}
 #   - {RGFA::Lines::Gaps}
 #   - {RGFA::Lines::Fragments}
-#   - {RGFA::Lines::Edges}
+#   - {RGFA::Lines::Edge::GFA2s}
 #   - {RGFA::Lines::OrderedGroups}
 #   - {RGFA::Lines::UnorderedGroups}
 #   - {RGFA::Lines::CustomRecords}
@@ -33,13 +33,13 @@
 #   - {RGFA::Line::Header}
 #   - {RGFA::Line::Segment::GFA1}
 #   - {RGFA::Line::Segment::GFA2}
-#   - {RGFA::Line::Link}
-#   - {RGFA::Line::Containment}
+#   - {RGFA::Line::Edge::Link}
+#   - {RGFA::Line::Edge::Containment}
 #   - {RGFA::Line::Path}
 #   - {RGFA::Line::Comment}
 #   - {RGFA::Line::Gap}
 #   - {RGFA::Line::Fragment}
-#   - {RGFA::Line::Edge}
+#   - {RGFA::Line::Edge::GFA2}
 #   - {RGFA::Line::OrderedGroup}
 #   - {RGFA::Line::UnorderedGroup}
 #   - {RGFA::Line::CustomRecord}
@@ -267,7 +267,7 @@ class RGFA
     end
     retval = []
     retval << "Segment count:               #{segments.size}"
-    retval << "Links count:                 #{links.size}"
+    retval << "Edge::Links count:                 #{links.size}"
     retval << "Total length (bp):           #{tlen}"
     retval << "Dead ends:                   #{nde}"
     retval << "Percentage dead ends:        #{pde}"
@@ -345,7 +345,7 @@ class RGFA
     @records[:P].values.each do |pt|
       pt.links.each do |l, dir|
         if l.virtual?
-          raise RGFA::NotFoundError, "Link: #{l.to_s}\n"+
+          raise RGFA::NotFoundError, "Edge::Link: #{l.to_s}\n"+
           "does not exist, but is required by the following paths:\n"+
           l.paths.map(&:to_s).join("\n")
         end

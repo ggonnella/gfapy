@@ -1,6 +1,4 @@
-require_relative "../connection"
-
-module RGFA::Line::Connection::AlignmentTypeGFA2
+module RGFA::Line::Edge::GFA2::AlignmentType
 
   # @return [:C, :L, :I] +:C+ if containment, +:L+ if link,
   #   +:I+ (internal) if any other local alignment

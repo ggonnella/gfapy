@@ -1,10 +1,10 @@
-require_relative "../connection"
+RGFA::Line::Edge::GFA1 ||= Module.new
 
 # Methods for the access of / convertion from a GFA1 link/containment
 # as / to a GFA2 edge
 #
 # Requirements: +from+, +from_orient+, +to+, +to_orient+.
-module RGFA::Line::Connection::GFA1ToGFA2
+module RGFA::Line::Edge::GFA1::ToGFA2
 
   def id
     i = get(:ID)

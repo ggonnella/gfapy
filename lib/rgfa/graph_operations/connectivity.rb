@@ -26,7 +26,7 @@ module RGFA::GraphOperations::Connectivity
   # Does the removal of the link alone divide a component
   # of the graph into two?
   # @return [Boolean]
-  # @param link [RGFA::Line::Link] a link
+  # @param link [RGFA::Line::Edge::Link] a link
   def cut_link?(link)
     return false if link.circular?
     return true if links_of(link.from_end.invert_end_type).size == 0

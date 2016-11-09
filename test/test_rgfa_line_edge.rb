@@ -1,7 +1,7 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFALineLink < Test::Unit::TestCase
+class TestRGFALineEdge < Test::Unit::TestCase
 
   def test_to_gfa1
     e1 = "E\t*\t1\t+\t2\t90\t100$\t0\t10\t10M".to_rgfa_line

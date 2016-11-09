@@ -8,7 +8,7 @@ class TestRGFALineLink < Test::Unit::TestCase
             "FC:i:2321","KC:i:1212","MQ:i:40"]
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
-    assert_equal(RGFA::Line::Link, str.to_rgfa_line.class)
+    assert_equal(RGFA::Line::Edge::Link, str.to_rgfa_line.class)
     assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.from)
     assert_equal(fields[2].to_sym, str.to_rgfa_line.from_orient)
@@ -71,8 +71,8 @@ class TestRGFALineLink < Test::Unit::TestCase
                  g.links[2].to_gfa2_s)
     assert_equal("E	*	3	-	4	60	100$	60	100$	40M",
                  g.links[3].to_gfa2_s)
-    assert_equal(RGFA::Line::Link, g.links[0].to_gfa1.class)
-    assert_equal(RGFA::Line::Edge, g.links[0].to_gfa2.class)
+    assert_equal(RGFA::Line::Edge::Link, g.links[0].to_gfa1.class)
+    assert_equal(RGFA::Line::Edge::GFA2, g.links[0].to_gfa2.class)
   end
 
 end

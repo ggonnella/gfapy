@@ -1,4 +1,4 @@
-module RGFA::Line::Containment::Canonical
+module RGFA::Line::Edge::Containment::Canonical
 
   # Returns true if the containment is canonical, false otherwise
   #

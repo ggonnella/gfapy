@@ -116,8 +116,6 @@ end
 require_relative "line/header.rb"
 require_relative "line/segment.rb"
 require_relative "line/path.rb"
-require_relative "line/link.rb"
-require_relative "line/containment.rb"
 require_relative "line/comment.rb"
 require_relative "line/custom_record.rb"
 require_relative "line/gap.rb"

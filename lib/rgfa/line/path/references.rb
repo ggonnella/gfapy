@@ -55,7 +55,7 @@ module RGFA::Line::Path::References
           "requires a non-existing link:\n"+
           "#{l}"
         end
-        l = RGFA::Line::Link.new({:from => from.segment,
+        l = RGFA::Line::Edge::Link.new({:from => from.segment,
                                   :from_orient => from.orient,
                                   :to => to.segment,
                                   :to_orient => to.orient,

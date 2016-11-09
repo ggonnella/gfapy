@@ -1,5 +1,5 @@
 # A containment line of a RGFA file
-class RGFA::Line::Containment < RGFA::Line
+class RGFA::Line::Edge::Containment < RGFA::Line::Edge
 
   RECORD_TYPE = :C
   POSFIELDS = [:from, :from_orient, :to, :to_orient, :pos, :overlap]
@@ -25,18 +25,18 @@ class RGFA::Line::Containment < RGFA::Line
   define_field_methods!
 end
 
-require_relative "connection/alignment_type"
-require_relative "connection/ends_gfa1"
-require_relative "connection/gfa1_to_gfa2"
-require_relative "connection/references_gfa1.rb"
-require_relative "containment/canonical.rb"
-require_relative "containment/pos.rb"
+require_relative "common/from_to"
+require_relative "common/alignment_type"
+require_relative "gfa1/to_gfa2"
+require_relative "gfa1/references"
+require_relative "containment/canonical"
+require_relative "containment/pos"
 
-class RGFA::Line::Containment
-  include RGFA::Line::Connection::EndsGFA1
-  include RGFA::Line::Connection::GFA1ToGFA2
-  include RGFA::Line::Connection::AlignmentType
-  include RGFA::Line::Connection::ReferencesGFA1
-  include RGFA::Line::Containment::Canonical
-  include RGFA::Line::Containment::Pos
+class RGFA::Line::Edge::Containment
+  include RGFA::Line::Edge::Common::FromTo
+  include RGFA::Line::Edge::Common::AlignmentType
+  include RGFA::Line::Edge::GFA1::ToGFA2
+  include RGFA::Line::Edge::GFA1::References
+  include RGFA::Line::Edge::Containment::Canonical
+  include RGFA::Line::Edge::Containment::Pos
 end

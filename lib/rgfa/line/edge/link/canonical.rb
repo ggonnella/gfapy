@@ -1,4 +1,4 @@
-module RGFA::Line::Link::Canonical
+module RGFA::Line::Edge::Link::Canonical
 
   # Returns true if the link is canonical, false otherwise
   #
@@ -41,7 +41,7 @@ module RGFA::Line::Link::Canonical
   # @note The path references are not corrected by this method; therefore
   #   the method shall be used before the link is embedded in a graph.
   #
-  # @return [RGFA::Line::Link] self
+  # @return [RGFA::Line::Edge::Link] self
   def canonicize!
     complement! if !canonical?
   end

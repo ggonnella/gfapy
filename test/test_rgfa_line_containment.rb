@@ -7,7 +7,7 @@ class TestRGFALineContainment < Test::Unit::TestCase
     fields=["C","1","+","2","-","12","12M","MQ:i:1232","NM:i:3","ab:Z:abcd"]
     str=fields.join("\t")
     assert_nothing_raised { str.to_rgfa_line }
-    assert_equal(RGFA::Line::Containment, str.to_rgfa_line.class)
+    assert_equal(RGFA::Line::Edge::Containment, str.to_rgfa_line.class)
     assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.from)
     assert_equal(fields[2].to_sym, str.to_rgfa_line.from_orient)

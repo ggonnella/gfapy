@@ -1,4 +1,4 @@
-module RGFA::Line::Containment::Pos
+module RGFA::Line::Edge::Containment::Pos
 
   # Computes the rightmost coordinate of the contained sequence in the container
   # @return [Integer] 0-based right coordinate of contained in container

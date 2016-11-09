@@ -1,4 +1,4 @@
-module RGFA::Line::Link::Equivalence
+module RGFA::Line::Edge::Link::Equivalence
 
   # Computes an hash for including a link in an Hash tables,
   # so that the hash of a link and its complement is the same.
@@ -15,7 +15,7 @@ module RGFA::Line::Link::Equivalence
   #   the CIGAR operations (order/type), one obtains an
   #   equivalent complement link.
   #
-  # @param other [RGFA::Line::Link] a link
+  # @param other [RGFA::Line::Edge::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
   # @see #same?
@@ -30,7 +30,7 @@ module RGFA::Line::Link::Equivalence
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the equivalent but complement link.
   #
-  # @param other [RGFA::Line::Link] a link
+  # @param other [RGFA::Line::Edge::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #==
   def eql_tags?(other)
@@ -45,7 +45,7 @@ module RGFA::Line::Link::Equivalence
   #   the CIGAR operations (order/type), one obtains an equivalent
   #   link.
   #
-  # @param other [RGFA::Line::Link] a link
+  # @param other [RGFA::Line::Edge::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #eql?
   # @see #eql_tags?
@@ -56,7 +56,7 @@ module RGFA::Line::Link::Equivalence
   # Compares two links and determine their equivalence.
   # Thereby, tags are not considered.
   #
-  # @param other [RGFA::Line::Link] a link
+  # @param other [RGFA::Line::Edge::Link] a link
   # @return [Boolean] are self and other equivalent?
   # @see #eql?
   # @see #complement?
@@ -71,7 +71,7 @@ module RGFA::Line::Link::Equivalence
   # and determine their equivalence.
   # Thereby, tags are not considered.
   #
-  # @param other [RGFA::Line::Link] the other link
+  # @param other [RGFA::Line::Edge::Link] the other link
   # @return [Boolean] are self and the complement of other equivalent?
   # @see #eql?
   # @see #same?

@@ -1,4 +1,4 @@
-module RGFA::Line::Link::Complement
+module RGFA::Line::Edge::Link::Complement
 
   # Creates the equivalent link with from/to inverted.
   #
@@ -11,7 +11,7 @@ module RGFA::Line::Link::Complement
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the equivalent complement link.
   #
-  # @return [RGFA::Line::Link] the inverted link.
+  # @return [RGFA::Line::Edge::Link] the inverted link.
   def complement
     l = self.clone
     l.from = to
@@ -38,7 +38,7 @@ module RGFA::Line::Link::Complement
   #   are defined, which have a ``complementation'' operation which determines
   #   their value in the complement link.
   #
-  # @return [RGFA::Line::Link] self
+  # @return [RGFA::Line::Edge::Link] self
   def complement!
     tmp = self.from
     self.from = self.to

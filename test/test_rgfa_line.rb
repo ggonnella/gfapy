@@ -74,7 +74,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_respond_to
-    l = RGFA::Line::Link.new(["1","+","2","-","*","zz:Z:yes","KC:i:100"])
+    l = RGFA::Line::Edge::Link.new(["1","+","2","-","*","zz:Z:yes","KC:i:100"])
     # record_type
     assert(l.respond_to?(:record_type))
     # reqfields

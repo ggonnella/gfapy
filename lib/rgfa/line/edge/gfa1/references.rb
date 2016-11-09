@@ -1,4 +1,6 @@
-module RGFA::Line::Connection::ReferencesGFA1
+RGFA::Line::Edge::GFA1 ||= Module.new
+
+module RGFA::Line::Edge::GFA1::References
 
   private
 

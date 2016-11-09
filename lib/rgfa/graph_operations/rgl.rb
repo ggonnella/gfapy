@@ -113,7 +113,7 @@ begin
         end
         g.each_vertex {|v| add_segment_if_new(gfa, v)}
         g.each_edge do |s, t|
-          gfa << RGFA::Line::Link.new(segment_name_and_orient(s) +
+          gfa << RGFA::Line::Edge::Link.new(segment_name_and_orient(s) +
                                       segment_name_and_orient(t) +
                                       ["*"])
         end

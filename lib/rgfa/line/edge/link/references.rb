@@ -1,4 +1,4 @@
-module RGFA::Line::Link::References
+module RGFA::Line::Edge::Link::References
 
   private
 

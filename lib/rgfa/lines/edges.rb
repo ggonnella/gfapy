@@ -4,7 +4,7 @@
 module RGFA::Lines::Edges
 
   # All edge lines of the graph
-  # @return [Array<RGFA::Line::Edge>]
+  # @return [Array<RGFA::Line::Edge::GFA2>]
   def edges
     @records[:E].values.flatten
   end

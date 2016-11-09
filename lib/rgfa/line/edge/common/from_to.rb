@@ -1,9 +1,9 @@
-require_relative "../connection"
+RGFA::Line::Edge::Common ||= Module.new
 
 # Methods regarding the ends (from/to) of a GFA1 link/containment
 #
 # Requirements: +from+, +from_orient+, +to+, +to_orient+.
-module RGFA::Line::Connection::EndsGFA1
+module RGFA::Line::Edge::Common::FromTo
 
   # @return [Boolean] is the from and to segments are equal
   def circular?

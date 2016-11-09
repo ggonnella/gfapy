@@ -34,8 +34,8 @@ module RGFA::Lines
   include RGFA::Lines::UnorderedGroups
 
   GFA1Specific = [
-                   RGFA::Line::Link,
-                   RGFA::Line::Containment,
+                   RGFA::Line::Edge::Link,
+                   RGFA::Line::Edge::Containment,
                    RGFA::Line::Path,
                  ]
 
@@ -43,7 +43,7 @@ module RGFA::Lines
                    RGFA::Line::CustomRecord,
                    RGFA::Line::Fragment,
                    RGFA::Line::Gap,
-                   RGFA::Line::Edge,
+                   RGFA::Line::Edge::GFA2,
                    RGFA::Line::UnorderedGroup,
                    RGFA::Line::OrderedGroup,
                   ]
@@ -180,9 +180,9 @@ module RGFA::Lines
   #   @param path [String, Symbol, RGFA::Line::Path]
   #     path name or instance
   # @overload rm(link)
-  #   @param link [RGFA::Line::Link] link line instance
+  #   @param link [RGFA::Line::Edge::Link] link line instance
   # @overload rm(containment)
-  #   @param containment [RGFA::Line::Containment] containment line instance
+  #   @param containment [RGFA::Line::Edge::Containment] containment line instance
   # @overload rm(comment)
   #   @param comment [RGFA::Line::Comment] comment line instance
   # @overload rm(custom_record)

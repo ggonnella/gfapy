@@ -1,6 +1,4 @@
-require_relative "../connection"
-
-module RGFA::Line::Connection::GFA2ToGFA1
+module RGFA::Line::Edge::GFA2::ToGFA1
 
   # @return [Array<String>] an array of fields of the equivalent line
   #   in GFA1, if the edge is a link or containment
