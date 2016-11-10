@@ -16,7 +16,7 @@ class RGFA
       s.cn = (s.coverage(unit_length: @default[:unit_length],
                          count_tag: @default[:count_tag])/2).round
     end
-    output_segment_infos if $debugmode
+    segments.each {|s| puts s.inspect} if $debugmode
     maxvisits_global = {:B => {}, :E => {}}
     segment_names.each do |sn|
       s = segment(sn)
@@ -31,7 +31,7 @@ class RGFA
         circles[rt] = []
         linear[rt] = []
         segment_end = [s, rt].to_segment_end
-        links_of(segment_end).each do |l|
+        s.dovetails(rt == :B ? :L : :R).each do |l|
           search_circle(segment_end.invert_end_type,
                         segment_end,
                         l,
@@ -131,18 +131,6 @@ class RGFA
 
   private
 
-  def output_segment_infos
-    segment_names.each do |sn|
-      s = segment(sn)
-      puts "#{s.name}\t#{s.cn}\t"+
-        "#{neighbours([s.name,:B]).map{|nb|segment(nb.segment).cn}.inject(:+)}\t"+
-        "#{neighbours([s.name,:E]).map{|nb|segment(nb.segment).cn}.inject(:+)}\t"+
-        "#{links_of([s.name,:B]).size}\t"+
-        "#{links_of([s.name,:E]).size}\t"+
-        "#{s.KC}\t#{s.length}"
-    end
-  end
-
   def merge_crisprs_path(segpath, repeat, repeat_end)
     merged = create_merged_segment(segpath, merged_name: :short,
                                  disable_tracking: true)[0]
@@ -178,7 +166,7 @@ class RGFA
       linear << new_path
       return
     end
-    ls = links_of(se)
+    ls = se.segment.dovetails(se.end_type == :B ? :L : :R)
     if ls.size == 0
       new_path[0..-1].each {|x| maxvisits[x.name] -= 1}
       linear << new_path

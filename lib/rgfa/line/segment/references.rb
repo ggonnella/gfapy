@@ -19,7 +19,7 @@ module RGFA::Line::Segment::References
   # References to the graph lines which involve the segment as dovetail overlap
   # @param extremity [:L,:R, nil] left of right extremity of the segment
   #   (default: both)
-  def gaps(extremity)
+  def gaps(extremity = nil)
     if extremity
       send(:"gaps_#{extremity}")
     else
@@ -47,6 +47,10 @@ module RGFA::Line::Segment::References
         "Segment is not connected to a RGFA instance"
     end
     connectivity_symbols(dovetails_L.size, dovetails_R.size)
+  end
+
+  def neighbours(extremity = nil)
+    dovetails(extremity).map {|l| l.other(self) }
   end
 
   private

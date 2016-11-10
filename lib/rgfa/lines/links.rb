@@ -12,8 +12,10 @@ module RGFA::Lines::Links
   #   components.
   # @return [RGFA] self
   def delete_other_links(segment_end, other_end, conserve_components: false)
+    segment_end = segment_end.to_segment_end
     other_end = other_end.to_segment_end
-    links_of(segment_end).each do |l|
+    s = segment!(segment_end.segment)
+    s.dovetails(segment_end.end_type == :B ? :L : :R).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)
           l.disconnect!
@@ -26,58 +28,6 @@ module RGFA::Lines::Links
   # @return [Array<RGFA::Line::Edge::Link>]
   def links
     @records[:L]
-  end
-
-  # CHANGE2: calling code shall directly use segment.dovetails
-  #
-  # Finds links of the specified end of segment.
-  #
-  # @param [RGFA::SegmentEnd] segment_end a segment end
-  #
-  # @return [Array<RGFA::Line::Edge::Link>] if segment_end[1] == :E,
-  #   links from sn with from_orient + and to sn with to_orient -
-  # @return [Array<RGFA::Line::Edge::Link>] if segment_end[1] == :B,
-  #   links to sn with to_orient + and from sn with from_orient -
-  #
-  # CHANGE1:
-  # @note to add or remove links, use the appropriate methods;
-  #   adding or removing links from the returned array will not work
-  def links_of(segment_end)
-    segment_end = segment_end.to_segment_end
-    s = segment!(segment_end.segment)
-    s.dovetails(segment_end.end_type == :B ? :L : :R)
-  end
-
-  # CHANGE2: directly use segment.dovetails
-  #
-  # Finds segment ends connected to the specified segment end.
-  #
-  # @param [RGFA::SegmentEnd] segment_end a segment end
-  #
-  # @return [Array<RGFA::SegmentEnd>>] segment ends connected by links
-  #   to +segment_end+
-  def neighbours(segment_end)
-    s = segment!(segment_end.segment)
-    s.dovetails(segment_end.end_type == :B ? :L : :R).map do |l|
-      l.other_end(segment_end)
-    end
-  end
-
-  # CHANGE2: directly use segment.dovetails
-  # CHANGE2: rename to something like dovetails_between
-  #
-  # Searches all links between +segment_end1+ and +segment_end2+
-  #
-  # @!macro [new] two_segment_ends
-  #   @param segment_end1 [RGFA::SegmentEnd] a segment end
-  #   @param segment_end2 [RGFA::SegmentEnd] a segment end
-  # @return [Array<RGFA::Line::Edge::Link>] (possibly empty)
-  def links_between(segment_end1, segment_end2)
-    segment_end1 = segment_end1.to_segment_end
-    segment_end2 = segment_end2.to_segment_end
-    links_of(segment_end1).select do |l|
-      l.other_end(segment_end1) == segment_end2
-    end
   end
 
   # CHANGE2: directly use segment.dovetails
@@ -93,7 +43,8 @@ module RGFA::Lines::Links
   def link(segment_end1, segment_end2)
     segment_end1 = segment_end1.to_segment_end
     segment_end2 = segment_end2.to_segment_end
-    links_of(segment_end1).each do |l|
+    s = segment!(segment_end1.segment)
+    s.dovetails(segment_end1.end_type == :B ? :L : :R).each do |l|
       return l if l.other_end(segment_end1) == segment_end2
     end
     return nil
@@ -132,7 +83,7 @@ module RGFA::Lines::Links
     oriented_segment2 = oriented_segment2.to_oriented_segment
     s = segment(oriented_segment1.segment)
     return nil if s.nil?
-    (s.dovetails(:L) + s.dovetails(:R)).select do |l|
+    s.dovetails.each do |l|
       return l if l.kind_of?(RGFA::Line::Edge::Link) and
         l.compatible?(oriented_segment1, oriented_segment2, cigar, true)
     end

@@ -40,15 +40,20 @@ module RGFATools::InvertibleSegments
     else
       return
     end
-    return if links_of(tokeep1_other_end).size < 2
-    return if links_of(tokeep2_other_end).size < 2
+    return if tokeep1_other_end.segment.dovetails(
+                tokeep1_other_end.end_type == :B ? :L : :R).size < 2
+    return if tokeep2_other_end.segment.dovetails(
+                tokeep2_other_end.end_type == :B ? :L : :R).size < 2
     delete_other_links([segment_name, :E], tokeep1_other_end)
     delete_other_links([segment_name, :B], tokeep2_other_end)
     annotate_random_orientation(segment_name)
   end
 
   def link_targets_for_cmp(segment_end)
-    links_of(segment_end).map {|l| l.other_end(segment_end).join}
+    segment_end.segment.dovetails(
+      segment_end.end_type == :B ? :L : :R).map do |l|
+        l.other_end(segment_end).join
+      end
   end
 
   def segment_same_links_both_ends?(segment_name)
@@ -67,7 +72,8 @@ module RGFATools::InvertibleSegments
   end
 
   def partitioned_links_of(segment_end)
-    links_of(segment_end).group_by do |l|
+    segment_end.segment.dovetails(
+        (segment_end.end_type == :B) ? :L : :R).group_by do |l|
       other_end = l.other_end(segment_end)
       sig = segment_signature(other_end)
       sig

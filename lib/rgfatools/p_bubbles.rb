@@ -14,10 +14,10 @@ module RGFATools::PBubbles
       sn = s.name
       next if visited.include?(sn)
       if s.connectivity == [1,1]
-        s1 = neighbours([sn, :B])[0]
-        s2 = neighbours([sn, :E])[0]
-        n1 = neighbours(s1).sort
-        n2 = neighbours(s2).sort
+        s1 = s.neighbours(:B)[0]
+        s2 = s.neighbours(:E)[0]
+        n1 = s1.neighbours.sort
+        n2 = s2.neighbours.sort
         n1.each {|se| visited << se[0].name}
         if n1 == n2.map{|se| se.invert_end_type}
           remove_proven_p_bubble(s1, s2, n1)

@@ -33,7 +33,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link(["1", :E], ["2", :B]))
     assert_equal([c], gfa.containments.map(&:to_s))
-    assert_equal(c, gfa.containment("1", "0").to_s)
+    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
     gfa << l
     assert_not_equal([], gfa.links)
     gfa.rm(gfa.search_link(["1","+"],["2","+"], "12M"))
@@ -46,13 +46,13 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     l = "L\t1\t+\t2\t+\t12M"
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
-    gfa.containment("1", "0").disconnect!
+    gfa.containments_between("1", "0").map(&:disconnect!)
     assert_equal([], gfa.containments)
-    assert_equal(nil, gfa.containment("1", "0"))
+    assert_equal(nil, gfa.containments_between("1", "0")[0])
     gfa << c
     assert_not_equal([], gfa.containments)
-    assert_equal(c, gfa.containment("1", "0").to_s)
-    gfa.rm(gfa.containment("1", "0"))
+    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
+    gfa.rm(gfa.containments_between("1", "0"))
     assert_equal([], gfa.containments)
   end
 

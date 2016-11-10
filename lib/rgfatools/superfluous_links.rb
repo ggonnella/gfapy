@@ -11,12 +11,13 @@ module RGFATools::SuperfluousLinks
   #   @param [Boolean] conserve_components <i>(Defaults to: +true+)</i>
   #     delete links only if #cut_link?(link) is +false+ (see RGFA API).
   def enforce_segment_mandatory_links(segment, conserve_components: true)
-    sn = segment_and_segment_name(segment)[1]
+    s, sn = segment_and_segment_name(segment)
     se = {}
     l = {}
     [:B, :E].each do |et|
+      etx = et == :B ? :L : :R
       se[et] = [sn, et]
-      l[et] = links_of(se[et])
+      l[et] = segment(s).dovetails(etx)
     end
     if l[:B].size == 1 and l[:E].size == 1
       oe = {}

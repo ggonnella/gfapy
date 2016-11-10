@@ -131,18 +131,19 @@ module RGFA::GraphOperations::LinearPaths
   #     All elements in the index range 1..-2 are :internal.
   def traverse_linear_path(segment_end, exclude)
     list = RGFA::SegmentEndsPath.new()
-    current = segment_end
+    current = segment_end.to_segment_end
+    current.segment = segment(current.segment)
     loop do
-      after  = links_of(current)
-      before = links_of(current.to_segment_end.invert_end_type)
+      after  = current.segment.dovetails(current.end_type == :B ? :L : :R)
+      before = current.segment.dovetails(current.end_type == :B ? :R : :L)
       if (before.size == 1 and after.size == 1) or list.empty?
-        list << current
+        list << [current.name, current.end_type]
         exclude << current.name
         l = after.first
         current = l.other_end(current).invert_end_type
         break if exclude.include?(current.name)
       elsif before.size == 1
-        list << current
+        list << [current.name, current.end_type]
         exclude << current.name
         break
       else
@@ -265,7 +266,8 @@ module RGFA::GraphOperations::LinearPaths
   end
 
   def link_merged(merged_name, segment_end, reversed)
-    links_of(segment_end).each do |l|
+    segment(segment_end.segment).dovetails(
+        segment_end.end_type == :B ? :L : :R).each do |l|
       l2 = l.clone
       if l2.to == segment_end.first
         l2.to = merged_name

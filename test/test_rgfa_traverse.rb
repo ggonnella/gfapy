@@ -80,6 +80,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
+    gfa.merge_linear_paths #XXX
     assert_nothing_raised { gfa.merge_linear_paths }
     assert_equal(3, gfa.segments.size)
     assert_equal([:"0", :"1", :"2_3"], gfa.segments.map(&:name))

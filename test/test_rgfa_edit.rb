@@ -12,12 +12,12 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.links[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
     assert_equal("P\t4\t2+,X-\t12M", gfa.paths[0].to_s)
-    assert_raises(RGFA::NotFoundError){gfa.links_of(["0", :E])}
-    assert_equal("L\tX\t+\t2\t-\t12M", gfa.links_of(["X", :E])[0].to_s)
-    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.contained_in("1")[0].to_s)
-    assert_raises(RGFA::NotFoundError){gfa.containing("0")}
-    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containing("X")[0].to_s)
-    assert_equal("P\t4\t2+,X-\t12M", gfa.segment("X").paths[0].to_s)
+    assert_raises(RGFA::NotFoundError){gfa.segment!("0").dovetails(:R)}
+    assert_equal("L\tX\t+\t2\t-\t12M", gfa.segment("X").dovetails(:R)[0].to_s)
+    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.segment!("1").contained[0].to_s)
+    assert_raises(RGFA::NotFoundError){gfa.segment!("0").containers}
+    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.segment!("X").containers[0].to_s)
+    assert_equal("P\t4\t2+,X-\t12M", gfa.segment!("X").paths[0].to_s)
   end
 
   def test_multiply_segment
@@ -34,15 +34,15 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal([l], gfa.links.select{|n|!n.virtual?}.map(&:to_s))
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)
-    assert_equal(c, gfa.containment("1", "0").to_s)
+    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
     assert_raises(RGFA::NotFoundError){gfa.link(["1a", :E], ["2", :B])}
-    assert_raises(RGFA::NotFoundError){gfa.containment("5", "0")}
+    assert_raises(RGFA::NotFoundError){gfa.containments_between("5", "0")}
     assert_equal(6000, gfa.segment("1").RC)
     gfa.multiply("1", 2)
     assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)
-    assert_equal(c, gfa.containment("1", "0").to_s)
+    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
     assert_not_equal(nil, gfa.link(["1b", :E], ["2", :B]))
-    assert_not_equal(nil, gfa.containment("1b", "0"))
+    assert_not_equal([], gfa.containments_between("1b", "0"))
     assert_equal(3000, gfa.segment("1").RC)
     assert_equal(3000, gfa.segment("1b").RC)
     gfa.multiply("1b", 3 , copy_names:["6","7"])
@@ -50,9 +50,9 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_not_equal(nil, gfa.link(["1b", :E], ["2", :B]))
     assert_not_equal(nil, gfa.link(["6", :E], ["2", :B]))
     assert_not_equal(nil, gfa.link(["7", :E], ["2", :B]))
-    assert_not_equal(nil, gfa.containment("1b", "0"))
-    assert_not_equal(nil, gfa.containment("6", "0"))
-    assert_not_equal(nil, gfa.containment("7", "0"))
+    assert_not_equal([], gfa.containments_between("1b", "0"))
+    assert_not_equal([], gfa.containments_between("6", "0"))
+    assert_not_equal([], gfa.containments_between("7", "0"))
     assert_equal(3000, gfa.segment("1").RC)
     assert_equal(1000, gfa.segment("1b").RC)
     assert_equal(1000, gfa.segment("6").RC)

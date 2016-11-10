@@ -150,9 +150,9 @@ class TestRGFALineGetters < Test::Unit::TestCase
     (0..2).each{|i| gfa << "S\t#{i}\t*"}
     c = "C\t1\t+\t0\t+\t0\t*"
     gfa << c
-    assert_equal([c], gfa.containing("0").map(&:to_s))
-    assert_equal([],  gfa.containing("1"))
-    assert_equal([],  gfa.containing("2"))
+    assert_equal([c], gfa.segment!("0").containers.map(&:to_s))
+    assert_equal([],  gfa.segment!("1").containers)
+    assert_equal([],  gfa.segment!("2").containers)
   end
 
   def test_contained_in
@@ -160,9 +160,9 @@ class TestRGFALineGetters < Test::Unit::TestCase
     (0..2).each{|i| gfa << "S\t#{i}\t*"}
     c = "C\t1\t+\t0\t+\t0\t*"
     gfa << c
-    assert_equal([],  gfa.contained_in("0"))
-    assert_equal([c], gfa.contained_in("1").map(&:to_s))
-    assert_equal([],  gfa.contained_in("2"))
+    assert_equal([],  gfa.segment!("0").contained)
+    assert_equal([c], gfa.segment!("1").contained.map(&:to_s))
+    assert_equal([],  gfa.segment!("2").contained)
   end
 
   def test_containments_between
@@ -183,49 +183,37 @@ class TestRGFALineGetters < Test::Unit::TestCase
     c2 = "C\t1\t+\t0\t+\t12\t*"
     gfa << c1
     gfa << c2
-    assert_equal(nil, gfa.containment("0", "1"))
-    assert_raises(RGFA::NotFoundError) {gfa.containment!("0", "1")}
-    assert_equal(c1, gfa.containment("1", "0").to_s)
-    assert_equal(c1, gfa.containment!("1", "0").to_s)
+    assert_equal([], gfa.containments_between("0", "1"))
+    assert_equal([c1,c2], gfa.containments_between("1", "0").map(&:to_s))
   end
 
-  def test_links_of
+  def test_dovetails
     gfa = RGFA.new
     (0..3).each{|i| gfa << "S\t#{i}\t*"}
     l0 = "L\t1\t+\t2\t+\t*"; gfa << l0
     l1 = "L\t0\t+\t1\t+\t*"; gfa << l1
     l2 = "L\t1\t+\t3\t+\t*"; gfa << l2
-    assert_equal([],         gfa.links_of(["0", :B]).map(&:to_s))
-    assert_equal([l1],       gfa.links_of(["0", :E]).map(&:to_s))
-    assert_equal([l1],       gfa.links_of(["1", :B]).map(&:to_s))
-    assert_equal([l0,l2],    gfa.links_of(["1", :E]).map(&:to_s))
-    assert_equal([l0],       gfa.links_of(["2", :B]).map(&:to_s))
-    assert_equal([],         gfa.links_of(["2", :E]).map(&:to_s))
-    assert_equal([l2],       gfa.links_of(["3", :B]).map(&:to_s))
-    assert_equal([],         gfa.links_of(["3", :E]).map(&:to_s))
+    assert_equal([],         gfa.segment("0").dovetails(:L).map(&:to_s))
+    assert_equal([l1],       gfa.segment("0").dovetails(:R).map(&:to_s))
+    assert_equal([l1],       gfa.segment("1").dovetails(:L).map(&:to_s))
+    assert_equal([l0,l2],    gfa.segment("1").dovetails(:R).map(&:to_s))
+    assert_equal([l0],       gfa.segment("2").dovetails(:L).map(&:to_s))
+    assert_equal([],         gfa.segment("2").dovetails(:R).map(&:to_s))
+    assert_equal([l2],       gfa.segment("3").dovetails(:L).map(&:to_s))
+    assert_equal([],         gfa.segment("3").dovetails(:R).map(&:to_s))
     gfa = RGFA.new
     (0..3).each{|i| gfa << "S\t#{i}\t*"}
     l0 = "L\t1\t+\t2\t-\t*"; gfa << l0
     l1 = "L\t0\t+\t1\t-\t*"; gfa << l1
     l2 = "L\t1\t-\t3\t+\t*"; gfa << l2
-    assert_equal([],         gfa.links_of(["0", :B]).map(&:to_s))
-    assert_equal([l1],       gfa.links_of(["0", :E]).map(&:to_s))
-    assert_equal([l2],       gfa.links_of(["1", :B]).map(&:to_s))
-    assert_equal([l0,l1],    gfa.links_of(["1", :E]).map(&:to_s))
-    assert_equal([],         gfa.links_of(["2", :B]).map(&:to_s))
-    assert_equal([l0],       gfa.links_of(["2", :E]).map(&:to_s))
-    assert_equal([l2],       gfa.links_of(["3", :B]).map(&:to_s))
-    assert_equal([],         gfa.links_of(["3", :E]).map(&:to_s))
-  end
-
-  def test_links_between
-    gfa = RGFA.new
-    (0..3).each{|i| gfa << "S\t#{i}\t*"}
-    l0 = "L\t1\t+\t2\t+\t11M1D3M"; gfa << l0
-    l1 = "L\t1\t+\t2\t+\t10M2D3M"; gfa << l1
-    l2 = "L\t1\t+\t3\t+\t*"; gfa << l2
-    assert_equal([l0, l1], gfa.links_between(["1", :E], ["2", :B]).map(&:to_s))
-    assert_equal([], gfa.links_between(["1", :E], ["2", :E]).map(&:to_s))
+    assert_equal([],         gfa.segment("0").dovetails(:L).map(&:to_s))
+    assert_equal([l1],       gfa.segment("0").dovetails(:R).map(&:to_s))
+    assert_equal([l2],       gfa.segment("1").dovetails(:L).map(&:to_s))
+    assert_equal([l0,l1],    gfa.segment("1").dovetails(:R).map(&:to_s))
+    assert_equal([],         gfa.segment("2").dovetails(:L).map(&:to_s))
+    assert_equal([l0],       gfa.segment("2").dovetails(:R).map(&:to_s))
+    assert_equal([l2],       gfa.segment("3").dovetails(:L).map(&:to_s))
+    assert_equal([],         gfa.segment("3").dovetails(:R).map(&:to_s))
   end
 
   def test_link

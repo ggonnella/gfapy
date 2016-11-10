@@ -290,7 +290,7 @@ class RGFA
   #
   def n_dead_ends
     segments.inject(0) do |n,s|
-      [:E, :B].each {|e| n+= 1 if links_of([s.name, e]).empty?}
+      [:L, :R].each {|e| n+= 1 if s.dovetails(e).empty?}
       n
     end
   end

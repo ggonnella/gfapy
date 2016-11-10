@@ -72,9 +72,8 @@ class TestRGFALineCreators < Test::Unit::TestCase
     gfa << s2
     assert_nothing_raised { gfa << c1 }
     assert_equal([c1], gfa.containments)
-    assert_equal(c1, gfa.containment("1", "2"))
-    assert_nothing_raised {gfa.containment!("1",  "2")}
-    assert_raises(RGFA::NotFoundError) {gfa.containment!("2", "1")}
+    assert_equal([c1], gfa.containments_between("1", "2"))
+    assert_equal([], gfa.containments_between("2", "1"))
     assert_nothing_raised { gfa << c2 }
   end
 

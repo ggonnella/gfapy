@@ -41,15 +41,6 @@ module RGFA::Lines::Segments
     seg
   end
 
-  # @return [Array<String>] list of names of segments connected to +segment+
-  #   by links or containments
-  def connected_segments(segment)
-    (neighbours([segment, :B]).map{|s, e| s} +
-      neighbours([segment, :E]).map{|s, e| s} +
-        contained_in(segment).map{|c| c.to} +
-          containing(segment).map{|c| c.from}).uniq
-  end
-
   # Delete all links/containments involving two segments
   # @return [RGFA] self
   # @param segment1
@@ -59,13 +50,11 @@ module RGFA::Lines::Segments
   #   [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
   #   segment 2 name or instance
   def unconnect_segments(segment1, segment2)
+    segment1 = segment!(segment1)
+    segment2 = segment!(segment2)
     containments_between(segment1, segment2).each {|c| c.disconnect!}
     containments_between(segment2, segment1).each {|c| c.disconnect!}
-    [[:B, :E], [:B, :B], [:E, :B], [:E, :E]].each do |end1, end2|
-      links_between([segment1, end1], [segment2, end2]).each do |l|
-        l.disconnect!
-      end
-    end
+    segment1.dovetails.each {|l| l.disconnect! if l.other(segment1) == segment2}
     return self
   end
 

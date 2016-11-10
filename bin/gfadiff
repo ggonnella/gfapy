@@ -271,7 +271,7 @@ if rt.include?("-l")
   difflinks1 = []
   (s1names - s2names).each do |sn|
     difffound = true
-    [:B, :E].each {|et| difflinks1 += gfa1.links_of([sn, et])}
+    difflinks1 += gfa1.segment(sn).dovetails
   end
   difflinks1.uniq.each do |l|
     if !out_script
@@ -281,7 +281,7 @@ if rt.include?("-l")
   difflinks2 = []
   (s2names - s1names).each do |sn|
     difffound = true
-    [:B, :E].each {|et| difflinks2 += gfa2.links_of([sn, et])}
+    difflinks2 += gfa2.segment(sn).dovetails
   end
   difflinks2.uniq.each do |l|
     if out_script
@@ -293,19 +293,17 @@ if rt.include?("-l")
   difflinks1b = []
   difflinks2b = []
   (s1names & s2names).each do |sn|
-    [:B, :E].each do |et|
-      l1 = gfa1.links_of([sn, et])
-      l2 = gfa2.links_of([sn, et])
-      d1 = l1 - l2
-      d2 = l2 - l1
-      if !d1.empty?
-        difffound = true
-        difflinks1b += d1
-      end
-      if !d2.empty?
-        difffound = true
-        difflinks2b += d2
-      end
+    l1 = gfa1.segment(sn).dovetails
+    l2 = gfa2.segment(sn).dovetails
+    d1 = l1 - l2
+    d2 = l2 - l1
+    if !d1.empty?
+      difffound = true
+      difflinks1b += d1
+    end
+    if !d2.empty?
+      difffound = true
+      difflinks2b += d2
     end
   end
   (difflinks1b-difflinks1).uniq.each do |l|
@@ -344,8 +342,7 @@ if rt.include?("-c")
   cexcl1 = []
   (s1names - s2names).each do |sn|
     difffound = true
-    cexcl1 += gfa1.contained_in(sn)
-    cexcl1 += gfa1.containing(sn)
+    cexcl1 += gfa1.segment(sn).containments
   end
   cexcl1.uniq.each do |c|
     if !out_script
@@ -355,8 +352,7 @@ if rt.include?("-c")
   cexcl2 = []
   (s2names - s1names).each do |sn|
     difffound = true
-    cexcl2 += gfa2.contained_in(sn)
-    cexcl2 += gfa2.containing(sn)
+    cexcl2 += gfa2.segment(sn).containments
   end
   cexcl2.uniq.each do |c|
     if out_script
@@ -368,10 +364,8 @@ if rt.include?("-c")
   cdiff1 = []
   cdiff2 = []
   (s1names & s2names).each do |sn|
-    c1 = gfa1.contained_in(sn)
-    c2 = gfa2.contained_in(sn)
-    c1 += gfa1.containing(sn)
-    c2 += gfa2.containing(sn)
+    c1 = gfa1.segment(sn).containments
+    c2 = gfa2.segment(sn).containments
     d1 = c1 - c2
     d2 = c2 - c1
     if !d1.empty?
@@ -386,8 +380,8 @@ if rt.include?("-c")
   (cdiff1-cexcl1).uniq.each do |l|
     if out_script
       # TODO: handle multiple containments for a segments pair
-      puts "gfa.rm(gfa.containment(#{l.from.to_sym.inspect}, "+
-                                  "#{l.to.to_sym.inspect}))"
+      puts "gfa.rm(gfa.containments_between(#{l.from.to_sym.inspect}, "+
+                                           "#{l.to.to_sym.inspect}))"
     else
       puts "<\t[containments/different]\t#{l.to_s}"
     end
