@@ -23,8 +23,8 @@ class TestRGFALineGetters < Test::Unit::TestCase
 
   def test_custom_records
     x = ["X\tVN:Z:1.0", "Y\ttesttesttest"]
-    assert_equal(x[0..0], x.to_rgfa.custom_records[:X].map(&:to_s))
-    assert_equal(x[1..1], x.to_rgfa.custom_records[:Y].map(&:to_s))
+    assert_equal(x[0..0], x.to_rgfa.custom_records(:X).map(&:to_s))
+    assert_equal(x[1..1], x.to_rgfa.custom_records(:Y).map(&:to_s))
   end
 
   def test_segments
