@@ -1,7 +1,7 @@
 module RGFA::Field::SequenceGFA1
 
   def unsafe_decode(string)
-    if string == "*"
+    if string.placeholder?
       return RGFA::Placeholder.new
     else
       return string

@@ -182,8 +182,9 @@ module RGFA::GraphOperations::LinearPaths
                      segment.name : options[:merged_name])
       merged.LN = segment.LN
     else
-      (segment.sequence == "*") ? (merged.sequence = RGFA::Placeholder.new)
-                                : (merged.sequence += s)
+      (segment.sequence.placeholder?) ?
+        (merged.sequence = RGFA::Placeholder.new) :
+        (merged.sequence += s)
       if options[:merged_name].nil?
         merged.name = "#{merged.name}_#{segment.name}"
       end
@@ -230,7 +231,7 @@ module RGFA::GraphOperations::LinearPaths
         progress_log(:merge_linear_paths, 0.95)
       end
     end
-    if merged.sequence != "*"
+    if !merged.sequence.placeholder?
       if merged.LN.nil?
         merged.LN = merged.sequence.length
       elsif @validate and merged.LN != merged.sequence.length

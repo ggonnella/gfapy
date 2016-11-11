@@ -23,7 +23,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
       end
     end
     a << overlap.to_s
-    if eid != "*" and eid != RGFA::Placeholder
+    if !eid.placeholder?
       a << eid.to_gfa_field(datatype: :Z, fieldname: :ID)
     end
     tagnames.each {|fn| a << field_to_s(fn, tag: true)}

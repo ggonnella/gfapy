@@ -8,7 +8,7 @@ module RGFA::Line::Segment::LengthGFA1
   def length
     if self.LN
       self.LN
-    elsif sequence != "*" and !sequence.kind_of?(RGFA::Placeholder)
+    elsif !sequence.placeholder? and !sequence.kind_of?(RGFA::Placeholder)
       sequence.length
     else
       nil
@@ -30,7 +30,7 @@ module RGFA::Line::Segment::LengthGFA1
   # @raise [RGFA::InconsistencyError]
   #    if sequence length and LN tag are not consistent.
   def validate_length!
-    if sequence != "*" and tagnames.include?(:LN)
+    if !sequence.placeholder? and tagnames.include?(:LN)
       if self.LN != sequence.length
         raise RGFA::InconsistencyError,
           "Length in LN tag (#{self.LN}) "+

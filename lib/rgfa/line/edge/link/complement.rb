@@ -54,7 +54,7 @@ module RGFA::Line::Edge::Link::Complement
   #
   # @return [RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder]
   def complement_overlap
-    self.overlap.to_alignment.complement
+    self.overlap.to_alignment(version: :"1.0", valid: true).complement
   end
 
 end

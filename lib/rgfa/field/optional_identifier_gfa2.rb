@@ -1,7 +1,7 @@
 module RGFA::Field::OptionalIdentifierGFA2
 
   def unsafe_decode(string)
-    if string == "*"
+    if string.placeholder?
       return RGFA::Placeholder.new
     else
       return string.to_sym
@@ -9,7 +9,7 @@ module RGFA::Field::OptionalIdentifierGFA2
   end
 
   def decode(string)
-    if string == "*"
+    if string.placeholder?
       return RGFA::Placeholder.new
     else
       validate_encoded(string)

@@ -46,7 +46,7 @@ class RGFA::Alignment::Trace < Array
   end
 
   def to_s
-    each(&:to_s).join(",")
+    placeholder? ? "*" : (each(&:to_s).join(","))
   end
 
   def self.from_string(str)
@@ -58,9 +58,10 @@ class RGFA::Alignment::Trace < Array
     self
   end
 
-  # @param allow_traces [Boolean] ignored, for compatibility only
-  # @return [RGFA::Alignment::Trace] self
-  def to_alignment(allow_traces = true)
+  # @param valid [nil] ignored, for compatibility
+  # @param version [nil] ignored, for compatibility
+  # @return [RGFA::Alignment::CIGAR] self
+  def to_alignment(valid: nil, version: :nil)
     self
   end
 
@@ -69,7 +70,8 @@ end
 class String
   # Parse trace string
   # @return [RGFA::Alignment::Trace]
-  # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid trace string
+  # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid
+  #   trace string
   def to_trace
     RGFA::Alignment::Trace.from_string(self)
   end

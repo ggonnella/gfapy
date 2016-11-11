@@ -117,8 +117,9 @@ module RGFATools::LinearPaths
       merged.or = o
       merged.mp = mp
     else
-      (segment.sequence == "*") ? (merged.sequence = "*")
-                                : (merged.sequence += s)
+      (segment.sequence.placeholder?) ?
+        (merged.sequence = "*") :
+        (merged.sequence += s)
       merged.name = "#{merged.name}_#{n}" if options[:merged_name].nil?
       if merged.LN
         if rn

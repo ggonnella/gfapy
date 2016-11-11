@@ -1,13 +1,11 @@
 module RGFA::Field::AlignmentGFA2
 
   def unsafe_decode(string)
-    string.to_alignment
+    string.to_alignment(version: :"2.0", valid: true)
   end
 
   def decode(string)
-    a = string.to_alignment
-    a.validate! if a.kind_of?(RGFA::Alignment::Trace)
-    return a
+    string.to_alignment(version: :"2.0", valid: false)
   end
 
   alias_method :validate_encoded, :decode
@@ -27,7 +25,8 @@ module RGFA::Field::AlignmentGFA2
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
         "(accepted classes: "+
-        "String, RGFA::Alignment::CIGAR, RGFA::Alignment::Trace, RGFA::Alignment::Placeholder)"
+        "String, RGFA::Alignment::CIGAR, RGFA::Alignment::Trace, "+
+        "RGFA::Alignment::Placeholder)"
     end
   end
 

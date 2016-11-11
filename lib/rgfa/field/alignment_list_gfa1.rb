@@ -1,7 +1,7 @@
 module RGFA::Field::AlignmentListGFA1
 
   def unsafe_decode(string)
-    string.split(",").map {|c| c.to_cigar(valid: true)}
+    string.split(",").map {|c| c.to_cigar(valid: true, version: :"1.0")}
   end
 
   def decode(string)
@@ -21,7 +21,9 @@ module RGFA::Field::AlignmentListGFA1
     case object
     when RGFA::Placeholder
     when Array
-      object.map(&:to_cigar).each(&:validate!)
+      object.map do |elem|
+        elem.to_cigar(version: :"1.0")
+      end.each(&:validate!)
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+

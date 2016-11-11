@@ -32,7 +32,7 @@ module RGFA::Sequence
   #  "ACG".rc(rnasequence: true)  # => "CGU"
   #  "ACUT".rc                    # (raises RuntimeError, both U and T)
   def rc(tolerant: false, rnasequence: false)
-    return "*" if self == "*"
+    return self if self.placeholder?
     retval = each_char.map do |c|
       if c == "U" or c == "u"
         rnasequence = true
@@ -67,7 +67,7 @@ module RGFA::Sequence
   # @return [RGFA::Placeholder, self] returns self if the string content
   #   is other than "*", otherwise a RGFA::Placeholder object
   def to_sequence
-    (self == "*") ? RGFA::Placeholder.new : self
+    self.placeholder? ? RGFA::Placeholder.new : self
   end
 end
 

@@ -1,7 +1,7 @@
 module RGFA::Field::OptionalInteger
 
   def decode(string)
-    if string == "*"
+    if string.placeholder?
       return RGFA::Placeholder
     else
       Integer(string) rescue raise RGFA::FormatError,

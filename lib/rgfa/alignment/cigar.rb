@@ -24,7 +24,7 @@ class RGFA::Alignment::CIGAR < Array
   # @return [RGFA::Alignment::CIGAR]
   def complement
     RGFA::Alignment::CIGAR.new(reverse.map do |op|
-      if op.code == :I
+      if op.code == :I or op.code == :S
         op.code = :D
       elsif op.code == :D or op.code == :N
         op.code = :I
@@ -36,25 +36,38 @@ class RGFA::Alignment::CIGAR < Array
   # Parse a CIGAR string into an array of CIGAR operations.
   #
   # Each operation is represented by a {RGFA::Alignment::CIGAR::Operation},
-  # i.e. a tuple of operation length and operation
-  # symbol (one of MIDP).
+  # i.e. a tuple of operation length and operation code.
   #
-  # Deprecation warning: the GFA1 specification does not forbid the
-  # other operation symbols (NSHX=); these are not allowed in GFA2 and their
-  # use is deprecated.
+  # The operation code is one of MIDP for GFA2 or MIDPNSHX= for GFA1.
+  # The additional operations allowed in GFA1 have an unclear meaning
+  # in the context of GFA and should be avoided.
   #
-  # @return [RGFA::Alignment::CIGAR]
+  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
+  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
   # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
-  def self.from_string(str, valid: false)
+  # @raise [RGFA::VersionError] if a wrong version is provided
+  # @return [RGFA::Alignment::CIGAR]
+  def self.from_string(str, valid: false, version: :"1.0")
     a = RGFA::Alignment::CIGAR.new
     unless valid
-      if str !~ /^([0-9]+[MIDNSHPX=])+$/
-        raise RGFA::FormatError
+      case version
+      when :"1.0"
+        if str !~ /^([0-9]+[MIDPNSHX=])+$/
+          raise RGFA::FormatError,
+          "The string #{str} does not represent a valid CIGAR string"
+        end
+      when :"2.0"
+        if str !~ /^([0-9]+[MIDP])+$/
+          raise RGFA::FormatError,
+          "The string #{str} does not represent a valid GFA2 CIGAR string"
+        end
+      else
+        raise RGFA::VersionError, "Version unknown: #{version}"
       end
     end
-    str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
+    str.scan(/[0-9]+[MIDPNSHX=]/).each do |op|
       len = op[0..-2].to_i
       code = op[-1..-1].to_sym
       a << RGFA::Alignment::CIGAR::Operation.new(len, code)
@@ -63,29 +76,48 @@ class RGFA::Alignment::CIGAR < Array
   end
 
   # String representation of the CIGAR
+  # @note no validation is performed, use #validate! if required
   # @return [String] CIGAR string
   def to_s
-    map(&:to_s).join
+    placeholder? ? "*" : (map(&:to_s).join)
   end
 
   # Validate the instance
-  # @raise if any component of the CIGAR array is invalid.
+  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
+  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @raise [RGFA::ValueError] if a code is invalid or a length is negative
+  # @raise [RGFA::TypeError] if a length is not an Integer or
+  #   the array contains anything which is not interpretable as a
+  #   cigar operation
+  # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  def validate!
+  def validate!(version: :"1.0")
+    if ![:"1.0", :"2.0"].include?(version)
+      raise RGFA::VersionError, "Version unknown: #{version}"
+    end
     any? do |op|
-      op.to_cigar_operation.validate!
+      begin
+        op = op.to_cigar_operation
+      rescue
+        raise RGFA::TypeError, "Array contains elements which are "+
+          "not CIGAR operations: #{self.inspect}"
+      end
+      op.validate!(version: version)
     end
   end
 
   # @return [RGFA::Alignment::CIGAR] self
   # @param valid [nil] ignored, for compatibility
-  def to_cigar(valid: nil)
+  # @param version [nil] ignored, for compatibility
+  # @api private
+  def to_cigar(valid: nil, version: :nil)
     self
   end
 
-  # @param allow_traces [Boolean] ignored, for compatibility only
+  # @param valid [nil] ignored, for compatibility
+  # @param version [nil] ignored, for compatibility
   # @return [RGFA::Alignment::CIGAR] self
-  def to_alignment(allow_traces = true)
+  def to_alignment(valid: nil, version: :nil)
     self
   end
 
@@ -139,7 +171,9 @@ class RGFA::Alignment::CIGAR::Operation
   attr_accessor :code
 
   # CIGAR operation code
-  CODE = [:M, :I, :D, :N, :S, :H, :P, :X, :"="]
+  CODE_GFA1_ONLY = [:S, :H, :N, :X, :"="]
+  CODE_GFA1_GFA2 = [:M, :I, :D, :P]
+  CODE = CODE_GFA1_ONLY + CODE_GFA1_GFA2
 
   # @param len [Integer] length of the operation
   # @param code [RGFA::Alignment::CIGAR::Operation::CODE] code of the operation
@@ -149,6 +183,7 @@ class RGFA::Alignment::CIGAR::Operation
   end
 
   # The string representation of the operation
+  # @note no validation is performed, use #validate! if required
   # @return [String]
   def to_s
     "#{len}#{code}"
@@ -161,17 +196,37 @@ class RGFA::Alignment::CIGAR::Operation
   end
 
   # Validate the operation
+  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
+  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @raise [RGFA::ValueError] if the code is invalid or the length is negative
+  # @raise [RGFA::TypeError] if the length is not an Integer
+  # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  # @raise [RGFA::ValueError] if the code is invalid or the length is not
-  #   an integer larger than zero
-  def validate!
-    if Integer(len) <= 0 or
-         !RGFA::Alignment::CIGAR::Operation::CODE.include?(code)
+  def validate!(version: :"1.0")
+    if ![:"1.0", :"2.0"].include?(version)
+      raise RGFA::VersionError, "Version unknown: #{version}"
+    end
+    begin
+      len = Integer(@len)
+    rescue => err
+      raise RGFA::TypeError, "CIGAR operation: #{self.inspect}\n"+
+        "Len class is not Integer but #{len.class}"
+    end
+    if len < 0
       raise RGFA::ValueError
+    elsif RGFA::Alignment::CIGAR::Operation::CODE_GFA1_ONLY.include?(code)
+      if version == :"2.0"
+        raise RGFA::ValueError, "CIGAR operation: #{self.inspect}\n"+
+          "CIGAR code is not supported in GFA2: #{code}"
+      end
+    elsif !RGFA::Alignment::CIGAR::Operation::CODE_GFA1_GFA2.include?(code)
+      raise RGFA::ValueError, "CIGAR operation: #{self.inspect}\n"+
+        "Invalid CIGAR code found: #{code}"
     end
   end
 
   # @return [RGFA::Alignment::CIGAR::Operation] self
+  # @api private
   def to_cigar_operation
     self
   end
@@ -180,12 +235,15 @@ end
 class Array
   # Create a {RGFA::Alignment::CIGAR} instance from the content of the array.
   # @param valid [nil] ignored, for compatibility
+  # @param version [nil] ignored, for compatibility
   # @return [RGFA::Alignment::CIGAR]
-  def to_cigar(valid: nil)
+  # @api private
+  def to_cigar(valid: nil, version: nil)
     RGFA::Alignment::CIGAR.new(self)
   end
-  # Create a {RGFA::Alignment::CIGAR::Operation} instance from the content of the array.
+  # Create a {RGFA::Alignment::CIGAR::Operation} instance from the array content
   # @return [RGFA::Alignment::CIGAR::Operation]
+  # @api private
   def to_cigar_operation
     RGFA::Alignment::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
   end
@@ -197,13 +255,17 @@ class String
   #    CIGAR or Placeholder (if +*+)
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
+  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
+  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
   # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
-  def to_cigar(valid: false)
-    if self == "*"
+  # @raise [RGFA::VersionError] if a wrong version is provided
+  # @api private
+  def to_cigar(valid: false, version: :"1.0")
+    if placeholder?
       return RGFA::Alignment::Placeholder.new
     else
-      return RGFA::Alignment::CIGAR.from_string(self, valid: valid)
+      return RGFA::Alignment::CIGAR.from_string(self, valid: valid,
+                                                version: version)
     end
   end
 end
-

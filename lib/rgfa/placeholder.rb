@@ -6,26 +6,6 @@ class RGFA::Placeholder
     "*"
   end
 
-  # For compatibility with CIGAR#complement.
-  # @return [self]
-  def complement
-    self
-  end
-
-  # For compatibility with the to_alignment method of other classes
-  # (CIGAR, Trace, String, Array).
-  # @param allow_traces [Boolean] ignored
-  # @return [self]
-  def to_alignment(allow_traces = true)
-    self
-  end
-
-  # For compatibility with the to_cigar method of other classes
-  # @return [self]
-  def to_cigar
-    self
-  end
-
   # A placeholder is always empty
   # return [true]
   def empty?
@@ -49,6 +29,11 @@ class RGFA::Placeholder
     0
   end
 
+  # @return [true]
+  def placeholder?
+    true
+  end
+
   alias_method :size, :length
 
   # Any cut of the placeholder returns the placeholder itself
@@ -66,12 +51,28 @@ class RGFA::Placeholder
   end
 
   def ==(other)
-    other.kind_of?(RGFA::Placeholder) or
-      other == :* or
-        other == "*"
+    other.placeholder?
   end
 
   alias :eql? :==
   alias :=== :==
 
+end
+
+class String
+  def placeholder?
+    self == "*"
+  end
+end
+
+class Symbol
+  def placeholder?
+    self == :"*"
+  end
+end
+
+class Array
+  def placeholder?
+    empty?
+  end
 end
