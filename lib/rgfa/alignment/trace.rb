@@ -1,4 +1,4 @@
-require_relative "error.rb"
+RGFA::Alignment ||= Module.new
 
 # Array of trace points.
 #
@@ -12,7 +12,7 @@ require_relative "error.rb"
 # Note: a complement operation such as for CIGARs cannot be defined
 # for a trace, without computing the alignment.
 #
-class RGFA::Trace < Array
+class RGFA::Alignment::Trace < Array
 
   # Validate the numeric array
   #
@@ -50,16 +50,16 @@ class RGFA::Trace < Array
   end
 
   def self.from_string(str)
-    RGFA::Trace.new(str.split(",").map{|i|Integer(i)})
+    RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
   end
 
-  # @return [RGFA::Trace] self
+  # @return [RGFA::Alignment::Trace] self
   def to_trace
     self
   end
 
   # @param allow_traces [Boolean] ignored, for compatibility only
-  # @return [RGFA::Trace] self
+  # @return [RGFA::Alignment::Trace] self
   def to_alignment(allow_traces = true)
     self
   end
@@ -68,9 +68,9 @@ end
 
 class String
   # Parse trace string
-  # @return [RGFA::Trace]
-  # @raise [RGFA::Trace::TypeError] if the string is not a valid trace string
+  # @return [RGFA::Alignment::Trace]
+  # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid trace string
   def to_trace
-    RGFA::Trace.from_string(self)
+    RGFA::Alignment::Trace.from_string(self)
   end
 end

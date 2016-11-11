@@ -14,7 +14,7 @@ class TestRGFALineContainment < Test::Unit::TestCase
     assert_equal(fields[3].to_sym, str.to_rgfa_line.to)
     assert_equal(fields[4].to_sym, str.to_rgfa_line.to_orient)
     assert_equal(12, str.to_rgfa_line.pos)
-    assert_equal([RGFA::CIGAR::Operation.new(12,:M)], str.to_rgfa_line.overlap)
+    assert_equal([RGFA::Alignment::CIGAR::Operation.new(12,:M)], str.to_rgfa_line.overlap)
     assert_equal(1232, str.to_rgfa_line.MQ)
     assert_equal(3, str.to_rgfa_line.NM)
     assert_equal("abcd", str.to_rgfa_line.ab)

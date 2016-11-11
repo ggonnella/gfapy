@@ -1,12 +1,10 @@
 require "json"
 require_relative "alignment"
 require_relative "byte_array"
-require_relative "cigar"
 require_relative "error"
 require_relative "field_array"
 require_relative "line"
 require_relative "numeric_array"
-require_relative "trace"
 
 RGFA::Field = Module.new
 

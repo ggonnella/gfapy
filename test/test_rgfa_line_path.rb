@@ -12,11 +12,11 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_equal(fields[1].to_sym, str.to_rgfa_line.path_name)
     assert_equal([[:"1",:"+"],[:"2",:"-"],[:"3",:"+"]],
                  str.to_rgfa_line.segment_names)
-    assert_equal([[RGFA::CIGAR::Operation.new(9,:M),
-                   RGFA::CIGAR::Operation.new(2,:I),
-                   RGFA::CIGAR::Operation.new(3,:D),
-                   RGFA::CIGAR::Operation.new(1,:M)],
-                  [RGFA::CIGAR::Operation.new(12,:M)]],
+    assert_equal([[RGFA::Alignment::CIGAR::Operation.new(9,:M),
+                   RGFA::Alignment::CIGAR::Operation.new(2,:I),
+                   RGFA::Alignment::CIGAR::Operation.new(3,:D),
+                   RGFA::Alignment::CIGAR::Operation.new(1,:M)],
+                  [RGFA::Alignment::CIGAR::Operation.new(12,:M)]],
                  str.to_rgfa_line.overlaps)
     assert_equal("abcd", str.to_rgfa_line.ab)
     assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }

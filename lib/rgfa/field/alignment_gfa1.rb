@@ -24,13 +24,13 @@ module RGFA::Field::AlignmentGFA1
     case object
     when String
       validate_encoded(object)
-    when RGFA::CIGAR
+    when RGFA::Alignment::CIGAR
       validate_decoded(object)
-    when RGFA::Placeholder
+    when RGFA::Alignment::Placeholder
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::CIGAR, RGFA::Placeholder)"
+        "(accepted classes: String, RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder)"
     end
   end
 
@@ -43,15 +43,15 @@ module RGFA::Field::AlignmentGFA1
     when String
       validate_encoded(object)
       return object
-    when RGFA::CIGAR
+    when RGFA::Alignment::CIGAR
       object.validate!
       return object.to_s
-    when RGFA::Placeholder
+    when RGFA::Alignment::Placeholder
       return object.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::CIGAR, RGFA::Placeholder)"
+        "(accepted classes: String, RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder)"
     end
   end
 

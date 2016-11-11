@@ -107,7 +107,7 @@ module RGFA::Lines::Finders
   #
   # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
   # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
-  # @param [RGFA::CIGAR] cigar
+  # @param [RGFA::Alignment::CIGAR] cigar
   # @return [RGFA::Line::Edge::Link] the first link found
   # @return [nil] if no link is found.
   def search_link(oriented_segment1, oriented_segment2, cigar)

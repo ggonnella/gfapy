@@ -6,7 +6,7 @@ module RGFA::Field::AlignmentGFA2
 
   def decode(string)
     a = string.to_alignment
-    a.validate! if a.kind_of?(RGFA::Trace)
+    a.validate! if a.kind_of?(RGFA::Alignment::Trace)
     return a
   end
 
@@ -20,14 +20,14 @@ module RGFA::Field::AlignmentGFA2
     case object
     when String
       validate_encoded(object)
-    when RGFA::CIGAR, RGFA::Trace
+    when RGFA::Alignment::CIGAR, RGFA::Alignment::Trace
       object.validate!
-    when RGFA::Placeholder
+    when RGFA::Alignment::Placeholder
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
         "(accepted classes: "+
-        "String, RGFA::CIGAR, RGFA::Trace, RGFA::Placeholder)"
+        "String, RGFA::Alignment::CIGAR, RGFA::Alignment::Trace, RGFA::Alignment::Placeholder)"
     end
   end
 

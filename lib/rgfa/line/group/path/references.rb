@@ -4,7 +4,7 @@ module RGFA::Line::Group::Path::References
 
   # computes the list of links which are required to support
   # the path
-  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::CIGAR]>]
+  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::Alignment::CIGAR]>]
   #   an array, which elements are 3-tuples (from oriented segment,
   #   to oriented segment, cigar)
   # @api private
@@ -16,7 +16,7 @@ module RGFA::Line::Group::Path::References
       if j == self.segment_names.size
         circular? ? j = 0 : break
       end
-      cigar = has_undef_overlaps ? RGFA::Placeholder.new : self.overlaps[i]
+      cigar = has_undef_overlaps ? RGFA::Alignment::Placeholder.new : self.overlaps[i]
       retval << [self.segment_names[i], self.segment_names[j], cigar]
     end
     retval

@@ -73,8 +73,8 @@
 class RGFA
 end
 
+require_relative "./rgfa/alignment.rb"
 require_relative "./rgfa/byte_array.rb"
-require_relative "./rgfa/cigar.rb"
 require_relative "./rgfa/field_array.rb"
 require_relative "./rgfa/field.rb"
 require_relative "./rgfa/graph_operations.rb"
@@ -87,7 +87,6 @@ require_relative "./rgfa/position.rb"
 require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_info.rb"
 require_relative "./rgfa/sequence.rb"
-require_relative "./rgfa/trace.rb"
 
 class RGFA
 

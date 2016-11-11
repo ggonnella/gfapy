@@ -52,7 +52,7 @@ module RGFA::Line::Edge::Link::Complement
 
   # Compute the overlap when the strand of both sequences is inverted.
   #
-  # @return [RGFA::CIGAR, RGFA::Placeholder]
+  # @return [RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder]
   def complement_overlap
     self.overlap.to_alignment.complement
   end

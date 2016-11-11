@@ -1,14 +1,14 @@
-require_relative "error.rb"
+RGFA::Alignment ||= Module.new
 
-# Array of {RGFA::CIGAR::Operation CIGAR operations}.
+# Array of {RGFA::Alignment::CIGAR::Operation CIGAR operations}.
 # Represents the contents of a CIGAR string.
-class RGFA::CIGAR < Array
+class RGFA::Alignment::CIGAR < Array
 
   # Compute the CIGAR for the segments when these are switched.
   #
   # @example Computing the complement CIGAR
   #
-  #   RGFA::CIGAR.from_string("2M1D3M").complement.to_s
+  #   RGFA::Alignment::CIGAR.from_string("2M1D3M").complement.to_s
   #   # => "3M1I2M"
   #
   #   # S1 + S2 + 2M1D3M
@@ -21,9 +21,9 @@ class RGFA::CIGAR < Array
   #   #
   #   # S2 - S1 - 3M1I2M
   #
-  # @return [RGFA::CIGAR]
+  # @return [RGFA::Alignment::CIGAR]
   def complement
-    RGFA::CIGAR.new(reverse.map do |op|
+    RGFA::Alignment::CIGAR.new(reverse.map do |op|
       if op.code == :I
         op.code = :D
       elsif op.code == :D or op.code == :N
@@ -35,7 +35,7 @@ class RGFA::CIGAR < Array
 
   # Parse a CIGAR string into an array of CIGAR operations.
   #
-  # Each operation is represented by a {RGFA::CIGAR::Operation},
+  # Each operation is represented by a {RGFA::Alignment::CIGAR::Operation},
   # i.e. a tuple of operation length and operation
   # symbol (one of MIDP).
   #
@@ -43,12 +43,12 @@ class RGFA::CIGAR < Array
   # other operation symbols (NSHX=); these are not allowed in GFA2 and their
   # use is deprecated.
   #
-  # @return [RGFA::CIGAR]
+  # @return [RGFA::Alignment::CIGAR]
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
   # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
   def self.from_string(str, valid: false)
-    a = RGFA::CIGAR.new
+    a = RGFA::Alignment::CIGAR.new
     unless valid
       if str !~ /^([0-9]+[MIDNSHPX=])+$/
         raise RGFA::FormatError
@@ -57,7 +57,7 @@ class RGFA::CIGAR < Array
     str.scan(/[0-9]+[MIDNSHPX=]/).each do |op|
       len = op[0..-2].to_i
       code = op[-1..-1].to_sym
-      a << RGFA::CIGAR::Operation.new(len, code)
+      a << RGFA::Alignment::CIGAR::Operation.new(len, code)
     end
     return a
   end
@@ -77,22 +77,22 @@ class RGFA::CIGAR < Array
     end
   end
 
-  # @return [RGFA::CIGAR] self
+  # @return [RGFA::Alignment::CIGAR] self
   # @param valid [nil] ignored, for compatibility
   def to_cigar(valid: nil)
     self
   end
 
   # @param allow_traces [Boolean] ignored, for compatibility only
-  # @return [RGFA::CIGAR] self
+  # @return [RGFA::Alignment::CIGAR] self
   def to_alignment(allow_traces = true)
     self
   end
 
   # Create a copy
-  # @return [RGFA::CIGAR]
+  # @return [RGFA::Alignment::CIGAR]
   def clone
-    RGFA::CIGAR.new(map{|x|x.clone})
+    RGFA::Alignment::CIGAR.new(map{|x|x.clone})
   end
 
   # Lenght of the aligned substring on the reference sequence
@@ -128,21 +128,21 @@ class RGFA::CIGAR < Array
 end
 
 # An operation in a CIGAR string
-class RGFA::CIGAR::Operation
+class RGFA::Alignment::CIGAR::Operation
 
   # @!attribute [rw] len
   #   @return [Integer > 0] operation length
   attr_accessor :len
 
   # @!attribute [rw] code
-  #   @return [RGFA::CIGAR::Operation::CODE] operation code
+  #   @return [RGFA::Alignment::CIGAR::Operation::CODE] operation code
   attr_accessor :code
 
   # CIGAR operation code
   CODE = [:M, :I, :D, :N, :S, :H, :P, :X, :"="]
 
   # @param len [Integer] length of the operation
-  # @param code [RGFA::CIGAR::Operation::CODE] code of the operation
+  # @param code [RGFA::Alignment::CIGAR::Operation::CODE] code of the operation
   def initialize(len, code)
     @len = len
     @code = code
@@ -166,42 +166,43 @@ class RGFA::CIGAR::Operation
   #   an integer larger than zero
   def validate!
     if Integer(len) <= 0 or
-         !RGFA::CIGAR::Operation::CODE.include?(code)
+         !RGFA::Alignment::CIGAR::Operation::CODE.include?(code)
       raise RGFA::ValueError
     end
   end
 
-  # @return [RGFA::CIGAR::Operation] self
+  # @return [RGFA::Alignment::CIGAR::Operation] self
   def to_cigar_operation
     self
   end
 end
 
 class Array
-  # Create a {RGFA::CIGAR} instance from the content of the array.
+  # Create a {RGFA::Alignment::CIGAR} instance from the content of the array.
   # @param valid [nil] ignored, for compatibility
-  # @return [RGFA::CIGAR]
+  # @return [RGFA::Alignment::CIGAR]
   def to_cigar(valid: nil)
-    RGFA::CIGAR.new(self)
+    RGFA::Alignment::CIGAR.new(self)
   end
-  # Create a {RGFA::CIGAR::Operation} instance from the content of the array.
-  # @return [RGFA::CIGAR::Operation]
+  # Create a {RGFA::Alignment::CIGAR::Operation} instance from the content of the array.
+  # @return [RGFA::Alignment::CIGAR::Operation]
   def to_cigar_operation
-    RGFA::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
+    RGFA::Alignment::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
   end
 end
 
 class String
   # Parse CIGAR string
-  # @return [RGFA::CIGAR,RGFA::Placeholder] CIGAR or Placeholder (if +*+)
+  # @return [RGFA::Alignment::CIGAR,RGFA::Alignment::Placeholder]
+  #    CIGAR or Placeholder (if +*+)
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
   # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
   def to_cigar(valid: false)
     if self == "*"
-      return RGFA::Placeholder.new
+      return RGFA::Alignment::Placeholder.new
     else
-      return RGFA::CIGAR.from_string(self, valid: valid)
+      return RGFA::Alignment::CIGAR.from_string(self, valid: valid)
     end
   end
 end
