@@ -222,10 +222,10 @@ class TestRGFALineGetters < Test::Unit::TestCase
     l0 = "L\t1\t+\t2\t+\t11M1D3M"; gfa << l0
     l1 = "L\t1\t+\t2\t+\t10M2D3M"; gfa << l1
     l2 = "L\t1\t+\t3\t+\t*"; gfa << l2
-    assert_equal(l0, gfa.link(["1", :E], ["2", :B]).to_s)
-    assert_equal(l0, gfa.link!(["1", :E], ["2", :B]).to_s)
-    assert_equal(nil, gfa.link(["1", :E], ["2", :E]))
-    assert_raise(RGFA::NotFoundError) { gfa.link!(["1", :E], ["2", :E]) }
+    assert_equal(l0, gfa.link(["1", :R], ["2", :L]).to_s)
+    assert_equal(l0, gfa.link!(["1", :R], ["2", :L]).to_s)
+    assert_equal(nil, gfa.link(["1", :R], ["2", :R]))
+    assert_raise(RGFA::NotFoundError) { gfa.link!(["1", :R], ["2", :R]) }
   end
 
   def test_header_tags

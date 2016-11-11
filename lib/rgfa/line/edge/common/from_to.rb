@@ -30,13 +30,13 @@ module RGFA::Line::Edge::Common::FromTo
   # @return [RGFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end
-    [from, from_orient == :+ ? :E : :B].to_segment_end
+    [from, from_orient == :+ ? :R : :L].to_segment_end
   end
 
   # @return [RGFA::SegmentEnd] the segment end represented by the
   #   to/to_orient fields
   def to_end
-    [to, to_orient == :+ ? :B : :E].to_segment_end
+    [to, to_orient == :+ ? :L : :R].to_segment_end
   end
 
   # Signature of the segment ends, for debugging

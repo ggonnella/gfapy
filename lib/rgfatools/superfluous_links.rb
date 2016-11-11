@@ -14,21 +14,20 @@ module RGFATools::SuperfluousLinks
     s, sn = segment_and_segment_name(segment)
     se = {}
     l = {}
-    [:B, :E].each do |et|
-      etx = et == :B ? :L : :R
+    [:L, :R].each do |et|
       se[et] = [sn, et]
-      l[et] = segment(s).dovetails(etx)
+      l[et] = segment(s).dovetails(et)
     end
-    if l[:B].size == 1 and l[:E].size == 1
+    if l[:L].size == 1 and l[:R].size == 1
       oe = {}
-      [:B, :E].each {|et| oe[et] = l[et][0].other_end(se[et])}
-      return if oe[:B] == oe[:E]
-      [:B, :E].each {|et| delete_other_links(oe[et], se[et],
+      [:L, :R].each {|et| oe[et] = l[et][0].other_end(se[et])}
+      return if oe[:L] == oe[:R]
+      [:L, :R].each {|et| delete_other_links(oe[et], se[et],
                                     conserve_components: conserve_components)}
     else
-      i = (l[:B].size == 1) ? 0 : ((l[:E].size == 1) ? 1 : nil)
+      i = (l[:L].size == 1) ? 0 : ((l[:R].size == 1) ? 1 : nil)
       return if i.nil?
-      et = [:B, :E][i]
+      et = [:L, :R][i]
       oe = l[et][0].other_end(se[et])
       delete_other_links(oe, se[et], conserve_components: conserve_components)
     end

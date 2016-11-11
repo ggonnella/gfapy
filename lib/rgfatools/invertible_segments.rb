@@ -30,35 +30,35 @@ module RGFATools::InvertibleSegments
   private
 
   def randomly_orient_proven_invertible_segment(segment_name)
-    parts = partitioned_links_of([segment_name, :E])
+    parts = partitioned_links_of([segment_name, :R])
     if parts.size == 2
-      tokeep1_other_end = parts[0][0].other_end([segment_name, :E])
-      tokeep2_other_end = parts[1][0].other_end([segment_name, :E])
+      tokeep1_other_end = parts[0][0].other_end([segment_name, :R])
+      tokeep2_other_end = parts[1][0].other_end([segment_name, :R])
     elsif parts.size == 1 and parts[0].size == 2
-      tokeep1_other_end = parts[0][0].other_end([segment_name, :E])
-      tokeep2_other_end = parts[0][1].other_end([segment_name, :E])
+      tokeep1_other_end = parts[0][0].other_end([segment_name, :R])
+      tokeep2_other_end = parts[0][1].other_end([segment_name, :R])
     else
       return
     end
     return if tokeep1_other_end.segment.dovetails(
-                tokeep1_other_end.end_type == :B ? :L : :R).size < 2
+                tokeep1_other_end.end_type).size < 2
     return if tokeep2_other_end.segment.dovetails(
-                tokeep2_other_end.end_type == :B ? :L : :R).size < 2
-    delete_other_links([segment_name, :E], tokeep1_other_end)
-    delete_other_links([segment_name, :B], tokeep2_other_end)
+                tokeep2_other_end.end_type).size < 2
+    delete_other_links([segment_name, :R], tokeep1_other_end)
+    delete_other_links([segment_name, :L], tokeep2_other_end)
     annotate_random_orientation(segment_name)
   end
 
   def link_targets_for_cmp(segment_end)
     segment_end.segment.dovetails(
-      segment_end.end_type == :B ? :L : :R).map do |l|
+      segment_end.end_type).map do |l|
         l.other_end(segment_end).join
       end
   end
 
   def segment_same_links_both_ends?(segment_name)
-    e_links = link_targets_for_cmp([segment_name, :E])
-    b_links = link_targets_for_cmp([segment_name, :B])
+    e_links = link_targets_for_cmp([segment_name, :R])
+    b_links = link_targets_for_cmp([segment_name, :L])
     return e_links == b_links
   end
 
@@ -72,8 +72,7 @@ module RGFATools::InvertibleSegments
   end
 
   def partitioned_links_of(segment_end)
-    segment_end.segment.dovetails(
-        (segment_end.end_type == :B) ? :L : :R).group_by do |l|
+    segment_end.segment.dovetails(segment_end.end_type).group_by do |l|
       other_end = l.other_end(segment_end)
       sig = segment_signature(other_end)
       sig

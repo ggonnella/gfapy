@@ -15,7 +15,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_raises(RGFA::ValueError) do
-      gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
+      gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]])
     end
     s = ["S\t0\tACGA",
          "S\t1\tACGA",
@@ -28,7 +28,7 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
     assert_nothing_raised do
-      gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
+      gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]])
     end
     assert_raises(RGFA::NotFoundError) {gfa.segment!("0")}
     assert_raises(RGFA::NotFoundError) {gfa.segment!("1")}
@@ -80,7 +80,6 @@ class TestRGFATraverse < Test::Unit::TestCase
     gfa = RGFA.new
     gfa << "H\tVN:Z:1.0"
     (s + l).each {|line| gfa << line }
-    gfa.merge_linear_paths #XXX
     assert_nothing_raised { gfa.merge_linear_paths }
     assert_equal(3, gfa.segments.size)
     assert_equal([:"0", :"1", :"2_3"], gfa.segments.map(&:name))

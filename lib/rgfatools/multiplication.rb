@@ -4,7 +4,7 @@
 module RGFATools::Multiplication
 
   # Allowed values for the links_distribution_policy option
-  LINKS_DISTRIBUTION_POLICY = [:off, :auto, :equal, :E, :B]
+  LINKS_DISTRIBUTION_POLICY = [:off, :auto, :equal, :L, :R]
 
   # @overload multiply(segment, factor, copy_names: :lowcase, distribute: :auto, conserve_components: true, origin_tag: :or)
   # Create multiple copies of a segment.
@@ -71,8 +71,7 @@ module RGFATools::Multiplication
   #   is eventually selected for distribution of the links.
   #
   #   - +:off+: no distribution performed
-  #   - +:E+: links of the E end are distributed
-  #   - +:B+: links of the B end are distributed
+  #   - +:L/:R+: links of the specified end are distributed
   #   - +:equal+: select an end for which the number of links is equal to
   #     +factor+, if any; if both, then the E end is selected
   #   - +:auto+: automatically select E or B, trying to maximize the number of
@@ -129,7 +128,7 @@ module RGFATools::Multiplication
         accepted.inspect
     end
     return nil if links_distribution_policy == :off
-    if [:B, :E].include?(links_distribution_policy)
+    if [:L, :R].include?(links_distribution_policy)
       return links_distribution_policy
     end
     s = segment(segment_name)
@@ -142,22 +141,22 @@ module RGFATools::Multiplication
   # (keep separate for testing)
   def auto_select_distribute_end(factor, bsize, esize, equal_only)
     if esize == factor
-      return :E
+      return :R
     elsif bsize == factor
-      return :B
+      return :L
     elsif equal_only
       return nil
     elsif esize < 2
-      return (bsize < 2) ? nil : :B
+      return (bsize < 2) ? nil : :L
     elsif bsize < 2
-      return :E
+      return :R
     elsif esize < factor
-      return ((bsize <= esize) ? :E :
-        ((bsize < factor) ? :B : :E))
+      return ((bsize <= esize) ? :R :
+        ((bsize < factor) ? :L : :R))
     elsif bsize < factor
-      return :B
+      return :L
     else
-      return ((bsize <= esize) ? :B : :E)
+      return ((bsize <= esize) ? :L : :R)
     end
   end
 
@@ -167,13 +166,13 @@ module RGFATools::Multiplication
     end_type = select_distribute_end(links_distribution_policy,
                                      segment_name, factor)
     return nil if end_type.nil?
-    et_links = segment(segment_name).dovetails(end_type == :B ? :L : :R)
+    et_links = segment(segment_name).dovetails(end_type)
     diff = [et_links.size - factor, 0].max
     links_signatures = et_links.map do |l|
       l.other_end([segment_name, end_type]).join
     end
     ([segment_name]+copy_names).each_with_index do |sn, i|
-      segment(sn).dovetails(end_type == :B ? :L : :R).each do |l|
+      segment(sn).dovetails(end_type).each do |l|
         l_sig = l.other_end([sn, end_type]).join
         to_save = links_signatures[i..i+diff].to_a
         l.disconnect! unless to_save.include?(l_sig)

@@ -14,8 +14,8 @@ module RGFATools::PBubbles
       sn = s.name
       next if visited.include?(sn)
       if s.connectivity == [1,1]
-        s1 = s.neighbours(:B)[0]
-        s2 = s.neighbours(:E)[0]
+        s1 = s.neighbours(:L)[0]
+        s2 = s.neighbours(:R)[0]
         n1 = s1.neighbours.sort
         n2 = s2.neighbours.sort
         n1.each {|se| visited << se[0].name}

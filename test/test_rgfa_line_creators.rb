@@ -54,11 +54,11 @@ class TestRGFALineCreators < Test::Unit::TestCase
     gfa << s2
     assert_nothing_raised { gfa << l1 }
     assert_equal([l1], gfa.links)
-    assert_equal(l1, gfa.link(["1", :E], ["2", :B]))
-    assert_equal(l1, gfa.link(["2", :B], ["1", :E]))
-    assert_equal(nil, gfa.link(["2", :E], ["1", :B]))
-    assert_nothing_raised {gfa.link!(["1", :E], ["2", :B])}
-    assert_raises(RGFA::NotFoundError) {gfa.link!(["2", :E], ["1", :B])}
+    assert_equal(l1, gfa.link(["1", :R], ["2", :L]))
+    assert_equal(l1, gfa.link(["2", :L], ["1", :R]))
+    assert_equal(nil, gfa.link(["2", :R], ["1", :L]))
+    assert_nothing_raised {gfa.link!(["1", :R], ["2", :L])}
+    assert_raises(RGFA::NotFoundError) {gfa.link!(["2", :R], ["1", :L])}
     assert_nothing_raised { gfa << l2 }
   end
 

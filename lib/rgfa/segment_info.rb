@@ -111,7 +111,7 @@ end
 # A representation of a segment end
 class RGFA::SegmentEnd < RGFA::SegmentInfo
   # Segment end type (begin or end)
-  ATTR = [ END_TYPE_BEGIN = :B, END_TYPE_END = :E ]
+  ATTR = [ END_TYPE_LEFT = :L, END_TYPE_RIGHT = :R ]
   alias_method :end_type, :attribute
   alias_method :end_type=, :attribute=
   alias_method :invert_end_type, :invert_attribute

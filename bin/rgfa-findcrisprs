@@ -17,7 +17,7 @@ class RGFA
                          count_tag: @default[:count_tag])/2).round
     end
     segments.each {|s| puts s.inspect} if $debugmode
-    maxvisits_global = {:B => {}, :E => {}}
+    maxvisits_global = {:L => {}, :R => {}}
     segment_names.each do |sn|
       s = segment(sn)
       next if s.length < minlen or s.length > maxlen
@@ -25,13 +25,13 @@ class RGFA
       circles = {}
       linear = {}
       maxvisits = {}
-      [:B, :E].each do |rt|
+      [:L, :R].each do |rt|
         maxvisits[rt] = maxvisits_global[rt].dup
         maxvisits[rt][sn] ||= s.cn
         circles[rt] = []
         linear[rt] = []
         segment_end = [s, rt].to_segment_end
-        s.dovetails(rt == :B ? :L : :R).each do |l|
+        s.dovetails(rt).each do |l|
           search_circle(segment_end.invert_end_type,
                         segment_end,
                         l,
@@ -66,21 +66,21 @@ class RGFA
           linear[rt] += multi[:l]
         end
       end
-      n_paths = (circles[:E].size+circles[:B].size+
-                 linear[:E].size+linear[:B].size)
-      if (circles[:E].size - circles[:B].size).abs > 1
+      n_paths = (circles[:R].size+circles[:L].size+
+                 linear[:R].size+linear[:L].size)
+      if (circles[:R].size - circles[:L].size).abs > 1
         next
       end
-      if (linear[:E].size - linear[:B].size).abs > 0
+      if (linear[:R].size - linear[:L].size).abs > 0
         next
       end
-      if linear[:E].size != 1
+      if linear[:R].size != 1
         next
       end
       merged_circles = []
-      circles[:E].each {|c|merged_circles << merge_crisprs_path(c,s,:E)}
-      before = merge_crisprs_path(linear[:B].first,s,:B)
-      after = merge_crisprs_path(linear[:E].first,s,:E)
+      circles[:R].each {|c|merged_circles << merge_crisprs_path(c,s,:R)}
+      before = merge_crisprs_path(linear[:L].first,s,:L)
+      after = merge_crisprs_path(linear[:R].first,s,:R)
       next if merged_circles.size < minrepeats
       maxvisits_global = maxvisits
       instances = 1
@@ -136,7 +136,7 @@ class RGFA
                                  disable_tracking: true)[0]
     sequence = merged.sequence[repeat.
                                  sequence.length..-(1+repeat.sequence.length)]
-    sequence = sequence.rc if repeat_end == :B
+    sequence = sequence.rc if repeat_end == :L
     return sequence
   end
 
@@ -166,7 +166,7 @@ class RGFA
       linear << new_path
       return
     end
-    ls = se.segment.dovetails(se.end_type == :B ? :L : :R)
+    ls = se.segment.dovetails(se.end_type)
     if ls.size == 0
       new_path[0..-1].each {|x| maxvisits[x.name] -= 1}
       linear << new_path

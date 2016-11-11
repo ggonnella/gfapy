@@ -11,10 +11,8 @@ module RGFA::GraphOperations::Connectivity
   # @param link [RGFA::Line::Edge::Link] a link
   def cut_link?(link)
     return false if link.circular?
-    return true if link.from.dovetails(
-      link.from_end.end_type == :B ? :R : :L).size == 0
-    return true if link.to.dovetails(
-      link.to_end.end_type == :B ? :R : :L).size == 0
+    return true if link.from.dovetails(link.from_end.end_type_inverted).size == 0
+    return true if link.to.dovetails(link.to_end.end_type_inverted).size == 0
     c = {}
     [:from, :to].each do |et|
       c[et] = Set.new
@@ -38,8 +36,8 @@ module RGFA::GraphOperations::Connectivity
     segment = segment!(segment)
     return false if [[0,0],[0,1],[1,0]].include?(segment.connectivity)
     start_points = []
-    [:B, :E].each do |et|
-      start_points += segment.dovetails(et == :B ? :L : :R).map do |l|
+    [:L, :R].each do |et|
+      start_points += segment.dovetails(et).map do |l|
         l.other_end([segment_name, et]).invert_end_type
       end
     end
@@ -62,11 +60,10 @@ module RGFA::GraphOperations::Connectivity
   # @param visited [Set<String>] a set of segments to ignore during graph
   #   traversal; all segments in the found component will be added to it
   def segment_connected_component(segment, visited = Set.new)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
-    visited << segment_name
-    c = [segment_name]
-    traverse_component([segment_name, :B], c, visited)
-    traverse_component([segment_name, :E], c, visited)
+    sn = segment.kind_of?(RGFA::Line) ? segment.name : segment
+    visited << sn
+    c = [sn]
+    [:L, :R].each {|e| traverse_component([sn, e], c, visited)}
     return c
   end
 
@@ -101,15 +98,13 @@ module RGFA::GraphOperations::Connectivity
   def traverse_component(segment_end, c, visited)
     segment_end = segment_end.to_segment_end
     s = segment(segment_end.segment)
-    k = segment_end.end_type == :B ? :L : :R
-    s.dovetails(k).each do |l|
+    s.dovetails(segment_end.end_type).each do |l|
       oe = l.other_end(segment_end)
       sn = oe.name
       next if visited.include?(sn)
       visited << sn
       c << sn
-      traverse_component([sn, :B], c, visited)
-      traverse_component([sn, :E], c, visited)
+      [:L, :R].each {|e| traverse_component([sn, e], c, visited)}
     end
   end
 

@@ -13,14 +13,14 @@ class TestRGFAToolsLinearPaths < Test::Unit::TestCase
          "L\t2\t-\t3\t+\t1M"]
     gfa = RGFA.new
     (s + l).each {|line| gfa << line }
-    gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]],
+    gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]],
                           enable_tracking: true)
     assert_nothing_raised {gfa.segment!("0_1_2^_3")}
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
     gfa = RGFA.new
     gfa.enable_extensions
     (s + l).each {|line| gfa << line }
-    gfa.merge_linear_path([["0", :E],["1", :E],["2", :B],["3", :E]])
+    gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]])
     assert_nothing_raised {gfa.segment!("0_1_2^_3")}
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
   end

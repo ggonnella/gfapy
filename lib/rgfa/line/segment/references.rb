@@ -37,7 +37,7 @@ module RGFA::Line::Segment::References
   #  conn. symbols respectively of the :L and :R ends of +segment+.
   #
   # <b>Connectivity symbol:</b> (+conn_symbol+)
-  # - Let _n_ be the number of links to an end (+:B+ or +:E+) of a segment.
+  # - Let _n_ be the number of links to an end (+:L+ or +:R+) of a segment.
   #   Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
   #
   def connectivity

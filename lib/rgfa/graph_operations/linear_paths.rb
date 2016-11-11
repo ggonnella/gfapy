@@ -23,7 +23,7 @@ module RGFA::GraphOperations::LinearPaths
     cs = segment(s).connectivity
     s = s.to_sym
     segpath = RGFA::SegmentEndsPath.new()
-    [:B, :E].each_with_index do |et, i|
+    [:L, :R].each_with_index do |et, i|
       if cs[i] == 1
         exclude << s
         segpath.pop
@@ -109,33 +109,19 @@ module RGFA::GraphOperations::LinearPaths
 
   private
 
-  # Traverse the links, starting from the segment +from+ :E end if
-  # +traverse_from_E_end+ is true, or :B end otherwise.
+  # Traverse the links, starting from the segment end +segment_end+.
   #
-  # If any segment after +from+ is found whose name is included in +exclude+
+  # If any segment is found during traversal whose name is included in +exclude+
   # the traversing is interrupted. The +exclude+ set is updated, so that
-  # circular paths are avoided.
+  # circular paths are avoided. The starting segment is not added to the set.
   #
-  # *Arguments*:
-  #   - +from+ -> first segment
-  #   - +traverse_from_E_end+ -> if true, start from E end, otherwise from B end
-  #   - +exclude+ -> Set of names of already visited segments
-  #
-  # *Side Effects*:
-  #   - Any element added to the returned list is also added to +exclude+
-  #
-  # *Returns*:
-  #   - An array of segment names of the unbranched path.
-  #     If +from+ is not an element of an unbranched path then [].
-  #     Otherwise the first (and possibly only) element is +from+.
-  #     All elements in the index range 1..-2 are :internal.
   def traverse_linear_path(segment_end, exclude)
     list = RGFA::SegmentEndsPath.new()
     current = segment_end.to_segment_end
     current.segment = segment(current.segment)
     loop do
-      after  = current.segment.dovetails(current.end_type == :B ? :L : :R)
-      before = current.segment.dovetails(current.end_type == :B ? :R : :L)
+      after  = current.segment.dovetails(current.end_type)
+      before = current.segment.dovetails(current.end_type_inverted)
       if (before.size == 1 and after.size == 1) or list.empty?
         list << [current.name, current.end_type]
         exclude << current.name
@@ -150,7 +136,7 @@ module RGFA::GraphOperations::LinearPaths
         break
       end
     end
-    return segment_end.end_type == :B ? list.reverse : list
+    return segment_end.end_type == :L ? list.reverse : list
   end
 
   def sum_of_counts(segpath, multfactor = 1)
@@ -212,7 +198,7 @@ module RGFA::GraphOperations::LinearPaths
     merged = segment!(segpath.first.first).clone
     total_cut = 0
     a = segpath.first
-    first_reversed = (a.end_type == :B)
+    first_reversed = (a.end_type == :L)
     last_reversed = nil
     if options[:merged_name] == :short
       forbidden = (segment_names + path_names)
@@ -236,7 +222,7 @@ module RGFA::GraphOperations::LinearPaths
           "Merging is only allowed if all operations are M/="
       end
       total_cut += cut
-      last_reversed = (b[1] == :E)
+      last_reversed = (b[1] == :R)
       add_segment_to_merged(merged, segment(b.segment), last_reversed, cut,
                             false, options)
       a = b.to_segment_end.invert_end_type
@@ -267,7 +253,7 @@ module RGFA::GraphOperations::LinearPaths
 
   def link_merged(merged_name, segment_end, reversed)
     segment(segment_end.segment).dovetails(
-        segment_end.end_type == :B ? :L : :R).each do |l|
+        segment_end.end_type).each do |l|
       l2 = l.clone
       if l2.to == segment_end.first
         l2.to = merged_name

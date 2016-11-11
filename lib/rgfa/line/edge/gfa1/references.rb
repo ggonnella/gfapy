@@ -17,7 +17,8 @@ module RGFA::Line::Edge::GFA1::References
       end
       set_existing_field(dir, s, set_reference: true)
       if self.record_type == :L
-        key = (send(:"#{dir}_end").end_type == :B) ? :dovetails_L : :dovetails_R
+        et = send(:"#{dir}_end").end_type
+        key = :"dovetails_#{et}"
       else
         key = (dir == :from) ? :contained : :containers
       end

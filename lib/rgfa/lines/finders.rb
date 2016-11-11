@@ -76,7 +76,7 @@ module RGFA::Lines::Finders
     segment_end1 = segment_end1.to_segment_end
     segment_end2 = segment_end2.to_segment_end
     s = segment!(segment_end1.segment)
-    s.dovetails(segment_end1.end_type == :B ? :L : :R).each do |l|
+    s.dovetails(segment_end1.end_type).each do |l|
       return l if l.other_end(segment_end1) == segment_end2
     end
     return nil

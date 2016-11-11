@@ -28,10 +28,10 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
     assert_equal([l], gfa.links.map(&:to_s))
-    assert_equal(l, gfa.link(["1", :E], ["2", :B]).to_s)
+    assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
     gfa.search_link(["1", "+"], ["2", "+"], "12M").disconnect!
     assert_equal([], gfa.links)
-    assert_equal(nil, gfa.link(["1", :E], ["2", :B]))
+    assert_equal(nil, gfa.link(["1", :R], ["2", :L]))
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
     gfa << l
