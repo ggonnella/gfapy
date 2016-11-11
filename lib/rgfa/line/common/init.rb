@@ -165,8 +165,9 @@ module RGFA::Line::Common::Init
 
   def initialize_positional_fields(strings)
     if @version.nil?
-      raise RGFA::VersionError, "Version unknown"
-      # this should never happen
+      raise RGFA::AssertionError,
+        "Bug found, please report\n"+
+        "strings: #{strings.inspect}"
     end
     if (@validate >= 1) and (strings.size < n_positional_fields)
       raise RGFA::FormatError,

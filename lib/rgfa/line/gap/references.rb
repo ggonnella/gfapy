@@ -31,8 +31,8 @@ module RGFA::Line::Gap::References
     when [:"<", :"<"]
       return (snum == 1) ? :gaps_L : :gaps_R
     else
-      raise RGFA::RuntimeError,
-        "This should never happen"
+      raise RGFA::AssertionError, "Bug found, please report\n"+
+        "snum: #{snum}"
     end
   end
 
@@ -52,8 +52,8 @@ module RGFA::Line::Gap::References
     when :S
       [:sid1, :sid2]
     else
-      raise RGFA::RuntimeError,
-        "This should not happen"
+      raise RGFA::AssertionError, "Bug found, please report\n"+
+        "ref: #{ref}\nkey_in_ref: #{key_in_ref}"
     end
   end
 

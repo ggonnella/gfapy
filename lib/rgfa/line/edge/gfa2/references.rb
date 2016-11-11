@@ -62,8 +62,10 @@ module RGFA::Line::Edge::GFA2::References
     when :S
       [:sid1, :sid2]
     else
-      raise RGFA::RuntimeError,
-        "This should not happen"
+      raise RGFA::AssertionError,
+        "Bug found, please report\n"+
+        "ref: #{ref}\n"+
+        "key_in_ref: #{key_in_ref}"
     end
   end
 

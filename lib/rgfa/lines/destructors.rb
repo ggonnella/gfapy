@@ -69,7 +69,8 @@ module RGFA::Lines::Destructors
     api_private_check_gfa_line(gfa_line, "unregister_line")
     case gfa_line.record_type
     when :H
-      raise # This should not happen
+      raise RGFA::AssertionError, "Bug found, please report\n"+
+        "gfa_line: #{gfa_line}"
     when :E, :S, :P, :U, :G, :O
       if gfa_line.id.empty?
         @records[gfa_line.record_type][nil].delete(gfa_line)

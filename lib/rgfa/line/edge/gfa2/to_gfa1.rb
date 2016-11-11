@@ -56,7 +56,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
         complement_alignment
       end
     else
-      raise # this should not happen
+      raise RGFA::AssertionError, "Bug found, please report"
     end
   end
 

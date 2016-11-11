@@ -22,8 +22,8 @@ module RGFA::Line::Fragment::References
     when :S
       [:sid]
     else
-      raise RGFA::RuntimeError,
-        "This should not happen"
+      raise RGFA::AssertionError, "Bug found, please report\n"+
+        "ref: #{ref}\nkey_in_ref: #{key_in_ref}"
     end
   end
 

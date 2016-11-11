@@ -39,3 +39,7 @@ class RGFA::InconsistencyError < RGFA::Error; end
 # e.g. a tag! method has been used and the tag is not set;
 #      a record finder ! method does not find the record
 class RGFA::NotFoundError < RGFA::Error; end
+
+# an assertion has failed; this should not happen
+# an error of this kind indicates a bug
+class RGFA::AssertionError < RGFA::Error; end
