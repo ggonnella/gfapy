@@ -367,10 +367,11 @@ class String
 
   # Converts a +String+ into a +RGFA+ instance. Each line of the string is added
   # separately to the gfa.
+  # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
   # @!macro validate
-  def to_rgfa(validate: 2)
-    gfa = RGFA.new(validate: validate)
+  def to_rgfa(validate: 2, version: nil)
+    gfa = RGFA.new(validate: validate, version: version)
     split("\n").each {|line| gfa << line}
     gfa.process_line_queue
     gfa.validate! if validate >= 1
@@ -384,10 +385,11 @@ class Array
 
   # Converts an +Array+ of strings or RGFA::Line instances
   # into a +RGFA+ instance.
+  # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
   # @!macro validate
-  def to_rgfa(validate: 2)
-    gfa = RGFA.new(validate: validate)
+  def to_rgfa(validate: 2, version: nil)
+    gfa = RGFA.new(validate: validate, version: version)
     each {|line| gfa << line}
     gfa.process_line_queue
     gfa.validate! if validate >= 1

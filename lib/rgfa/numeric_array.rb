@@ -156,17 +156,25 @@ class String
   # @raise [RGFA::TypeError] if the subtype code is invalid
   # @return [RGFA::NumericArray] the numeric array
   def to_numeric_array(valid: false)
+    unless valid
+      if empty?
+        raise RGFA::FormatError, "Numeric arrays shall not be empty"
+      end
+      if self[-1] == ","
+        raise RGFA::FormatError, "Numeric array ends with comma #{self}"
+      end
+    end
     elems = split(",")
     subtype = elems.shift
-    integer = (subtype != "f")
-    if integer
-      range = RGFA::NumericArray::SUBTYPE_RANGE[subtype]
-    elsif !RGFA::NumericArray::SUBTYPE.include?(subtype)
+    if !RGFA::NumericArray::SUBTYPE.include?(subtype)
       raise RGFA::TypeError, "Subtype #{subtype} unknown"
     end
-    elems.map do |e|
+    if subtype != "f"
+      range = RGFA::NumericArray::SUBTYPE_RANGE[subtype]
+    end
+    elems.map! do |e|
       begin
-        if integer
+        if subtype != "f"
           e = Integer(e)
           if not valid and not range.include?(e)
             raise "NumericArray: "+
@@ -183,5 +191,6 @@ class String
         raise RGFA::ValueError, msg
       end
     end
+    elems.to_numeric_array(valid: true)
   end
 end

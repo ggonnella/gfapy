@@ -73,6 +73,13 @@ class String
         "Invalid byte array string #{self}; "+
         "each element must be represented by two letters [0-9A-F]"
     end
-    scan(/..?/).map {|x|Integer(x,16)}.to_byte_array
+    scan(/..?/).map do |x|
+      begin
+        Integer(x,16)
+      rescue
+        raise RGFA::FormatError,
+          "Invalid element #{x} found in byte array string: #{self}"
+      end
+    end.to_byte_array
   end
 end

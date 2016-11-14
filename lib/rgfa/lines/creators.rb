@@ -39,14 +39,14 @@ module RGFA::Lines::Creators
     end
     case rt
     when :"#"
-      gfa_line.to_rgfa_line.connect(self)
+      gfa_line.to_rgfa_line(validate: @validate).connect(self)
     when :H
       gfa_line = gfa_line.to_rgfa_line(validate: @validate)
       header.merge(gfa_line)
       if gfa_line.VN
         @version = gfa_line.VN.to_sym
         @version_explanation = "specified in header VN tag"
-        validate_version!
+        validate_version! if @validate > 0
         @line_queue.size.times {self << @line_queue.shift}
       end
     when :S
@@ -80,7 +80,7 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+
@@ -106,13 +106,12 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+
           "File version: 2.0 (#{@version_explanation})"
       end
-      gfa_line.connect(self)
       header.merge(gfa_line)
     else
       gfa_line.connect(self)

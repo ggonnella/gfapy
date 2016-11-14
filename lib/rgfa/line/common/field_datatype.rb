@@ -28,7 +28,7 @@ module RGFA::Line::Common::FieldDatatype
           "The datatype of a predefined tag cannot be changed"
         return
       end
-    elsif !valid_custom_tagname?(fieldname)
+    elsif !valid_custom_tagname?(fieldname) and @validate > 0
       raise RGFA::FormatError,
         "#{fieldname} is not a valid custom tag name"
     end
@@ -47,6 +47,7 @@ module RGFA::Line::Common::FieldDatatype
   def field_or_default_datatype(fieldname, value)
     t = field_datatype(fieldname)
     if t.nil?
+      return nil if value.nil?
       t = value.default_gfa_tag_datatype
       @datatype[fieldname] = t
     end

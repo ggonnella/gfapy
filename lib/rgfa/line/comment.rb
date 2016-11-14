@@ -23,13 +23,13 @@
 #   # Spacer shall not contain newlines:
 #   RGFA::Line::Comment.new(["hallo", "\n"]) # raises RGFA::FormatError
 #   # Validations can be turned off:
-#   RGFA::Line::Comment.new(["hallo", "\n"], validation: 0) # nothing raised
+#   RGFA::Line::Comment.new(["hallo", "\n"], validate: 0) # nothing raised
 #   # No validations on content setting by default
 #   l = RGFA::Line::Comment.new(["hallo"])
 #   l.content = "hallo\n" # nothing raised
 #   l.to_s # raises RGFA::FormatError
 #   # Validations on content setting can be turned on
-#   l = RGFA::Line::Comment.new(["hallo"], validation: 3)
+#   l = RGFA::Line::Comment.new(["hallo"], validate: 3)
 #   l.content = "hallo\n" # raises RGFA::FormatError
 #
 # @example Non-spacing characters in spacer
@@ -57,7 +57,7 @@
 #   l.to_s # => "# hallo"
 #   l.spacer = ""
 #   l.to_s # => "#hallo"
-#   l = "# hallo".to_rgfa_line(validation: 3)
+#   l = "# hallo".to_rgfa_line(validate: 3)
 #   l.spacer = "\n" # raises RGFA::FormatError as validation >= 3
 #
 # @example Comment lines have no tags

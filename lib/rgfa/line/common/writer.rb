@@ -6,6 +6,7 @@ module RGFA::Line::Common::Writer
   end
 
   # @return [Array<String>] an array of string representations of the fields
+  # @api private
   def to_a
     a = [record_type]
     positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
@@ -37,6 +38,7 @@ module RGFA::Line::Common::Writer
 
   # Returns the tags as an array of [fieldname, datatype, value]
   #   triples.
+  # @api private
   # @return [Array<[Symbol, Symbol, Object]>]
   def tags
     retval = []

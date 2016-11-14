@@ -208,7 +208,7 @@ class RGFA::Alignment::CIGAR::Operation
     end
     begin
       len = Integer(@len)
-    rescue => err
+    rescue
       raise RGFA::TypeError, "CIGAR operation: #{self.inspect}\n"+
         "Len class is not Integer but #{len.class}"
     end

@@ -21,7 +21,8 @@ module RGFA::Line::Common::VersionConversion
       if (v == version)
         return self
       else
-        send(:"to_#{shall_version}_a").to_rgfa_line(version: v)
+        send(:"to_#{shall_version}_a").to_rgfa_line(version: v,
+                                                    validate: @validate)
       end
     end
   end
