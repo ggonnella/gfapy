@@ -7,7 +7,7 @@ The correct number of positional fields is record type-specific.
 
 Positional fields are recognized by its position in the line.
 Each positional field has an implicit field name and datatype associated
-with it. The datatype of a positional field cannot be changed.
+with it.
 
 ### Field names
 
@@ -20,13 +20,13 @@ rules, see the respective chapters.
 
 #### GFA1 field names
 
-| Record Type     | Field 1   | Field 2       | Field 3  | Field 4    | Field 5 | Field 6 | Field 7 | Field 8   | Field 9   |
-|-----------------|-----------|---------------|----------|------------|---------|---------|---------|-----------|-----------|
-| Segment         | name      | sequence      |          |            |         |         |         |           |           |
-| Link            | from      | from_orient   | to       | to_orient  | overlap |         |         |           |           |
-| Containment     | from      | from_orient   | to       | to_orient  | pos     | overlap |         |           |           |
-| Path            | path_name | segment_names | overlaps |            |         |         |         |           |           |
-|-----------------|-----------|---------------|----------|------------|---------|---------|---------|-----------|-----------|
+| Record Type     | Field 1   | Field 2       | Field 3  | Field 4    | Field 5 | Field 6 |
+|-----------------|-----------|---------------|----------|------------|---------|---------|
+| Segment         | name      | sequence      |          |            |         |         |
+| Link            | from      | from_orient   | to       | to_orient  | overlap |         |
+| Containment     | from      | from_orient   | to       | to_orient  | pos     | overlap |
+| Path            | path_name | segment_names | overlaps |            |         |         |
+|-----------------|-----------|---------------|----------|------------|---------|---------|
 
 #### GFA2 field names
 
@@ -39,6 +39,73 @@ rules, see the respective chapters.
 | Unordered group | pid       | items         |          |            |         |         |         |           |           |
 | Ordered group   | pid       | items         |          |            |         |         |         |           |           |
 |-----------------|-----------|---------------|----------|------------|---------|---------|---------|-----------|-----------|
+
+### Datatypes
+
+The datatype of a positional field is described in the specification and
+cannot be changed.
+
+#### Placeholders
+
+Some positional fields may contain an undefined value S: sequence; L/C:
+overlap; P: overlaps; E: eid, alignment; F: alignment; G: gid, var; U/O: pid.
+In GFA this value is represented by a ```*```.
+
+In RGFA instances of the class RGFA::Placeholder (and its subclasses) represent
+the undefined value.
+
+The method #placeholder? is defined for placeholders and all classes whose
+instances can be used as a value for fields where a placeholder is allowed.  It
+allows to check if a value is a placeholder instance or an equivalent value
+(such as an empty array, or the string representation of the placeholder).
+
+Some methods are defined for placeholders, which allow them to respond to the
+same methods as defined values. For example, for all placeholders, #empty?
+returns true; #validate! does nothing; #length returns 0; #[] returns self; #+
+returns self. Thus in many cases the code can be written in a generic way,
+without explicitely handling the different cases where a value is a placeholder
+or not.
+
+#### Line identifiers
+
+Some fields contain identifiers or lists of identifiers. These can be
+identifiers for the line itself (segment GFA1: name; segment GFA2: sid; path:
+path_name; edge: eid; gap: gid; groups: gid) or references to other lines in
+the GFA file (links/containments: from, to; path: segment_names; edge/gap:
+sid1/sid2; groups: items) or to external sequences (fragment: external).
+
+The line identifiers are represented in RGFA by Symbols. Where an identifier
+is optional and not specified (E/G/U/O lines) a placeholder is used instead.
+
+Identifier which are references to other lines are also symbols in stand-alone
+line instances. Lists of identifiers are represented by arrays of symbols.
+When a line is connected to a RGFA object, the symbols are changed into
+references to other lines.
+
+#### Alignments
+
+Some fields contain alignments and lists of alignments (L/C: overlap; P:
+overlaps; E/F: alignment). Alignments can be represented by CIGAR strings,
+trace alignments (in GFA2) and placeholders. See the Alignments chapter for
+more information.
+
+#### Sequences
+
+Sequences (S field sequence) are represented by strings in RGFA.
+Depending on the GFA version, the alphabet definition is more or less
+restrictive. The definitions are correctly applied by the validation methods.
+
+The method #rc is provided to compute the reverse complement of a DNA sequence.
+The extended IUPAC alphabet is understood by the method. Applied to non-DNA
+sequences, the results will be meaningless.
+
+#### Positions
+
+Some fields contain positions (GFA1: C pos; GFA2: E beg1, beg2, end1, end2 and
+F s_beg, s_end, f_beg, f_end). These are always 0-based. GFA2 positions
+must contain an additional symbol (```$```) appended to the integer, if they
+are the last position in the segment sequence. For this reason, positions
+in GFA2 are represented using instances of the class RGFA::Position.
 
 ### Reading and writing positional fields
 

@@ -2,7 +2,7 @@ require_relative "../lib/rgfa.rb"
 require "test/unit"
 TestAPI ||= Module.new
 
-class TestAPI::Alignment < Test::Unit::TestCase
+class TestAPI::Tags < Test::Unit::TestCase
 
   def test_predefined_tags
     # correct type:
