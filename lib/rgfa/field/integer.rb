@@ -7,8 +7,14 @@ module RGFA::Field::Integer
 
   alias_method :unsafe_decode, :decode
 
-  def validate_decoded(integer)
-    # always valid
+  def validate_decoded(object)
+    case object
+    when Integer
+    else
+      raise RGFA::TypeError,
+        "the class #{object.class} is incompatible with the datatype\n"+
+        "(accepted classes: Integer)"
+    end
   end
 
   def validate_encoded(string)

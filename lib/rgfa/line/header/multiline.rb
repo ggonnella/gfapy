@@ -15,7 +15,7 @@ module RGFA::Line::Header::Multiline
   # @param value [Object]
   # @param datatype [RGFA::Field::TAG_DATATYPE, nil] the datatype to use;
   #   the default is to determine the datatype according to the value or the
-  #   previous values present int the field
+  #   previous values present in the field
   def add(fieldname, value, datatype=nil)
     fieldname = fieldname.to_sym
     prev = get(fieldname)
@@ -25,34 +25,36 @@ module RGFA::Line::Header::Multiline
       return self
     elsif !prev.kind_of?(RGFA::FieldArray)
       prev = RGFA::FieldArray.new(get_datatype(fieldname), [prev])
-      set_datatype(fieldname, :J)
-      set(fieldname,prev)
+      set_existing_field(fieldname, prev)
     end
-    prev.push_with_validation(value, datatype, fieldname)
+    if @validate > 3
+      prev.vpush(value, datatype, fieldname)
+    else
+      prev << value
+    end
     return self
   end
 
-  # Array of tags data.
+  # Compute the string representation of a field.
   #
-  # Returns the tags as an array of [fieldname, datatype, value]
-  # arrays. If a field is a FieldArray, this is splitted into multiple fields
-  # with the same fieldname.
-  # @return [Array<(Symbol, Symbol, Object)>]
-  # @api private
-  def tags
-    retval = []
-    tagnames.each do |of|
-      value = get(of)
-      if value.kind_of?(RGFA::FieldArray)
-        value.each do |elem|
-          retval << [of, value.datatype, elem]
-        end
-      else
-        retval << [of, get_datatype(of), value]
-      end
+  # @param fieldname [Symbol] the tag name of the field
+  # @param tag [Boolean] <i>(defaults to: +false+)</i>
+  #   return the tagname:datatype:value representation
+  #
+  # @raise [RGFA::NotFoundError] if field is not defined
+  # @return [String] the string representation
+  def field_to_s(fieldname, tag: false)
+    prev = get(fieldname)
+    if prev.kind_of?(RGFA::FieldArray)
+      prev.validate_gfa_field!(nil, fieldname) if @validate >= 4
+      return tag ? prev.to_gfa_tag(fieldname)
+                 : prev.to_gfa_field(fieldname: fieldname)
+    else
+      super
     end
-    return retval
   end
+
+  # api_private
 
   # Split the header line into single-tag lines.
   #
@@ -78,6 +80,30 @@ module RGFA::Line::Header::Multiline
       add(of, gfa_line.get(of), gfa_line.get_datatype(of))
     end
     self
+  end
+
+  private
+
+  # Array of tags data.
+  #
+  # Returns the tags as an array of [fieldname, datatype, value]
+  # arrays. If a field is a FieldArray, this is splitted into multiple fields
+  # with the same fieldname.
+  # @return [Array<(Symbol, Symbol, Object)>]
+  # @api private
+  def tags
+    retval = []
+    tagnames.each do |of|
+      value = get(of)
+      if value.kind_of?(RGFA::FieldArray)
+        value.each do |elem|
+          retval << [of, value.datatype, elem]
+        end
+      else
+        retval << [of, get_datatype(of), value]
+      end
+    end
+    return retval
   end
 
 end

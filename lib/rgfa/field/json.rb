@@ -2,12 +2,7 @@ require "json"
 module RGFA::Field::JSON
 
   def unsafe_decode(string)
-    value = JSON.parse(string)
-    # RGFA convention for array of fields
-    if value.kind_of?(Array) and value.rgfa_field_array?
-      value = value.to_rgfa_field_array
-    end
-    return value
+    JSON.parse(string)
   end
 
   def decode(string)

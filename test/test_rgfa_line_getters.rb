@@ -234,12 +234,11 @@ class TestRGFALineGetters < Test::Unit::TestCase
     gfa << "H\taa:i:12\tab:Z:test1"
     gfa << "H\taa:i:15"
     gfa << "H\tac:Z:test2"
-    assert_equal([[:VN, :Z, "1.0"],
-                 [:aa, :i, 12],
-                 [:aa, :i, 15],
-                 [:ab, :Z, "test1"],
-                 [:ac, :Z, "test2"]].sort,
-                 gfa.header.tags.sort)
+    assert_equal([:VN, :aa, :ab, :ac], gfa.header.tagnames)
+    assert_equal("1.0", gfa.header.VN)
+    assert_equal([12,15], gfa.header.aa)
+    assert_equal("test1", gfa.header.ab)
+    assert_equal("test2", gfa.header.ac)
   end
 
 end

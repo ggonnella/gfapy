@@ -8,26 +8,51 @@ class RGFA::FieldArray < Array
     super(data)
   end
 
-  # Run a datatype-specific validation on each element of the array
-  # @param datatype [RGFA::Field::TAG_DATATYPE]
-  def validate_gfa_field!(datatype, fieldname=nil)
-    each.validate_gfa_field!(@datatype, fieldname)
+  # Run the datatype-specific validation on each element of the array
+  # @param fieldname [Symbol] fieldname to use for error messages
+  # @return [void]
+  def validate!(fieldname=nil)
+    validate_gfa_field!(nil, fieldname)
   end
 
-  # Default GFA tag datatype, :J
+  # Run a datatype-specific validation on each element of the array,
+  #   using the specified datatype
+  # @param datatype [nil, RGFA::Field::TAG_DATATYPE] datatype to use for the
+  #   validation; use +nil+ to use the stored datatype (self.datatype)
+  # @param fieldname [Symbol] fieldname to use for error messages
+  # @api private
+  # @return [void]
+  def validate_gfa_field!(datatype, fieldname=nil)
+    datatype ||= @datatype
+    each {|elem| elem.validate_gfa_field!(datatype, fieldname)}
+  end
+
+  # Default GFA tag datatype
+  # @return [RGFA::Field::TAG_DATATYPE]
   # @api private
   def default_gfa_tag_datatype
-    :J
+    @datatype
   end
 
-  # Representation of the field array as JSON array, with
-  # two additional values: the datatype and a zero byte as "signature".
-  # @param datatype [RGFA::Field::TAG_DATATYPE] (ignored, J is always used)
+  # String representation of the field array
+  # @param datatype [RGFA::Field::TAG_DATATYPE]
+  #   <i>(defaults to: +self.datatype+)</i> datatype of the data
+  # @param fieldname [Symbol]
+  #   <i>(defaults to +nil+)</i> fieldname to use for error messages
+  # @return [String] tab-separated string representations of the elements
   # @api private
-  def to_gfa_field(datatype: nil)
-    self << @datatype
-    self << "\0"
-    to_json
+  def to_gfa_field(datatype: @datatype, fieldname: nil)
+    map{|x| x.to_gfa_field(datatype: datatype, fieldname: fieldname)}.join("\t")
+  end
+
+  # String representation of the field array as GFA tags
+  # @param datatype [RGFA::Field::TAG_DATATYPE]
+  #   <i>(defaults to: +self.datatype+)</i> datatype of the data
+  # @param fieldname [Symbol] name of the tag
+  # @return [String] tab-separated GFA tag representations of the elements
+  # @api private
+  def to_gfa_tag(fieldname, datatype: @datatype)
+    map{|x| x.to_gfa_tag(fieldname, datatype: datatype)}.join("\t")
   end
 
   # Add a value to the array and validate
@@ -35,43 +60,34 @@ class RGFA::FieldArray < Array
   #   of the new value does not correspond to the type of
   #   existing values
   # @param value [Object] the value to add
-  # @param type [RGFA::Field::TAG_DATATYPE, nil] the datatype to use;
+  # @param datatype [RGFA::Field::TAG_DATATYPE, nil] the datatype to use;
   #   if not +nil+, it will be checked that the specified datatype is the
   #   same as for previous elements of the field array;
   #   if +nil+, the value will be validated, according to the datatype
   #   specified on field array creation
   # @param fieldname [Symbol] the field name to use for error messages
-  #
-  def push_with_validation(value, type, fieldname=nil)
-    if type.nil?
+  # @api private
+  def vpush(value, datatype, fieldname=nil)
+    if datatype.nil?
       value.validate_gfa_field!(@datatype, fieldname)
-    elsif type != @datatype
+    elsif datatype != @datatype
       raise RGFA::InconsistencyError,
-        "Datatype mismatch error for field #{fieldname}:\n"+
+        "Datadatatype mismatch error for field #{fieldname}:\n"+
         "value: #{value}\n"+
         "existing datatype: #{@datatype};\n"+
-        "new datatype: #{type}"
+        "new datatype: #{datatype}"
     end
     self << value
   end
+
 end
 
 class Array
-  # Is this possibly a {RGFA::FieldArray} instance?
-  #
-  # (i.e. are the two last elements a datatype symbol
-  # and a zero byte?)
-  # @return [Boolean]
-  def rgfa_field_array?
-    self[-1] == "\0" and
-      RGFA::Field::TAG_DATATYPE.include?(self[-2].to_sym)
-  end
-
   # Create a {RGFA::FieldArray} from an array
   # @param datatype [RGFA::Field::TAG_DATATYPE, nil] the datatype to use
   def to_rgfa_field_array(datatype=nil)
-    if self.rgfa_field_array?
-      RGFA::FieldArray.new(self[-2].to_sym, self[0..-3])
+    if kind_of?(RGFA::FieldArray)
+      self
     elsif datatype.nil?
       raise RGFA::ArgumentError, "No datatype specified"
     else

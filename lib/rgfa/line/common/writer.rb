@@ -36,18 +36,6 @@ module RGFA::Line::Common::Writer
     return tag ? field.to_gfa_tag(fieldname, datatype: t) : field
   end
 
-  # Returns the tags as an array of [fieldname, datatype, value]
-  #   triples.
-  # @api private
-  # @return [Array<[Symbol, Symbol, Object]>]
-  def tags
-    retval = []
-    tagnames.each do |of|
-      retval << [of, get_datatype(of), get(of)]
-    end
-    return retval
-  end
-
   def inspect
     if instance_variable_defined?(:@refs) and !@refs.nil?
       local_refs = @refs
@@ -66,4 +54,19 @@ module RGFA::Line::Common::Writer
     @rgfa = local_rgfa if local_rgfa
     retval
   end
+
+  private
+
+  # Returns the tags as an array of [fieldname, datatype, value]
+  #   triples.
+  # @api private
+  # @return [Array<[Symbol, Symbol, Object]>]
+  def tags
+    retval = []
+    tagnames.each do |of|
+      retval << [of, get_datatype(of), get(of)]
+    end
+    return retval
+  end
+
 end
