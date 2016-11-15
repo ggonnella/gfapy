@@ -55,7 +55,8 @@ version. This may change in a future version of the library.
 
 For all kind of tags, the name must follow the correct format, the datatype
 must be one of the known datatypes and the data must be a correctly formatted
-string for the specified datatype.  For predefined tags, RGFA also checks that
+string for the specified datatype or a Ruby object whose string representation
+is a correctly formatted string.  For predefined tags, RGFA also checks that
 the datatype given in the specification is used.
 
 Depending on the validation level, more or less checks are done automatically
@@ -68,7 +69,7 @@ tags.
 ### Reading and writing tags
 
 Tags can be read using a method on the RGFA line object, which is called as the
-datatype (e.g. line.xx). A banged version of the method raises an error if the
+tag (e.g. line.xx). A banged version of the method raises an error if the
 tag was not available (e.g. line.LN!), which the normal method returns
 ```nil``` in this case. Setting the value is done with an equal sign version of
 the tag name method (e.g. line.TS = 120).  In alternative, the
@@ -155,7 +156,7 @@ the RGFA::Line::Unknown class.
 
 ```
 RGFA::Line#tn/tn!/tn= # tn = tag name
-RGFA::Line#get/set
+RGFA::Line#get/get!/set
 RGFA::Line#delete
 RGFA::Line#get_datatype/set_datatype
 RGFA::Line#validate_field/validate!
