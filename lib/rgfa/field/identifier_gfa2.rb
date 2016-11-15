@@ -20,7 +20,7 @@ module RGFA::Field::IdentifierGFA2
   def validate_decoded(object)
     case object
     when RGFA::Line
-      validate_encoded(object.id)
+      validate_encoded(object.name)
     when String, Symbol
       validate_encoded(object)
     else
@@ -41,7 +41,7 @@ module RGFA::Field::IdentifierGFA2
     when Symbol
       return object.to_s
     when RGFA::Line
-      return object.id.to_s
+      return object.name.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+

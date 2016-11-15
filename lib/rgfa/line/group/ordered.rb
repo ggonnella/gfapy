@@ -4,7 +4,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   RECORD_TYPE = :O
   POSFIELDS = [:pid, :items]
   PREDEFINED_TAGS = []
-  FIELD_ALIAS = {:id => :pid}
+  FIELD_ALIAS = { :name => :pid }
   DATATYPE = {
     :pid => :optional_identifier_gfa2,
     :items => :identifier_list_gfa2,
@@ -14,6 +14,8 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
+
+  alias_method :to_sym, :pid
 
 end
 

@@ -46,18 +46,18 @@ module RGFA::Lines
   def rename(old_name, new_name)
     old_name = old_name.to_sym
     new_name = new_name.to_sym
-    l = search_by_id(new_name)
+    l = search_by_name(new_name)
     if l
       raise RGFA::NotUniqueError,
         "#{new_name} is not unique\n"+
         "Matching line: #{l}"
     end
-    l = search_by_id(old_name)
+    l = search_by_name(old_name)
     if l.nil?
       raise RGFA::NotFoundError,
         "No line has ID '#{old_name}'"
     end
-    l.id = new_name
+    l.name = new_name
     @records[l.record_type].delete(old_name)
     @records[l.record_type][new_name] = l
     self

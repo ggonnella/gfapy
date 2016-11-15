@@ -40,7 +40,7 @@ module RGFA::Lines::Destructors
       end
     when Symbol, String
       x = x.to_sym
-      l = search_by_id(x)
+      l = search_by_name(x)
       if l
         if !args.empty?
           raise RGFA::ArgumentError,
@@ -72,10 +72,10 @@ module RGFA::Lines::Destructors
       raise RGFA::AssertionError, "Bug found, please report\n"+
         "gfa_line: #{gfa_line}"
     when :E, :S, :P, :U, :G, :O
-      if gfa_line.id.empty?
+      if gfa_line.name.empty?
         @records[gfa_line.record_type][nil].delete(gfa_line)
       else
-        @records[gfa_line.record_type].delete(gfa_line.id)
+        @records[gfa_line.record_type].delete(gfa_line.name)
       end
     else
       @records[gfa_line.record_type].delete(gfa_line)

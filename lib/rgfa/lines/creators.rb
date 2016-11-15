@@ -133,12 +133,12 @@ module RGFA::Lines::Creators
     when :H
       @records[:H].merge(gfa_line)
     when :S, :P, nil
-      @records[gfa_line.record_type][gfa_line.id] = gfa_line
+      @records[gfa_line.record_type][gfa_line.name] = gfa_line
     when :E, :U, :G, :O
-      if gfa_line.id.empty?
+      if gfa_line.name.empty?
         @records[gfa_line.record_type][nil] << gfa_line
       else
-        @records[gfa_line.record_type][gfa_line.id] = gfa_line
+        @records[gfa_line.record_type][gfa_line.name] = gfa_line
       end
     else
       @records[gfa_line.record_type] ||= []

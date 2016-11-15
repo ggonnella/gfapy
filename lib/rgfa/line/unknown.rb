@@ -3,17 +3,19 @@
 class RGFA::Line::Unknown < RGFA::Line
 
   RECORD_TYPE = nil
-  POSFIELDS = [:id]
-  FIELD_ALIAS = {}
+  POSFIELDS = [:name]
+  FIELD_ALIAS = { }
   PREDEFINED_TAGS = []
   DATATYPE = {
-    :id => :identifier_gfa2,
+    :name => :identifier_gfa2,
   }
   REFERENCE_FIELDS = []
   DEPENDENT_REFERENCES = [:unordered_groups, :ordered_groups]
   NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
+
+  alias_method :to_sym, :name
 
   def virtual?
     true

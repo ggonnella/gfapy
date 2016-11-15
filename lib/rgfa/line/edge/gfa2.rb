@@ -16,12 +16,14 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
     :end2 => :position_gfa2,
     :alignment => :alignment_gfa2,
   }
-  FIELD_ALIAS = { :id => :eid }
+  FIELD_ALIAS = { :name => :eid }
   REFERENCE_FIELDS = [:sid1, :or2, :sid2, :beg1, :end1, :beg2, :end2]
   DEPENDENT_REFERENCES = [:ordered_groups, :unordered_groups]
   NONDEPENDENT_REFERENCES = []
 
   define_field_methods!
+
+  alias_method :to_sym, :eid
 
 end
 

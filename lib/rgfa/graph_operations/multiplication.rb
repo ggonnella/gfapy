@@ -99,7 +99,7 @@ module RGFA::GraphOperations::Multiplication
     end
     while retval.size < (factor-1)
       while retval.include?(next_name) or
-            search_by_id(next_name.to_sym)
+            search_by_name(next_name.to_sym)
         if copy_names == :copy
           next_name += "1"
           copy_names = :number

@@ -5,7 +5,7 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
   RECORD_TYPE = :P
   POSFIELDS = [:path_name, :segment_names, :overlaps]
   PREDEFINED_TAGS = []
-  FIELD_ALIAS = {:id => :path_name}
+  FIELD_ALIAS = { :name => :path_name }
   DATATYPE = {
     :path_name => :path_name_gfa1,
     :segment_names => :oriented_segments,

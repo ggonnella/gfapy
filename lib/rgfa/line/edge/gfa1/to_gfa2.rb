@@ -6,7 +6,7 @@ RGFA::Line::Edge::GFA1 ||= Module.new
 # Requirements: +from+, +from_orient+, +to+, +to_orient+.
 module RGFA::Line::Edge::GFA1::ToGFA2
 
-  def id
+  def name
     i = get(:ID)
     if i.nil?
       return RGFA::Placeholder.new
@@ -14,7 +14,8 @@ module RGFA::Line::Edge::GFA1::ToGFA2
     end
     return i
   end
-  alias_method :eid, :id
+  alias_method :eid, :name
+  alias_method :to_sym, :name
 
   def sid1
     (from_orient == :+ or to_orient == :-) ? from : to
@@ -118,7 +119,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
       end
       if from.length.nil?
         raise RGFA::ValueError,
-          "Length of segment #{from.id} unknown"
+          "Length of segment #{from.name} unknown"
       end
       from_l = RGFA::Position.new(from.length, true)
       return [from_l - overlap.length_on_reference, from_l]
@@ -146,7 +147,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
       end
       if to.length.nil?
         raise RGFA::ValueError,
-          "Length of segment #{to.id} unknown"
+          "Length of segment #{to.name} unknown"
       end
       to_l = RGFA::Position.new(to.length, true)
       return [to_l - overlap.length_on_query, to_l]

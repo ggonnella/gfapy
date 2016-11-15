@@ -27,7 +27,7 @@ module RGFA::Field::IdentifierListGFA2
                when Symbol
                  elem.to_s
                when RGFA::Line
-                 elem.id.to_s
+                 elem.name.to_s
                else
                  raise RGFA::TypeError,
                    "the array contains an object of class #{elem.class}\n"+
@@ -67,7 +67,7 @@ module RGFA::Field::IdentifierListGFA2
         when String, Symbol
           elem.to_s
         when RGFA::Line
-          elem.id.to_s
+          elem.name.to_s
         else
           raise RGFA::TypeError,
             "the array contains an object of class #{elem.class}\n"+

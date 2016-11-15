@@ -129,20 +129,20 @@ module RGFA::Lines::Finders
       search_link(gfa_line.oriented_from,
                   gfa_line.oriented_to, gfa_line.alignment)
     when :E, :S, :P, :U, :G, :O
-      return search_by_id(gfa_line.id)
+      return search_by_name(gfa_line.name)
     else
       return nil
     end
   end
 
   # @api private
-  def search_by_id(id)
-    if id.kind_of?(RGFA::Placeholder)
+  def search_by_name(name)
+    if name.kind_of?(RGFA::Placeholder)
       return nil
     end
-    id = id.to_sym
+    name = name.to_sym
     [:E, :S, :P, :U, :G, :O, nil].each do |rt|
-      found = @records[rt][id]
+      found = @records[rt][name]
       return found if !found.nil?
     end
     return nil

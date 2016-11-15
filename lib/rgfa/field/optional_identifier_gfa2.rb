@@ -29,7 +29,7 @@ module RGFA::Field::OptionalIdentifierGFA2
     case object
     when RGFA::Placeholder
     when RGFA::Line
-      validate_encoded(object.id)
+      validate_encoded(object.name)
     when String, Symbol
       validate_encoded(object)
     else
@@ -50,7 +50,7 @@ module RGFA::Field::OptionalIdentifierGFA2
     when Symbol, RGFA::Placeholder
       return object.to_s
     when RGFA::Line
-      return object.id.to_s
+      return object.name.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
@@ -66,7 +66,7 @@ module RGFA::Field::OptionalIdentifierGFA2
     when Symbol
       object = object.to_s
     when RGFA::Line
-      object = object.id.to_s
+      object = object.name.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+

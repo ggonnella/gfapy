@@ -16,7 +16,7 @@ class RGFA::Line::Segment::GFA2 < RGFA::Line
     :SH => :H,
     :UR => :Z,
   }
-  FIELD_ALIAS = { :name => :sid, :id => :sid, :length => :slen, :LN => :slen }
+  FIELD_ALIAS = { :name => :sid, :length => :slen, :LN => :slen }
 
   define_field_methods!
 
