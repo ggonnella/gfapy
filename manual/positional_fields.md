@@ -66,7 +66,7 @@ returns self. Thus in many cases the code can be written in a generic way,
 without explicitely handling the different cases where a value is a placeholder
 or not.
 
-#### Line identifiers
+#### Identifiers
 
 Some fields contain identifiers or lists of identifiers. These can be
 identifiers for the line itself (segment GFA1: name; segment GFA2: sid; path:
@@ -80,7 +80,7 @@ is optional and not specified (E/G/U/O lines) a placeholder is used instead.
 Identifier which are references to other lines are also symbols in stand-alone
 line instances. Lists of identifiers are represented by arrays of symbols.
 When a line is connected to a RGFA object, the symbols are changed into
-references to other lines.
+references to other lines (see the References chapter).
 
 #### Alignments
 
