@@ -82,14 +82,6 @@ module RGFA::Lines::Destructors
     end
   end
 
-  # Remove all comments.
-  # @return [RGFA] self
-  # @api private
-  def delete_comments
-    @records[:"#"] = []
-    return self
-  end
-
   # Delete all links/containments involving two segments
   # @return [RGFA] self
   # @param segment1
