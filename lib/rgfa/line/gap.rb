@@ -3,7 +3,6 @@ class RGFA::Line::Gap < RGFA::Line
 
   RECORD_TYPE = :G
   POSFIELDS = [:gid, :sid1, :d1, :d2, :sid2, :disp, :var]
-  REFERENCE_FIELDS = [:sid1, :d1, :d2, :sid2]
   FIELD_ALIAS = { :name => :gid }
   PREDEFINED_TAGS = []
   DATATYPE = {
@@ -15,8 +14,10 @@ class RGFA::Line::Gap < RGFA::Line
     :disp => :i,
     :var => :optional_integer
   }
-  DEPENDENT_REFERENCES = [:unordered_groups, :ordered_groups]
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_FIELDS = [:sid1, :sid2]
+  REFERENCE_RELATED_FIELDS = [:d1, :d2]
+  DEPENDENT_LINES = [:unordered_groups, :ordered_groups]
+  OTHER_REFERENCES = []
 
   define_field_methods!
 

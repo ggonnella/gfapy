@@ -17,6 +17,10 @@ When a line is connected to a RGFA object (adding the line using
 the symbols in the fields (and in arrays and oriented segments) are changed into
 references to the corresponding lines in the RGFA object.
 
+The method ```RGFA::Line#connected?``` allows to determine if
+a line is connected to an RGFA instance. The method ```RGFA::Line#rgfa```
+returns the RGFA instance to which the line is connected.
+
 ### References
 
 The following tables list the references for each record type.
@@ -163,14 +167,16 @@ as when the RGFA is written to a GFA file.
 #### Adding and removing group elements
 
 To add an item to or remove an item from an unordered group, use the methods
-```RGFA::Line::Group#add_item(item)``` ```RGFA::Line::Group#rm_item(item)```,
-which take as argument either a symbol (identifier) or a line instance.
+```RGFA::Line::Group::Unordered#add_item(item)``` and
+```RGFA::Line::Group::Unordered#rm_item(item)```, which take as argument either
+a symbol (identifier) or a line instance.
 
 To append or prepend an item to an ordered group, use the methods
-```RGFA::Line::Group#append_item(item)``` and
-```RGFA::Line::Group#prepend_item(item)```.  To remove the first or the last
-item of an ordered group use the methods ```RGFA::Line::Group#rm_first_item```
-and ```RGFA::Line::Group#rm_last_item```.
+```RGFA::Line::Group::Ordered#append_item(item)``` and
+```RGFA::Line::Group::Ordered#prepend_item(item)```.  To remove the first or
+the last item of an ordered group use the methods
+```RGFA::Line::Group::Ordered#rm_first_item``` and
+```RGFA::Line::Group::Ordered#rm_last_item```.
 
 #### Editing read-only fields of connected lines
 
@@ -200,4 +206,25 @@ and all references are corrected to point to the real line.
 
 ### Summary of references-related API methods
 
-#XXX
+```
+RGFA#<<(line)/rm(line)
+RGFA::Line#connect(rgfa)/disconnect!
+RGFA::Line#connected?/rgfa
+RGFA::Line#virtual?
+RGFA::Line::Segment::GFA1/GFA2#dovetails[_L|_R]/contain(ed|ers)/neighbours
+RGFA::Line::Segment::GFA1#paths
+RGFA::Line::Segment::GFA2#gaps[_L|_R]/fragments/[un]ordered_groups/internals
+RGFA::Line::Fragment#sid
+RGFA::Line::Edge::Containment/Link#from/to
+RGFA::Line::Gap/Edge::GFA2#sid1/sid2
+RGFA::Line::Gap/Edge::GFA2#unordered_groups/ordered_groups
+RGFA::Line::Group::Path#segment_names
+RGFA::Line::Group::Path#links
+RGFA::Line::Group::Unordered#items
+RGFA::Line::Group::Unordered#ordered_groups
+RGFA::Line::Group::Unordered#add_item(item)/rm_item(item)
+RGFA::Line::Group::Ordered#items
+RGFA::Line::Group::Ordered#ordered_groups
+RGFA::Line::Group::Ordered#append_item(item)/prepend_item(item)
+RGFA::Line::Group::Ordered#rm_first_item/rm_last_item
+```

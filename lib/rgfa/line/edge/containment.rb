@@ -3,7 +3,6 @@ class RGFA::Line::Edge::Containment < RGFA::Line::Edge
 
   RECORD_TYPE = :C
   POSFIELDS = [:from, :from_orient, :to, :to_orient, :pos, :overlap]
-  REFERENCE_FIELDS = [:from, :from_orient, :to, :to_orient]
   FIELD_ALIAS = {:container => :from,
                  :contained => :to,
                  :container_orient => :from_orient,
@@ -19,8 +18,10 @@ class RGFA::Line::Edge::Containment < RGFA::Line::Edge
      :MQ => :i,
      :NM => :i,
   }
-  DEPENDENT_REFERENCES = []
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_FIELDS = [:from, :to]
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = []
+  OTHER_REFERENCES = []
 
   define_field_methods!
 end

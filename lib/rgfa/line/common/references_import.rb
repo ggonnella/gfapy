@@ -42,7 +42,8 @@ module RGFA::Line::Common::ReferencesImport
   #   the reference fields are not directly references
   #   but rather contain the reference (e.g. path segment_names)
   def import_field_references(previous)
-    self.class::REFERENCE_FIELDS.each do |k|
+    (self.class::REFERENCE_FIELDS +
+     self.class::REFERENCE_RELATED_FIELDS).each do |k|
       ref = previous.get(k)
       set_existing_field(k, ref, set_reference: true)
     end

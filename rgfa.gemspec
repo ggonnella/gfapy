@@ -115,6 +115,8 @@ Gem::Specification.new do |s|
               'lib/rgfa/line/group/path.rb',
               'lib/rgfa/line/group/unordered.rb',
               'lib/rgfa/line/group/gfa2/references.rb',
+              'lib/rgfa/line/group/ordered/references.rb',
+              'lib/rgfa/line/group/unordered/references.rb',
               'lib/rgfa/line/group/path/references.rb',
               'lib/rgfa/line/group/path/topology.rb',
               'lib/rgfa/line/group/path/validation.rb',

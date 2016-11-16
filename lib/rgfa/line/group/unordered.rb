@@ -10,8 +10,9 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
     :items => :identifier_list_gfa2,
   }
   REFERENCE_FIELDS = [:items]
-  DEPENDENT_REFERENCES = []
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = [:unordered_groups]
+  OTHER_REFERENCES = []
 
   define_field_methods!
 
@@ -20,7 +21,9 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
 end
 
 require_relative "gfa2/references"
+require_relative "unordered/references"
 
 class RGFA::Line::Group::Unordered
   include RGFA::Line::Group::GFA2::References
+  include RGFA::Line::Group::Unordered::References
 end

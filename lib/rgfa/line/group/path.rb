@@ -12,8 +12,9 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
     :overlaps => :alignment_list_gfa1,
   }
   REFERENCE_FIELDS = [:segment_names, :overlaps]
-  DEPENDENT_REFERENCES = []
-  NONDEPENDENT_REFERENCES = [:links, :segments]
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = []
+  OTHER_REFERENCES = [:links, :segments]
 
   define_field_methods!
 

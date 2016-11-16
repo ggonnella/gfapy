@@ -37,9 +37,13 @@ module RGFA::Line::Common::ReferencesCreation
   end
 
   # @api private
-  def add_reference(line, key)
+  def add_reference(line, key, append: true)
     refs[key] ||= []
-    @refs[key] += [line]
+    if append
+      @refs[key] += [line]
+    else
+      @refs[key] = [line] + @refs[key]
+    end
     @refs[key].freeze
   end
 

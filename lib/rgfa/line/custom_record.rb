@@ -14,14 +14,15 @@ class RGFA::Line::CustomRecord < RGFA::Line
 
   RECORD_TYPE = nil
   POSFIELDS = [:record_type]
-  REFERENCE_FIELDS = []
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
     :record_type => :custom_record_type,
   }
-  DEPENDENT_REFERENCES = []
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_FIELDS = []
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = []
+  OTHER_REFERENCES = []
 
   define_field_methods!
 end

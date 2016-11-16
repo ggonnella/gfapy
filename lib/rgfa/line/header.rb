@@ -13,8 +13,9 @@ class RGFA::Line::Header < RGFA::Line
     :VN => :Z
   }
   REFERENCE_FIELDS = []
-  DEPENDENT_REFERENCES = []
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = []
+  OTHER_REFERENCES = []
 
   define_field_methods!
 

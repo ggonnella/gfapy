@@ -10,8 +10,9 @@ class RGFA::Line::Unknown < RGFA::Line
     :name => :identifier_gfa2,
   }
   REFERENCE_FIELDS = []
-  DEPENDENT_REFERENCES = [:unordered_groups, :ordered_groups]
-  NONDEPENDENT_REFERENCES = []
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = [:unordered_groups, :ordered_groups]
+  OTHER_REFERENCES = []
 
   define_field_methods!
 

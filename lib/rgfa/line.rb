@@ -96,8 +96,7 @@ class RGFA::Line
       alias_method :"#{k}!", :"#{v}!"
       alias_method :"#{k}=", :"#{v}="
     end
-    (self::NONDEPENDENT_REFERENCES +
-     self::DEPENDENT_REFERENCES).each do |k|
+    (self::DEPENDENT_LINES + self::OTHER_REFERENCES).each do |k|
       define_method(k) do
         refs[k] ||= [].freeze
       end

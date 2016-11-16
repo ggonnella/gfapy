@@ -29,6 +29,18 @@ module RGFA::Line::Common::ReferencesDeletion
     @refs[key].freeze
   end
 
+  # @api private
+  def delete_first_reference(key)
+    @refs[key] = refs[key][1..-1]
+    @refs[key].freeze
+  end
+
+  # @api private
+  def delete_last_reference(key)
+    @refs[key] = refs[key][0..-2]
+    @refs[key].freeze
+  end
+
   private
 
   # @note SUBCLASSES with reference fields may
@@ -58,13 +70,13 @@ module RGFA::Line::Common::ReferencesDeletion
   end
 
   def disconnect_dependent_lines
-    self.class::DEPENDENT_REFERENCES.each do |k|
+    self.class::DEPENDENT_LINES.each do |k|
       refs.fetch(k, []).each {|l| l.disconnect!}
     end
   end
 
   def remove_nonfield_backreferences
-    self.class::NONDEPENDENT_REFERENCES.each do |k|
+    self.class::OTHER_REFERENCES.each do |k|
       refs.fetch(k, []).each do |l|
         l.update_references(self, nil, k)
       end
