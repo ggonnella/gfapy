@@ -7,7 +7,7 @@ class RGFA::Position
 
   attr_accessor :value, :last
 
-  def validate!
+  def validate
     if !value.kind_of?(Integer)
       raise RGFA::TypeError
     elsif value < 0

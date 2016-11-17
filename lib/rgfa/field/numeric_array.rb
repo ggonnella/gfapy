@@ -18,15 +18,15 @@ module RGFA::Field::NumericArray
   end
 
   def validate_decoded(numeric_array)
-    numeric_array.validate!
+    numeric_array.validate
   end
 
   def validate(object)
     case object
     when RGFA::NumericArray
-      object.validate!
+      object.validate
     when Array
-      object.to_numeric_array.validate!
+      object.to_numeric_array.validate
     when String
       validate_encoded(object)
     else

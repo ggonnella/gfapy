@@ -63,7 +63,7 @@ Depending on the validation level, more or less checks are done automatically
 (see validation chapter).  Not regarding which validation level is selected,
 the user can trigger a manual validation using the
 ```validate_field(fieldname)``` method for a single tag, or using
-```validate!```, which does a full validation on the whole line, including all
+```validate```, which does a full validation on the whole line, including all
 tags.
 
 ### Reading and writing tags
@@ -121,7 +121,7 @@ converting the string representation (using #to_byte_array and
 instances containing numerical values.
 
 Instances of the classes behave as normal arrays, except that they provide a
-#validate! method, which checks the constraints, and that their #to_s method
+#validate method, which checks the constraints, and that their #to_s method
 computes the GFA string representation of the field value.
 
 For numeric values, the ```#compute_subtype``` method allows to compute the
@@ -159,10 +159,10 @@ RGFA::Line#tn/tn!/tn= # tn = tag name
 RGFA::Line#get/get!/set
 RGFA::Line#delete
 RGFA::Line#get_datatype/set_datatype
-RGFA::Line#validate_field/validate!
+RGFA::Line#validate_field/validate
 String#to_byte_array/to_numeric_array
 Array#to_byte_array/to_numeric_array
 RGFA::NumericArray/RGFA::ByteArray#to_s
-RGFA::NumericArray/RGFA::ByteArray#validate!
+RGFA::NumericArray/RGFA::ByteArray#validate
 RGFA::NumericArray#compute_subtype
 ```

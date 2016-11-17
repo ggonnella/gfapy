@@ -14,7 +14,7 @@ class RGFA::SegmentInfo < Array
   #   @raise [RGFA::ValueError] if second element
   #     is not a valid info
   # @return [void]
-  def validate!
+  def validate
     if size != 2
       raise RGFA::ValueError,
         "Wrong n of elements, 2 expected (#{inspect})"
@@ -153,7 +153,7 @@ class Array
       return RGFA::OrientedSegment.new([segment.to_sym, orient.to_sym])
     end
     se = subclass.new(map {|e| e.kind_of?(String) ? e.to_sym : e})
-    se.validate!
+    se.validate
     return se
   end
 

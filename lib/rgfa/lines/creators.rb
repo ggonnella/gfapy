@@ -46,7 +46,7 @@ module RGFA::Lines::Creators
       if gfa_line.VN
         @version = gfa_line.VN.to_sym
         @version_explanation = "specified in header VN tag"
-        validate_version! if @validate > 0
+        validate_version if @validate > 0
         @line_queue.size.times {self << @line_queue.shift}
       end
     when :S

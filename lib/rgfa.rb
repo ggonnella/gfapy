@@ -68,7 +68,7 @@
 #   gfa = RGFA.from_file(filename, validate: 1) # default level is 2
 #   gfa.validate = 3 # change validation level
 #   gfa.turn_off_validations # equivalent to gfa.validate = 0
-#   gfa.validate! # run post-validations (e.g. check segment names in links)
+#   gfa.validate # run post-validations (e.g. check segment names in links)
 #
 class RGFA
 end
@@ -130,7 +130,7 @@ class RGFA
       @version = version.to_sym
       @version_explanation = "set during initialization"
       @version_guess = @version
-      validate_version!
+      validate_version
     end
   end
 
@@ -155,9 +155,9 @@ class RGFA
   # Post-validation of the RGFA
   # @return [void]
   # @raise if validation fails
-  def validate!
-    validate_segment_references!
-    validate_path_links!
+  def validate
+    validate_segment_references
+    validate_path_links
     return nil
   end
 
@@ -205,7 +205,7 @@ class RGFA
       process_line_queue
     end
     progress_log_end(:read_file) if @progress
-    validate! if @validate >= 1
+    validate if @validate >= 1
     self
   end
 
@@ -326,7 +326,7 @@ class RGFA
   # Checks that L, C and P refer to existing S.
   # @return [void]
   # @raise [RGFA::NotFoundError] if validation fails
-  def validate_segment_references!
+  def validate_segment_references
     @records[:S].values.each do |s|
       if s.virtual?
         raise RGFA::NotFoundError, "Segment #{s.name} does not exist\n"+
@@ -340,7 +340,7 @@ class RGFA
   # Checks that P are supported by links.
   # @return [void]
   # @raise if validation fails
-  def validate_path_links!
+  def validate_path_links
     @records[:P].values.each do |pt|
       pt.links.each do |l, dir|
         if l.virtual?
@@ -353,7 +353,7 @@ class RGFA
     return nil
   end
 
-  def validate_version!
+  def validate_version
     if !@version.nil? and !RGFA::VERSIONS.include?(@version)
       raise RGFA::VersionError,
         "GFA specification version #{@version} not supported"
@@ -374,7 +374,7 @@ class String
     gfa = RGFA.new(validate: validate, version: version)
     split("\n").each {|line| gfa << line}
     gfa.process_line_queue
-    gfa.validate! if validate >= 1
+    gfa.validate if validate >= 1
     return gfa
   end
 
@@ -392,7 +392,7 @@ class Array
     gfa = RGFA.new(validate: validate, version: version)
     each {|line| gfa << line}
     gfa.process_line_queue
-    gfa.validate! if validate >= 1
+    gfa.validate if validate >= 1
     return gfa
   end
 

@@ -11,8 +11,8 @@ class RGFA::FieldArray < Array
   # Run the datatype-specific validation on each element of the array
   # @param fieldname [Symbol] fieldname to use for error messages
   # @return [void]
-  def validate!(fieldname=nil)
-    validate_gfa_field!(nil, fieldname)
+  def validate(fieldname=nil)
+    validate_gfa_field(nil, fieldname)
   end
 
   # Run a datatype-specific validation on each element of the array,
@@ -22,9 +22,9 @@ class RGFA::FieldArray < Array
   # @param fieldname [Symbol] fieldname to use for error messages
   # @api private
   # @return [void]
-  def validate_gfa_field!(datatype, fieldname=nil)
+  def validate_gfa_field(datatype, fieldname=nil)
     datatype ||= @datatype
-    each {|elem| elem.validate_gfa_field!(datatype, fieldname)}
+    each {|elem| elem.validate_gfa_field(datatype, fieldname)}
   end
 
   # Default GFA tag datatype
@@ -69,7 +69,7 @@ class RGFA::FieldArray < Array
   # @api private
   def vpush(value, datatype, fieldname=nil)
     if datatype.nil?
-      value.validate_gfa_field!(@datatype, fieldname)
+      value.validate_gfa_field(@datatype, fieldname)
     elsif datatype != @datatype
       raise RGFA::InconsistencyError,
         "Datadatatype mismatch error for field #{fieldname}:\n"+

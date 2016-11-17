@@ -29,7 +29,7 @@ module RGFA::Line::Segment::LengthGFA1
 
   # @raise [RGFA::InconsistencyError]
   #    if sequence length and LN tag are not consistent.
-  def validate_length!
+  def validate_length
     if !sequence.placeholder? and tagnames.include?(:LN)
       if self.LN != sequence.length
         raise RGFA::InconsistencyError,
@@ -41,8 +41,8 @@ module RGFA::Line::Segment::LengthGFA1
 
   private
 
-  def validate_record_type_specific_info!
-    validate_length!
+  def validate_record_type_specific_info
+    validate_length
   end
 
 end

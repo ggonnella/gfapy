@@ -26,7 +26,7 @@ module RGFA::Field::OrientedSegments
   def validate_decoded(array)
     array.each do |elem|
       elem = elem.to_oriented_segment
-      elem.validate!
+      elem.validate
       if elem.name !~ /^[!-)+-<>-~][!-~]*$/
         raise RGFA::FormatError,
           "#{elem.name} is not a valid GFA1 segment name\n"+

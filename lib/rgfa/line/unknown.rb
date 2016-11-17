@@ -14,7 +14,7 @@ class RGFA::Line::Unknown < RGFA::Line
   DEPENDENT_LINES = [:unordered_groups, :ordered_groups]
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 
   alias_method :to_sym, :name
 

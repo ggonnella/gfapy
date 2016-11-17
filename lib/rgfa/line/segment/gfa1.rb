@@ -18,7 +18,7 @@ class RGFA::Line::Segment::GFA1 < RGFA::Line::Segment
   }
   FIELD_ALIAS = { :sid => :name }
 
-  define_field_methods!
+  define_field_methods
 
   alias_method :to_sym, :name
 

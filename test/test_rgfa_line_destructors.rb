@@ -29,7 +29,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     (s + [l,c]).each {|line| gfa << line }
     assert_equal([l], gfa.links.map(&:to_s))
     assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
-    gfa.search_link(["1", "+"], ["2", "+"], "12M").disconnect!
+    gfa.search_link(["1", "+"], ["2", "+"], "12M").disconnect
     assert_equal([], gfa.links)
     assert_equal(nil, gfa.link(["1", :R], ["2", :L]))
     assert_equal([c], gfa.containments.map(&:to_s))
@@ -46,7 +46,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     l = "L\t1\t+\t2\t+\t12M"
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
-    gfa.containments_between("1", "0").map(&:disconnect!)
+    gfa.containments_between("1", "0").map(&:disconnect)
     assert_equal([], gfa.containments)
     assert_equal(nil, gfa.containments_between("1", "0")[0])
     gfa << c
@@ -82,14 +82,14 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal([p], gfa.paths.map(&:to_s))
     assert_equal([:"4"], gfa.path_names)
-    gfa.segment("0").disconnect!
+    gfa.segment("0").disconnect
     assert_equal([s[1],s[2]], gfa.segments.map(&:to_s))
     assert_equal([:"1", :"2"], gfa.segment_names)
     assert_equal([l], gfa.links.select{|n|!n.virtual?}.map(&:to_s))
     assert_equal([], gfa.containments.map(&:to_s))
     assert_equal([], gfa.paths.map(&:to_s))
     assert_equal([], gfa.path_names)
-    gfa.segment("1").disconnect!
+    gfa.segment("1").disconnect
     assert_equal([s[2]], gfa.segments.map(&:to_s))
     assert_equal([], gfa.links)
     gfa.rm("2")

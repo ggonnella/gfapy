@@ -21,7 +21,7 @@ module RGFA::Field::PositionGFA2
           "#{object} is not a positive integer"
       end
     when RGFA::Position
-      object.validate!
+      object.validate
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+

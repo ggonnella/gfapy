@@ -61,7 +61,7 @@ allows to check if a value is a placeholder instance or an equivalent value
 
 Some methods are defined for placeholders, which allow them to respond to the
 same methods as defined values. For example, for all placeholders, #empty?
-returns true; #validate! does nothing; #length returns 0; #[] returns self; #+
+returns true; #validate does nothing; #length returns 0; #[] returns self; #+
 returns self. Thus in many cases the code can be written in a generic way,
 without explicitely handling the different cases where a value is a placeholder
 or not.
@@ -135,7 +135,7 @@ Depending on the validation level, more or less checks are done automatically
 (see validation chapter).  Not regarding which validation level is selected,
 the user can trigger a manual validation using the
 ```validate_field(fieldname)``` method for a single field, or using
-```validate!```, which does a full validation on the whole line, including all
+```validate```, which does a full validation on the whole line, including all
 positional fields.
 
 ### Aliases
@@ -173,5 +173,5 @@ container[_orient] for from[_orient]; contained[_orient] for to[_orient]
 ```
 RGFA::Line#<fieldname>/<fieldname>=
 RGFA::Line#get/set
-RGFA::Line#validate_field/validate!
+RGFA::Line#validate_field/validate
 ```

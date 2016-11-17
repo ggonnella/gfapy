@@ -43,7 +43,7 @@ module RGFATools::CopyNumber
     segments.each do |s|
       cov = s.coverage(count_tag: count_tag,
                        unit_length: unit_length)
-      s.disconnect! if cov < mincov
+      s.disconnect if cov < mincov
     end
     self
   end

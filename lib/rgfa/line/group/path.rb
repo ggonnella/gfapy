@@ -16,7 +16,7 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
   DEPENDENT_LINES = []
   OTHER_REFERENCES = [:links, :segments]
 
-  define_field_methods!
+  define_field_methods
 
   alias_method :to_sym, :path_name
 

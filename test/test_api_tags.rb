@@ -359,9 +359,9 @@ class TestAPI::Tags < Test::Unit::TestCase
     assert_nothing_raised { c = "12ACF4AA601C1F".to_byte_array }
     assert_equal([18, 172, 244, 170, 96, 28, 31].to_byte_array, c)
     # validation
-    assert_nothing_raised { a.validate! }
+    assert_nothing_raised { a.validate }
     assert_nothing_raised { a = RGFA::ByteArray.new([1,2,3,4,356]) }
-    assert_raises(RGFA::ValueError) { a.validate! }
+    assert_raises(RGFA::ValueError) { a.validate }
     assert_raises(RGFA::FormatError) { a = "12ACF4AA601C1".to_byte_array }
     assert_raises(RGFA::FormatError) { a = "".to_byte_array }
     assert_raises(RGFA::FormatError) { a = "12ACG4AA601C1F".to_byte_array }
@@ -381,14 +381,14 @@ class TestAPI::Tags < Test::Unit::TestCase
     assert_nothing_raised { c = "i,1,2,3,4,5".to_numeric_array }
     assert_equal([1, 2, 3, 4, 5].to_numeric_array, c)
     # validation
-    assert_nothing_raised { a.validate! }
-    assert_nothing_raised { RGFA::NumericArray.new([1,2,3,4,356]).validate! }
+    assert_nothing_raised { a.validate }
+    assert_nothing_raised { RGFA::NumericArray.new([1,2,3,4,356]).validate }
     assert_raises(RGFA::ValueError) {
-      RGFA::NumericArray.new([1,2.0,3,4,356]).validate! }
+      RGFA::NumericArray.new([1,2.0,3,4,356]).validate }
     assert_raises(RGFA::ValueError) {
-      RGFA::NumericArray.new([1.0,2.0,3,4,356]).validate! }
+      RGFA::NumericArray.new([1.0,2.0,3,4,356]).validate }
     assert_raises(RGFA::ValueError) {
-      RGFA::NumericArray.new([1,:x,3,4,356]).validate! }
+      RGFA::NumericArray.new([1,:x,3,4,356]).validate }
     assert_raises(RGFA::ValueError) { a = "i,1,X,2".to_numeric_array }
     assert_raises(RGFA::FormatError) { a = "".to_numeric_array }
     assert_raises(RGFA::FormatError) { a = "i,1,2,".to_numeric_array }

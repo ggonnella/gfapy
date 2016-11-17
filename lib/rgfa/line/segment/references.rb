@@ -7,7 +7,7 @@ module RGFA::Line::Segment::References
   #   modified, but the array is frozen
   # @note to add a dovetail overlap, create a L (GFA1) or E (GFA2) line and
   #   connect it to the graph; to remove a dovetail overlap, call
-  #   RGFA::Line#disconnect! on the corresponding L or E line
+  #   RGFA::Line#disconnect on the corresponding L or E line
   def dovetails(extremity = nil)
     if extremity
       send(:"dovetails_#{extremity}")

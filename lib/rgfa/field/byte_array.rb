@@ -17,15 +17,15 @@ module RGFA::Field::ByteArray
   end
 
   def validate_decoded(byte_array)
-    byte_array.validate!
+    byte_array.validate
   end
 
   def validate(object)
     case object
     when RGFA::ByteArray
-      object.validate!
+      object.validate
     when Array
-      object.to_byte_array.validate!
+      object.to_byte_array.validate
     when String
       validate_encoded(object)
     else

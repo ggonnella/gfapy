@@ -93,9 +93,9 @@ module RGFA::Lines::Destructors
   def unconnect_segments(segment1, segment2)
     segment1 = segment!(segment1)
     segment2 = segment!(segment2)
-    containments_between(segment1, segment2).each {|c| c.disconnect!}
-    containments_between(segment2, segment1).each {|c| c.disconnect!}
-    segment1.dovetails.each {|l| l.disconnect! if l.other(segment1) == segment2}
+    containments_between(segment1, segment2).each {|c| c.disconnect}
+    containments_between(segment2, segment1).each {|c| c.disconnect}
+    segment1.dovetails.each {|l| l.disconnect if l.other(segment1) == segment2}
     return self
   end
 
@@ -114,7 +114,7 @@ module RGFA::Lines::Destructors
     s.dovetails(segment_end.end_type).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)
-          l.disconnect!
+          l.disconnect
         end
       end
     end

@@ -84,7 +84,7 @@ class RGFA::Line::Comment < RGFA::Line
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 end
 
 require_relative "comment/init.rb"

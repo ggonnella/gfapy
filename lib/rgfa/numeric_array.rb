@@ -40,9 +40,7 @@ class RGFA::NumericArray < Array
   # Validate the numeric array
   #
   # @raise [RGFA::ValueError] if the array is not valid
-  def validate!
-    compute_subtype
-  end
+  alias_method :validate, :compute_subtype
 
   # Computes the subtype of the array from its content.
   #

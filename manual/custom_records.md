@@ -21,7 +21,7 @@ records are returned. If a record type symbol is provided (e.g.
 ```g#custom_records(:X)```), records of that type will be returned.
 
 To delete a custom record, retrieve its instance and either call
-```RGFA::Line::CustomRecord#disconnect!``` or ```RGFA#rm(custom_record_line)```.
+```RGFA::Line::CustomRecord#disconnect``` or ```RGFA#rm(custom_record_line)```.
 
 To add a new custom record line, you may add the GFA string defining the
 record using ```RGFA#<<(string)```, e.g. ```g << "X\ta\tb"```.

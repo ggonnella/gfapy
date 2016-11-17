@@ -83,7 +83,7 @@ module RGFA::GraphOperations::LinearPaths
                 first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
     segpath.each do |sn_et|
-      segment(sn_et.segment).disconnect!
+      segment(sn_et.segment).disconnect
       progress_log(:merge_linear_paths, 0.05) if @progress
     end
     self

@@ -26,7 +26,7 @@ class TestRGFA < Test::Unit::TestCase
     gfa << "S\t1\t*"
     gfa << "S\t2\t*"
     assert_equal([:"1", :"2"], gfa.segment_names)
-    gfa.segment("1").disconnect!
+    gfa.segment("1").disconnect
     assert_equal([:"2"], gfa.segment_names)
   end
 
@@ -35,24 +35,24 @@ class TestRGFA < Test::Unit::TestCase
     assert_equal([], gfa.path_names)
     gfa << "P\t3\t1+,4-\t*"
     assert_equal([:"3"], gfa.path_names)
-    gfa.path("3").disconnect!
+    gfa.path("3").disconnect
     assert_equal([], gfa.path_names)
   end
 
-  def test_validate!
+  def test_validate
     gfa = RGFA.new(version: :"1.0")
     gfa << "S\t1\t*"
-    assert_nothing_raised { gfa.validate! }
+    assert_nothing_raised { gfa.validate }
     gfa << "L\t1\t+\t2\t-\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validate! }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "S\t2\t*"
-    assert_nothing_raised { gfa.validate! }
+    assert_nothing_raised { gfa.validate }
     gfa << "P\t3\t1+,4-\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validate! }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "S\t4\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validate! }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "L\t4\t+\t1\t-\t*"
-    assert_nothing_raised { gfa.validate! }
+    assert_nothing_raised { gfa.validate }
   end
 
   def test_to_s

@@ -22,7 +22,7 @@ class RGFA::Line::Edge::Link < RGFA::Line::Edge
   DEPENDENT_LINES = [:paths]
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 
 end
 

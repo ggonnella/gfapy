@@ -78,7 +78,7 @@ class RGFA::Line
   #
   # This avoids calls to method_missing for fields which are already defined
   #
-  def self.define_field_methods!
+  def self.define_field_methods
     (self::POSFIELDS +
      self::PREDEFINED_TAGS).each do |fieldname|
       define_method(fieldname) do

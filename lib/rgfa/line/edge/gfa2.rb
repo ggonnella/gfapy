@@ -22,7 +22,7 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
   DEPENDENT_LINES = [:ordered_groups, :unordered_groups]
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 
   alias_method :to_sym, :eid
 

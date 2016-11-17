@@ -11,7 +11,7 @@ module RGFA::Field::AlignmentGFA2
   alias_method :validate_encoded, :decode
 
   def validate_decoded(alignment)
-    alignment.validate!
+    alignment.validate
   end
 
   def validate(object)
@@ -19,7 +19,7 @@ module RGFA::Field::AlignmentGFA2
     when String
       validate_encoded(object)
     when RGFA::Alignment::CIGAR, RGFA::Alignment::Trace
-      object.validate!
+      object.validate
     when RGFA::Alignment::Placeholder
     else
       raise RGFA::TypeError,

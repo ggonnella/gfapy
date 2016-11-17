@@ -21,12 +21,12 @@ class TestAPI::Header < Test::Unit::TestCase
     assert_equal([0,1,2,3], g.header.xx)
     assert_equal([0,1,2,3], g.header.get(:xx))
     assert_equal(:i, g.header.get_datatype(:xx))
-    assert_nothing_raised { g.header.validate_field!(:xx) }
+    assert_nothing_raised { g.header.validate_field(:xx) }
     [0,2,3].each {|i| g.header.xx.delete(i)}
     g.header.xx = (g.header.xx += [4])
-    assert_raise(RGFA::TypeError) { g.header.validate_field!(:xx) }
+    assert_raise(RGFA::TypeError) { g.header.validate_field(:xx) }
     g.header.xx = g.header.xx.to_rgfa_field_array(:i)
-    assert_nothing_raised { g.header.validate_field!(:xx) }
+    assert_nothing_raised { g.header.validate_field(:xx) }
     assert_equal([1,4], g.header.get(:xx))
     assert_equal("1\t4", g.header.field_to_s(:xx))
     assert_equal("xx:i:1\txx:i:4", g.header.field_to_s(:xx, tag: true))

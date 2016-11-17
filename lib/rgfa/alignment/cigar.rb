@@ -76,7 +76,7 @@ class RGFA::Alignment::CIGAR < Array
   end
 
   # String representation of the CIGAR
-  # @note no validation is performed, use #validate! if required
+  # @note no validation is performed, use #validate if required
   # @return [String] CIGAR string
   def to_s
     placeholder? ? "*" : (map(&:to_s).join)
@@ -91,7 +91,7 @@ class RGFA::Alignment::CIGAR < Array
   #   cigar operation
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  def validate!(version: :"1.0")
+  def validate(version: :"1.0")
     if ![:"1.0", :"2.0"].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end
@@ -102,7 +102,7 @@ class RGFA::Alignment::CIGAR < Array
         raise RGFA::TypeError, "Array contains elements which are "+
           "not CIGAR operations: #{self.inspect}"
       end
-      op.validate!(version: version)
+      op.validate(version: version)
     end
   end
 
@@ -183,7 +183,7 @@ class RGFA::Alignment::CIGAR::Operation
   end
 
   # The string representation of the operation
-  # @note no validation is performed, use #validate! if required
+  # @note no validation is performed, use #validate if required
   # @return [String]
   def to_s
     "#{len}#{code}"
@@ -202,7 +202,7 @@ class RGFA::Alignment::CIGAR::Operation
   # @raise [RGFA::TypeError] if the length is not an Integer
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  def validate!(version: :"1.0")
+  def validate(version: :"1.0")
     if ![:"1.0", :"2.0"].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end

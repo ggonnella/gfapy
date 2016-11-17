@@ -115,7 +115,7 @@ instances which are connected by dovetails to the segment.
 ### Disconnecting a line from a RGFA object
 
 Lines can be disconnected using ```RGFA#rm(line)``` or
-```RGFA::Line#disconnect!```.
+```RGFA::Line#disconnect```.
 
 Disconnecting a line affects other lines as well. Lines which are dependent
 on the disconnected line are disconnected as well. Any other reference to
@@ -208,7 +208,7 @@ and all references are corrected to point to the real line.
 
 ```
 RGFA#<<(line)/rm(line)
-RGFA::Line#connect(rgfa)/disconnect!
+RGFA::Line#connect(rgfa)/disconnect
 RGFA::Line#connected?/rgfa
 RGFA::Line#virtual?
 RGFA::Line::Segment::GFA1/GFA2#dovetails[_L|_R]/contain(ed|ers)/neighbours

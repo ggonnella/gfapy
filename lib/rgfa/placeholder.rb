@@ -14,7 +14,7 @@ class RGFA::Placeholder
 
   # A placeholder is always valid
   # return [void]
-  def validate!
+  def validate
   end
 
   # For compatibility with String#rc (RGFA::Sequence module)

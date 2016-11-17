@@ -12,7 +12,7 @@ module RGFA::Line::Common::FieldDatatype
   # Set the datatype of a tag.
   #
   # If an existing tag datatype is changed, its content may become
-  # invalid (call #validate_field! if necessary).
+  # invalid (call #validate_field if necessary).
   #
   # @param fieldname [Symbol] the field name (it is not required that
   #   the field exists already)

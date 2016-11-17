@@ -98,16 +98,16 @@ class TestAPI::Alignment < Test::Unit::TestCase
   end
 
   def test_validate
-    assert_nothing_raised           { @@trace_1.validate! }
-    assert_nothing_raised           { @@trace_empty.validate! }
-    assert_nothing_raised           { @@cigar_1.validate! }
-    assert_nothing_raised           { @@cigar_empty.validate! }
-    assert_nothing_raised           { @@placeholder.validate! }
-    assert_raises(RGFA::ValueError) { @@trace_invalid_value_1.validate! }
-    assert_raises(RGFA::ValueError) { @@cigar_invalid_value_1.validate! }
-    assert_raises(RGFA::ValueError) { @@cigar_invalid_value_2.validate! }
-    assert_raises(RGFA::TypeError)  { @@trace_invalid_type_1.validate! }
-    assert_raises(RGFA::TypeError)  { @@cigar_invalid_type_1.validate! }
+    assert_nothing_raised           { @@trace_1.validate }
+    assert_nothing_raised           { @@trace_empty.validate }
+    assert_nothing_raised           { @@cigar_1.validate }
+    assert_nothing_raised           { @@cigar_empty.validate }
+    assert_nothing_raised           { @@placeholder.validate }
+    assert_raises(RGFA::ValueError) { @@trace_invalid_value_1.validate }
+    assert_raises(RGFA::ValueError) { @@cigar_invalid_value_1.validate }
+    assert_raises(RGFA::ValueError) { @@cigar_invalid_value_2.validate }
+    assert_raises(RGFA::TypeError)  { @@trace_invalid_type_1.validate }
+    assert_raises(RGFA::TypeError)  { @@cigar_invalid_type_1.validate }
   end
 
   def test_version_specific_validate

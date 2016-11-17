@@ -14,7 +14,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   DEPENDENT_LINES = [:ordered_groups]
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 
   alias_method :to_sym, :pid
 

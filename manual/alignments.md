@@ -51,7 +51,7 @@ switching the two sequences.
 
 #### Validation
 
-The ```validate!``` method checks if all operations in a cigar use
+The ```validate``` method checks if all operations in a cigar use
 valid codes and length values (which must be non-negative)
 The codes can be M, I, D or P. For GFA1 the other codes are formally accepted
 (no exception is raised), but their use is discouraged.
@@ -97,7 +97,7 @@ field contains a defined value (cigar, trace) or not (placeholder).
 (String, RGFA::Alignment::*)#to_s
 (String, RGFA::Alignment::*)#to_alignment
 (String, RGFA::Alignment::*)#placeholder?
-RGFA::Alignment::*#validate!
+RGFA::Alignment::*#validate
 RGFA::Alignment::(Trace|CIGAR)#(array methods; each,map,reverse,...)
 RGFA::Alignment::CIGAR::Operation#(len|len=|code|code=)
 RGFA::Alignment::CIGAR#complement

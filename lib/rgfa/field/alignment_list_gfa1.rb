@@ -23,7 +23,7 @@ module RGFA::Field::AlignmentListGFA1
     when Array
       object.map do |elem|
         elem.to_cigar(version: :"1.0")
-      end.each(&:validate!)
+      end.each(&:validate)
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
@@ -59,7 +59,7 @@ module RGFA::Field::AlignmentListGFA1
     when Array
       object.map do |cig|
         cig = cig.to_cigar
-        cig.validate!
+        cig.validate
         cig.to_s
       end.join(",")
     else

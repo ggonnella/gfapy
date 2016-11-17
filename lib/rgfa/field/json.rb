@@ -27,7 +27,7 @@ module RGFA::Field::JSON
   def validate_decoded(object)
     case object
     when RGFA::FieldArray
-      object.validate!
+      object.validate
     when Array, Hash
       string = encode(object)
       validate_all_printable(string)

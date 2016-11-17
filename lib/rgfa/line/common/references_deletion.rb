@@ -9,7 +9,7 @@ module RGFA::Line::Common::ReferencesDeletion
   # or in the from/to lines of L/C lines are changed into symbols).
   #
   # @return [void]
-  def disconnect!
+  def disconnect
     if !connected?
       raise RGFA::RuntimeError,
         "Line #{self} is not connected to a RGFA instance"
@@ -71,7 +71,7 @@ module RGFA::Line::Common::ReferencesDeletion
 
   def disconnect_dependent_lines
     self.class::DEPENDENT_LINES.each do |k|
-      refs.fetch(k, []).each {|l| l.disconnect!}
+      refs.fetch(k, []).each {|l| l.disconnect}
     end
   end
 

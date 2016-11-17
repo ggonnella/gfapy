@@ -65,7 +65,7 @@ module RGFA::Line::Common::Init
   # <b>Validation levels</b>
   #
   # The default is 2, i.e. if a field content is changed, the user is
-  # responsible to call #validate_field!, if necessary.
+  # responsible to call #validate_field, if necessary.
   #
   # - 0: no validation
   # - 1: basic validations (number of positional fields,
@@ -95,11 +95,11 @@ module RGFA::Line::Common::Init
       if @version.nil?
         process_unknown_version(data)
       else
-        validate_version!
+        validate_version
         initialize_positional_fields(data)
         initialize_tags(data)
       end
-      validate_record_type_specific_info! if @validate >= 3
+      validate_record_type_specific_info if @validate >= 3
       if @version.nil?
         raise "RECORD_TYPE_VERSION has no value for #{record_type}"
       end
@@ -131,7 +131,7 @@ module RGFA::Line::Common::Init
     end
   end
 
-  def validate_version!
+  def validate_version
     rt = self.class::RECORD_TYPE
     if !RGFA::VERSIONS.include?(@version)
         raise RGFA::VersionError,

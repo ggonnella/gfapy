@@ -2,7 +2,7 @@ module RGFA::Line::Group::Path::Validation
 
   private
 
-  def validate_lists_size!
+  def validate_lists_size
     n_overlaps = self.overlaps.size
     n_segments = self.segment_names.size
     if n_overlaps == n_segments - 1
@@ -20,8 +20,8 @@ module RGFA::Line::Group::Path::Validation
     end
   end
 
-  def validate_record_type_specific_info!
-    validate_lists_size!
+  def validate_record_type_specific_info
+    validate_lists_size
   end
 
 end

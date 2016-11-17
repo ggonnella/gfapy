@@ -31,7 +31,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     s = ["S\t1\t*","S\t2\t*"]
     gfa = s.to_rgfa
     assert_equal(s, gfa.segments.map(&:to_s))
-    gfa.segment("1").disconnect!
+    gfa.segment("1").disconnect
     assert_equal([s[1]], gfa.segments.map(&:to_s))
   end
 
@@ -41,7 +41,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     gfa = s1.to_rgfa
     gfa.segments.each {|s| s2 << s.to_s}
     assert_equal(s1, s2)
-    gfa.segment("1").disconnect!
+    gfa.segment("1").disconnect
     s2 = []
     gfa.segments.each {|s| s2 << s.to_s}
     assert_equal([s1[1]], s2)
@@ -97,7 +97,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     pt = ["P\t4\t1+,2+\t122M", "P\t5\t1+,3+\t120M"]
     gfa = (s+l+pt).to_rgfa
     assert_equal(pt, gfa.paths.map(&:to_s))
-    gfa.path("4").disconnect!
+    gfa.path("4").disconnect
     assert_equal([pt[1]], gfa.paths.map(&:to_s))
   end
 

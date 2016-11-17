@@ -23,7 +23,7 @@ class RGFA::Line::Edge::Containment < RGFA::Line::Edge
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  define_field_methods!
+  define_field_methods
 end
 
 require_relative "common/from_to"

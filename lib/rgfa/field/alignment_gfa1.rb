@@ -17,7 +17,7 @@ module RGFA::Field::AlignmentGFA1
   end
 
   def validate_decoded(cigar)
-    cigar.validate!
+    cigar.validate
   end
 
   def validate(object)
@@ -44,7 +44,7 @@ module RGFA::Field::AlignmentGFA1
       validate_encoded(object)
       return object
     when RGFA::Alignment::CIGAR
-      object.validate!
+      object.validate
       return object.to_s
     when RGFA::Alignment::Placeholder
       return object.to_s

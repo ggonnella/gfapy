@@ -25,7 +25,7 @@ class RGFA::Alignment::Trace < Array
   #
   # @return [void]
   #
-  def validate!(ts: nil)
+  def validate(ts: nil)
     each do |e|
       if !e.kind_of?(Integer)
         raise RGFA::TypeError,

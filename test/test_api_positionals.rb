@@ -101,8 +101,9 @@ class TestAPI::Positionals < Test::Unit::TestCase
         i+=1 # skip record_type
         # field_to_s()
         assert_equal(@@f[rt][i], @@l[rt].field_to_s(fn))
-        # validate_field!
-        assert_nothing_raised { @@l[rt].validate_field!(fn) }
+        # validate_field/validate
+        assert_nothing_raised { @@l[rt].validate_field(fn) }
+        assert_nothing_raised { @@l[rt].validate }
         # fieldname() == get(fieldname)
         assert_equal(@@l[rt].send(fn), @@l[rt].get(fn))
         # fieldname=() and fieldname()
@@ -122,8 +123,9 @@ class TestAPI::Positionals < Test::Unit::TestCase
         # get(orig) == get(alias)
         assert_equal(@@l[rt].send(orig), @@l[rt].send(al))
         assert_equal(@@l[rt].get(orig),  @@l[rt].get(al))
-        # validate_field!
-        assert_nothing_raised { @@l[rt].validate_field!(al) }
+        # validate_field/validate
+        assert_nothing_raised { @@l[rt].validate_field(al) }
+        assert_nothing_raised { @@l[rt].validate }
         # field_to_s(orig) == field_to_s(alias)
         assert_equal(@@l[rt].field_to_s(orig), @@l[rt].field_to_s(al))
         # set(al, value) + get(orig)

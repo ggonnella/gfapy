@@ -10,7 +10,7 @@ class RGFA::ByteArray < Array
   # @raise [RGFA::ValueError] if any value is not a
   #   positive integer <= 255
   # @return [void]
-  def validate!
+  def validate
     each do |x|
       unless x.kind_of?(Integer) and (0..255).include?(x)
         raise RGFA::ValueError,
@@ -36,7 +36,7 @@ class RGFA::ByteArray < Array
   #   the string is guaranteed to be valid
   # @return [String]
   def to_s(valid: false)
-    validate! unless valid
+    validate unless valid
     map do |elem|
       str = elem.to_s(16).upcase
       elem < 16 ? "0#{str}" : str

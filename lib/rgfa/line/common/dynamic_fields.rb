@@ -137,7 +137,7 @@ module RGFA::Line::Common::DynamicFields
   end
 
   module ClassMethods
-    # TODO: this should contain define_field_methods!
+    # TODO: this should contain define_field_methods
   end
 
 end

@@ -63,12 +63,12 @@ module RGFA::Line::Common::FieldData
         # value was not parsed or was set to a string by the user
         return (@data[fieldname] = v.parse_gfa_field(t, safe: @validate >= 2))
       else
-         v.validate_gfa_field!(t, fieldname) if (@validate >= 5)
+         v.validate_gfa_field(t, fieldname) if (@validate >= 5)
       end
     elsif !v.nil?
       if (@validate >= 5)
         t = field_datatype(fieldname)
-        v.validate_gfa_field!(t, fieldname)
+        v.validate_gfa_field(t, fieldname)
       end
     else
       dealiased_fieldname = self.class::FIELD_ALIAS[fieldname]
@@ -115,7 +115,7 @@ module RGFA::Line::Common::FieldData
     else
       if @validate >= 5
         field_or_default_datatype(fieldname, value)
-        value.validate_gfa_field!(field_datatype(fieldname), fieldname)
+        value.validate_gfa_field(field_datatype(fieldname), fieldname)
       end
       @data[fieldname] = value
     end

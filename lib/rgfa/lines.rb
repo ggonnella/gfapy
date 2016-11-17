@@ -68,11 +68,11 @@ module RGFA::Lines
   def api_private_check_gfa_line(gfa_line, callermeth)
     if !gfa_line.kind_of?(RGFA::Line)
       raise RGFA::TypeError,
-        "Note: ##{callermeth} is API private, do not call it directly!\n"+
+        "Note: ##{callermeth} is API private, do not call it directly\n"+
         "Error: line class is #{gfa_line.class} and not RGFA::Line"
     elsif gfa_line.rgfa != self
       raise RGFA::RuntimeError,
-        "Note: ##{callermeth} is API private, do not call it directly!\n"+
+        "Note: ##{callermeth} is API private, do not call it directly\n"+
         "Error: line.rgfa is "+
         "#{gfa_line.rgfa.class}:#{gfa_line.rgfa.object_id} and not "+
         "RGFA:#{self.object_id}"

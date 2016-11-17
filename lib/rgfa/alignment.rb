@@ -36,7 +36,7 @@ class String
         elsif char == ","
           if version == :"2.0"
             t = self.to_trace
-            t.validate! if !valid
+            t.validate if !valid
             return t
           else
             raise RGFA::FormatError,
