@@ -1,4 +1,4 @@
-## The header
+## The Header
 
 GFA files may contain one or multiple header lines (record type: H).  These
 lines may be present in any part of the file, not necessarily at the beginning.

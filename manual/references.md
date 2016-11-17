@@ -33,7 +33,6 @@ The following tables list the references for each record type.
 | Containment | from, to       | Segment                  |
 | Path        | segment_names, | Array of OrientedSegment |
 |             | links (1)      | Array of Link            |
-|-------------|----------------|--------------------------|
 
 (1): paths contain information in the fields segment_names and overlaps,
 which allow to find the identify from which they depend; these links can be
@@ -47,7 +46,6 @@ retrieved using ```links``` (which is not a field).
 | Gap         | sid1, sid2    | Segment                         |
 | Fragment    | sid           | Segment                         |
 | U/O Group   | items         | Array of Edge/Gap/Group/Segment |
-|-------------|---------------|---------------------------------|
 
 ### Backreferences
 
@@ -73,7 +71,6 @@ The following tables list the backreferences collections for each record type.
 |             | containers (type: C)  |
 |             | paths                 |
 | Link        | paths                 |
-|-------------|-----------------------|
 
 #### GFA2
 
@@ -95,7 +92,6 @@ The following tables list the backreferences collections for each record type.
 |             | unordered_groups      |
 | U/O Group   | ordered_groups        |
 |             | unordered_groups      |
-|-------------|------------------------
 
 #### Backreference convenience methods
 
@@ -131,7 +127,6 @@ refer to a line which is being disconnected.
 |-------------|--------------------------------|
 | Segment     | links (+ paths), containments  |
 | Link        | paths                          |
-|-------------|--------------------------------|
 
 #### GFA2
 
@@ -141,7 +136,6 @@ refer to a line which is being disconnected.
 | Edge        | groups                         |
 | Gap         | groups                         |
 | Group       | groups                         |
-|-------------|--------------------------------|
 
 ### Editing reference fields
 

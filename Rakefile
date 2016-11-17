@@ -60,3 +60,8 @@ task :pdf do
                      "--user-style-sheet pdfdoc/print.css "+
                      "pdfdoc/rgfa-api-#$rgfaversion.pdf")
 end
+
+desc "Create the manual"
+task :manual do
+  system("cd manual; pandoc $(cat chapters) -o manual.pdf")
+end

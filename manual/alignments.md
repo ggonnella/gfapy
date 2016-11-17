@@ -1,9 +1,9 @@
 ## Alignments
 
-Some positional fields (GFA1: in P/C/L lines; GFA2: in E/F lines)
-describe alignments of sequences. If an alignment is not given, the
-placeholder symbol ```*``` is used instead. In GFA1 the alignments
-can be given as CIGAR strings, in GFA2 also as Dazzler traces.
+Some fields contain alignments and lists of alignments (L/C: overlap; P:
+overlaps; E/F: alignment). If an alignment is not given, the placeholder symbol
+```*``` is used instead.  In GFA1 the alignments can be given as CIGAR strings,
+in GFA2 also as Dazzler traces.
 
 RGFA uses different classes (in module RGFA::Alignment) for representing the two
 possible alignment styles (cigar strings and traces) and undefined alignments

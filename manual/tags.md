@@ -46,7 +46,6 @@ The following table summarizes the datatypes available for tags:
 | J      | JSON          | [1,{"k1":1,"k2":2},"a"] | Array/Hash         |
 | B      | numeric array | f,1.2,13E-2,0           | RGFA::NumericArray |
 | H      | byte array    | FFAA01                  | RGFA::ByteArray    |
-|--------|---------------|-------------------------|--------------------|
 
 ### Validation
 
