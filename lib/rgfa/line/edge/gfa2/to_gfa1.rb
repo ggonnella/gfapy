@@ -10,7 +10,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
         "Internal alignment, cannot be represented in GFA1"
     else
       a = [alignment_type]
-      if beg1.first
+      if beg1.first?
         a += [field_to_s(:sid2), field_to_s(:or2), field_to_s(:sid1), "+"]
         if alignment_type == :C
           a << field_to_s(:beg2)
@@ -50,7 +50,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
     when RGFA::Alignment::Placeholder, RGFA::Alignment::Trace
       RGFA::Alignment::Placeholder.new
     when RGFA::Alignment::CIGAR
-      if beg1.first
+      if beg1.first?
         alignment
       else
         complement_alignment
@@ -72,7 +72,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def from
     check_not_internal(:from)
-    beg1.first ? sid2 : sid1
+    beg1.first? ? sid2 : sid1
   end
 
   # Set the field which will be returned by calling from
@@ -80,7 +80,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def from=(value)
     check_not_internal(:from)
-    beg1.first ? set(:sid2, value) : set(:sid1, value)
+    beg1.first? ? set(:sid2, value) : set(:sid1, value)
   end
 
   # @return [:+, :-] value of the GFA1 +from_orient+ field,
@@ -88,7 +88,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def from_orient
     check_not_internal(:from_orient)
-    beg1.first ? or2 : :"+"
+    beg1.first? ? or2 : :"+"
   end
 
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +to+ field,
@@ -96,7 +96,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to
     check_not_internal(:to)
-    beg1.first ? sid1 : sid2
+    beg1.first? ? sid1 : sid2
   end
 
   # Set the field which will be returned by calling to
@@ -104,7 +104,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def to=(value)
     check_not_internal(:to)
-    beg1.first ? set(:sid1, value) : set(:sid2, value)
+    beg1.first? ? set(:sid1, value) : set(:sid2, value)
   end
 
   # @return [:+, :-] value of the GFA1 +to_orient+ field,
@@ -112,7 +112,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to_orient
     check_not_internal(:to_orient)
-    beg1.first ? :"+" : or2
+    beg1.first? ? :"+" : or2
   end
 
   # @return [Integer] value of the GFA1 +pos+ field,
@@ -128,7 +128,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
       raise RGFA::ValueError, "Line: #{self.to_s}\n"+
         "Dovetail alignment, pos is not defined"
     when :C
-      beg1.first ? beg2 : beg1
+      beg1.first? ? beg2 : beg1
     end
   end
 

@@ -60,6 +60,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/graph_operations/multiplication.rb',
               'lib/rgfa/graph_operations/rgl.rb',
               'lib/rgfa/graph_operations.rb',
+              'lib/rgfa/lastpos.rb',
               'lib/rgfa/line.rb',
               'lib/rgfa/line/comment.rb',
               'lib/rgfa/line/containment.rb',

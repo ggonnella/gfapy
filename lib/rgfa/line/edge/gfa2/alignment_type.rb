@@ -35,8 +35,10 @@ module RGFA::Line::Edge::GFA2::AlignmentType
   # Analyze the begin and end position and determine if the substring is
   #   the whole string, or a (possibly empty) other substring, ie a prefix,
   #   a suffix, or an internal alignment
-  # @param begpos [RGFA::Position] begin position of the substring on a segment
-  # @param endpos [RGFA::Position] end position of the substring on a segment
+  # @param begpos [RGFA::LastPos,Integer]
+  #    begin position of the substring on a segment
+  # @param endpos [RGFA::LastPos,Integer]
+  #    end position of the substring on a segment
   # @return [Array<substring_type, Boolean>] The first value is the
   #   substring type, which a symbol (one of: +:pfx+, +:sfx+, +:whole+,
   #   +:internal+). Thereby, with pfx or sfx is meant a prefix or suffix which
@@ -50,16 +52,16 @@ module RGFA::Line::Edge::GFA2::AlignmentType
         "Line: #{self.to_s}\n"+
         "begin > end: #{begpos.value}$ > #{endpos.value}"
     end
-    if begpos.first
-      if endpos.first
+    if begpos.first?
+      if endpos.first?
         return :pfx, true
-      elsif endpos.last
+      elsif endpos.last?
         return :whole, false
       else
         return :pfx, false
       end
-    elsif begpos.last
-      if !endpos.last
+    elsif begpos.last?
+      if !endpos.last?
         raise RGFA::FormatError,
           "Line: #{self.to_s}\n"+
           "Wrong use of $ marker\n"+
@@ -67,7 +69,7 @@ module RGFA::Line::Edge::GFA2::AlignmentType
       end
       return :sfx, true
     else
-      if endpos.last
+      if endpos.last?
         return :sfx, false
       else
         return :internal, begpos.value == endpos.value

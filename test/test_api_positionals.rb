@@ -43,12 +43,12 @@ class TestAPI::Positionals < Test::Unit::TestCase
            [:y,:-].to_oriented_segment], :overlaps => ["10M".to_alignment]},
     :S2 => {:sid => :s2s, :slen => 999, :sequence => "gggg"},
     :E  => {:eid => :e2e, :sid1 => :s2s, :or2 => :-, :sid2 => :t2t,
-            :beg1 => 0, :end1 => "100$".to_position,
-            :beg2 => 10, :end2 => "110$".to_position,
+            :beg1 => 0, :end1 => "100$".to_pos,
+            :beg2 => 10, :end2 => "110$".to_pos,
             :alignment => "10M1I10M1D80M".to_alignment},
     :F  => {:sid => :s2s, :or => :-, :external => :ex2ex,
-            :s_beg => 0, :s_end => "100$".to_position,
-            :f_beg => 10, :f_end => "110$".to_position,
+            :s_beg => 0, :s_end => "100$".to_pos,
+            :f_beg => 10, :f_end => "110$".to_pos,
             :alignment => "10M1I10M1D80M".to_alignment},
     :G  => {:gid => :g2g, :sid1 => :s2s, :d1 => :>, :d2 => :<, :sid2 => :t2t,
             :disp => 2000, :var => 100},
@@ -65,12 +65,12 @@ class TestAPI::Positionals < Test::Unit::TestCase
            [:l,:+].to_oriented_segment], :overlaps => ["11M".to_alignment]},
     :S2 => {:sid => :s4s, :slen => 1999, :sequence => "aaaa"},
     :E  => {:eid => :e4e, :sid1 => :s4s, :or2 => :+, :sid2 => :t4t,
-            :beg1 => 10, :end1 => "110$".to_position,
-            :beg2 => 0, :end2 => "100$".to_position,
+            :beg1 => 10, :end1 => "110$".to_pos,
+            :beg2 => 0, :end2 => "100$".to_pos,
             :alignment => "10M1I20M1D80M".to_alignment},
     :F  => {:sid => :s4s, :or => :+, :external => :ex4ex,
-            :s_beg => 10, :s_end => "110$".to_position,
-            :f_beg => 0, :f_end => "100$".to_position,
+            :s_beg => 10, :s_end => "110$".to_pos,
+            :f_beg => 0, :f_end => "100$".to_pos,
             :alignment => "10M1I20M1D80M".to_alignment},
     :G  => {:gid => :g4g, :sid1 => :s4s, :d1 => :<, :d2 => :>, :sid2 => :t4t,
             :disp => 3000, :var => 200},
@@ -147,6 +147,72 @@ class TestAPI::Positionals < Test::Unit::TestCase
         assert_equal(@@v2[rt][orig], l.send(al))
       end
     end
+  end
+
+  def test_orientation
+    # orientation is symbol
+    assert_equal(:+, @@l[:L].from_orient)
+    assert_equal(:+, @@l[:L].to_orient)
+    # invert
+    assert_equal(:-, @@l[:L].to_orient.invert)
+    assert_equal(:+, :-.invert)
+    assert_equal(:-, :+.invert)
+    # string representation
+    assert_equal("+", @@l[:L].field_to_s(:from_orient))
+    # invert does not work with string representation
+    assert_raise(NoMethodError) {"+".invert}
+    # assigning the string representation
+    l = @@l[:L].clone
+    l.from_orient = "+"
+    assert_equal(:+, l.from_orient)
+    assert_equal(:-, l.from_orient.invert)
+    # non :+/:- symbols is an error
+    assert_raises(RGFA::FormatError) {l.from_orient = :x; l.validate}
+    # only :+/:- and their string representations are accepted
+    assert_raises(RGFA::FormatError) {l.from_orient = "x"; l.validate}
+    assert_raises(RGFA::FormatError) {l.from_orient = 1; l.validate}
+  end
+
+  def test_sequence
+    # placeholder
+    assert(@@l[:S1].sequence.placeholder?)
+    assert(@@l[:S2].sequence.placeholder?)
+    s = @@l[:S1].clone
+    s.sequence = "ACCT"
+    assert(!s.sequence.placeholder?)
+    # sequence is string
+    assert_equal("ACCT", s.sequence)
+    # rc
+    assert_equal("AGGT", s.sequence.rc)
+    # GFA2 allowed alphabet is larger than GFA1
+    assert_nothing_raised { s.validate }
+    s.sequence = ";;;{}"
+    assert_raises(RGFA::FormatError) { s.validate }
+    s = @@l[:S2].clone
+    s.sequence = ";;;{}"
+    assert_nothing_raised { s.validate }
+  end
+
+  def test_sequence_rc
+    assert_equal("gcatcgatcgt","acgatcgatgc".rc)
+    assert_equal("gCaTCgatcgt","acgatcGAtGc".rc)
+    assert_equal("gcatcnatcgt","acgatngatgc".rc)
+    assert_equal("gcatcYatcgt","acgatRgatgc".rc)
+    assert_raises(RGFA::InconsistencyError){"acgatUgatgc".rc}
+    assert_equal("gcaucgaucgu","acgaucgaugc".rc)
+    assert_equal("===.",".===".rc)
+    assert_raises(RGFA::ValueError){"acgatXgatgc".rc}
+    assert_equal("*","*".rc)
+    assert_raises(RGFA::ValueError){"**".rc}
+  end
+
+  def test_positions
+    pos1 = 12.to_lastpos
+    pos2 = "12$"
+    #assert_equal(pos1, pos2.to_pos)
+    assert_nothing_raised { "12".to_pos }
+    assert_nothing_raised { "12$".to_pos }
+    #assert_raise (RGFA::FormatError) { "12=".to_pos }
   end
 
 end

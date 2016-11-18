@@ -100,7 +100,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
 
   # GFA2 positions of the alignment on the +from+ segment
   # @!macro [new] coords
-  #   @return [Array(RGFA::Position, RGFA::Position)] begin and end
+  #   @return [(Integer|Lastpos,Integer|Lastpos)] begin and end
   #   @raise [RGFA::ValueError] if the overlap is not specified
   #   @raise [RGFA::RuntimeError] if the segment length cannot be determined,
   #     because the segment line is unknown
@@ -121,11 +121,10 @@ module RGFA::Line::Edge::GFA1::ToGFA2
         raise RGFA::ValueError,
           "Length of segment #{from.name} unknown"
       end
-      from_l = RGFA::Position.new(from.length, true)
+      from_l = from.length.to_lastpos
       return [from_l - overlap.length_on_reference, from_l]
     else
-      return [RGFA::Position.new(0, false),
-              RGFA::Position.new(overlap.length_on_reference, false)]
+      return [0, overlap.length_on_reference]
     end
   end
 
@@ -138,8 +137,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
         "Missing overlap, cannot compute overlap coordinates"
     end
     if to_orient == :+
-      return [RGFA::Position.new(0, false),
-              RGFA::Position.new(overlap.length_on_query, false)]
+      return [0, overlap.length_on_query]
     else
       if !to.kind_of?(RGFA::Line)
         raise RGFA::RuntimeError,
@@ -149,7 +147,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
         raise RGFA::ValueError,
           "Length of segment #{to.name} unknown"
       end
-      to_l = RGFA::Position.new(to.length, true)
+      to_l = to.length.to_lastpos
       return [to_l - overlap.length_on_query, to_l]
     end
   end

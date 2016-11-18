@@ -40,13 +40,10 @@ rules, see the respective chapters.
 
 ### Datatypes
 
-The datatype of a positional field is described in the specification.
-Differently from custom tags (see Tags chapter) the datatype cannot be
-changed.
-
-Here is a short description of the datatypes and the Ruby classes used
-for the representation of the data. When specialized classes are used,
-a more detailled description can be found in the respective chapter.
+The datatype of each positional field is described in the specification and
+cannot be changed (differently from tags).  Here is a short description of the
+Ruby classes used to represent data for different datatypes. For some
+complex cases, more details are found in the following chapters.
 
 #### Placeholders
 
@@ -56,7 +53,7 @@ character is used instead (```*```). Such undefined values are represented
 in RGFA by the Placeholder class, which is described more in detail in the
 Placeholders chapter.
 
-#### Identifiers and Orientations
+#### Identifiers and orientations
 
 The identifier of the line itself (available for S, P, E, G, U, O lines)
 can always be accessed in RGFA using the ```name``` alias and is represented
@@ -69,15 +66,11 @@ Identifiers which refer to other lines are also present in some line types
 are represented by symbols. In connected lines they are references to the Line
 instances to which they refer to (see the References chapter).
 
-#### Orientations
-
 Orientations are represented by symbols. Applying the ```invert``` method
 on an orientation symbol returns the other orientation, e.g.
-
 ```ruby
 :+.invert # => :-
 ```
-
 #### Sequences
 
 Sequences (S field sequence) are represented by strings in RGFA.
@@ -88,17 +81,30 @@ The method #rc is provided to compute the reverse complement of a DNA sequence.
 The extended IUPAC alphabet is understood by the method. Applied to non-DNA
 sequences, the results will be meaningless.
 
-# XXX
-
 #### Positions and other integers
 
 Some fields contain positions (GFA1: C pos; GFA2: E beg1, beg2, end1, end2 and
-F s_beg, s_end, f_beg, f_end). These are always 0-based. GFA2 positions
-must contain an additional symbol (```$```) appended to the integer, if they
-are the last position in the segment sequence. For this reason, positions
-in GFA2 are represented using instances of the class RGFA::Position.
+F s_beg, s_end, f_beg, f_end). These are always 0-based.
 
-# XXX
+GFA2 positions must contain an additional symbol (```$```) appended to the
+integer, if they are the last position in the segment sequence. For
+this reason, positions in GFA2 are represented using instances of the class
+RGFA::Position. Assigning an integer to a position field will still work
+correctly, as long as this is not equal to the segment length (in which
+case a position object or the string representation must be used).
+
+The string representation of a position can be transformed into a position
+using the ```#to_position``` method.
+
+Other integer fields are present in gap lines. These are not positions
+and thus do not require an own class. The ```var``` field is optional,
+and thus can be represented either by an integer or a placeholder.
+
+#### Alignments
+
+Alignments are always optional, ie they can be placeholders. If they are
+specified they are CIGAR alignments or, only in GFA2, trace alignments.
+For more details, see the Alignments chapter.
 
 #### GFA1 datatypes
 
@@ -108,7 +114,7 @@ in GFA2 are represented using instances of the class RGFA::Position.
 |                          | Path        | ```path_name             ``` |
 |                          | Link        | ```from, to              ``` |
 |                          | Containment | ```from, to              ``` |
-| [Identifier/Orientation] | Path        | ```segment_names         ``` |
+| [Identifier+Orientation] | Path        | ```segment_names         ``` |
 | Orientation              | Link        | ```from_orient, to_orient``` |
 |                          | Containment | ```from_orient, to_orient``` |
 | Sequence                 | Segment     | ```sequence              ``` |
@@ -203,5 +209,7 @@ container[_orient] for from[_orient]; contained[_orient] for to[_orient]
 RGFA::Line#<fieldname>/<fieldname>=
 RGFA::Line#get/set
 RGFA::Line#validate_field/validate
+Symbol#invert
+String#rc
 ```
 

@@ -1,7 +1,7 @@
 module RGFA::Field::PositionGFA2
 
   def unsafe_decode(string)
-    string.to_position
+    string.to_pos
   end
 
   def decode(string)
@@ -20,12 +20,12 @@ module RGFA::Field::PositionGFA2
         raise RGFA::ValueError,
           "#{object} is not a positive integer"
       end
-    when RGFA::Position
+    when RGFA::LastPos
       object.validate
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: RGFA::Position, Integer)"
+        "(accepted classes: RGFA::LastPos, Integer)"
     end
   end
 
