@@ -169,11 +169,11 @@ module RGFATools::Multiplication
     et_links = segment(segment_name).dovetails(end_type)
     diff = [et_links.size - factor, 0].max
     links_signatures = et_links.map do |l|
-      l.other_end([segment_name, end_type]).join
+      l.other_end([segment_name, end_type]).to_s
     end
     ([segment_name]+copy_names).each_with_index do |sn, i|
       segment(sn).dovetails(end_type).each do |l|
-        l_sig = l.other_end([sn, end_type]).join
+        l_sig = l.other_end([sn, end_type]).to_s
         to_save = links_signatures[i..i+diff].to_a
         l.disconnect unless to_save.include?(l_sig)
       end

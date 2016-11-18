@@ -33,7 +33,7 @@ module RGFA::Line::Group::Path::References
   def update_reference_in_field(field, oldref, newref)
     case field
     when :segment_names
-      segment_names.each {|s_o| s_o[0] = newref if s_o[0] == oldref }
+      segment_names.each {|s_o| s_o.segment = newref if s_o.segment == oldref }
     end
   end
 
@@ -71,8 +71,8 @@ module RGFA::Line::Group::Path::References
 
   def initialize_segments
     segment_names.each do |sn_with_o|
-      s = @rgfa.segment(sn_with_o[0])
-      sn_with_o[0] = s
+      s = @rgfa.segment(sn_with_o.segment)
+      sn_with_o.segment = s
       s.add_reference(self, :paths)
     end
   end

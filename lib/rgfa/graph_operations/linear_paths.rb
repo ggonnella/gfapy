@@ -27,7 +27,7 @@ module RGFA::GraphOperations::LinearPaths
       if cs[i] == 1
         exclude << s
         segpath.pop
-        segpath += traverse_linear_path(RGFA::SegmentEnd.new([s, et]), exclude)
+        segpath += traverse_linear_path(RGFA::SegmentEnd.new(s, et), exclude)
       end
     end
     return (segpath.size < 2) ? nil : segpath
@@ -73,13 +73,15 @@ module RGFA::GraphOperations::LinearPaths
   def merge_linear_path(segpath, **options)
     return if segpath.size < 2
     segpath.map!{|se|se.to_segment_end}
-    if segpath[1..-2].any? {|sn,et| segment(sn).connectivity != [1,1]}
+    if segpath[1..-2].any? do |sn_et|
+        segment(sn_et.segment).connectivity != [1,1]
+      end
       raise RGFA::ValueError, "The specified path is not linear"
     end
     merged, first_reversed, last_reversed =
       create_merged_segment(segpath, options)
     self << merged
-    link_merged(merged.name, segpath.first.to_segment_end.invert_end_type,
+    link_merged(merged.name, segpath.first.to_segment_end.invert,
                 first_reversed)
     link_merged(merged.name, segpath.last, last_reversed)
     segpath.each do |sn_et|
@@ -121,12 +123,12 @@ module RGFA::GraphOperations::LinearPaths
     current.segment = segment(current.segment)
     loop do
       after  = current.segment.dovetails(current.end_type)
-      before = current.segment.dovetails(current.end_type_inverted)
+      before = current.segment.dovetails(current.end_type.invert)
       if (before.size == 1 and after.size == 1) or list.empty?
         list << [current.name, current.end_type]
         exclude << current.name
         l = after.first
-        current = l.other_end(current).invert_end_type
+        current = l.other_end(current).invert
         break if exclude.include?(current.name)
       elsif before.size == 1
         list << [current.name, current.end_type]
@@ -141,7 +143,7 @@ module RGFA::GraphOperations::LinearPaths
 
   def sum_of_counts(segpath, multfactor = 1)
     retval = {}
-    segs = segpath.map {|sn,et|segment!(sn)}
+    segs = segpath.map {|sn_et|segment!(sn_et.segment)}
     [:KC, :RC, :FC].each do |count_tag|
       segs.each do |s|
         if s.tagnames.include?(count_tag)
@@ -196,7 +198,7 @@ module RGFA::GraphOperations::LinearPaths
   end
 
   def create_merged_segment(segpath, options)
-    merged = segment!(segpath.first.first).clone
+    merged = segment!(segpath.first.segment).clone
     total_cut = 0
     a = segpath.first
     first_reversed = (a.end_type == :L)
@@ -212,7 +214,7 @@ module RGFA::GraphOperations::LinearPaths
                           options)
     progress_log(:merge_linear_paths, 0.95) if @progress
     (segpath.size-1).times do |i|
-      b = segpath[i+1].to_segment_end.invert_end_type
+      b = segpath[i+1].to_segment_end.invert
       l = link!(a, b)
       if l.overlap == []
         cut = 0
@@ -223,10 +225,10 @@ module RGFA::GraphOperations::LinearPaths
           "Merging is only allowed if all operations are M/="
       end
       total_cut += cut
-      last_reversed = (b[1] == :R)
+      last_reversed = (b.attribute == :R)
       add_segment_to_merged(merged, segment(b.segment), last_reversed, cut,
                             false, options)
-      a = b.to_segment_end.invert_end_type
+      a = b.to_segment_end.invert
       if @progress
         progress_log(:merge_linear_paths, 0.95)
       end
@@ -256,7 +258,7 @@ module RGFA::GraphOperations::LinearPaths
     segment(segment_end.segment).dovetails(
         segment_end.end_type).each do |l|
       l2 = l.clone
-      if l2.to == segment_end.first
+      if l2.to == segment_end.segment
         l2.to = merged_name
         if reversed
           l2.to_orient = l2.to_orient.invert

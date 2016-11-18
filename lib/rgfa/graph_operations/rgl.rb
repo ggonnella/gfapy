@@ -42,9 +42,9 @@ begin
               os = [segment(l.to), l.to_orient].to_oriented_segment
               block.call(os)
             end
-            if l.to == s and l.to_orient == oriented_segment.orient_inverted
+            if l.to == s and l.to_orient == oriented_segment.orient.invert
               os = [segment(l.from), l.from_orient].to_oriented_segment
-              block.call(os.invert_orient)
+              block.call(os.invert)
             end
           end
         end

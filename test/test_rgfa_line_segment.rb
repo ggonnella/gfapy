@@ -64,13 +64,4 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_equal(6, l.coverage!(count_tag: :FC))
   end
 
-  def test_other_orientation
-    assert_equal(:+, RGFA::OrientedSegment.invert("-"))
-    assert_equal(:-, RGFA::OrientedSegment.invert("+"))
-    assert_equal(:-, RGFA::OrientedSegment.invert(:+))
-    assert_raises(RGFA::ValueError) do
-      RGFA::OrientedSegment.invert("x")
-    end
-  end
-
 end

@@ -131,8 +131,8 @@ module RGFA::Line::Edge::Link::Equivalence
   #   (if not empty)?
   def compatible_complement?(other_oriented_from, other_oriented_to,
                           other_overlap = [])
-    (oriented_to == other_oriented_from.invert_orient and
-     oriented_from == other_oriented_to.invert_orient) and
+    (oriented_to == other_oriented_from.invert and
+     oriented_from == other_oriented_to.invert) and
      (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
   end
 

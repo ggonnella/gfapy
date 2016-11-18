@@ -11,8 +11,8 @@ module RGFA::GraphOperations::Connectivity
   # @param link [RGFA::Line::Edge::Link] a link
   def cut_link?(link)
     return false if link.circular?
-    return true if link.from.dovetails(link.from_end.end_type_inverted).size == 0
-    return true if link.to.dovetails(link.to_end.end_type_inverted).size == 0
+    return true if link.from.dovetails(link.from_end.end_type.invert).size == 0
+    return true if link.to.dovetails(link.to_end.end_type.invert).size == 0
     c = {}
     [:from, :to].each do |et|
       c[et] = Set.new
@@ -38,7 +38,7 @@ module RGFA::GraphOperations::Connectivity
     start_points = []
     [:L, :R].each do |et|
       start_points += segment.dovetails(et).map do |l|
-        l.other_end([segment_name, et]).invert_end_type
+        l.other_end([segment_name, et]).invert
       end
     end
     cc = []

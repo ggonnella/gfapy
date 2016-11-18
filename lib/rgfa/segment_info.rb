@@ -7,6 +7,11 @@ require_relative "error"
 #
 class RGFA::SegmentInfo < Array
 
+  def initialize(segment, attribute)
+    self[0]=segment
+    self[1]=attribute
+  end
+
   # Check that the elements of the array are compatible with the definition.
   #
   # @!macro [new] segment_info_validation_errors
@@ -15,13 +20,9 @@ class RGFA::SegmentInfo < Array
   #     is not a valid info
   # @return [void]
   def validate
-    if size != 2
+    if !self.class::ATTR.include?(attribute)
       raise RGFA::ValueError,
-        "Wrong n of elements, 2 expected (#{inspect})"
-    end
-    if !self.class::ATTR.include?(self[1])
-      raise RGFA::ValueError,
-        "Invalid attribute (#{self[1].inspect})"
+        "Invalid attribute (#{attribute.inspect})"
     end
     return nil
   end
@@ -42,11 +43,6 @@ class RGFA::SegmentInfo < Array
     self[0]=value
   end
 
-  # @return [Symbol] the segment name
-  def name
-    self[0].kind_of?(RGFA::Line) ? self[0].name : self[0].to_sym
-  end
-
   # @return [Symbol] the attribute
   def attribute
     self[1]
@@ -59,25 +55,14 @@ class RGFA::SegmentInfo < Array
     self[1]=(value)
   end
 
-  # @return [Symbol] the other possible value of the attribute
-  def attribute_inverted
-    self.class::ATTR[self.class::ATTR[0] == self[1] ? 1 : 0]
+  # @return [Symbol] the segment name
+  def name
+    segment.to_sym
   end
 
   # @return [RGFA::SegmentInfo] same segment, inverted attribute
-  def invert_attribute
-    self.class.new([self[0], self.attribute_inverted])
-  end
-
-  # @param [Symbol] attribute an attribute value
-  # @return [Symbol] the other attribute value
-  def self.invert(attribute)
-    i = self::ATTR.index(attribute.to_sym)
-    if i.nil?
-      raise RGFA::ValueError,
-        "Invalid attribute (#{self[1].inspect})"
-    end
-    return self::ATTR[i-1]
+  def invert
+    self.class.new(self.segment, self.attribute.invert)
   end
 
   # @return [String] name of the segment and attribute
@@ -106,6 +91,19 @@ class RGFA::SegmentInfo < Array
     to_s <=> other.to_segment_info(self.class).to_s
   end
 
+  def to_segment_info(subklass)
+    self
+  end
+
+  (Array.instance_methods - Object.instance_methods).each do |method|
+    private method
+  end
+
+  def to_a
+    [segment, attribute]
+  end
+  public :to_a
+
 end
 
 # A representation of a segment end
@@ -114,8 +112,7 @@ class RGFA::SegmentEnd < RGFA::SegmentInfo
   ATTR = [ END_TYPE_LEFT = :L, END_TYPE_RIGHT = :R ]
   alias_method :end_type, :attribute
   alias_method :end_type=, :attribute=
-  alias_method :invert_end_type, :invert_attribute
-  alias_method :end_type_inverted, :attribute_inverted
+  def to_segment_end; self; end
 end
 
 # A segment plus orientation
@@ -124,8 +121,7 @@ class RGFA::OrientedSegment < RGFA::SegmentInfo
   ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
   alias_method :orient, :attribute
   alias_method :orient=, :attribute=
-  alias_method :invert_orient, :invert_attribute
-  alias_method :orient_inverted, :attribute_inverted
+  def to_oriented_segment; self; end
 end
 
 class Array
@@ -148,11 +144,15 @@ class Array
 
   def to_segment_info(subclass)
     return self if self.kind_of?(subclass)
+    if self.size != 2
+      raise RGFA::ValueError,
+        "Wrong n of elements, 2 expected (#{inspect})"
+    end
     # support converting from gfa gem GraphVertex objects:
     if respond_to?(:segment) and respond_to?(:orient)
       return RGFA::OrientedSegment.new([segment.to_sym, orient.to_sym])
     end
-    se = subclass.new(map {|e| e.kind_of?(String) ? e.to_sym : e})
+    se = subclass.new(*map {|e| e.kind_of?(String) ? e.to_sym : e})
     se.validate
     return se
   end
