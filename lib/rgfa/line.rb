@@ -105,7 +105,7 @@ class RGFA::Line
       refs.values.flatten
     end
   end
-  private_class_method :define_field_methods!
+  private_class_method :define_field_methods
 
 end
 

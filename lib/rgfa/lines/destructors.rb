@@ -36,7 +36,7 @@ module RGFA::Lines::Destructors
       when :H then raise RGFA::ArgumentError,
                            "Cannot remove single header lines"
       else
-        x.disconnect!
+        x.disconnect
       end
     when Symbol, String
       x = x.to_sym
@@ -46,7 +46,7 @@ module RGFA::Lines::Destructors
           raise RGFA::ArgumentError,
             "One arguments required if first argument is an ID"
         end
-        l.disconnect!
+        l.disconnect
       else
         if respond_to?(x)
           rm(send(x, *args))

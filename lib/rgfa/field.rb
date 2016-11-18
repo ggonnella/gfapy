@@ -299,7 +299,7 @@ module RGFA::Field
     #   @return [void]
     #   @api private
     module Encoded
-      def validate_gfa_field!(datatype, fieldname=nil)
+      def validate_gfa_field(datatype, fieldname=nil)
         mod = RGFA::Field::FIELD_MODULE[datatype]
         if mod.nil?
           raise RGFA::TypeError,
@@ -313,7 +313,7 @@ module RGFA::Field
     # according to the field datatype.
     # @!macro validate_gfa_field
     module Decoded
-      def validate_gfa_field!(datatype, fieldname=nil)
+      def validate_gfa_field(datatype, fieldname=nil)
         mod = RGFA::Field::FIELD_MODULE[datatype]
         if mod.nil?
           raise RGFA::TypeError,

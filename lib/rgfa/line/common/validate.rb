@@ -7,20 +7,21 @@ module RGFA::Line::Common::Validate
   # @raise [RGFA::FormatError] if the content of the field is
   #   not valid, according to its required type
   # @return [void]
-  def validate_field!(fieldname)
+  def validate_field(fieldname)
     fieldname = self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
     v = @data[fieldname]
     t = field_or_default_datatype(fieldname, v)
-    v.validate_gfa_field!(t, fieldname)
+    v.validate_gfa_field(t, fieldname)
     return nil
   end
 
   # Validate the RGFA::Line instance
   # @raise [RGFA::FormatError] if any field content is not valid
   # @return [void]
-  def validate!
-    fieldnames.each {|fieldname| validate_field!(fieldname) }
-    validate_record_type_specific_info!
+  def validate
+    fieldnames = positional_fieldnames + tagnames
+    fieldnames.each {|fieldname| validate_field(fieldname) }
+    validate_record_type_specific_info
   end
 
   private
@@ -29,7 +30,7 @@ module RGFA::Line::Common::Validate
     /^[a-z][a-z0-9]$/ =~ fieldname
   end
 
-  def validate_record_type_specific_info!
+  def validate_record_type_specific_info
   end
 
   def predefined_tag?(fieldname)

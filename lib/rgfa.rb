@@ -155,7 +155,7 @@ class RGFA
   # Post-validation of the RGFA
   # @return [void]
   # @raise if validation fails
-  def validate
+  def validation
     validate_segment_references
     validate_path_links
     return nil

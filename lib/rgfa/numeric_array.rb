@@ -37,11 +37,6 @@ class RGFA::NumericArray < Array
       end
     ]
 
-  # Validate the numeric array
-  #
-  # @raise [RGFA::ValueError] if the array is not valid
-  alias_method :validate, :compute_subtype
-
   # Computes the subtype of the array from its content.
   #
   # If all elements are float, then the computed subtype is "f".
@@ -72,6 +67,11 @@ class RGFA::NumericArray < Array
       return RGFA::NumericArray.integer_type(e_min..e_max)
     end
   end
+
+  # Validate the numeric array
+  #
+  # @raise [RGFA::ValueError] if the array is not valid
+  alias_method :validate, :compute_subtype
 
   # Computes the subtype for integers in a given range.
   #
@@ -137,7 +137,7 @@ class Array
   # @return [RGFA::NumericArray] the numeric array
   def to_numeric_array(valid: false)
     na = RGFA::NumericArray.new(self)
-    na.validate! if !valid
+    na.validate if !valid
     na
   end
 end
