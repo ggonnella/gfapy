@@ -81,30 +81,72 @@ The method #rc is provided to compute the reverse complement of a DNA sequence.
 The extended IUPAC alphabet is understood by the method. Applied to non-DNA
 sequences, the results will be meaningless.
 
-#### Positions and other integers
+#### Integers
 
-Some fields contain positions (GFA1: C pos; GFA2: E beg1, beg2, end1, end2 and
-F s_beg, s_end, f_beg, f_end). These are always 0-based.
+The C lines ```pos``` field and the ```disp``` and ```var``` fields of gaps
+are represented by integers. The ```var``` field is optional,
+and thus can be also a placeholder. Positions are 0-based coordinates.
 
-GFA2 positions must contain an additional symbol (```$```) appended to the
-integer, if they are the last position in the segment sequence. For
-this reason, positions in GFA2 are represented using instances of the class
-RGFA::Position. Assigning an integer to a position field will still work
-correctly, as long as this is not equal to the segment length (in which
-case a position object or the string representation must be used).
+Some fields in GFA2 E lines (```beg1, beg2, end1, end2```) and
+F lines (```s_beg, s_end, f_beg, f_end```). According to the specification,
+are 0-based positions before and after a symbol in the sequence: for example
+a 1-character prefix of a sequence will have begin 0 and end 1.
 
-The string representation of a position can be transformed into a position
-using the ```#to_position``` method.
+The GFA2 positions must contain an additional symbol (```$```) appended to the
+integer, if (and only if) they are the last position in the segment sequence.
+These particular positions are represented in RGFA as instances of the class
+RGFA::LastPos.
 
-Other integer fields are present in gap lines. These are not positions
-and thus do not require an own class. The ```var``` field is optional,
-and thus can be represented either by an integer or a placeholder.
+To create a lastpos instance, ```to_lastpos``` can be called on
+an integer, or ```to_pos``` can be called on the string representation:
+```ruby
+12.to_lastpos # => RGFA::LastPos(value: 12)
+"12".to_pos   # => 12
+"12$".to_pos  # => RGFA::LastPos(value: 12)
+```
+
+Subtracting an integer from a lastpos returns a lastpos if 0 subtracted,
+an integer otherwise. This allows to do some arithmetic on positions
+without making them invalid.
+```ruby
+12.to_lastpos - 0 # => RGFA::LastPos(value: 12)
+12.to_lastpos - 1 # 11
+```
+
+The methods first? and last? allow to determine if a position value
+is 0 (first?), or if it is a last position (last?), using the
+same syntax fo lastpos and integer instances.
+```ruby
+0.first?  # true
+0.last?   # false
+12.first? # false
+12.last?  # false
+"12".to_pos.first? # false
+"12$".to_pos.last? # true
+```
 
 #### Alignments
 
 Alignments are always optional, ie they can be placeholders. If they are
 specified they are CIGAR alignments or, only in GFA2, trace alignments.
 For more details, see the Alignments chapter.
+
+#### Arrays
+
+The ```items``` field in unordered and ordered groups
+and the ```segment_names``` and ```overlaps``` fields in paths are
+lists of objects and are represented by Array instances.
+
+The elements of the ```segment_names``` array contain identifiers
+and an orientation and are represented by elements of the class
+```RGFA::OrientedSegment```. The ```segment``` method of the oriented
+segments returns the segment identifier (or segment reference in connected
+path lines) and the ```orient``` method returns the orientation symbol.
+To set the two attributes use ```segment=``` and ```orient=```.
+```ruby
+p = "P\tP1\t1+,2-\t*".to_rgfa_line
+p.segment_names # => [OrientedSegment(:1,:+),OrientedSegment(:2,:-)]
+```
 
 #### GFA1 datatypes
 
@@ -211,5 +253,10 @@ RGFA::Line#get/set
 RGFA::Line#validate_field/validate
 Symbol#invert
 String#rc
+String#to_pos
+Integer#to_lastpos
+Integer/RGFA::LastPos#first?
+Integer/RGFA::LastPos#last?
+RGFA::LastPos.-
 ```
 
