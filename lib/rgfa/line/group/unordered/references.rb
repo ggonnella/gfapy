@@ -29,7 +29,7 @@ module RGFA::Line::Group::Unordered::References
   def rm_item_from_unconnected_group(item)
     item = item.name if item.kind_of?(RGFA::Line)
     check_item_included(item)
-    deleted = self.items.delete(item)
+    self.items.delete(item)
     return nil
   end
 
