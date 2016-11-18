@@ -1,0 +1,12 @@
+- follow the example of the work on Alignment for the rest of the library
+-- write a manual
+-- write api tests
+-- write internals tests
+-- check documentation
+- simplify validation levels to 4 instead of 6:
+-- :off  => no validation (such as 0)
+-- :r    => guarantees that valid GFA is read (such as 3) *default*
+-- :rw   => guarantees that valid GFA is read and written (such as 4)
+-- :full => guarantees that the internal state is always valid (such as 5)
+- use paths/groups instead of SegmentEndPaths
+- write complicated/long tests using data in a separate repo
