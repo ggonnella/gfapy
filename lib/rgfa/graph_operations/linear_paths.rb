@@ -259,12 +259,12 @@ module RGFA::GraphOperations::LinearPaths
       if l2.to == segment_end.first
         l2.to = merged_name
         if reversed
-          l2.to_orient = RGFA::OrientedSegment.invert(l2.to_orient)
+          l2.to_orient = l2.to_orient.invert
         end
       else
         l2.from = merged_name
         if reversed
-          l2.from_orient = RGFA::OrientedSegment.invert(l2.from_orient)
+          l2.from_orient = l2.from_orient.invert
         end
       end
       self << l2

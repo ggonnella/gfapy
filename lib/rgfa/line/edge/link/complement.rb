@@ -15,9 +15,9 @@ module RGFA::Line::Edge::Link::Complement
   def complement
     l = self.clone
     l.from = to
-    l.from_orient = (to_orient == :+ ? :- : :+)
+    l.from_orient = to_orient.invert
     l.to = from
-    l.to_orient = (from_orient == :+ ? :- : :+)
+    l.to_orient = from_orient.invert
     l.overlap = complement_overlap
     l
   end
@@ -44,8 +44,8 @@ module RGFA::Line::Edge::Link::Complement
     self.from = self.to
     self.to = tmp
     tmp = self.from_orient
-    self.from_orient = (self.to_orient == :+) ? :- : :+
-    self.to_orient = (tmp == :+) ? :- : :+
+    self.from_orient = self.to_orient.invert
+    self.to_orient = tmp.invert
     self.overlap = self.complement_overlap
     return self
   end
