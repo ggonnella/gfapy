@@ -3,15 +3,6 @@ require "test/unit"
 
 class TestRGFALineDestructors < Test::Unit::TestCase
 
-  def test_delete_comments
-    gfa = RGFA.new
-    c = "# This is a comment"
-    gfa << c
-    assert_equal(c, gfa.comments[0].to_s)
-    gfa.rm(gfa.comments[0])
-    assert_equal([], gfa.comments)
-  end
-
   def test_delete_custom_records
     gfa = RGFA.new(version: :"2.0")
     c = "X\tThis is a custom_record"

@@ -7,16 +7,20 @@ with some differences, e.g. they do not support tags.
 
 ### Comments in RGFA objects
 
-Adding a comment to a RGFA object is done similary to other lines,
-by using the ```RGFA#<<(line)``` method (e.g. ```g << "# this is a comment"```).
+Adding a comment to a RGFA object is done similary to other lines, by using the
+```RGFA#<<(line)``` method.  The comments of a RGFA object can be accessed
+using the ```comments``` method. This returns an array of comment line
+instances.  To remove a comment from the RGFA, first find the instance (using
+the #comments array), then call ```disconnect``` on the line instance or
+``rm(line)``` on the RGFA object (passing the instance as parameter).
 
-The comments of a RGFA object can be accessed using the
-```RGFA#comments``` method. This returns an array of comment line
-instances.
-
-To remove a comment from the RGFA, first find the instance (using the
-#comments array), then call ```RGFA::Line::Comment#disconnect``` on it,
-or call ```RGFA#rm(line)``` passing the instance as parameter.
+Examples:
+```ruby
+g << "# this is a comment"
+g.comments.map(&:to_s) # => ["# this is a comment"]
+g.comments[0].disconnect # or g.rm(g.comments[0])
+g.comments # => []
+```
 
 ### Accessing the comment content
 

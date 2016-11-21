@@ -10,17 +10,6 @@ class TestRGFALineCreators < Test::Unit::TestCase
     assert_equal([h], gfa.headers.map(&:to_s))
   end
 
-  def test_add_comments
-    gfa = RGFA.new
-    c1 = "#this is a comment"
-    c2 = "# this is also a comment"
-    c3 = "#and \tthis too!"
-    assert_nothing_raised { gfa << c1 }
-    assert_nothing_raised { gfa << c2 }
-    assert_nothing_raised { gfa << c3 }
-    assert_equal([c1,c2,c3], gfa.comments.map(&:to_s))
-  end
-
   def test_add_custom_records
     gfa = RGFA.new(version: :"2.0")
     x1 = "X\tthis is a custom record"
