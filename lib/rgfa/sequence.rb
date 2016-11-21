@@ -10,15 +10,13 @@ module RGFA::Sequence
   # @return [String] reverse complement, without newlines and spaces
   # @return [String] "*" if string is "*"
   #
-  # @param tolerant [Boolean] <i>(defaults to: +false+)</i>
+  # @param valid [Boolean] <i>(defaults to: +false+)</i>
   #   if true, anything non-sequence is complemented to itself
-  # @param rnasequence [Boolean] <i>(defaults to: +false+)</i>
-  #   if true, any A and a is complemented into u and U; otherwise
-  #   it is so, only if an U is found; otherwise DNA is assumed
+  # @param rna [Boolean] <i>(defaults to: +false+)</i>
+  #   if true, any A and a is complemented into u and U
   #
-  # @raise [RGFA::ValueError] if not +tolerant+ and chars are found for which
-  #   no Watson-Crick complement is defined
-  # @raise [RGFA::InconsistencyError] if sequence contains both U and T
+  # @raise [RGFA::ValueError] if chars are found for which
+  #   no Watson-Crick complement is defined (and not +valid+)
   #
   # @example
   #  "ACTG".rc  # => "CAGT"
@@ -28,26 +26,18 @@ module RGFA::Sequence
   # @example Extended IUPAC Alphabet:
   #  "ARBN".rc  # => "NVYT"
   # @example Usage with RNA sequences:
-  #  "ACUG".rc                    # => "CAGU"
-  #  "ACG".rc(rnasequence: true)  # => "CGU"
-  #  "ACUT".rc                    # (raises RuntimeError, both U and T)
-  def rc(tolerant: false, rnasequence: false)
+  #  "ACG".rc(rna: true) # => "CGU"
+  def rc(valid: false, rna: false)
     return self if self.placeholder?
     retval = each_char.map do |c|
-      if c == "U" or c == "u"
-        rnasequence = true
-      elsif rnasequence and (c == "T" or c == "t")
-        raise RGFA::InconsistencyError, "String contains both U/u and T/t"
-      end
-      wcc = WCC.fetch(c, tolerant ? c : nil)
+      wcc = WCC.fetch(c, valid ? c : nil)
       if wcc.nil?
-        raise RGFA::ValueError, "#{self}: no Watson-Crick complement for #{c}"
+        raise RGFA::ValueError,
+          "#{self}: no Watson-Crick complement for #{c}"
       end
       wcc
     end.reverse.join
-    if rnasequence
-      retval.tr!("tT","uU")
-    end
+    retval.tr!("tT","uU") if rna
     retval
   end
 

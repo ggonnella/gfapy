@@ -53,7 +53,21 @@ character is used instead (```*```). Such undefined values are represented
 in RGFA by the Placeholder class, which is described more in detail in the
 Placeholders chapter.
 
-#### Identifiers and orientations
+#### Arrays
+
+The ```items``` field in unordered and ordered groups
+and the ```segment_names``` and ```overlaps``` fields in paths are
+lists of objects and are represented by Array instances.
+
+#### Orientations
+
+Orientations are represented by symbols. Applying the ```invert``` method
+on an orientation symbol returns the other orientation, e.g.
+```ruby
+:+.invert # => :-
+```
+
+#### Identifiers
 
 The identifier of the line itself (available for S, P, E, G, U, O lines)
 can always be accessed in RGFA using the ```name``` alias and is represented
@@ -66,87 +80,67 @@ Identifiers which refer to other lines are also present in some line types
 are represented by symbols. In connected lines they are references to the Line
 instances to which they refer to (see the References chapter).
 
-Orientations are represented by symbols. Applying the ```invert``` method
-on an orientation symbol returns the other orientation, e.g.
+#### Oriented identifiers
+
+Oriented identifiers (e.g. ```segment_names``` in GFA1 paths)
+are represented by elements of the class
+```RGFA::OrientedSegment```. The ```segment``` method of the oriented
+segments returns the segment identifier (or segment reference in connected
+path lines) and the ```orient``` method returns the orientation symbol.
+The ```name``` method returns the symbol of the segment, even if this is
+a reference to a segment.
+
+Calling ```invert``` returns an oriented segment, with inverted orientation.
+To set the two attributes the methods ```segment=``` and ```orient=```
+are available.
+
+Examples:
 ```ruby
-:+.invert # => :-
+p = "P\tP1\ta+,b-\t*".to_rgfa_line
+p.segment_names # => [OrientedSegment(:a,:+),OrientedSegment(:b,:-)]
+p[0].segment # => :a
+p[0].name # => :a
+p[0].orient # => :+
+p[0].invert # => OrientedSegment(:a,:-)
+p[0].orient = :-
+p[0].segment = "S\tX\t*".to_rgfa_line
+p[0] # => OrientedSegment(RGFA::Line("S\tX\t*"), :-)
+p[0].name # => :X
 ```
+
 #### Sequences
 
 Sequences (S field sequence) are represented by strings in RGFA.
 Depending on the GFA version, the alphabet definition is more or less
 restrictive. The definitions are correctly applied by the validation methods.
 
-The method #rc is provided to compute the reverse complement of a DNA sequence.
-The extended IUPAC alphabet is understood by the method. Applied to non-DNA
-sequences, the results will be meaningless.
+The method #rc is provided to compute the reverse complement of a nucleotidic
+sequence. The extended IUPAC alphabet is understood by the method. Applied to
+non nucleotidic sequences, the results will be meaningless:
+```ruby
+"gcat".rc # => "atgc"
+"*".rc # => "*" (placeholder)
+"yatc".rc # => "gatr" (wildcards)
+"gCat".rc # => "atGc" (case remains)
+"ctg".rc(rna: true) # => "cug"
+```
 
-#### Integers
+#### Integers and positions
 
-The C lines ```pos``` field and the ```disp``` and ```var``` fields of gaps
+The C lines ```pos``` field and the G lines ```disp``` and ```var``` fields
 are represented by integers. The ```var``` field is optional,
 and thus can be also a placeholder. Positions are 0-based coordinates.
 
-Some fields in GFA2 E lines (```beg1, beg2, end1, end2```) and
-F lines (```s_beg, s_end, f_beg, f_end```). According to the specification,
-are 0-based positions before and after a symbol in the sequence: for example
-a 1-character prefix of a sequence will have begin 0 and end 1.
-
-The GFA2 positions must contain an additional symbol (```$```) appended to the
-integer, if (and only if) they are the last position in the segment sequence.
-These particular positions are represented in RGFA as instances of the class
-RGFA::LastPos.
-
-To create a lastpos instance, ```to_lastpos``` can be called on
-an integer, or ```to_pos``` can be called on the string representation:
-```ruby
-12.to_lastpos # => RGFA::LastPos(value: 12)
-"12".to_pos   # => 12
-"12$".to_pos  # => RGFA::LastPos(value: 12)
-```
-
-Subtracting an integer from a lastpos returns a lastpos if 0 subtracted,
-an integer otherwise. This allows to do some arithmetic on positions
-without making them invalid.
-```ruby
-12.to_lastpos - 0 # => RGFA::LastPos(value: 12)
-12.to_lastpos - 1 # 11
-```
-
-The methods first? and last? allow to determine if a position value
-is 0 (first?), or if it is a last position (last?), using the
-same syntax fo lastpos and integer instances.
-```ruby
-0.first?  # true
-0.last?   # false
-12.first? # false
-12.last?  # false
-"12".to_pos.first? # false
-"12$".to_pos.last? # true
-```
+The position fields of GFA2 E lines (```beg1, beg2, end1, end2```) and
+F lines (```s_beg, s_end, f_beg, f_end```) contain a dollar symbol as suffix
+if the position is equal to the segment length. For more information,
+see the Positions chapter.
 
 #### Alignments
 
 Alignments are always optional, ie they can be placeholders. If they are
 specified they are CIGAR alignments or, only in GFA2, trace alignments.
 For more details, see the Alignments chapter.
-
-#### Arrays
-
-The ```items``` field in unordered and ordered groups
-and the ```segment_names``` and ```overlaps``` fields in paths are
-lists of objects and are represented by Array instances.
-
-The elements of the ```segment_names``` array contain identifiers
-and an orientation and are represented by elements of the class
-```RGFA::OrientedSegment```. The ```segment``` method of the oriented
-segments returns the segment identifier (or segment reference in connected
-path lines) and the ```orient``` method returns the orientation symbol.
-To set the two attributes use ```segment=``` and ```orient=```.
-```ruby
-p = "P\tP1\t1+,2-\t*".to_rgfa_line
-p.segment_names # => [OrientedSegment(:1,:+),OrientedSegment(:2,:-)]
-```
 
 #### GFA1 datatypes
 
@@ -253,10 +247,5 @@ RGFA::Line#get/set
 RGFA::Line#validate_field/validate
 Symbol#invert
 String#rc
-String#to_pos
-Integer#to_lastpos
-Integer/RGFA::LastPos#first?
-Integer/RGFA::LastPos#last?
-RGFA::LastPos.-
 ```
 

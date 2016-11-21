@@ -70,9 +70,12 @@ end
 
 class String
 
-  # Parse a position field and return a RGFA::LastPos if the position
-  # is suffixed by the dollar symbol, otherwise an integer.
-  def to_pos
+  # Parse the string representation of a GFA2 position field
+  # @return [Integer,RGFA::LastPos] if the string ends with a dollar,
+  #   then RGFA::LastPos, otherwise an integer.
+  # @param valid [Boolean] <i>defaults to: +false+</i> is the string
+  #   guaranteed to be a valid position value?
+  def to_pos(valid: false)
     if self[-1] == "$"
       last = true
       s = self[0..-2]
@@ -83,7 +86,12 @@ class String
     begin
       value = Integer(s)
     rescue
-      raise RGFA::FormatError, "Wrong value for position: #{self}"
+      raise RGFA::FormatError,
+        "Wrong value for position: #{self}"
+    end
+    if !valid and value < 0
+      raise RGFA::ValueError,
+        "Negative position value (#{self})"
     end
     return last ? RGFA::LastPos.new(value) : value
   end
@@ -110,7 +118,13 @@ class Integer
     self == 0
   end
 
-  def to_lastpos
+  # Convert to a RGFA::LastPos instance
+  # @return [RGFA::LastPos]
+  def to_lastpos(valid: false)
+    if !valid and self < 0
+      raise RGFA::ValueError,
+        "Negative position value (#{self})"
+    end
     RGFA::LastPos.new(self)
   end
 

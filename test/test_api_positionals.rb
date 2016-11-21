@@ -149,6 +149,17 @@ class TestAPI::Positionals < Test::Unit::TestCase
     end
   end
 
+  def test_array_fields
+    assert_kind_of(Array, @@l[:P].segment_names)
+    assert_kind_of(RGFA::OrientedSegment, @@l[:P].segment_names.first)
+    assert_kind_of(Array, @@l[:P].overlaps)
+    assert_kind_of(RGFA::Alignment::Placeholder, @@l[:P].overlaps.first)
+    assert_kind_of(Array, @@l[:O].items)
+    assert_kind_of(Symbol, @@l[:O].items.first)
+    assert_kind_of(Array, @@l[:U].items)
+    assert_kind_of(Symbol, @@l[:U].items.first)
+  end
+
   def test_orientation
     # orientation is symbol
     assert_equal(:+, @@l[:L].from_orient)
@@ -173,6 +184,27 @@ class TestAPI::Positionals < Test::Unit::TestCase
     assert_raises(RGFA::FormatError) {l.from_orient = 1; l.validate}
   end
 
+  def test_oriented_segment
+    os = @@l[:P].segment_names.first
+    # getter methods
+    assert_equal(:"1", os.segment)
+    assert_equal(:+, os.orient)
+    # invert
+    assert_equal(:"1", os.invert.segment)
+    assert_equal(:-, os.invert.orient)
+    assert_equal(:-, os.orient.invert)
+    # setter methods
+    os.segment = :"one"
+    os.orient = :-
+    assert_equal(:"one", os.segment)
+    assert_equal(:-, os.orient)
+    # name
+    assert_equal(:"one", os.name)
+    os.segment = @@l[:S1]
+    assert_equal(@@l[:S1], os.segment)
+    assert_equal(@@l[:S1].name, os.name)
+  end
+
   def test_sequence
     # placeholder
     assert(@@l[:S1].sequence.placeholder?)
@@ -195,24 +227,20 @@ class TestAPI::Positionals < Test::Unit::TestCase
 
   def test_sequence_rc
     assert_equal("gcatcgatcgt","acgatcgatgc".rc)
+    # case
     assert_equal("gCaTCgatcgt","acgatcGAtGc".rc)
+    # wildcards
     assert_equal("gcatcnatcgt","acgatngatgc".rc)
     assert_equal("gcatcYatcgt","acgatRgatgc".rc)
-    assert_raises(RGFA::InconsistencyError){"acgatUgatgc".rc}
-    assert_equal("gcaucgaucgu","acgaucgaugc".rc)
+    # RNA
+    assert_equal("gcaucgaucgu","acgaucgaugc".rc(rna: true))
     assert_equal("===.",".===".rc)
+    # valid
     assert_raises(RGFA::ValueError){"acgatXgatgc".rc}
+    assert_nothing_raised{"acgatXgatgc".rc(valid: true)}
+    # placeholder
     assert_equal("*","*".rc)
     assert_raises(RGFA::ValueError){"**".rc}
-  end
-
-  def test_positions
-    pos1 = 12.to_lastpos
-    pos2 = "12$"
-    #assert_equal(pos1, pos2.to_pos)
-    assert_nothing_raised { "12".to_pos }
-    assert_nothing_raised { "12$".to_pos }
-    #assert_raise (RGFA::FormatError) { "12=".to_pos }
   end
 
 end
