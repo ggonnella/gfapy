@@ -28,7 +28,7 @@ or not.
 ```ruby
 RGFA::Placeholder#to_s
 RGFA::Placeholder#placeholder?
-String/Symbol/Array/(other classes)#placeholder? # XXX
+String/Symbol/Array/Integer#placeholder?
 RGFA::Placeholder#empty?
 RGFA::Placeholder#validate
 RGFA::Placeholder#length

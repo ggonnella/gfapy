@@ -76,3 +76,9 @@ class Array
     empty?
   end
 end
+
+class Numeric
+  def placeholder?
+    false
+  end
+end
