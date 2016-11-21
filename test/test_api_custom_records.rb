@@ -1,7 +1,8 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFALineCustomRecord < Test::Unit::TestCase
+TestAPI ||= Module.new
+class TestAPI::CustomRecords < Test::Unit::TestCase
 
   def test_from_string
     str1 = "X\tthis is a\tcustom line"
@@ -33,4 +34,28 @@ class TestRGFALineCustomRecord < Test::Unit::TestCase
     str2 = "XX\txx:i:2\txxxxxx\txx:i:1"
     assert_equal(str2, str2.to_rgfa_line.to_s)
   end
+
+  def test_add_custom_records
+    gfa = RGFA.new(version: :"2.0")
+    x1 = "X\tthis is a custom record"
+    assert_nothing_raised { gfa << x1 }
+    assert_equal([:X], gfa.custom_record_keys)
+    assert_equal([x1], gfa.custom_records(:X).map(&:to_s))
+  end
+
+  def test_delete_custom_records
+    gfa = RGFA.new(version: :"2.0")
+    c = "X\tThis is a custom_record"
+    gfa << c
+    assert_equal([c], gfa.custom_records(:X).map(&:to_s))
+    gfa.rm(gfa.custom_records(:X))
+    assert_equal([], gfa.custom_records(:X))
+  end
+
+  def test_custom_records
+    x = ["X\tVN:Z:1.0", "Y\ttesttesttest"]
+    assert_equal(x[0..0], x.to_rgfa.custom_records(:X).map(&:to_s))
+    assert_equal(x[1..1], x.to_rgfa.custom_records(:Y).map(&:to_s))
+  end
+
 end

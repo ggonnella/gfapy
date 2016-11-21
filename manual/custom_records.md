@@ -15,16 +15,16 @@ or write custom record contents.
 
 ### Retrieving, adding and deleting custom records
 
-The custom records contained in a RGFA object can be retrieved using the
-```RGFA#custom_records``` method. If no argument is provided, all custom
+The custom records contained in a RGFA object can be retrieved using its
+```custom_records``` method. If no argument is provided, all custom
 records are returned. If a record type symbol is provided (e.g.
 ```g#custom_records(:X)```), records of that type will be returned.
 
-To delete a custom record, retrieve its instance and either call
-```RGFA::Line::CustomRecord#disconnect``` or ```RGFA#rm(custom_record_line)```.
-
-To add a new custom record line, you may add the GFA string defining the
-record using ```RGFA#<<(string)```, e.g. ```g << "X\ta\tb"```.
+Adding custom records to and removing them from a RGFA instance
+is similar to any other line. So to delete a custom record, ```disconnect```
+is called on the instance, or ```rm(custom_record_line)``` on the RGFA object.
+To add a custom record line, the instance or its string representation
+is added using ```<<``` on the RGFA, e.g. ```g << "X\ta\tb"```.
 
 ### Tags
 
@@ -49,13 +49,24 @@ be valid according to the datatype.
 
 The positional fields in a custom record are called ```:field1, :field2, ...```.
 The user can iterate over the positional field names using the array obtained
-by calling ```RGFA::Line::CustomRecord#positional_fieldnames```.
-
-Due to the parsing heuristics mentioned in the Tags section above, invalid
-tags are sometimes wrongly taken as positional fields. Therefore,
-the user shall validate the number of positional fields
-(using ```RGFA::Line::CustomRecord#positional_fieldnames.size```)
+by calling ```positional_fieldnames``` on the line.
 
 Positional fields are allowed to contain any character (including non-printable
 characters and spacing characters), except tabs and newlines (as they are
 structural elements of the line).
+
+Due to the parsing heuristics mentioned in the Tags section above, invalid
+tags are sometimes wrongly taken as positional fields. Therefore,
+the user shall validate the number of positional fields
+(```line.positional_fieldnames.size```).
+
+### Summary of custom-record related API methods
+```
+RGFA#custom_records
+RGFA#custom_records(record_type)
+RGFA#rm(custom_record_line)
+RGFA#<<(custom_record_string)
+RGFA::Line::CustomRecord#disconnect
+RGFA::Line::CustomRecord#positional_fieldnames
+RGFA::Line::CustomRecord#field1/field2/...
+```
