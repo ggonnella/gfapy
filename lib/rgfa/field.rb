@@ -26,6 +26,7 @@ require_relative "field/numeric_array.rb"
 require_relative "field/optional_identifier_gfa2.rb"
 require_relative "field/optional_integer.rb"
 require_relative "field/orientation.rb"
+require_relative "field/oriented_identifier_gfa2.rb"
 require_relative "field/oriented_segments.rb"
 require_relative "field/path_name_gfa1.rb"
 require_relative "field/position_gfa1.rb"
@@ -136,6 +137,7 @@ module RGFA::Field
     :identifier_gfa2          => RGFA::Field::IdentifierGFA2,
     :identifier_list_gfa2     => RGFA::Field::IdentifierListGFA2,
     :optional_identifier_gfa2 => RGFA::Field::OptionalIdentifierGFA2,
+    :oriented_identifier_gfa2 => RGFA::Field::OrientedIdentifierGFA2,
     :optional_integer         => RGFA::Field::OptionalInteger,
     :orientation              => RGFA::Field::Orientation,
     :oriented_segments        => RGFA::Field::OrientedSegments,

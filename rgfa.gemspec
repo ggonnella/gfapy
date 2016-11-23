@@ -44,6 +44,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/field/json.rb',
               'lib/rgfa/field/numeric_array.rb',
               'lib/rgfa/field/optional_identifier_gfa2.rb',
+              'lib/rgfa/field/oriented_identifier_gfa2.rb',
               'lib/rgfa/field/optional_integer.rb',
               'lib/rgfa/field/orientation.rb',
               'lib/rgfa/field/oriented_segments.rb',
