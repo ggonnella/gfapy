@@ -63,50 +63,57 @@ The following tables list the backreferences collections for each record type.
 
 #### GFA1
 
-| Record type | Backreferences        |
-|-------------|-----------------------|
-| Segment     | dovetails_L (type: L) |
-|             | dovetails_R (type: L) |
-|             | contained (type: C)   |
-|             | containers (type: C)  |
-|             | paths                 |
-| Link        | paths                 |
+| Record type | Backreferences                |
+|-------------|-------------------------------|
+| Segment     | dovetails_L (type: L)         |
+|             | dovetails_R (type: L)         |
+|             | edges_to_contained (type: C)  |
+|             | edges_to_containers (type: C) |
+|             | paths                         |
+| Link        | paths                         |
 
 #### GFA2
 
-| Record type | Backreferences        |
-|-------------|-----------------------|
-| Segment     | dovetails_L (type: E) |
-|             | dovetails_R (type: E) |
-|             | contained (type: E)   |
-|             | containers (type: E)  |
-|             | internals (type: E)   |
-|             | gaps_L (type: G)      |
-|             | gaps_R (type: G)      |
-|             | fragments             |
-|             | ordered_groups        |
-|             | unordered_groups      |
-| Edge        | ordered_groups        |
-|             | unordered_groups      |
-| Gap         | ordered_groups        |
-|             | unordered_groups      |
-| U/O Group   | ordered_groups        |
-|             | unordered_groups      |
+| Record type | Backreferences                |
+|-------------|-------------------------------|
+| Segment     | dovetails_L (type: E)         |
+|             | dovetails_R (type: E)         |
+|             | edges_to_contained (type: E)  |
+|             | edges_to_containers (type: E) |
+|             | internals (type: E)           |
+|             | gaps_L (type: G)              |
+|             | gaps_R (type: G)              |
+|             | fragments                     |
+|             | ordered_groups                |
+|             | unordered_groups              |
+| Edge        | ordered_groups                |
+|             | unordered_groups              |
+| Gap         | ordered_groups                |
+|             | unordered_groups              |
+| U/O Group   | ordered_groups                |
+|             | unordered_groups              |
 
 #### Backreference convenience methods
 
 In some cases, additional methods are available which combine in different way
 the backreferences information.
 
-The ```RGFA::Line::Segment#dovetails``` and ```RGFA::Line::Segment#gaps```
+The segment ```dovetails``` and ```gaps```
 methods take an optional argument. Without argument all dovetail overlaps
 (references to links or dovetail edges) or gaps are returned.  If :L or :R is
 provided as argument, the dovetails overlaps (or gaps) of the left or,
 respectively, right end of the segment sequence are returned (equivalent to
 dovetails_L/dovetails_R and gaps_L/gaps_R).
+The segment ```containments``` methods returns both containments
+where the segment is the container or the contained segment.
 
-The ```RGFA::Line::Segment#neighbours``` method computes the set of segment
+The above mentioned methods return lists of edges. Other methods
+directly compute from these edges lists of segments. In particular,
+the segment ```neighbours``` method computes the set of segment
 instances which are connected by dovetails to the segment.
+The segment ```containers``` and ```contained``` methods similarly
+compute the set of segment instances which, respectively, contains
+the segment, or are contained in the segment.
 
 ### Disconnecting a line from a RGFA object
 

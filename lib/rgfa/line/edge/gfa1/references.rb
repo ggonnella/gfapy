@@ -20,7 +20,9 @@ module RGFA::Line::Edge::GFA1::References
         et = send(:"#{dir}_end").end_type
         key = :"dovetails_#{et}"
       else
-        key = (dir == :from) ? :contained : :containers
+        key = (dir == :from) ?
+          :edges_to_contained :
+          :edges_to_containers
       end
       s.add_reference(self, key)
     end

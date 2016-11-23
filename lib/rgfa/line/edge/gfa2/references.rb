@@ -24,9 +24,9 @@ module RGFA::Line::Edge::GFA2::References
 
   def refkey_for_s(snum, st1, st2)
     if st1 == :whole
-      return snum == 1 ? :contained : :containers
+      return snum == 1 ? :edges_to_contained  : :edges_to_containers
     elsif st2 == :whole
-      return snum == 1 ? :containers : :contained
+      return snum == 1 ? :edges_to_containers : :edges_to_contained
     elsif or2 == :+
       if (st1 == :pfx and st2 == :sfx)
         return snum == 1 ? :dovetails_L : :dovetails_R

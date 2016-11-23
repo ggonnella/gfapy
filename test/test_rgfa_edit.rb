@@ -14,9 +14,11 @@ class TestRGFAEdit < Test::Unit::TestCase
     assert_equal("P\t4\t2+,X-\t12M", gfa.paths[0].to_s)
     assert_raises(RGFA::NotFoundError){gfa.segment!("0").dovetails(:R)}
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.segment("X").dovetails(:R)[0].to_s)
-    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.segment!("1").contained[0].to_s)
+    assert_equal("C\t1\t+\tX\t+\t12\t12M",
+                 gfa.segment!("1").edges_to_contained[0].to_s)
     assert_raises(RGFA::NotFoundError){gfa.segment!("0").containers}
-    assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.segment!("X").containers[0].to_s)
+    assert_equal("C\t1\t+\tX\t+\t12\t12M",
+                 gfa.segment!("X").edges_to_containers[0].to_s)
     assert_equal("P\t4\t2+,X-\t12M", gfa.segment!("X").paths[0].to_s)
   end
 

@@ -27,8 +27,10 @@ module RGFA::Line::Segment::References
     end
   end
 
+  # References to graph edges (C lines for GFA1, E for GFA2) which involve the
+  # segment in a containment relationship.
   def containments
-    contained + containers
+    edges_to_contained + edges_to_containers
   end
 
   # Computes the connectivity of a segment from its number of dovetail overlaps.
@@ -49,8 +51,30 @@ module RGFA::Line::Segment::References
     connectivity_symbols(dovetails_L.size, dovetails_R.size)
   end
 
+  # List of dovetail-neighbours of a segment
+  # @return [Array<RGFA::Line::Segment>] segments connected to the current
+  #   segment by dovetail overlap relationships (L lines for GFA1,
+  #   dovetail-representing E lines for GFA2)
   def neighbours(extremity = nil)
-    dovetails(extremity).map {|l| l.other(self) }
+    dovetails(extremity).map{|l|l.other(self)}.uniq
+  end
+
+  # List of segments which contain the segment
+  # @return [Array<RGFA::Line::Segment>] segments connected to the current
+  #   segment by containment relationships (C lines for GFA1,
+  #   containment-representing E lines for GFA2), where the current segment is
+  #   the contained segment
+  def containers
+    edges_to_containers.map(&:from).uniq
+  end
+
+  # List of segments which are contained in the segment
+  # @return [Array<RGFA::Line::Segment>] segments connected to the current
+  #   segment by containment relationships (C lines for GFA1,
+  #   containment-representing E lines for GFA2), where the current segment is
+  #   the container segment
+  def contained
+    edges_to_contained.map(&:to).uniq
   end
 
   private
@@ -66,11 +90,12 @@ module RGFA::Line::Segment::References
   def backreference_keys(ref, key_in_ref)
     case ref.record_type
     when :E
-      [:dovetails_L, :dovetails_R, :internals, :containers, :contained]
+      [:dovetails_L, :dovetails_R, :internals,
+       :edges_to_containers, :edges_to_contained]
     when :L
       [:dovetails_L, :dovetails_R]
     when :C
-      (key_in_ref == :from) ? [:contained] : [:containers]
+      (key_in_ref == :from) ? [:edges_to_contained] : [:edges_to_containers]
     when :G
       [:gaps_L, :gaps_R]
     when :F

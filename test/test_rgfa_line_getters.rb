@@ -139,9 +139,9 @@ class TestRGFALineGetters < Test::Unit::TestCase
     (0..2).each{|i| gfa << "S\t#{i}\t*"}
     c = "C\t1\t+\t0\t+\t0\t*"
     gfa << c
-    assert_equal([c], gfa.segment!("0").containers.map(&:to_s))
-    assert_equal([],  gfa.segment!("1").containers)
-    assert_equal([],  gfa.segment!("2").containers)
+    assert_equal([c], gfa.segment!("0").edges_to_containers.map(&:to_s))
+    assert_equal([],  gfa.segment!("1").edges_to_containers)
+    assert_equal([],  gfa.segment!("2").edges_to_containers)
   end
 
   def test_contained_in
@@ -149,9 +149,9 @@ class TestRGFALineGetters < Test::Unit::TestCase
     (0..2).each{|i| gfa << "S\t#{i}\t*"}
     c = "C\t1\t+\t0\t+\t0\t*"
     gfa << c
-    assert_equal([],  gfa.segment!("0").contained)
-    assert_equal([c], gfa.segment!("1").contained.map(&:to_s))
-    assert_equal([],  gfa.segment!("2").contained)
+    assert_equal([],  gfa.segment!("0").edges_to_contained)
+    assert_equal([c], gfa.segment!("1").edges_to_contained.map(&:to_s))
+    assert_equal([],  gfa.segment!("2").edges_to_contained)
   end
 
   def test_containments_between

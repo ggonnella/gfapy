@@ -33,7 +33,9 @@ module RGFA::Lines::Finders
   #     a segment instance or name
   #
   def containments_between(container, contained)
-    segment!(container).contained.select {|l| l.to.to_sym == contained.to_sym }
+    segment!(container).edges_to_contained.select do |l|
+      l.to.to_sym == contained.to_sym
+    end
   end
 
   # @!macro [new] segment
