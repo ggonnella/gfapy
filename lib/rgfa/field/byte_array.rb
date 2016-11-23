@@ -20,21 +20,6 @@ module RGFA::Field::ByteArray
     byte_array.validate
   end
 
-  def validate(object)
-    case object
-    when RGFA::ByteArray
-      object.validate
-    when Array
-      object.to_byte_array.validate
-    when String
-      validate_encoded(object)
-    else
-      raise RGFA::TypeError,
-        "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::ByteArray, Array)"
-    end
-  end
-
   def unsafe_encode(object)
     case object
     when RGFA::ByteArray
@@ -70,7 +55,6 @@ module RGFA::Field::ByteArray
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

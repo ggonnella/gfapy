@@ -42,41 +42,32 @@ require_relative "field/string.rb"
 # For each datatype a module under field/ exists, which defines
 # the following methods as module functions:
 #
-# unsafe_decode => parse the string representation, and return
-#                  an appropriate Ruby object; it may raise an exception,
-#                  if the content is not valid; however, it is not
-#                  guaranteed that the content is valid;
-#                  either it is faster than decode, or it is an alias for decode
+# unsafe_decode => parses an ASSUMED VALID string representation to
+#                  an appropriate Ruby object
+#                  - faster or as fast as decode()
+#                  - if the assumption is not met, sometimes it will
+#                  raise an exception, sometimes it will return an
+#                  invalid object
 #
-# decode => parse the string representation, and return
-#           an appropriate Ruby object; it raises an exception
-#           if the content is not valid; it is guaranteed
-#           that the content is valid
+# decode => parses a string representation to an appropriate Ruby object
+#           - if the string is invalid, an exception is raised
+#           - the returned object is guaranteed to be valid
 #
-# validate_encoded => validates the string representation; raises
-#                     RGFA::FormatError if invalid
+# validate_encoded => validates a string representation
+#                     - raises RGFA::FormatError if invalid
 #
-# validate_decoded => validates the object, which the user guarantees
-#                     to be of a Ruby type returned by decode
-#                     for the field datatype (eg Integer for "i")
+# validate_decoded => validates a non-string field content
+#                     - raises exception if its state is invalid
 #
-# validate => if the object is a string, it calls validate_encoded;
-#             otherwise validates the object, eventually calling
-#             encode internally, thus it is not meant to be called
-#             immediately before encode (use safe_encode instead);
-#             it raises RGFA::TypeError if the object is not of a compatible
-#             class; it raises RGFA::FormatError or RGFA::ValueError
-#             if the class is compatible with field, but the value is not
-#             (wrong format or wrong value range)
+# unsafe_encode => encodes an ASSUMED VALID field to the string representation;
+#                  - faster or as fast as encode()
+#                  - if the assumption is not met, sometimes it will
+#                  raise an exception, sometimes it will return an
+#                  invalid string representation
 #
-# unsafe_encode => convert an object into the string representation;
-#                  there is no guarantee that the conversion leads to
-#                  a valid field; it may raise an exception if invalid;
-#                  either it is faster than encode, or it is an alias for encode
-#
-# encode => convert an object into the string representation;
-#           the string representation is guaranteed to be valid;
-#           if raises an exception if the object is invalid
+# encode => encodes a field to its string representation;
+#           - raises an exception if the field content is invalid
+#           - the string representation is guaranteed to be valid;
 #
 # Everything in the RGFA::Field module is API private. The user will not call
 # these methods directly, and use instead methods of RGFA::Line.

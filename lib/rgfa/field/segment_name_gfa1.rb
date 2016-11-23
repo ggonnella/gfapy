@@ -34,10 +34,6 @@ module RGFA::Field::SegmentNameGFA1
     end
   end
 
-  def validate(object)
-    validate_decoded(object)
-  end
-
   def unsafe_encode(object)
     case object
     when String
@@ -63,7 +59,6 @@ module RGFA::Field::SegmentNameGFA1
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

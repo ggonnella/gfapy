@@ -52,7 +52,6 @@ module RGFA::Field::String
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

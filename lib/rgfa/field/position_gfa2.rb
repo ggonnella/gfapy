@@ -37,20 +37,13 @@ module RGFA::Field::PositionGFA2
     end
   end
 
-  def validate(object)
-    if object.kind_of?(String)
-      validate_encoded(object)
-    else
-      validate_decoded(object)
-    end
-  end
-
   def unsafe_encode(object)
     object.to_s
   end
 
   def encode(object)
-    validate(object)
+    object.kind_of?(String) ? validate_encoded(object)
+                            : validate_decoded(object)
     object.to_s
   end
 
@@ -58,7 +51,6 @@ module RGFA::Field::PositionGFA2
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

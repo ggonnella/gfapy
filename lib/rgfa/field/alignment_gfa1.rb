@@ -16,21 +16,16 @@ module RGFA::Field::AlignmentGFA1
     end
   end
 
-  def validate_decoded(cigar)
-    cigar.validate
-  end
-
-  def validate(object)
+  def validate_decoded(object)
     case object
-    when String
-      validate_encoded(object)
     when RGFA::Alignment::CIGAR
-      validate_decoded(object)
+      object.validate
     when RGFA::Alignment::Placeholder
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder)"
+        "(accepted classes: String, RGFA::Alignment::CIGAR,"+
+        "RGFA::Alignment::Placeholder)"
     end
   end
 
@@ -51,7 +46,8 @@ module RGFA::Field::AlignmentGFA1
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder)"
+        "(accepted classes: String, "+
+        "RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder)"
     end
   end
 
@@ -59,7 +55,6 @@ module RGFA::Field::AlignmentGFA1
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

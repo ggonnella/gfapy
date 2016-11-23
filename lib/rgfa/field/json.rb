@@ -38,15 +38,6 @@ module RGFA::Field::JSON
     end
   end
 
-  def validate(object)
-    case object
-    when String, Symbol
-      validate_encoded(object)
-    else
-      validate_decoded(object)
-    end
-  end
-
   def unsafe_encode(object)
     object.to_json
   end
@@ -79,7 +70,6 @@ module RGFA::Field::JSON
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
   module_function :validate_all_printable

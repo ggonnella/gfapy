@@ -25,18 +25,6 @@ module RGFA::Field::Integer
     end
   end
 
-  def validate(object)
-    case object
-    when String
-      validate_encoded(object)
-    when Integer
-    else
-      raise RGFA::TypeError,
-        "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: Integer, String)"
-    end
-  end
-
   def unsafe_encode(object)
     object.to_s
   end
@@ -59,7 +47,6 @@ module RGFA::Field::Integer
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

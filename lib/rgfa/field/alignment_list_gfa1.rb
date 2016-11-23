@@ -31,14 +31,6 @@ module RGFA::Field::AlignmentListGFA1
     end
   end
 
-  def validate(object)
-    if object.kind_of?(String)
-      validate_encoded(object)
-    else
-      validate_decoded(object)
-    end
-  end
-
   def unsafe_encode(object)
     case object
     when RGFA::Placeholder
@@ -73,7 +65,6 @@ module RGFA::Field::AlignmentListGFA1
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

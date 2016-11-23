@@ -19,10 +19,15 @@ module RGFA::Field::Generic
 
   alias_method :validate_decoded, :validate_encoded
 
-  def validate(object)
+  def unsafe_encode(object)
+    object.to_s
+  end
+
+  def encode(object)
     case object
     when String
       validate_encoded(object)
+      return object
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
@@ -30,20 +35,10 @@ module RGFA::Field::Generic
     end
   end
 
-  def unsafe_encode(object)
-    object.to_s
-  end
-
-  def encode(object)
-    validate(object)
-    return object
-  end
-
   module_function :decode
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

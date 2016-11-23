@@ -39,10 +39,6 @@ module RGFA::Field::OptionalIdentifierGFA2
     end
   end
 
-  def validate(object)
-    validate_decoded(object)
-  end
-
   def unsafe_encode(object)
     case object
     when String
@@ -80,7 +76,6 @@ module RGFA::Field::OptionalIdentifierGFA2
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

@@ -34,8 +34,6 @@ module RGFA::Field::SequenceGFA1
     end
   end
 
-  alias_method :validate, :validate_decoded
-
   def unsafe_encode(object)
     object.to_s
   end
@@ -58,7 +56,6 @@ module RGFA::Field::SequenceGFA1
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 

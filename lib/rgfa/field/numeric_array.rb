@@ -21,21 +21,6 @@ module RGFA::Field::NumericArray
     numeric_array.validate
   end
 
-  def validate(object)
-    case object
-    when RGFA::NumericArray
-      object.validate
-    when Array
-      object.to_numeric_array.validate
-    when String
-      validate_encoded(object)
-    else
-      raise RGFA::TypeError,
-        "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::NumericArray, Array)"
-    end
-  end
-
   def unsafe_encode(object)
     case object
     when RGFA::NumericArray
@@ -71,7 +56,6 @@ module RGFA::Field::NumericArray
   module_function :unsafe_decode
   module_function :validate_encoded
   module_function :validate_decoded
-  module_function :validate
   module_function :unsafe_encode
   module_function :encode
 
