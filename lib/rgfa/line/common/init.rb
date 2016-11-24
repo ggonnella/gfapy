@@ -154,11 +154,13 @@ module RGFA::Line::Common::Init
     self.class::POSFIELDS.size
   end
 
-  def init_field_value(n ,t, s)
+  def init_field_value(n ,t, s, errmsginfo: nil)
     if @validate >= 3
-      s = s.parse_gfa_field(t, safe: true)
+      s = s.parse_gfa_field(t, safe: true, fieldname: n,
+                            line: errmsginfo)
     elsif !DELAYED_PARSING_DATATYPES.include?(t)
-      s = s.parse_gfa_field(t, safe: @validate >= 2)
+      s = s.parse_gfa_field(t, safe: @validate >= 2, fieldname: n,
+                            line: errmsginfo)
     end
     @data[n] = s
   end
@@ -176,17 +178,18 @@ module RGFA::Line::Common::Init
     end
     n_positional_fields.times do |i|
       n = self.class::POSFIELDS[i]
-      init_field_value(n, self.class::DATATYPE[n], strings[i])
+      init_field_value(n, self.class::DATATYPE[n], strings[i],
+                       errmsginfo: strings)
     end
   end
 
   def initialize_tags(strings)
     n_positional_fields.upto(strings.size-1) do |i|
-      initialize_tag(*strings[i].parse_gfa_tag)
+      initialize_tag(*strings[i].parse_gfa_tag, errmsginfo: strings)
     end
   end
 
-  def initialize_tag(n, t, s)
+  def initialize_tag(n, t, s, errmsginfo: nil)
     if (@validate > 0)
       if @data.has_key?(n)
         raise RGFA::NotUniqueError,
@@ -206,7 +209,7 @@ module RGFA::Line::Common::Init
     else
       (@datatype[n] = t) if !field_datatype(t)
     end
-    init_field_value(n, t, s)
+    init_field_value(n, t, s, errmsginfo: errmsginfo)
   end
 
   def self.included(base)

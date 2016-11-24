@@ -30,14 +30,20 @@ require_relative "common/from_to"
 require_relative "common/alignment_type"
 require_relative "gfa1/to_gfa2"
 require_relative "gfa1/references"
+require_relative "gfa1/oriented_segments"
+require_relative "gfa1/alignment_type"
 require_relative "containment/canonical"
 require_relative "containment/pos"
+require_relative "containment/to_gfa2"
 
 class RGFA::Line::Edge::Containment
   include RGFA::Line::Edge::Common::FromTo
   include RGFA::Line::Edge::Common::AlignmentType
   include RGFA::Line::Edge::GFA1::ToGFA2
   include RGFA::Line::Edge::GFA1::References
+  include RGFA::Line::Edge::GFA1::OrientedSegments
+  include RGFA::Line::Edge::GFA1::AlignmentType
   include RGFA::Line::Edge::Containment::Canonical
   include RGFA::Line::Edge::Containment::Pos
+  include RGFA::Line::Edge::Containment::ToGFA2
 end

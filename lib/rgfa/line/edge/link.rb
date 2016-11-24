@@ -30,19 +30,25 @@ require_relative "common/alignment_type"
 require_relative "common/from_to"
 require_relative "gfa1/to_gfa2"
 require_relative "gfa1/references"
+require_relative "gfa1/oriented_segments"
+require_relative "gfa1/alignment_type"
 require_relative "link/canonical"
 require_relative "link/complement"
 require_relative "link/equivalence"
 require_relative "link/references"
+require_relative "link/to_gfa2"
 
 class RGFA::Line::Edge::Link
   include RGFA::Line::Edge::Common::FromTo
   include RGFA::Line::Edge::Common::AlignmentType
   include RGFA::Line::Edge::GFA1::ToGFA2
   include RGFA::Line::Edge::GFA1::References
+  include RGFA::Line::Edge::GFA1::OrientedSegments
+  include RGFA::Line::Edge::GFA1::AlignmentType
   include RGFA::Line::Edge::Link::Canonical
   include RGFA::Line::Edge::Link::Complement
   include RGFA::Line::Edge::Link::Equivalence
   include RGFA::Line::Edge::Link::References
+  include RGFA::Line::Edge::Link::ToGFA2
 end
 

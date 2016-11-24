@@ -15,18 +15,6 @@ module RGFA::Line::Edge::Common::FromTo
     from_end == to_end
   end
 
-  # @return [RGFA::OrientedSegment] the oriented segment represented by the
-  #   from/from_orient fields
-  def oriented_from
-    [from, from_orient].to_oriented_segment
-  end
-
-  # @return [RGFA::OrientedSegment] the oriented segment represented by the
-  #   to/to_orient fields
-  def oriented_to
-    [to, to_orient].to_oriented_segment
-  end
-
   # @return [RGFA::SegmentEnd] the segment end represented by the
   #   from/from_orient fields
   def from_end

@@ -101,6 +101,8 @@ Gem::Specification.new do |s|
               'lib/rgfa/line/edge/gfa2/alignment_type.rb',
               'lib/rgfa/line/edge/common/from_to.rb',
               'lib/rgfa/line/edge/gfa1/to_gfa2.rb',
+              'lib/rgfa/line/edge/link/to_gfa2.rb',
+              'lib/rgfa/line/edge/containment/to_gfa2.rb',
               'lib/rgfa/line/edge/gfa2/to_gfa1.rb',
               'lib/rgfa/line/edge/gfa1/references.rb',
               'lib/rgfa/line/edge/containment/canonical.rb',

@@ -25,10 +25,11 @@ module RGFA::Line::CustomRecord::Init
 
   def delayed_initialize_positional_fields(strings, n_positional_fields)
     @positional_fieldnames = []
-    init_field_value(:record_type, :custom_record_type, strings[0])
+    init_field_value(:record_type, :custom_record_type, strings[0],
+                     errmsginfo: strings)
     1.upto(n_positional_fields-1) do |i|
       n = :"field#{i}"
-      init_field_value(n, :generic, strings[i])
+      init_field_value(n, :generic, strings[i], errmsginfo: strings)
       @positional_fieldnames << n
       @datatype[n] = :generic
     end

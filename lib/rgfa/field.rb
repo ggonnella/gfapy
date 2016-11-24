@@ -225,18 +225,26 @@ module RGFA::Field
     #   assumed to be valid and decoded into a value accordingly, which may
     #   result in invalid values (but may be faster than the safe decoding)
     # @param fieldname [String] fieldname, for error messages (optional)
+    # @param line [#to_s] line content, for error messages (optional)
     # @raise [RGFA::TypeError] if the specified datatype is unknown
     # @raise [RGFA::FormatError] if the string syntax is not valid
     # @raise [RGFA::ValueError] if the decoded value is not valid
     # @api private
     def parse_gfa_field(datatype,
                         safe: true,
-                        fieldname: nil)
+                        fieldname: nil,
+                        line: nil)
       mod = RGFA::Field::FIELD_MODULE[datatype]
       if mod.nil?
+        begin
+          linemsg = line ? "Line content: #{line.to_s}\n" : ""
+        rescue
+          linemsg = ""
+        end
         fieldnamemsg = fieldname ? "Field: #{fieldname}\n" : ""
         contentmsg = "Content: #{self}\n"
         raise RGFA::TypeError,
+          linemsg +
           fieldnamemsg +
           contentmsg +
           "Datatype unknown: #{datatype.inspect}"
@@ -248,10 +256,16 @@ module RGFA::Field
           mod.unsafe_decode(self)
         end
       rescue => err
+        begin
+          linemsg = line ? "Line content: #{line.to_s}\n" : ""
+        rescue
+          linemsg = ""
+        end
         fieldnamemsg = fieldname ? "Field: #{fieldname}\n" : ""
         contentmsg = "Content: #{self}\n"
         datatypemsg = "Datatype: #{datatype}\n"
         raise err.class,
+              linemsg +
               fieldnamemsg +
               datatypemsg +
               contentmsg +

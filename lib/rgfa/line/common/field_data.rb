@@ -61,7 +61,10 @@ module RGFA::Line::Common::FieldData
       t = field_datatype(fieldname)
       if t != :Z and t != :seq
         # value was not parsed or was set to a string by the user
-        return (@data[fieldname] = v.parse_gfa_field(t, safe: @validate >= 2))
+        return (@data[fieldname] = v.parse_gfa_field(t,
+                                                     safe: @validate >= 2,
+                                                     fieldname: fieldname,
+                                                     line: @data))
       else
          v.validate_gfa_field(t, fieldname) if (@validate >= 5)
       end

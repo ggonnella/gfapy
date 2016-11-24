@@ -1,13 +1,14 @@
 module RGFA::Field::OrientedIdentifierGFA2
 
   def unsafe_decode(string)
-    orientation = string.chop!
-    [string.to_sym, orientation.to_sym].to_oriented_segment
+    [string[0..-2].to_sym,
+     string[-1..-1].to_sym].to_oriented_segment
   end
 
   def decode(string)
-    validate_encoded(string)
-    string.to_sym
+    object = unsafe_decode(string)
+    validate_decoded(object)
+    return object
   end
 
   def validate_encoded(string)
@@ -26,7 +27,7 @@ module RGFA::Field::OrientedIdentifierGFA2
         raise RGFA::ValueError,
           "#{object.inspect} is not a valid GFA2 oriented identifier\n"+
           "(segment name contains spaces or non-printable characters)"
-      elsif [:+,:-].include?(object.orient)
+      elsif ![:+,:-].include?(object.orient)
         raise RGFA::ValueError,
           "#{object.inspect} is not a valid GFA2 oriented identifier\n"+
           "(orientation is invalid)"

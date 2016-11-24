@@ -7,7 +7,8 @@ module RGFA::Line::Edge::GFA2::References
     st2 = substring_type(beg2, end2)[0]
     [1,2].each do |snum|
       sid = :"sid#{snum}"
-      s = @rgfa.segment(get(sid))
+      orient = get(sid).orient
+      s = @rgfa.segment(get(sid).segment)
       if s.nil?
         raise RGFA::NotFoundError if @rgfa.segments_first_order
         s = RGFA::Line::Segment::GFA2.new({:sid => get(sid),
@@ -17,7 +18,8 @@ module RGFA::Line::Edge::GFA2::References
                                            virtual: true)
         s.connect(@rgfa)
       end
-      set_existing_field(sid, s, set_reference: true)
+      set_existing_field(sid, [s, orient].to_oriented_segment,
+                         set_reference: true)
       s.add_reference(self, refkey_for_s(snum, st1, st2))
     end
   end
@@ -27,7 +29,7 @@ module RGFA::Line::Edge::GFA2::References
       return snum == 1 ? :edges_to_contained  : :edges_to_containers
     elsif st2 == :whole
       return snum == 1 ? :edges_to_containers : :edges_to_contained
-    elsif or2 == :+
+    elsif sid1.orient == sid2.orient
       if (st1 == :pfx and st2 == :sfx)
         return snum == 1 ? :dovetails_L : :dovetails_R
       elsif (st1 == :sfx and st2 == :pfx)

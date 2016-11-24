@@ -4,23 +4,14 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   in GFA1, if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def to_gfa1_a
-    case alignment_type
-    when :I
-      raise RGFA::ValueError, "Line: #{self.to_s}\n"+
-        "Internal alignment, cannot be represented in GFA1"
-    else
-      a = [alignment_type]
-      if beg1.first?
-        a += [field_to_s(:sid2), field_to_s(:or2), field_to_s(:sid1), "+"]
-        if alignment_type == :C
-          a << field_to_s(:beg2)
-        end
-      else
-        a += [field_to_s(:sid1), "+", field_to_s(:sid2), field_to_s(:or2)]
-        if alignment_type == :C
-          a << field_to_s(:beg1)
-        end
-      end
+    check_not_internal("GFA1 representation")
+    a = [alignment_type]
+    a << oriented_from.name
+    a << oriented_from.orient
+    a << oriented_to.name
+    a << oriented_to.orient
+    if alignment_type == :C
+      a << pos.to_s
     end
     a << overlap.to_s
     if !eid.placeholder?
@@ -36,35 +27,32 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   returned, as the complement of a trace can only be computed by computing
   #   the alignment
   def complement_alignment
-    alignment.kind_of?(RGFA::Alignment::CIGAR) ?
-      alignment.complement :
-      RGFA::Alignment::Placeholder.new
+    alignment.complement
   end
 
-  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR] value of the GFA1 +overlap+ field,
+  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR]
+  #   value of the GFA1 +overlap+ field,
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def overlap
     check_not_internal(:overlap)
-    case alignment
-    when RGFA::Alignment::Placeholder, RGFA::Alignment::Trace
-      RGFA::Alignment::Placeholder.new
-    when RGFA::Alignment::CIGAR
-      if beg1.first?
-        alignment
-      else
-        complement_alignment
-      end
-    else
-      raise RGFA::AssertionError, "Bug found, please report"
-    end
+    beg1.first? ? alignment.complement : alignment
   end
 
-  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR] complement of the value of the
+  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR]
+  #   complement of the value of the
   #   GFA1 +overlap+ field, if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def complement_overlap
     overlap.complement
+  end
+
+  def oriented_from
+    beg1.first? ? sid2 : sid1
+  end
+
+  def oriented_to
+    beg1.first? ? sid1 : sid2
   end
 
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +from+ field,
@@ -72,7 +60,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def from
     check_not_internal(:from)
-    beg1.first? ? sid2 : sid1
+    oriented_from.segment
   end
 
   # Set the field which will be returned by calling from
@@ -80,7 +68,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def from=(value)
     check_not_internal(:from)
-    beg1.first? ? set(:sid2, value) : set(:sid1, value)
+    oriented_from.segment = value
   end
 
   # @return [:+, :-] value of the GFA1 +from_orient+ field,
@@ -88,7 +76,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def from_orient
     check_not_internal(:from_orient)
-    beg1.first? ? or2 : :"+"
+    oriented_from.orient
   end
 
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +to+ field,
@@ -96,7 +84,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to
     check_not_internal(:to)
-    beg1.first? ? sid1 : sid2
+    oriented_to.segment
   end
 
   # Set the field which will be returned by calling to
@@ -104,7 +92,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def to=(value)
     check_not_internal(:to)
-    beg1.first? ? set(:sid1, value) : set(:sid2, value)
+    oriented_to.segment = value
   end
 
   # @return [:+, :-] value of the GFA1 +to_orient+ field,
@@ -112,7 +100,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to_orient
     check_not_internal(:to_orient)
-    beg1.first? ? :"+" : or2
+    oriented_to.orient
   end
 
   # @return [Integer] value of the GFA1 +pos+ field,

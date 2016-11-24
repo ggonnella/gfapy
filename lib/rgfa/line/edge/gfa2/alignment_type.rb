@@ -17,7 +17,7 @@ module RGFA::Line::Edge::GFA2::AlignmentType
   def alignment_type_for_substring_types(st1, st2)
     if st1 == :whole or st2 == :whole
       return :C
-    elsif or2 == :+
+    elsif sid1.orient == sid2.orient
       if (st1 == :pfx and st2 == :sfx) or (st1 == :sfx and st2 == :pfx)
         return :L
       else

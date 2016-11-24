@@ -65,6 +65,10 @@ class RGFA::Alignment::Trace < Array
     self
   end
 
+  def complement
+    return RGFA::Alignment::Placeholder.new
+  end
+
 end
 
 class String
