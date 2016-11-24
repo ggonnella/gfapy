@@ -7,7 +7,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   FIELD_ALIAS = { :name => :pid }
   DATATYPE = {
     :pid => :optional_identifier_gfa2,
-    :items => :identifier_list_gfa2,
+    :items => :oriented_identifier_list_gfa2,
   }
   REFERENCE_FIELDS = [:items]
   REFERENCE_RELATED_FIELDS = []

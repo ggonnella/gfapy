@@ -122,7 +122,7 @@ class TestRGFAVersion < Test::Unit::TestCase
   end
 
   def test_version_by_GFA2_specific_line_O
-    o = "O\tX\tA B C"
+    o = "O\tX\tA+ B- C+"
     gfa = RGFA.new()
     gfa << o
     assert_equal(:"2.0", gfa.version)

@@ -20,6 +20,7 @@ require_relative "field/gap_direction.rb"
 require_relative "field/generic.rb"
 require_relative "field/identifier_gfa2.rb"
 require_relative "field/identifier_list_gfa2.rb"
+require_relative "field/oriented_identifier_list_gfa2.rb"
 require_relative "field/integer.rb"
 require_relative "field/json.rb"
 require_relative "field/numeric_array.rb"
@@ -94,7 +95,9 @@ module RGFA::Field
                              :alignment_gfa2,
                              :generic,
                              :identifier_gfa2,
+                             :oriented_identifier_gfa2,
                              :identifier_list_gfa2,
+                             :oriented_identifier_list_gfa2,
                              :optional_identifier_gfa2,
                              :position_gfa2,
                              :custom_record_type,
@@ -118,26 +121,27 @@ module RGFA::Field
   FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
 
   FIELD_MODULE = {
-    :alignment_gfa1           => RGFA::Field::AlignmentGFA1,
-    :alignment_gfa2           => RGFA::Field::AlignmentGFA2,
-    :alignment_list_gfa1      => RGFA::Field::AlignmentListGFA1,
-    :comment                  => RGFA::Field::Comment,
-    :custom_record_type       => RGFA::Field::CustomRecordType,
-    :gap_direction            => RGFA::Field::GapDirection,
-    :generic                  => RGFA::Field::Generic,
-    :identifier_gfa2          => RGFA::Field::IdentifierGFA2,
-    :identifier_list_gfa2     => RGFA::Field::IdentifierListGFA2,
-    :optional_identifier_gfa2 => RGFA::Field::OptionalIdentifierGFA2,
-    :oriented_identifier_gfa2 => RGFA::Field::OrientedIdentifierGFA2,
-    :optional_integer         => RGFA::Field::OptionalInteger,
-    :orientation              => RGFA::Field::Orientation,
-    :oriented_segments        => RGFA::Field::OrientedSegments,
-    :path_name_gfa1           => RGFA::Field::PathNameGFA1,
-    :position_gfa1            => RGFA::Field::PositionGFA1,
-    :position_gfa2            => RGFA::Field::PositionGFA2,
-    :segment_name_gfa1        => RGFA::Field::SegmentNameGFA1,
-    :sequence_gfa1            => RGFA::Field::SequenceGFA1,
-    :sequence_gfa2            => RGFA::Field::SequenceGFA2,
+    :alignment_gfa1                => RGFA::Field::AlignmentGFA1,
+    :alignment_gfa2                => RGFA::Field::AlignmentGFA2,
+    :alignment_list_gfa1           => RGFA::Field::AlignmentListGFA1,
+    :comment                       => RGFA::Field::Comment,
+    :custom_record_type            => RGFA::Field::CustomRecordType,
+    :gap_direction                 => RGFA::Field::GapDirection,
+    :generic                       => RGFA::Field::Generic,
+    :identifier_gfa2               => RGFA::Field::IdentifierGFA2,
+    :identifier_list_gfa2          => RGFA::Field::IdentifierListGFA2,
+    :oriented_identifier_list_gfa2 => RGFA::Field::OrientedIdentifierListGFA2,
+    :optional_identifier_gfa2      => RGFA::Field::OptionalIdentifierGFA2,
+    :oriented_identifier_gfa2      => RGFA::Field::OrientedIdentifierGFA2,
+    :optional_integer              => RGFA::Field::OptionalInteger,
+    :orientation                   => RGFA::Field::Orientation,
+    :oriented_segments             => RGFA::Field::OrientedSegments,
+    :path_name_gfa1                => RGFA::Field::PathNameGFA1,
+    :position_gfa1                 => RGFA::Field::PositionGFA1,
+    :position_gfa2                 => RGFA::Field::PositionGFA2,
+    :segment_name_gfa1             => RGFA::Field::SegmentNameGFA1,
+    :sequence_gfa1                 => RGFA::Field::SequenceGFA1,
+    :sequence_gfa2                 => RGFA::Field::SequenceGFA2,
     :H    => RGFA::Field::ByteArray,
     :A    => RGFA::Field::Char,
     :f    => RGFA::Field::Float,

@@ -14,7 +14,7 @@ class TestAPI::Positionals < Test::Unit::TestCase
     :F  => "F\t1\t5+\t11\t21\t31\t41\t*",
     :G  => "G\t*\t1\t<\t>\t2\t1000\t1",
     :U  => "U\t*\t1 2 3",
-    :O  => "O\t*\t1 2 3",
+    :O  => "O\t*\t1+ 2+ 3+",
   }
   @@f = Hash[@@s.map{|k,v|[k,v.split("\t")]}]
   @@l = Hash[@@s.map{|k,v|[k,v.to_rgfa_line]}]
@@ -53,7 +53,9 @@ class TestAPI::Positionals < Test::Unit::TestCase
             :alignment => "10M1I10M1D80M".to_alignment},
     :G  => {:gid => :g2g, :sid1 => :s2s, :d1 => :>, :d2 => :<, :sid2 => :t2t,
             :disp => 2000, :var => 100},
-    :O  => {:pid => :O100, :items => [:x1, :x2, :x3]},
+    :O  => {:pid => :O100, :items => [[:x1,:+].to_oriented_segment,
+                                      [:x2,:+].to_oriented_segment,
+                                      [:x3,:-].to_oriented_segment]},
     :U  => {:pid => :U100, :items => [:x1, :x2, :x3]},
   }
   @@v2 = {
@@ -76,7 +78,9 @@ class TestAPI::Positionals < Test::Unit::TestCase
             :alignment => "10M1I20M1D80M".to_alignment},
     :G  => {:gid => :g4g, :sid1 => :s4s, :d1 => :<, :d2 => :>, :sid2 => :t4t,
             :disp => 3000, :var => 200},
-    :O  => {:pid => :O200, :items => [:x7, :x6, :x3]},
+    :O  => {:pid => :O200, :items => [[:x7,:-].to_oriented_segment,
+                                      [:x6,:+].to_oriented_segment,
+                                      [:x3,:+].to_oriented_segment]},
     :U  => {:pid => :U200, :items => [:x6, :x7, :x4]},
   }
   @@aliases = {
@@ -157,7 +161,7 @@ class TestAPI::Positionals < Test::Unit::TestCase
     assert_kind_of(Array, @@l[:P].overlaps)
     assert_kind_of(RGFA::Alignment::Placeholder, @@l[:P].overlaps.first)
     assert_kind_of(Array, @@l[:O].items)
-    assert_kind_of(Symbol, @@l[:O].items.first)
+    assert_kind_of(RGFA::OrientedSegment, @@l[:O].items.first)
     assert_kind_of(Array, @@l[:U].items)
     assert_kind_of(Symbol, @@l[:U].items.first)
   end
