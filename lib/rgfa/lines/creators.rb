@@ -76,7 +76,8 @@ module RGFA::Lines::Creators
     elsif RGFA::Lines::GFA2Specific.include?(gfa_line.class)
       raise RGFA::VersionError,
         "Version: 1.0 (#{@version_explanation})\t"+
-        "Cannot add instance of incompatible line type (#{rt})"
+        "Cannot add instance of incompatible line type "+
+        "(#{gfa_line.record_type})"
     end
     case gfa_line.record_type
     when :H

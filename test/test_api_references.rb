@@ -96,6 +96,18 @@ class TestAPI::References < Test::Unit::TestCase
   end
 
   def test_edges_references
+    g = RGFA.new
+    lab = "E\t*\ta+\tb+\t0\t10\t90\t100$\t*".to_rgfa_line
+    assert_equal([:a,:+].to_oriented_segment, lab.sid1)
+    assert_equal([:b,:+].to_oriented_segment, lab.sid2)
+    g << (sa = "S\ta\t100\t*".to_rgfa_line)
+    g << (sb = "S\tb\t100\t*".to_rgfa_line)
+    g << lab
+    assert_equal(sa, lab.sid1.segment)
+    assert_equal(sb, lab.sid2.segment)
+    lab.disconnect
+    assert_equal(:a, lab.sid1.segment)
+    assert_equal(:b, lab.sid2.segment)
   end
 
   def test_fragments_references
