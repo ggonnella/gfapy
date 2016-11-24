@@ -29,14 +29,14 @@ rules, see the respective chapters.
 
 #### GFA2 field names
 
-| Record Type | Field 1   | Field 2     | Field 3        | Field 4     | Field 5     | Field 6     | Field 7     | Field 8         | Field 9         |
-|-------------|-----------|-------------|----------------|-------------|-------------|-------------|-------------|-----------------|-----------------|
-| Segment     | ```sid``` | ```slen ``` | ```sequence``` |             |             |             |             |                 |                 |
-| Edge        | ```eid``` | ```sid1 ``` | ```or2     ``` | ```sid2 ``` | ```beg1 ``` | ```end1 ``` | ```beg2 ``` | ```end2     ``` | ```alignment``` |
-| Fragment    | ```sid``` | ```or   ``` | ```external``` | ```s_beg``` | ```s_end``` | ```f_beg``` | ```f_end``` | ```alignment``` |                 |
-| Gap         | ```gid``` | ```sid1 ``` | ```d1      ``` | ```d2   ``` | ```sid2 ``` | ```disp ``` | ```var  ``` |                 |                 |
-| U\ Group    | ```pid``` | ```items``` |                |             |             |             |             |                 |                 |
-| O\ Group    | ```pid``` | ```items``` |                |             |             |             |             |                 |                 |
+| Record Type | Field 1   | Field 2        | Field 3        | Field 4     | Field 5     | Field 6     | Field 7         | Field 8         |
+|-------------|-----------|----------------|----------------|-------------|-------------|-------------|-----------------|-----------------|
+| Segment     | ```sid``` | ```slen    ``` | ```sequence``` |             |             |             |                 |                 |
+| Edge        | ```eid``` | ```sid1    ``` | ```sid2    ``` | ```beg1 ``` | ```end1 ``` | ```beg2 ``` | ```end2 ```     | ```alignment``` |
+| Fragment    | ```sid``` | ```external``` | ```s_beg   ``` | ```s_end``` | ```f_beg``` | ```f_end``` | ```alignment``` |                 |
+| Gap         | ```gid``` | ```sid1    ``` | ```d1      ``` | ```d2   ``` | ```sid2 ``` | ```disp ``` | ```var  ```     |                 |
+| U\ Group    | ```pid``` | ```items   ``` |                |             |             |             |                 |                 |
+| O\ Group    | ```pid``` | ```items   ``` |                |             |             |             |                 |                 |
 
 ### Datatypes
 
@@ -150,7 +150,7 @@ For more details, see the Alignments chapter.
 |                          | Path        | ```path_name             ``` |
 |                          | Link        | ```from, to              ``` |
 |                          | Containment | ```from, to              ``` |
-| [Identifier+Orientation] | Path        | ```segment_names         ``` |
+| [OrientedIdentifier]     | Path        | ```segment_names         ``` |
 | Orientation              | Link        | ```from_orient, to_orient``` |
 |                          | Containment | ```from_orient, to_orient``` |
 | Sequence                 | Segment     | ```sequence              ``` |
@@ -164,13 +164,16 @@ For more details, see the Alignments chapter.
 | Datatype                 | Record Type | Fields                           |
 |--------------------------|-------------|----------------------------------|
 | Itentifier               | Segment     | ```sid                       ``` |
-|                          | Edge        | ```eid, sid1, sid2           ``` |
-|                          | Gap         | ```gid, sid1, sid2           ``` |
-|                          | Fragment    | ```sid, external             ``` |
-|                          | U/O Group   | ```pid                       ``` |
-| [Identifier]             | U/O Group   | ```items                     ``` |
-| Orientation              | Edge        | ```or2                       ``` |
-| Direction                | Gap         | ```d1, d2                    ``` |
+|                          | Fragment    | ```sid                       ``` |
+| OrientedIdentifier       | Edge        | ```sid1, sid2                ``` |
+|                          | Gap         | ```sid1, sid2                ``` |
+|                          | Fragment    | ```external                  ``` |
+| OptionalIdentifier       | Edge        | ```eid                       ``` |
+|                          | Gap         | ```gid                       ``` |
+|                          | U Group     | ```oid                       ``` |
+|                          | O Group     | ```uid                       ``` |
+| [Identifier]             | U Group     | ```items                     ``` |
+| [OrientedIdentifier]     | O Group     | ```items                     ``` |
 | Sequence                 | Segment     | ```sequence                  ``` |
 | Alignment                | Edge        | ```alignment                 ``` |
 |                          | Fragment    | ```alignment                 ``` |
