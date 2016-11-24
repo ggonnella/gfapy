@@ -2,13 +2,12 @@
 class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F
-  POSFIELDS = [:sid, :or, :external, :s_beg, :s_end, :f_beg, :f_end, :alignment]
+  POSFIELDS = [:sid, :external, :s_beg, :s_end, :f_beg, :f_end, :alignment]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
   DATATYPE = {
     :sid => :identifier_gfa2,
-    :or => :orientation,
-    :external => :identifier_gfa2,
+    :external => :oriented_identifier_gfa2,
     :s_beg => :position_gfa2,
     :s_end => :position_gfa2,
     :f_beg => :position_gfa2,
