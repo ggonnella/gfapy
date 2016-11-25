@@ -108,7 +108,7 @@ class TestRGFAVersion < Test::Unit::TestCase
   end
 
   def test_version_by_GFA2_specific_line_G
-    g = "G\t*\tA\t<\t>\tB\t1000\t*"
+    g = "G\t*\tA+\tB-\t1000\t*"
     gfa = RGFA.new()
     gfa << g
     assert_equal(:"2.0", gfa.version)
