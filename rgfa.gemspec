@@ -48,7 +48,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/field/oriented_identifier_gfa2.rb',
               'lib/rgfa/field/optional_integer.rb',
               'lib/rgfa/field/orientation.rb',
-              'lib/rgfa/field/oriented_segments.rb',
+              'lib/rgfa/field/oriented_identifier_list_gfa1.rb',
               'lib/rgfa/field/path_name_gfa1.rb',
               'lib/rgfa/field/position_gfa1.rb',
               'lib/rgfa/field/position_gfa2.rb',

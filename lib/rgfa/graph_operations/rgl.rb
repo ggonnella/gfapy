@@ -24,26 +24,25 @@ begin
     # Creates an RGL graph, including links orientations.
     #
     # @return [RGL::ImplicitGraph] an rgl implicit directed graph;
-    #   where vertices are [RGFA::Segment::GFA1, orientation] pairs
-    #   (instances of the RGFA::OrientedSegment subclass of Array)
+    #   where vertices are RGFA::OrientedLine instances
     def to_rgl_oriented
       RGL::ImplicitGraph.new do |g|
         g.vertex_iterator do |block|
           self.each_segment do |segment|
             [:+, :-].each do |orient|
-              block.call([segment, orient].to_oriented_segment)
+              block.call(OL[segment, orient])
             end
           end
         end
         g.adjacent_iterator do |oriented_segment, block|
-          s = segment(oriented_segment.segment)
+          s = segment(oriented_segment.line)
           s.dovetails.each do |l|
             if l.from == s and l.from_orient == oriented_segment.orient
-              os = [segment(l.to), l.to_orient].to_oriented_segment
+              os = OL[segment(l.to), l.to_orient]
               block.call(os)
             end
             if l.to == s and l.to_orient == oriented_segment.orient.invert
-              os = [segment(l.from), l.from_orient].to_oriented_segment
+              os = OL[segment(l.from), l.from_orient]
               block.call(os.invert)
             end
           end
@@ -87,8 +86,8 @@ begin
       # @!macro[new] from_rgl
       #   <b>Accepted vertex formats</b>:
       #
-      #   - RGFA::OrientedSegment, or Array which can be converted to it;
-      #     where the first element is a <i>segment specifier</i> (see below)
+      #   - RGFA::OrientedLine,
+      #     where the line element is a <i>segment specifier</i> (see below)
       #   - <i>segment specifier</i> alone: the orientation is assumed to be :+
       #
       #   The <i>segment specifier</i> can be:
@@ -123,8 +122,10 @@ begin
       private
 
       def add_segment_if_new(gfa, v)
-        # RGFA::OrientedSegment or GFA::GraphVertex
+        # GFA::GraphVertex
         v = v.segment if v.respond_to?(:segment)
+        # RGFA::OrientedLine
+        v = v.line if v.respond_to?(:line)
         if v.kind_of?(Symbol)
           # segment name as symbol
           return if gfa.segment_names.include?(v)
@@ -148,7 +149,7 @@ begin
       def segment_name_and_orient(s)
         # default orientation
         o = s.respond_to?(:orient) ? s.orient.to_s : "+"
-        # RGFA::Line::Segment (also embedded in RGFA::OrientedSegment)
+        # RGFA::Line::Segment (also embedded in RGFA::OrientedLine)
         if s.respond_to?(:name)
           s = s.name.to_s
         elsif s.respond_to?(:segment)

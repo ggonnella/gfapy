@@ -8,7 +8,7 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
   FIELD_ALIAS = { :name => :path_name }
   DATATYPE = {
     :path_name => :path_name_gfa1,
-    :segment_names => :oriented_segments,
+    :segment_names => :oriented_identifier_list_gfa1,
     :overlaps => :alignment_list_gfa1,
   }
   REFERENCE_FIELDS = [:segment_names, :overlaps]

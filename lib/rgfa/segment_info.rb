@@ -115,15 +115,6 @@ class RGFA::SegmentEnd < RGFA::SegmentInfo
   def to_segment_end; self; end
 end
 
-# A segment plus orientation
-class RGFA::OrientedSegment < RGFA::SegmentInfo
-  # Segment orientation
-  ATTR = [ ORIENT_FWD = :+, ORIENT_REV = :- ]
-  alias_method :orient, :attribute
-  alias_method :orient=, :attribute=
-  def to_oriented_segment; self; end
-end
-
 class Array
 
   # Create and validate a segment end from an array
@@ -131,13 +122,6 @@ class Array
   # @return [RGFA::SegmentEnd]
   def to_segment_end
     to_segment_info(RGFA::SegmentEnd)
-  end
-
-  # Create and validate a segment end from an array
-  # @!macro segment_info_validation_errors
-  # @return [RGFA::OrientedSegment]
-  def to_oriented_segment
-    to_segment_info(RGFA::OrientedSegment)
   end
 
   protected

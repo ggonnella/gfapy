@@ -84,8 +84,8 @@ module RGFA::Line::Edge::Link::Equivalence
 
   # Compares a link and optionally the complement link,
   # with two oriented_segments and optionally an overlap.
-  # @param [RGFA::OrientedSegment] other_oriented_from
-  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param [RGFA::OrientedLine] other_oriented_from
+  # @param [RGFA::OrientedLine] other_oriented_to
   # @param equivalent [Boolean] shall the complement link also be considered?
   # @param [RGFA::Alignment::CIGAR] other_overlap compared only if not empty
   # @return [Boolean] does the link or, if +equivalent+,
@@ -108,8 +108,8 @@ module RGFA::Line::Edge::Link::Equivalence
   end
 
   # Compares a link with two oriented segments and optionally an overlap.
-  # @param [RGFA::OrientedSegment] other_oriented_from
-  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param [RGFA::OrientedLine] other_oriented_from
+  # @param [RGFA::OrientedLine] other_oriented_to
   # @param [RGFA::Alignment::CIGAR] other_overlap compared only if not empty
   # @return [Boolean] does the link go from the first
   #   oriented segment to the second with an overlap equal to the provided one
@@ -123,8 +123,8 @@ module RGFA::Line::Edge::Link::Equivalence
 
   # Compares the complement link with two oriented segments and optionally an
   # overlap.
-  # @param [RGFA::OrientedSegment] other_oriented_from
-  # @param [RGFA::OrientedSegment] other_oriented_to
+  # @param [RGFA::OrientedLine] other_oriented_from
+  # @param [RGFA::OrientedLine] other_oriented_to
   # @param [RGFA::Alignment::CIGAR] other_overlap compared only if not empty
   # @return [Boolean] does the complement link go from the first
   #   oriented segment to the second with an overlap equal to the provided one

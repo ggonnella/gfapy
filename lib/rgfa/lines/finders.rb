@@ -107,15 +107,13 @@ module RGFA::Lines::Finders
   # to another segment S2 in a given, or the equivalent
   # link from S2 to S1 with inverted orientations.
   #
-  # @param [RGFA::OrientedSegment] oriented_segment1 a segment with orientation
-  # @param [RGFA::OrientedSegment] oriented_segment2 a segment with orientation
+  # @param [RGFA::OrientedLine] oriented_segment1 a segment with orientation
+  # @param [RGFA::OrientedLine] oriented_segment2 a segment with orientation
   # @param [RGFA::Alignment::CIGAR] cigar
   # @return [RGFA::Line::Edge::Link] the first link found
   # @return [nil] if no link is found.
   def search_link(oriented_segment1, oriented_segment2, cigar)
-    oriented_segment1 = oriented_segment1.to_oriented_segment
-    oriented_segment2 = oriented_segment2.to_oriented_segment
-    s = segment(oriented_segment1.segment)
+    s = segment(oriented_segment1.line)
     return nil if s.nil?
     s.dovetails.each do |l|
       return l if l.kind_of?(RGFA::Line::Edge::Link) and

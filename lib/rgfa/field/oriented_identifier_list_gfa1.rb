@@ -1,8 +1,8 @@
-module RGFA::Field::OrientedSegments
+module RGFA::Field::OrientedIdentifierListGFA1
 
   def unsafe_decode(string)
     string.split(",").map do |l|
-      [l[0..-2].to_sym, l[-1].to_sym].to_oriented_segment
+      OL[l[0..-2].to_sym, l[-1].to_sym]
     end
   end
 
@@ -25,7 +25,13 @@ module RGFA::Field::OrientedSegments
 
   def validate_decoded(array)
     array.each do |elem|
-      elem = elem.to_oriented_segment
+      if !elem.kind_of?(RGFA::OrientedLine)
+        raise RGFA::TypeError,
+          "an element of the list is not a RGFA::OrientedLine\n"+
+          "Element class: #{elem.class}\n"+
+          "Element: #{elem}\n"+
+          "List: #{array}"
+      end
       elem.validate
       if elem.name !~ /^[!-)+-<>-~][!-~]*$/
         raise RGFA::FormatError,
@@ -40,7 +46,7 @@ module RGFA::Field::OrientedSegments
     when String
       return object
     when Array
-      return object.map{|os|os.to_oriented_segment.to_s}.join(",")
+      return object.map{|os|os.to_s}.join(",")
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
@@ -55,7 +61,7 @@ module RGFA::Field::OrientedSegments
       return object
     when Array
       validate_decoded(object)
-      return object.map{|os|os.to_oriented_segment.to_s}.join(",")
+      return object.map{|os|os.to_s}.join(",")
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+

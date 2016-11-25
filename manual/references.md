@@ -7,15 +7,15 @@ other lines of the GFA file.
 ### Connecting a line to a RGFA object
 
 In stand-alone line instances, the identifiers which reference
-other lines are symbols (or instances of RGFA::OrientedSegment, consisting
-of a symbol and an orientation, if they contain an orientation).
+other lines are symbols (or, if they are oriented identifiers,
+then instances of RGFA::OrientedLine containing a symbol).
 Lists of identifiers are represented by arrays of symbols and oriented
 segment instances.
 
 When a line is connected to a RGFA object (adding the line using
 ```RGFA#<<(line)``` or calling ```RGFA::Line#connect(rgfa)```),
-the symbols in the fields (and in arrays and oriented segments) are changed into
-references to the corresponding lines in the RGFA object.
+the symbols in the fields (and in arrays and oriented line instances)
+are changed into references to the corresponding lines in the RGFA object.
 
 The method ```RGFA::Line#connected?``` allows to determine if
 a line is connected to an RGFA instance. The method ```RGFA::Line#rgfa```
@@ -24,15 +24,16 @@ returns the RGFA instance to which the line is connected.
 ### References
 
 The following tables list the references for each record type.
+```[]``` represent arrays.
 
 #### GFA1
 
-| Record type | Fields         | Type of reference        |
-|-------------|----------------|--------------------------|
-| Link        | from, to       | Segment                  |
-| Containment | from, to       | Segment                  |
-| Path        | segment_names, | Array of OrientedSegment |
-|             | links (1)      | Array of Link            |
+| Record type | Fields         | Type of reference |
+|-------------|----------------|-------------------|
+| Link        | from, to       | Segment           |
+| Containment | from, to       | Segment           |
+| Path        | segment_names, | [OrientedLine]    |
+|             | links (1)      | [Link]            |
 
 (1): paths contain information in the fields segment_names and overlaps,
 which allow to find the identify from which they depend; these links can be
@@ -40,12 +41,13 @@ retrieved using ```links``` (which is not a field).
 
 #### GFA2
 
-| Record type | Fields        | Type of reference               |
-|-------------|---------------|---------------------------------|
-| Edge        | sid1, sid2    | Segment                         |
-| Gap         | sid1, sid2    | Segment                         |
-| Fragment    | sid           | Segment                         |
-| U/O Group   | items         | Array of Edge/Gap/Group/Segment |
+| Record type | Fields        | Type of reference                        |
+|-------------|---------------|------------------------------------------|
+| Edge        | sid1, sid2    | Segment                                  |
+| Gap         | sid1, sid2    | Segment                                  |
+| Fragment    | sid           | Segment                                  |
+| U Group     | items         | [Edge/Gap/U-Group/Segment]               |
+| O Group     | items         | [OrientedLine(Edge/Gap/O-Group/Segment)] |
 
 ### Backreferences
 

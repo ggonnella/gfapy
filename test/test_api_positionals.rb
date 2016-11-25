@@ -39,23 +39,23 @@ class TestAPI::Positionals < Test::Unit::TestCase
            :overlap => "12M".to_alignment},
     :C => {:from => :cx, :from_orient => :-, :to => :cy, :to_orient => :-,
            :pos => 123, :overlap => "120M".to_alignment},
-    :P => {:path_name => :px, :segment_names => [[:x,:+].to_oriented_segment,
-           [:y,:-].to_oriented_segment], :overlaps => ["10M".to_alignment]},
+    :P => {:path_name => :px, :segment_names => [OL[:x,:+], OL[:y,:-]],
+           :overlaps => ["10M".to_alignment]},
     :S2 => {:sid => :s2s, :slen => 999, :sequence => "gggg"},
-    :E  => {:eid => :e2e, :sid1 => [:s2s,:-].to_oriented_segment,
-            :sid2 => [:t2t,:-].to_oriented_segment,
+    :E  => {:eid => :e2e, :sid1 => OL[:s2s,:-],
+            :sid2 => OL[:t2t,:-],
             :beg1 => 0, :end1 => "100$".to_pos,
             :beg2 => 10, :end2 => "110$".to_pos,
             :alignment => "10M1I10M1D80M".to_alignment},
-    :F  => {:sid => :s2s, :external => [:ex2ex,:-].to_oriented_segment,
+    :F  => {:sid => :s2s, :external => OL[:ex2ex,:-],
             :s_beg => 0, :s_end => "100$".to_pos,
             :f_beg => 10, :f_end => "110$".to_pos,
             :alignment => "10M1I10M1D80M".to_alignment},
     :G  => {:gid => :g2g, :sid1 => :s2s, :d1 => :>, :d2 => :<, :sid2 => :t2t,
             :disp => 2000, :var => 100},
-    :O  => {:pid => :O100, :items => [[:x1,:+].to_oriented_segment,
-                                      [:x2,:+].to_oriented_segment,
-                                      [:x3,:-].to_oriented_segment]},
+    :O  => {:pid => :O100, :items => [OL[:x1,:+],
+                                      OL[:x2,:+],
+                                      OL[:x3,:-]]},
     :U  => {:pid => :U100, :items => [:x1, :x2, :x3]},
   }
   @@v2 = {
@@ -64,23 +64,23 @@ class TestAPI::Positionals < Test::Unit::TestCase
            :overlap => "9M3I3M".to_alignment},
     :C => {:from => :cp, :from_orient => :+, :to => :cl, :to_orient => :+,
            :pos => 213, :overlap => "110M4D10M".to_alignment},
-    :P => {:path_name => :pu, :segment_names => [[:k,:-].to_oriented_segment,
-           [:l,:+].to_oriented_segment], :overlaps => ["11M".to_alignment]},
+    :P => {:path_name => :pu, :segment_names => [OL[:k,:-],
+           OL[:l,:+]], :overlaps => ["11M".to_alignment]},
     :S2 => {:sid => :s4s, :slen => 1999, :sequence => "aaaa"},
-    :E  => {:eid => :e4e, :sid1 => [:s4s,:+].to_oriented_segment,
-            :sid2 => [:t4t,:+].to_oriented_segment,
+    :E  => {:eid => :e4e, :sid1 => OL[:s4s,:+],
+            :sid2 => OL[:t4t,:+],
             :beg1 => 10, :end1 => "110$".to_pos,
             :beg2 => 0, :end2 => "100$".to_pos,
             :alignment => "10M1I20M1D80M".to_alignment},
-    :F  => {:sid => :s4s, :external => [:ex4ex, :+].to_oriented_segment,
+    :F  => {:sid => :s4s, :external => OL[:ex4ex, :+],
             :s_beg => 10, :s_end => "110$".to_pos,
             :f_beg => 0, :f_end => "100$".to_pos,
             :alignment => "10M1I20M1D80M".to_alignment},
     :G  => {:gid => :g4g, :sid1 => :s4s, :d1 => :<, :d2 => :>, :sid2 => :t4t,
             :disp => 3000, :var => 200},
-    :O  => {:pid => :O200, :items => [[:x7,:-].to_oriented_segment,
-                                      [:x6,:+].to_oriented_segment,
-                                      [:x3,:+].to_oriented_segment]},
+    :O  => {:pid => :O200, :items => [OL[:x7,:-],
+                                      OL[:x6,:+],
+                                      OL[:x3,:+]]},
     :U  => {:pid => :U200, :items => [:x6, :x7, :x4]},
   }
   @@aliases = {
@@ -157,7 +157,7 @@ class TestAPI::Positionals < Test::Unit::TestCase
 
   def test_array_fields
     assert_kind_of(Array, @@l[:P].segment_names)
-    assert_kind_of(RGFA::OrientedSegment, @@l[:P].segment_names.first)
+    assert_kind_of(RGFA::OrientedLine, @@l[:P].segment_names.first)
     assert_kind_of(Array, @@l[:P].overlaps)
     assert_kind_of(RGFA::Alignment::Placeholder, @@l[:P].overlaps.first)
     assert_kind_of(Array, @@l[:O].items)
@@ -193,21 +193,21 @@ class TestAPI::Positionals < Test::Unit::TestCase
   def test_oriented_segment
     os = @@l[:P].segment_names.first
     # getter methods
-    assert_equal(:"1", os.segment)
+    assert_equal(:"1", os.line)
     assert_equal(:+, os.orient)
     # invert
-    assert_equal(:"1", os.invert.segment)
+    assert_equal(:"1", os.invert.line)
     assert_equal(:-, os.invert.orient)
     assert_equal(:-, os.orient.invert)
     # setter methods
-    os.segment = :"one"
+    os.line = :"one"
     os.orient = :-
-    assert_equal(:"one", os.segment)
+    assert_equal(:"one", os.line)
     assert_equal(:-, os.orient)
     # name
     assert_equal(:"one", os.name)
-    os.segment = @@l[:S1]
-    assert_equal(@@l[:S1], os.segment)
+    os.line = @@l[:S1]
+    assert_equal(@@l[:S1], os.line)
     assert_equal(@@l[:S1].name, os.name)
   end
 

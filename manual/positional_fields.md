@@ -84,7 +84,7 @@ instances to which they refer to (see the References chapter).
 
 Oriented identifiers (e.g. ```segment_names``` in GFA1 paths)
 are represented by elements of the class
-```RGFA::OrientedSegment```. The ```segment``` method of the oriented
+```RGFA::OrientedLine```. The ```segment``` method of the oriented
 segments returns the segment identifier (or segment reference in connected
 path lines) and the ```orient``` method returns the orientation symbol.
 The ```name``` method returns the symbol of the segment, even if this is
@@ -97,14 +97,14 @@ are available.
 Examples:
 ```ruby
 p = "P\tP1\ta+,b-\t*".to_rgfa_line
-p.segment_names # => [OrientedSegment(:a,:+),OrientedSegment(:b,:-)]
+p.segment_names # => [OrientedLine(:a,:+),OrientedLine(:b,:-)]
 p[0].segment # => :a
 p[0].name # => :a
 p[0].orient # => :+
-p[0].invert # => OrientedSegment(:a,:-)
+p[0].invert # => OrientedLine(:a,:-)
 p[0].orient = :-
 p[0].segment = "S\tX\t*".to_rgfa_line
-p[0] # => OrientedSegment(RGFA::Line("S\tX\t*"), :-)
+p[0] # => OrientedLine(RGFA::Line("S\tX\t*"), :-)
 p[0].name # => :X
 ```
 

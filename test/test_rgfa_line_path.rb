@@ -10,8 +10,8 @@ class TestRGFALinePath < Test::Unit::TestCase
     assert_equal(RGFA::Line::Group::Path, str.to_rgfa_line.class)
     assert_equal(fields[0].to_sym, str.to_rgfa_line.record_type)
     assert_equal(fields[1].to_sym, str.to_rgfa_line.path_name)
-    assert_equal([[:"1",:"+"],[:"2",:"-"],[:"3",:"+"]],
-                 str.to_rgfa_line.segment_names.map(&:to_a))
+    assert_equal([OL[:"1",:"+"],OL[:"2",:"-"],OL[:"3",:"+"]],
+                 str.to_rgfa_line.segment_names)
     assert_equal([[RGFA::Alignment::CIGAR::Operation.new(9,:M),
                    RGFA::Alignment::CIGAR::Operation.new(2,:I),
                    RGFA::Alignment::CIGAR::Operation.new(3,:D),

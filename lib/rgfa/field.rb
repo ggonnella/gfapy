@@ -20,6 +20,7 @@ require_relative "field/gap_direction.rb"
 require_relative "field/generic.rb"
 require_relative "field/identifier_gfa2.rb"
 require_relative "field/identifier_list_gfa2.rb"
+require_relative "field/oriented_identifier_list_gfa1.rb"
 require_relative "field/oriented_identifier_list_gfa2.rb"
 require_relative "field/integer.rb"
 require_relative "field/json.rb"
@@ -28,7 +29,6 @@ require_relative "field/optional_identifier_gfa2.rb"
 require_relative "field/optional_integer.rb"
 require_relative "field/orientation.rb"
 require_relative "field/oriented_identifier_gfa2.rb"
-require_relative "field/oriented_segments.rb"
 require_relative "field/path_name_gfa1.rb"
 require_relative "field/position_gfa1.rb"
 require_relative "field/position_gfa2.rb"
@@ -83,7 +83,7 @@ module RGFA::Field
   GFA1_POSFIELD_DATATYPE = [
                              :alignment_gfa1,
                              :alignment_list_gfa1,
-                             :oriented_segments,
+                             :oriented_identifier_list_gfa1,
                              :position_gfa1,
                              :segment_name_gfa1,
                              :sequence_gfa1,
@@ -130,12 +130,12 @@ module RGFA::Field
     :generic                       => RGFA::Field::Generic,
     :identifier_gfa2               => RGFA::Field::IdentifierGFA2,
     :identifier_list_gfa2          => RGFA::Field::IdentifierListGFA2,
+    :oriented_identifier_list_gfa1 => RGFA::Field::OrientedIdentifierListGFA1,
     :oriented_identifier_list_gfa2 => RGFA::Field::OrientedIdentifierListGFA2,
     :optional_identifier_gfa2      => RGFA::Field::OptionalIdentifierGFA2,
     :oriented_identifier_gfa2      => RGFA::Field::OrientedIdentifierGFA2,
     :optional_integer              => RGFA::Field::OptionalInteger,
     :orientation                   => RGFA::Field::Orientation,
-    :oriented_segments             => RGFA::Field::OrientedSegments,
     :path_name_gfa1                => RGFA::Field::PathNameGFA1,
     :position_gfa1                 => RGFA::Field::PositionGFA1,
     :position_gfa2                 => RGFA::Field::PositionGFA2,

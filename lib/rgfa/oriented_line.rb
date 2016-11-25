@@ -6,7 +6,7 @@ class RGFA::OrientedLine
 
   def initialize(line, orient)
     @line = line
-    @orient = orient
+    @orient = orient.to_sym
     @editable = true
   end
 
@@ -90,7 +90,7 @@ class RGFA::OrientedLine
   private
 
   def validate_orient
-    if ![:+,:-].include(@orient)
+    if ![:+,:-].include?(@orient)
       raise RGFA::ValueError,
         "Invalid orientation (#{@orient})"
     end

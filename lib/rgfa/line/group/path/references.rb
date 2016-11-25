@@ -4,7 +4,8 @@ module RGFA::Line::Group::Path::References
 
   # computes the list of links which are required to support
   # the path
-  # @return [Array<[RGFA::OrientedSegment, RGFA::OrientedSegment, RGFA::Alignment::CIGAR]>]
+  # @return
+  #   [Array<[RGFA::OrientedLine, RGFA::OrientedLine, RGFA::Alignment::CIGAR]>]
   #   an array, which elements are 3-tuples (from oriented segment,
   #   to oriented segment, cigar)
   # @api private
@@ -16,7 +17,8 @@ module RGFA::Line::Group::Path::References
       if j == self.segment_names.size
         circular? ? j = 0 : break
       end
-      cigar = has_undef_overlaps ? RGFA::Alignment::Placeholder.new : self.overlaps[i]
+      cigar = has_undef_overlaps ?
+        RGFA::Alignment::Placeholder.new : self.overlaps[i]
       retval << [self.segment_names[i], self.segment_names[j], cigar]
     end
     retval
@@ -33,7 +35,7 @@ module RGFA::Line::Group::Path::References
   def update_reference_in_field(field, oldref, newref)
     case field
     when :segment_names
-      segment_names.each {|s_o| s_o.segment = newref if s_o.segment == oldref }
+      segment_names.each {|s_o| s_o.line = newref if s_o.line == oldref }
     end
   end
 
@@ -46,7 +48,7 @@ module RGFA::Line::Group::Path::References
     refs[:links] = []
     required_links.each do |from,to,cigar|
       l = nil
-      if @rgfa.segment(from.segment) and @rgfa.segment(to.segment)
+      if @rgfa.segment(from.line) and @rgfa.segment(to.line)
         l = rgfa.search_link(from, to, cigar)
       end
       if l.nil?
@@ -55,9 +57,9 @@ module RGFA::Line::Group::Path::References
           "requires a non-existing link:\n"+
           "#{l}"
         end
-        l = RGFA::Line::Edge::Link.new({:from => from.segment,
+        l = RGFA::Line::Edge::Link.new({:from => from.line,
                                   :from_orient => from.orient,
-                                  :to => to.segment,
+                                  :to => to.line,
                                   :to_orient => to.orient,
                                   :overlap => cigar},
                                   virtual: true,
@@ -71,8 +73,8 @@ module RGFA::Line::Group::Path::References
 
   def initialize_segments
     segment_names.each do |sn_with_o|
-      s = @rgfa.segment(sn_with_o.segment)
-      sn_with_o.segment = s
+      s = @rgfa.segment(sn_with_o.line)
+      sn_with_o.line = s
       s.add_reference(self, :paths)
     end
   end
