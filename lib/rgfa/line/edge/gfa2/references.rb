@@ -8,18 +8,17 @@ module RGFA::Line::Edge::GFA2::References
     [1,2].each do |snum|
       sid = :"sid#{snum}"
       orient = get(sid).orient
-      s = @rgfa.segment(get(sid).segment)
+      s = @rgfa.segment(get(sid).line)
       if s.nil?
         raise RGFA::NotFoundError if @rgfa.segments_first_order
-        s = RGFA::Line::Segment::GFA2.new({:sid => get(sid),
+        s = RGFA::Line::Segment::GFA2.new({:sid => get(sid).line,
                                            :slen => 1,
                                            :sequence => "*"},
                                            version: :"2.0",
                                            virtual: true)
         s.connect(@rgfa)
       end
-      set_existing_field(sid, [s, orient].to_oriented_segment,
-                         set_reference: true)
+      set_existing_field(sid, OL[s, orient], set_reference: true)
       s.add_reference(self, refkey_for_s(snum, st1, st2))
     end
   end
@@ -50,7 +49,8 @@ module RGFA::Line::Edge::GFA2::References
 
   def import_field_references(previous)
     [:sid1, :sid2].each do |sid|
-      set_existing_field(sid, @rgfa.segment(get(sid)),
+      set_existing_field(sid, OL[@rgfa.segment(get(sid).line),
+                                               get(sid).orient],
                          set_reference: true)
     end
   end

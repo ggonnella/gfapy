@@ -2,8 +2,7 @@ module RGFA::Field::OrientedIdentifierListGFA2
 
   def unsafe_decode(string)
     string.split(" ").map do |item|
-      [item[0..-2].to_sym,
-       item[-1..-1].to_sym].to_oriented_segment
+      OL[item[0..-2].to_sym, item[-1].to_sym]
     end
   end
 
@@ -24,10 +23,10 @@ module RGFA::Field::OrientedIdentifierListGFA2
     case object
     when Array
       object.each do |elem|
-        if !elem.kind_of?(RGFA::OrientedSegment)
+        if !elem.kind_of?(RGFA::OrientedLine)
           raise RGFA::TypeError,
             "the array contains an object of class #{elem.class}\n"+
-            "(accepted classes: RGFA::OrientedSegment)"
+            "(accepted classes: RGFA::OrientedLine)"
         end
         if elem.name !~ /^[!-~]+$/
           raise RGFA::FormatError,
@@ -52,12 +51,12 @@ module RGFA::Field::OrientedIdentifierListGFA2
     when Array
       object.map do |elem|
         case elem
-        when RGFA::OrientedSegment
+        when RGFA::OrientedLine
           elem.to_s
         else
           raise RGFA::TypeError,
             "the array contains an object of class #{elem.class}\n"+
-            "(accepted classes: RGFA::OrientedSegment)"
+            "(accepted classes: RGFA::OrientedLine)"
         end
       end.join(" ")
     when String

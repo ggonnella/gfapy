@@ -50,4 +50,35 @@ module RGFA::Line::Group::Unordered::References
     end
   end
 
+  def add_item_to_unconnected_group(item, append = true)
+    item = item.name if item.kind_of?(RGFA::Line)
+    items.send(append ? :push : :unshift, item)
+    return nil
+  end
+
+  def add_item_to_connected_group(item, append = true)
+    self.add_reference(prepare_and_check_ref(item),
+                       :items, append: append)
+    return nil
+  end
+
+  def update_reference_in_field(field, oldref, newref)
+    case field
+    when :items
+      items.each {|item| item = newref if item == oldref }
+    end
+  end
+
+  def initialize_references
+    items.size.times do |i|
+      items[i] = line_for_ref_symbol(items[i])
+    end
+  end
+
+  def disconnect_field_references
+    items.size.times do |i|
+      items[i] = items[i].name if items[i].kind_of?(RGFA::Line)
+    end
+  end
+
 end

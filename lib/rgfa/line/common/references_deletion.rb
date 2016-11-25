@@ -52,8 +52,8 @@ module RGFA::Line::Common::ReferencesDeletion
       ref = get(k)
       if ref.kind_of?(RGFA::Line)
         set_existing_field(k, ref.to_sym, set_reference: true)
-      elsif ref.kind_of?(RGFA::OrientedSegment)
-        ref.segment = ref.name
+      elsif ref.kind_of?(RGFA::OrientedLine)
+        ref.line = ref.name
       end
     end
   end
@@ -67,8 +67,8 @@ module RGFA::Line::Common::ReferencesDeletion
       ref = get(k)
       if ref.kind_of?(RGFA::Line)
         ref.update_references(self, nil, k)
-      elsif ref.kind_of?(RGFA::OrientedSegment)
-        ref.segment.update_references(self, nil, k)
+      elsif ref.kind_of?(RGFA::OrientedLine)
+        ref.line.update_references(self, nil, k)
       end
     end
   end

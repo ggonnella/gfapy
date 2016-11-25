@@ -1,8 +1,7 @@
 module RGFA::Field::OrientedIdentifierGFA2
 
   def unsafe_decode(string)
-    [string[0..-2].to_sym,
-     string[-1..-1].to_sym].to_oriented_segment
+    string.to_oriented_line
   end
 
   def decode(string)
@@ -22,7 +21,7 @@ module RGFA::Field::OrientedIdentifierGFA2
 
   def validate_decoded(object)
     case object
-    when RGFA::OrientedSegment
+    when RGFA::OrientedLine
       if object.name !~ /^[!-~]+$/
         raise RGFA::ValueError,
           "#{object.inspect} is not a valid GFA2 oriented identifier\n"+
@@ -35,20 +34,18 @@ module RGFA::Field::OrientedIdentifierGFA2
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: RGFA::OrientedSegment)"
+        "(accepted classes: RGFA::OrientedLine)"
     end
   end
 
   def unsafe_encode(object)
     case object
-    when String
-      return object
-    when RGFA::OrientedSegment
+    when String, RGFA::OrientedLine
       return object.to_s
     else
       raise RGFA::TypeError,
         "the class #{object.class} is incompatible with the datatype\n"+
-        "(accepted classes: String, RGFA::OrientedSegment)"
+        "(accepted classes: String, RGFA::OrientedLine)"
     end
   end
 

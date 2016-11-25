@@ -161,7 +161,7 @@ class TestAPI::Positionals < Test::Unit::TestCase
     assert_kind_of(Array, @@l[:P].overlaps)
     assert_kind_of(RGFA::Alignment::Placeholder, @@l[:P].overlaps.first)
     assert_kind_of(Array, @@l[:O].items)
-    assert_kind_of(RGFA::OrientedSegment, @@l[:O].items.first)
+    assert_kind_of(RGFA::OrientedLine, @@l[:O].items.first)
     assert_kind_of(Array, @@l[:U].items)
     assert_kind_of(Symbol, @@l[:U].items.first)
   end

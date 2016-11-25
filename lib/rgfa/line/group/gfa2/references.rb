@@ -4,23 +4,15 @@ module RGFA::Line::Group::GFA2::References
 
   private
 
-  def add_item_to_unconnected_group(item, append = true)
-    item = item.name if item.kind_of?(RGFA::Line)
-    items.send(append ? :push : :unshift, item)
-    return nil
+  def prepare_and_check_ref(ref)
+    ref = line_for_ref_symbol(ref) if ref.kind_of?(Symbol)
+    check_ref_class(ref)
+    check_ref_connection(ref)
+    check_ref_not_self(ref)
+    return ref
   end
 
-  def add_item_to_connected_group(item, append = true)
-    item = line_for_item_symbol(item) if item.kind_of?(Symbol)
-    check_item_class(item)
-    check_item_connection(item)
-    check_item_not_self(item)
-    self.add_reference(item, :items, append: append)
-    check_consistency if record_type == :O
-    return nil
-  end
-
-  def check_item_class(item)
+  def check_ref_class(item)
     if ![RGFA::Line::Edge::GFA2,
          RGFA::Line::Segment::GFA2,
          RGFA::Line::Gap,
@@ -33,7 +25,7 @@ module RGFA::Line::Group::GFA2::References
     end
   end
 
-  def check_item_connection(item)
+  def check_ref_connection(item)
     if line.rgfa != self.rgfa
       raise RGFA::ArgumentError,
         "Line: #{self}\n"+
@@ -43,7 +35,7 @@ module RGFA::Line::Group::GFA2::References
     end
   end
 
-  def check_item_not_self(item)
+  def check_ref_not_self(item)
     if (line == self)
       raise RGFA::RuntimeError,
         "Line: #{self}\n"+
@@ -52,35 +44,20 @@ module RGFA::Line::Group::GFA2::References
     end
   end
 
-  def line_for_item_symbol(item)
-    line = @rgfa.search_by_name(item)
+  def line_for_ref_symbol(ref)
+    line = @rgfa.search_by_name(ref)
     if line.nil?
       if @rgfa.segments_first_order
         raise RGFA::NotFoundError, "Group: #{self}\n"+
-        "requires a non-existing item with ID #{item}"
+        "requires a non-existing ref with ID #{ref}"
       end
-      line = RGFA::Line::Unknown.new({:name => item}, virtual: true,
+      line = RGFA::Line::Unknown.new({:name => ref}, virtual: true,
                                      version: :"2.0")
       line.connect(@rgfa)
     end
     line.add_reference(self, (record_type == :O) ? :ordered_groups :
                        :unordered_groups)
     return line
-  end
-
-  def update_reference_in_field(field, oldref, newref)
-    case field
-    when :items
-      items.each {|item| item = newref if item == oldref }
-    end
-  end
-
-  def initialize_references
-    items.size.times {|i| items[i] = line_for_item_symbol(items[i])}
-  end
-
-  def disconnect_field_references
-    items.size.times {|i| items[i] = i.to_sym if items[i].kind_of?(RGFA::Line)}
   end
 
   def backreference_keys(ref, key_in_ref)

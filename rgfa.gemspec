@@ -139,6 +139,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/lines.rb',
               'lib/rgfa/logger.rb',
               'lib/rgfa/numeric_array.rb',
+              'lib/rgfa/oriented_line.rb',
               'lib/rgfa/placeholder.rb',
               'lib/rgfa/segment_ends_path.rb',
               'lib/rgfa/segment_info.rb',

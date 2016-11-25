@@ -56,9 +56,41 @@ module RGFA::Line::Group::Ordered::References
 
   private
 
+  def add_item_to_unconnected_group(item, append = true)
+    item.line = item.name if item.line.kind_of?(RGFA::Line)
+    items.send(append ? :push : :unshift, item)
+    return nil
+  end
+
+  def add_item_to_connected_group(item, append = true)
+    item.line = prepare_and_check_ref(item.line)
+    self.add_reference(item, :items, append: append)
+    check_consistency
+    return nil
+  end
+
   # Check that the elements in an ordered set are contiguous
   def check_consistency
     # not implemented yet
+  end
+
+  def update_reference_in_field(field, oldref, newref)
+    case field
+    when :items
+      items.each {|item| item.line = newref if item.line == oldref }
+    end
+  end
+
+  def initialize_references
+    items.size.times do |i|
+      items[i].line = line_for_ref_symbol(items[i].line)
+    end
+  end
+
+  def disconnect_field_references
+    items.size.times do |i|
+      items[i].line = items[i].name if items[i].line.kind_of?(RGFA::Line)
+    end
   end
 
 end
