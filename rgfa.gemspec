@@ -142,7 +142,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/oriented_line.rb',
               'lib/rgfa/placeholder.rb',
               'lib/rgfa/segment_ends_path.rb',
-              'lib/rgfa/segment_info.rb',
+              'lib/rgfa/segment_end.rb',
               'lib/rgfa/sequence.rb',
               'lib/rgfatools.rb',
               'lib/rgfatools/artifacts.rb',

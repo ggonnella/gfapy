@@ -1,15 +1,12 @@
 require_relative "error"
 
-# A segment or segment name plus an additional boolean attribute
+# A segment or segment name and an end symbol (:L or :R)
 #
-# This class shall not be initialized directly.
-# @api private
-#
-class RGFA::SegmentInfo < Array
+class RGFA::SegmentEnd < Array
 
-  def initialize(segment, attribute)
+  def initialize(segment, end_type)
     self[0]=segment
-    self[1]=attribute
+    self[1]=end_type
   end
 
   # Check that the elements of the array are compatible with the definition.
@@ -20,9 +17,9 @@ class RGFA::SegmentInfo < Array
   #     is not a valid info
   # @return [void]
   def validate
-    if !self.class::ATTR.include?(attribute)
+    if ![:L, :R].include?(end_type)
       raise RGFA::ValueError,
-        "Invalid attribute (#{attribute.inspect})"
+        "Invalid end type (#{end_type.inspect})"
     end
     return nil
   end
@@ -43,15 +40,15 @@ class RGFA::SegmentInfo < Array
     self[0]=value
   end
 
-  # @return [Symbol] the attribute
-  def attribute
+  # @return [Symbol] the end type
+  def end_type
     self[1]
   end
 
-  # Set the attribute
-  # @param value [Symbol] the attribute
+  # Set the end type
+  # @param value [Symbol] the end type
   # @return [Symbol] +value+
-  def attribute=(value)
+  def end_type=(value)
     self[1]=(value)
   end
 
@@ -60,38 +57,38 @@ class RGFA::SegmentInfo < Array
     segment.to_sym
   end
 
-  # @return [RGFA::SegmentInfo] same segment, inverted attribute
+  # @return [RGFA::SegmentInfo] same segment, inverted end type
   def invert
-    self.class.new(self.segment, self.attribute.invert)
+    self.class.new(self.segment, self.end_type.invert)
   end
 
-  # @return [String] name of the segment and attribute
+  # @return [String] name of the segment and end type
   def to_s
-    "#{name}#{attribute}"
+    "#{name}#{end_type}"
   end
 
-  # @return [Symbol] name of the segment and attribute
+  # @return [Symbol] name of the segment and end type
   def to_sym
     to_s.to_sym
   end
 
-  # Compare the segment names and attributes of two instances
+  # Compare the segment names and end types of two instances
   #
   # @param [RGFA::SegmentInfo] other the other instance
   # @return [Boolean]
   def ==(other)
-    to_s == other.to_segment_info(self.class).to_s
+    to_s == other.to_segment_end.to_s
   end
 
-  # Compare the segment names and attributes of two instances
+  # Compare the segment names and end types of two instances
   #
   # @param [RGFA::SegmentInfo] other the other instance
   # @return [Boolean]
   def <=>(other)
-    to_s <=> other.to_segment_info(self.class).to_s
+    to_s <=> other.to_segment_end.to_s
   end
 
-  def to_segment_info(subklass)
+  def to_segment_end
     self
   end
 
@@ -100,19 +97,10 @@ class RGFA::SegmentInfo < Array
   end
 
   def to_a
-    [segment, attribute]
+    [segment, end_type]
   end
   public :to_a
 
-end
-
-# A representation of a segment end
-class RGFA::SegmentEnd < RGFA::SegmentInfo
-  # Segment end type (begin or end)
-  ATTR = [ END_TYPE_LEFT = :L, END_TYPE_RIGHT = :R ]
-  alias_method :end_type, :attribute
-  alias_method :end_type=, :attribute=
-  def to_segment_end; self; end
 end
 
 class Array
@@ -121,22 +109,11 @@ class Array
   # @!macro segment_info_validation_errors
   # @return [RGFA::SegmentEnd]
   def to_segment_end
-    to_segment_info(RGFA::SegmentEnd)
-  end
-
-  protected
-
-  def to_segment_info(subclass)
-    return self if self.kind_of?(subclass)
     if self.size != 2
       raise RGFA::ValueError,
         "Wrong n of elements, 2 expected (#{inspect})"
     end
-    # support converting from gfa gem GraphVertex objects:
-    if respond_to?(:segment) and respond_to?(:orient)
-      return RGFA::OrientedSegment.new([segment.to_sym, orient.to_sym])
-    end
-    se = subclass.new(*map {|e| e.kind_of?(String) ? e.to_sym : e})
+    se = RGFA::SegmentEnd.new(*map {|e| e.kind_of?(String) ? e.to_sym : e})
     se.validate
     return se
   end

@@ -86,7 +86,7 @@ require_relative "./rgfa/placeholder.rb"
 require_relative "./rgfa/oriented_line.rb"
 require_relative "./rgfa/lastpos.rb"
 require_relative "./rgfa/segment_ends_path.rb"
-require_relative "./rgfa/segment_info.rb"
+require_relative "./rgfa/segment_end.rb"
 require_relative "./rgfa/sequence.rb"
 
 class RGFA

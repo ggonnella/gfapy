@@ -225,7 +225,7 @@ module RGFA::GraphOperations::LinearPaths
           "Merging is only allowed if all operations are M/="
       end
       total_cut += cut
-      last_reversed = (b.attribute == :R)
+      last_reversed = (b.end_type == :R)
       add_segment_to_merged(merged, segment(b.segment), last_reversed, cut,
                             false, options)
       a = b.to_segment_end.invert
