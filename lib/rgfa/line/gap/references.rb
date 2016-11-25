@@ -23,21 +23,19 @@ module RGFA::Line::Gap::References
   end
 
   def refkey_for_s(snum)
-    return :gaps_L
-    # XXX
-    #case [d1, d2]
-    #when [:">", :">"]
-    #  return (snum == 1) ? :gaps_R : :gaps_L
-    #when [:">", :"<"]
-    #  return :gaps_R
-    #when [:"<", :">"]
-    #  return :gaps_L
-    #when [:"<", :"<"]
-    #  return (snum == 1) ? :gaps_L : :gaps_R
-    #else
-    #  raise RGFA::AssertionError, "Bug found, please report\n"+
-    #    "snum: #{snum}"
-    #end
+    case [sid1.orient, sid2.orient]
+    when [:+, :+]
+      return (snum == 1) ? :gaps_R : :gaps_L
+    when [:+, :-]
+      return :gaps_R
+    when [:-, :+]
+      return :gaps_L
+    when [:-, :-]
+      return (snum == 1) ? :gaps_L : :gaps_R
+    else
+      raise RGFA::AssertionError, "Bug found, please report\n"+
+        "snum: #{snum}"
+    end
   end
 
   def import_field_references(previous)

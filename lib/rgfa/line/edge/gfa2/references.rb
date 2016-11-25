@@ -25,9 +25,13 @@ module RGFA::Line::Edge::GFA2::References
 
   def refkey_for_s(snum, st1, st2)
     if st1 == :whole
-      return snum == 1 ? :edges_to_contained  : :edges_to_containers
+      if st2 == :whole
+        return snum == 1 ? :edges_to_contained : :edges_to_containers
+      else
+        return snum == 1 ? :edges_to_containers : :edges_to_contained
+      end
     elsif st2 == :whole
-      return snum == 1 ? :edges_to_containers : :edges_to_contained
+      return snum == 2 ? :edges_to_containers : :edges_to_contained
     elsif sid1.orient == sid2.orient
       if (st1 == :pfx and st2 == :sfx)
         return snum == 1 ? :dovetails_L : :dovetails_R
@@ -44,6 +48,13 @@ module RGFA::Line::Edge::GFA2::References
       else
         return :internals
       end
+    end
+  end
+
+  def update_reference_in_field(field, oldref, newref)
+    case field
+    when :sid1,:sid2
+      get(field).line = newref if get(field).line == oldref
     end
   end
 

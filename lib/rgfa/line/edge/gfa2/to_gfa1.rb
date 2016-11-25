@@ -48,11 +48,19 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   end
 
   def oriented_from
-    beg1.first? ? sid2 : sid1
+    if beg1.first?
+      (beg2.first? and end2.last?) ? sid1 : sid2
+    else
+      sid1
+    end
   end
 
   def oriented_to
-    beg1.first? ? sid1 : sid2
+    if beg1.first?
+      (beg2.first? and end2.last?) ? sid2 : sid1
+    else
+      sid2
+    end
   end
 
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +from+ field,
@@ -60,7 +68,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def from
     check_not_internal(:from)
-    oriented_from.segment
+    oriented_from.line
   end
 
   # Set the field which will be returned by calling from
@@ -68,7 +76,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def from=(value)
     check_not_internal(:from)
-    oriented_from.segment = value
+    oriented_from.line = value
   end
 
   # @return [:+, :-] value of the GFA1 +from_orient+ field,
@@ -84,7 +92,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to
     check_not_internal(:to)
-    oriented_to.segment
+    oriented_to.line
   end
 
   # Set the field which will be returned by calling to
@@ -92,7 +100,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @return [nil]
   def to=(value)
     check_not_internal(:to)
-    oriented_to.segment = value
+    oriented_to.line = value
   end
 
   # @return [:+, :-] value of the GFA1 +to_orient+ field,
@@ -116,7 +124,11 @@ module RGFA::Line::Edge::GFA2::ToGFA1
       raise RGFA::ValueError, "Line: #{self.to_s}\n"+
         "Dovetail alignment, pos is not defined"
     when :C
-      beg1.first? ? beg2 : beg1
+      if beg1.first?
+        (beg2.first? and end2.last?) ? beg1 : beg2
+      else
+        beg1
+      end
     end
   end
 

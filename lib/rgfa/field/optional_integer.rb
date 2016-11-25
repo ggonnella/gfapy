@@ -2,7 +2,7 @@ module RGFA::Field::OptionalInteger
 
   def decode(string)
     if string.placeholder?
-      return RGFA::Placeholder
+      return RGFA::Placeholder.new
     else
       Integer(string) rescue raise RGFA::FormatError,
         "the string does not represent a valid integer"
