@@ -144,6 +144,7 @@ Gem::Specification.new do |s|
               'lib/rgfa/segment_ends_path.rb',
               'lib/rgfa/segment_end.rb',
               'lib/rgfa/sequence.rb',
+              'lib/rgfa/symbol_invert.rb',
               'lib/rgfatools.rb',
               'lib/rgfatools/artifacts.rb',
               'lib/rgfatools/copy_number.rb',

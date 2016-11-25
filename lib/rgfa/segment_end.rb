@@ -119,19 +119,3 @@ class Array
   end
 
 end
-
-class Symbol
-  def invert
-    case self
-    when :+ then :-
-    when :- then :+
-    when :L then :R
-    when :R then :L
-    when :> then :<
-    when :< then :>
-    else
-      raise RGFA::ValueError,
-        "The symbol #{self.inspect} has no inverse."
-    end
-  end
-end

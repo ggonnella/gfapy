@@ -88,6 +88,7 @@ require_relative "./rgfa/lastpos.rb"
 require_relative "./rgfa/segment_ends_path.rb"
 require_relative "./rgfa/segment_end.rb"
 require_relative "./rgfa/sequence.rb"
+require_relative "./rgfa/symbol_invert.rb"
 
 class RGFA
 
