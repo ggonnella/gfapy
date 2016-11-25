@@ -110,7 +110,28 @@ class TestAPI::References < Test::Unit::TestCase
     assert_equal(:b, lab.sid2.line)
   end
 
+  # TODO: test_edges_backreferences (internals, containments, links)
+
   def test_fragments_references
+    g = RGFA.new
+    f = "F\ta\tf+\t0\t200\t281\t502$\t*".to_rgfa_line
+    assert_equal(:a, f.sid)
+    assert_equal(OL[:f,:+], f.external)
+    g << (sa = "S\ta\t100\t*".to_rgfa_line)
+    g << f
+    assert_equal(sa, f.sid)
+    f.disconnect
+    assert_equal(:a, f.sid)
+  end
+
+  def test_fragments_backreferences
+    g = RGFA.new
+    f1 = "F\ta\tf+\t0\t200\t281\t502$\t*".to_rgfa_line
+    f2 = "F\ta\tf+\t240\t440$\t0\t210\t*".to_rgfa_line
+    g << (sa = "S\ta\t100\t*".to_rgfa_line)
+    g << f1
+    g << f2
+    assert_equal([f1,f2], sa.fragments)
   end
 
   def test_gaps_references_groups
