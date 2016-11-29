@@ -25,8 +25,10 @@ module RGFA::Line::Common::ReferencesDeletion
 
   # @api private
   def delete_reference(line, key)
-    refs[key] -= [line]
-    @refs[key].freeze
+    return if !@refs[key]
+    idx = @refs[key].index {|x| x.equal?(line)}
+    return if idx.nil?
+    @refs = ((idx == 0 ? [] : @refs[0..idx-1]) + @refs[idx+1..-1]).freeze
   end
 
   # @api private
@@ -43,10 +45,11 @@ module RGFA::Line::Common::ReferencesDeletion
 
   private
 
-  # @note SUBCLASSES with reference fields may
-  #   overwrite this method to discconnect their reference
-  #   fields, if they are not directly a reference
-  #   but contain a reference (e.g path segment_names)
+  # @note currently this method supports fields which are: references,
+  #   oriented lines and arrays of references of oriented lines;
+  #   if SUBCLASSES have reference fields which contain references
+  #   in a different fashion, the method must be updated or overwritten
+  #   in the subclass
   def remove_field_references
     self.class::REFERENCE_FIELDS.each do |k|
       ref = get(k)
@@ -54,14 +57,24 @@ module RGFA::Line::Common::ReferencesDeletion
         set_existing_field(k, ref.to_sym, set_reference: true)
       elsif ref.kind_of?(RGFA::OrientedLine)
         ref.line = ref.name
+      elsif ref.kind_of?(Array)
+        ref.map! do |elem|
+          if elem.kind_of?(RGFA::Line)
+            elem = elem.to_sym
+          elsif elem.kind_of?(RGFA::OrientedLine)
+            elem.line = elem.name
+          end
+          elem
+        end
       end
     end
   end
 
-  # @note SUBCLASSES with reference fields may
-  #   overwrite this method to discconnect their reference
-  #   fields, if they are not directly a reference
-  #   but contain a reference (e.g path segment_names)
+  # @note currently this method supports fields which are: references,
+  #   oriented lines and arrays of references of oriented lines;
+  #   if SUBCLASSES have reference fields which contain references
+  #   in a different fashion, the method must be updated or overwritten
+  #   in the subclass
   def remove_field_backreferences
     self.class::REFERENCE_FIELDS.each do |k|
       ref = get(k)
@@ -69,6 +82,14 @@ module RGFA::Line::Common::ReferencesDeletion
         ref.update_references(self, nil, k)
       elsif ref.kind_of?(RGFA::OrientedLine)
         ref.line.update_references(self, nil, k)
+      elsif ref.kind_of?(Array)
+        ref.each do |elem|
+          if elem.kind_of?(RGFA::Line)
+            elem.update_references(self, nil, k)
+          elsif elem.kind_of?(RGFA::OrientedLine)
+            elem.line.update_references(self, nil, k)
+          end
+        end
       end
     end
   end
@@ -88,7 +109,7 @@ module RGFA::Line::Common::ReferencesDeletion
   end
 
   def remove_nonfield_references
-    @refs ||= {}
+    @refs = {}
   end
 
 end

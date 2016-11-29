@@ -39,12 +39,32 @@ module RGFA::Line::Common::ReferencesUpdate
     []
   end
 
-  # @note SUBCLASSES can overwrite this method
-  # eg. if the field contain references but these are not
-  # themselves the field content (e.g. path segment_names)
+  # @note this methods supports fields which contain references,
+  #   oriented lines or array of references or oriented lines;
+  #   if SUBCLASSES contain fields which reference to line in a
+  #   different fashion, the method must be updated or overwritten
+  #   by the subclass
   def update_reference_in_field(field, oldref, newref)
-    if get(field) == oldref
-      set_existing_field(field, newref, set_reference: true)
+    value = get(field)
+    case value
+    when RGFA::Line
+      if value == oldref
+        set_existing_field(field, newref, set_reference: true)
+      end
+    when RGFA::OrientedLine
+      if value.line == oldref
+        value.line = newref
+      end
+    when Array
+      value.map! do |elem|
+        case elem
+        when RGFA::Line
+          elem = newref if elem == oldref
+        when RGFA::OrientedLine
+          elem.line == newref if elem.line == newref
+        end
+        elem
+      end
     end
   end
 
@@ -56,11 +76,10 @@ module RGFA::Line::Common::ReferencesUpdate
 
   def update_nonfield_references(oldref, newref, possible_keys)
     possible_keys.each do |key|
-      if @refs[key].include?(oldref)
-        @refs[key] -= [oldref]
-        @refs[key] += [newref] if newref
-        @refs[key].freeze
-      end
+      idx = @refs[key].index {|x| x.equal?(oldref)}
+      next if idx.nil?
+      @refs[key] = ((idx > 0 ? @refs[key][0..idx-1] : []) +
+                    (newref ? [newref] : []) + @refs[key][idx+1..-1]).freeze
     end
   end
 

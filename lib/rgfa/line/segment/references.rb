@@ -100,10 +100,12 @@ module RGFA::Line::Segment::References
       [:gaps_L, :gaps_R]
     when :F
       [:fragments]
-    when :O, :P
+    when :P
       [:paths]
+    when :O
+      [:ordered_groups]
     when :U
-      [:subgraphs]
+      [:unordered_groups]
     else
       []
     end

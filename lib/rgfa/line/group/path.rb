@@ -14,7 +14,7 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
   REFERENCE_FIELDS = [:segment_names, :overlaps]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
-  OTHER_REFERENCES = [:links, :segments]
+  OTHER_REFERENCES = [:links]
 
   define_field_methods
 

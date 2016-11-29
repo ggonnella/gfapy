@@ -11,6 +11,9 @@ module RGFA::Line::Common::Writer
     a = [record_type]
     positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
     tagnames.each {|fn| a << field_to_s(fn, tag: true)}
+    if virtual?
+      a << "co:Z:RGFA_virtual_line"
+    end
     return a
   end
 

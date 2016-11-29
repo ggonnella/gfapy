@@ -32,13 +32,6 @@ module RGFA::Line::Group::Path::References
     overlaps.size == 1 and overlaps[0].empty?
   end
 
-  def update_reference_in_field(field, oldref, newref)
-    case field
-    when :segment_names
-      segment_names.each {|s_o| s_o.line = newref if s_o.line == oldref }
-    end
-  end
-
   def initialize_references
     initialize_links
     initialize_segments
@@ -49,13 +42,13 @@ module RGFA::Line::Group::Path::References
     required_links.each do |from,to,cigar|
       l = nil
       if @rgfa.segment(from.line) and @rgfa.segment(to.line)
-        l = rgfa.search_link(from, to, cigar)
+        l = @rgfa.search_link(from, to, cigar)
       end
       if l.nil?
         if @rgfa.segments_first_order
           raise RGFA::NotFoundError, "Path: #{self}\n"+
           "requires a non-existing link:\n"+
-          "#{l}"
+          "from=#{from} to=#{to} cigar=#{cigar}"
         end
         l = RGFA::Line::Edge::Link.new({:from => from.line,
                                   :from_orient => from.orient,
@@ -77,10 +70,6 @@ module RGFA::Line::Group::Path::References
       sn_with_o.line = s
       s.add_reference(self, :paths)
     end
-  end
-
-  def disconnect_field_references
-    segment_names.each {|s, o| s.update_references(self, nil, :paths)}
   end
 
   def backreference_keys(ref, key_in_ref)

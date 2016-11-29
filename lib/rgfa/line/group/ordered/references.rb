@@ -74,22 +74,9 @@ module RGFA::Line::Group::Ordered::References
     # not implemented yet
   end
 
-  def update_reference_in_field(field, oldref, newref)
-    case field
-    when :items
-      items.each {|item| item.line = newref if item.line == oldref }
-    end
-  end
-
   def initialize_references
     items.size.times do |i|
       items[i].line = line_for_ref_symbol(items[i].line)
-    end
-  end
-
-  def disconnect_field_references
-    items.size.times do |i|
-      items[i].line = items[i].name if items[i].line.kind_of?(RGFA::Line)
     end
   end
 

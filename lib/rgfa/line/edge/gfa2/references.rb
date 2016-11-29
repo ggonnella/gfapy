@@ -51,13 +51,6 @@ module RGFA::Line::Edge::GFA2::References
     end
   end
 
-  def update_reference_in_field(field, oldref, newref)
-    case field
-    when :sid1,:sid2
-      get(field).line = newref if get(field).line == oldref
-    end
-  end
-
   def import_field_references(previous)
     [:sid1, :sid2].each do |sid|
       set_existing_field(sid, OL[@rgfa.segment(get(sid).line),
