@@ -12,7 +12,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   REFERENCE_FIELDS = [:items]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:ordered_groups, :unordered_groups]
-  OTHER_REFERENCES = []
+  OTHER_REFERENCES = [:implied_items]
 
   define_field_methods
 

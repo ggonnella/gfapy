@@ -506,13 +506,61 @@ class TestAPI::References < Test::Unit::TestCase
     assert_equal([], l["c-d+"].paths)
   end
 
-  def test_unordered_groups_references
+  def test_ordered_groups_references
+    g = RGFA.new
+    s = {}
+    [:a, :b, :c, :d, :e, :f].each do |name|
+      g << (s[name] = "S\t#{name}\t1000\t*".to_rgfa_line)
+    end
+    path = "O\tp1\tf+ a+ b+ c- e-c+-".to_rgfa_line
+    assert_equal([OL[:f,:+], OL[:a,:+], OL[:b,:+], OL[:c,:-], OL[:"e-c+",:-]],
+                 path.items)
+    assert_equal([], path.implied_items)
+    # connection
+    g << path
+    # edges
+    e = {}
+    ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"].each do |name|
+      coord1 = name[1] == "+" ? "900\t1000$" : "0\t100"
+      coord2 = name[3] == "+" ? "0\t100" : "900\t1000$"
+      g <<  (e[name] = ("E\t#{name}\t#{name[0..1]}\t#{name[2..3]}\t"+
+                       "#{coord1}\t#{coord2}\t100M").to_rgfa_line)
+    end
+    # items
+    assert_equal([OL[s[:f],:+], OL[s[:a],:+], OL[s[:b],:+], OL[s[:c],:-],
+                  OL[e["e-c+"],:-]], path.items)
+    assert_equal([], path.implied_items) # TODO
+    # XXX: disconnection effects
   end
 
-  def test_ordered_groups_references
+  def test_unordered_groups_references
+    g = RGFA.new
+    s = {}
+    [:a, :b, :c, :d, :e, :f].each do |name|
+      g << (s[name] = "S\t#{name}\t1000\t*".to_rgfa_line)
+    end
+    subgraph = "U\tsg1\tf a b c e-c+".to_rgfa_line
+    assert_equal([:f, :a, :b, :c, :"e-c+"], subgraph.items)
+    assert_equal([], subgraph.implied_items)
+    # connection
+    g << subgraph
+    # edges
+    e = {}
+    ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"].each do |name|
+      coord1 = name[1] == "+" ? "900\t1000$" : "0\t100"
+      coord2 = name[3] == "+" ? "0\t100" : "900\t1000$"
+      g <<  (e[name] = ("E\t#{name}\t#{name[0..1]}\t#{name[2..3]}\t"+
+                       "#{coord1}\t#{coord2}\t100M").to_rgfa_line)
+    end
+    # items
+    assert_equal([s[:f], s[:a], s[:b], s[:c], e["e-c+"]], subgraph.items)
+    assert_equal([], subgraph.implied_items) # TODO
   end
 
   def test_reference_fields_editing
+  end
+
+  def test_virtual_lines
   end
 
 end

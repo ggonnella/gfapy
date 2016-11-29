@@ -12,7 +12,7 @@ module RGFA::Field::OrientedIdentifierListGFA2
   end
 
   def validate_encoded(string)
-    if string !~ /^[!-~][+-]( [!-~][+-])*$/
+    if string !~ /^[!-~]+[+-]( [!-~]+[+-])*$/
       raise RGFA::FormatError,
         "#{string.inspect} is not a valid list of oriented GFA2 identifier\n"+
         "(it contains non-printable characters or invalid orientations)"
