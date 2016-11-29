@@ -16,12 +16,13 @@ module RGFA::Line::Group::GFA2::References
     if ![RGFA::Line::Edge::GFA2,
          RGFA::Line::Segment::GFA2,
          RGFA::Line::Gap,
+         RGFA::Line::Group::Ordered,
          self::class].include?(item.class)
     raise RGFA::ArgumentError,
       "Line: #{self}\n"+
     "Cannot add items of class #{item.class}\n"+
-    "Only GFA2 edges, segments, gaps and groups of the same kind "+
-    "can be added"
+    "Only GFA2 edges, segments, gaps, groups[*] "+
+    "can be added\n(* = unordered groups to unordered groups only)."
     end
   end
 
@@ -55,13 +56,13 @@ module RGFA::Line::Group::GFA2::References
                                      version: :"2.0")
       line.connect(@rgfa)
     end
-    line.add_reference(self, (record_type == :O) ? :ordered_groups :
-                       :unordered_groups)
+    line.add_reference(self, (record_type == :O) ?
+                         :ordered_groups : :unordered_groups)
     return line
   end
 
   def backreference_keys(ref, key_in_ref)
-    [:items]
+    [:items, :ordered_groups, :unordered_groups]
   end
 
 end
