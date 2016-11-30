@@ -17,14 +17,4 @@ module RGFA::Line::Fragment::References
     s.add_reference(self, :fragments)
   end
 
-  def backreference_keys(ref, key_in_ref)
-    case ref.record_type
-    when :S
-      [:sid]
-    else
-      raise RGFA::AssertionError, "Bug found, please report\n"+
-        "ref: #{ref}\nkey_in_ref: #{key_in_ref}"
-    end
-  end
-
 end

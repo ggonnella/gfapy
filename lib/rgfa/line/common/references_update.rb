@@ -32,11 +32,22 @@ module RGFA::Line::Common::ReferencesUpdate
 
   private
 
-  # @note SUBCLASSES must overwrite this method if they
-  #   can be referenced by virtual lines
+  # Return a list of fields and/or @ref keys, which indicates
+  # where a reference "ref" _may_ be stored (in order to be able
+  # to locate it and update it).
+  #
+  # The default is: all reference fields, dependent line references
+  # and other references.
+  #
+  # @note SUBCLASSES may overwrite this method if they
+  #   can be referenced by virtual lines, by providing more
+  #   specific results, depending on the ref and key_in_ref;
+  #   this can make the update faster
   # @return [Array<Symbol>] fieldnames and/or @refs keys
   def backreference_keys(ref, key_in_ref)
-    []
+    self.class::REFERENCE_FIELDS +
+      self.class::DEPENDENT_LINES +
+        self.class::OTHER_REFERENCES
   end
 
   # @note this methods supports fields which contain references,

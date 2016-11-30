@@ -61,8 +61,4 @@ module RGFA::Line::Group::GFA2::References
     return line
   end
 
-  def backreference_keys(ref, key_in_ref)
-    [:items, :ordered_groups, :unordered_groups]
-  end
-
 end
