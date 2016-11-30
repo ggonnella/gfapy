@@ -647,9 +647,20 @@ class TestAPI::References < Test::Unit::TestCase
   end
 
   def test_reference_fields_editing
+    # for each kind of line
+    #   for each reference field (hard code here)
+    #     test that editing is allowed when line is not connected
+    #     test that editing is blocked when line is connected
+    #     test disconnection-editing-reconnection
+    #     test other editing possibilities if any (see manual)
   end
 
   def test_virtual_lines
+    # for each kind of line
+    #   test that generated virtual lines are virtual
+    #   test class of generated virtual lines
+    #   add real line corresponding to virtual line
+    #   test that references are correctly updated
   end
 
 end
