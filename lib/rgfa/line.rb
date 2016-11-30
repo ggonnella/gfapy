@@ -34,7 +34,8 @@ class RGFA::Line
 
   # @return self
   # @param validate [Boolean] ignored (compatibility reasons)
-  def to_rgfa_line(validate: nil)
+  # @param version [Boolean] ignored (compatibility reasons)
+  def to_rgfa_line(validate: nil, version: nil)
     self
   end
 

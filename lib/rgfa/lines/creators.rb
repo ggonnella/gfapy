@@ -56,9 +56,9 @@ module RGFA::Lines::Creators
       process_line_queue
       gfa_line.connect(self)
     when :E, :F, :G, :U, :O
-      gfa_line = gfa_line.to_rgfa_line(validate: @validate, version: version)
       @version = :"2.0"
       @version_explanation = "implied by: presence of a #{rt} line"
+      gfa_line = gfa_line.to_rgfa_line(validate: @validate, version: @version)
       process_line_queue
       gfa_line.connect(self)
     when :L, :C, :P

@@ -14,7 +14,7 @@ class RGFA::Line::Gap < RGFA::Line
   }
   REFERENCE_FIELDS = [:sid1, :sid2]
   REFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = [:unordered_groups, :ordered_groups]
+  DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
   define_field_methods

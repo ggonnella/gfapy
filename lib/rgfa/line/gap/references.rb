@@ -47,18 +47,4 @@ module RGFA::Line::Gap::References
     end
   end
 
-  def backreference_keys(ref, key_in_ref)
-    case ref.record_type
-    when :U
-      [:unordered_groups]
-    when :O
-      [:ordered_groups]
-    when :S
-      [:sid1, :sid2]
-    else
-      raise RGFA::AssertionError, "Bug found, please report\n"+
-        "ref: #{ref}\nkey_in_ref: #{key_in_ref}"
-    end
-  end
-
 end
