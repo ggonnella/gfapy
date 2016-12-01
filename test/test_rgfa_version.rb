@@ -9,13 +9,13 @@ class TestRGFAVersion < Test::Unit::TestCase
   end
 
   def test_init_GFA1
-    gfa = RGFA.new(version: :"1.0")
-    assert_equal(:"1.0", gfa.version)
+    gfa = RGFA.new(version: :gfa1)
+    assert_equal(:gfa1, gfa.version)
   end
 
   def test_init_GFA2
-    gfa = RGFA.new(version: :"2.0")
-    assert_equal(:"2.0", gfa.version)
+    gfa = RGFA.new(version: :gfa2)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_init_invalid_version
@@ -29,7 +29,7 @@ class TestRGFAVersion < Test::Unit::TestCase
     gfa << hother
     assert_equal(nil, gfa.version)
     gfa << hv1
-    assert_equal(:"1.0", gfa.version)
+    assert_equal(:gfa1, gfa.version)
   end
 
   def test_GFA2_header
@@ -39,7 +39,7 @@ class TestRGFAVersion < Test::Unit::TestCase
     gfa << hother
     assert_equal(nil, gfa.version)
     gfa << hv2
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_unknown_version_in_header
@@ -54,9 +54,9 @@ class TestRGFAVersion < Test::Unit::TestCase
   def test_wrong_version_in_header
     hother = "H\taa:A:a\tff:f:1.1"
     hv2 = "H\tzz:Z:test\tVN:Z:2.0\tii:i:11"
-    gfa = RGFA.new(version: :"1.0")
+    gfa = RGFA.new(version: :gfa1)
     gfa << hother
-    assert_equal(:"1.0", gfa.version)
+    assert_equal(:gfa1, gfa.version)
     assert_raises(RGFA::VersionError) { gfa << hv2 }
   end
 
@@ -74,14 +74,14 @@ class TestRGFAVersion < Test::Unit::TestCase
     sv1 = "S\tA\t*"
     gfa = RGFA.new()
     gfa << sv1
-    assert_equal(:"1.0", gfa.version)
+    assert_equal(:gfa1, gfa.version)
   end
 
   def test_version_by_segment_GFA2_syntax
     sv2 = "S\tB\t100\t*"
     gfa = RGFA.new()
     gfa << sv2
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_GFA2_segment_in_GFA1
@@ -104,35 +104,35 @@ class TestRGFAVersion < Test::Unit::TestCase
     e = "E\t*\tA+\tB+\t0\t10\t20\t30\t*"
     gfa = RGFA.new()
     gfa << e
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_version_by_GFA2_specific_line_G
     g = "G\t*\tA+\tB-\t1000\t*"
     gfa = RGFA.new()
     gfa << g
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_version_by_GFA2_specific_line_F
     f = "F\tX\tID+\t10\t100\t0\t90$\t*"
     gfa = RGFA.new()
     gfa << f
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_version_by_GFA2_specific_line_O
     o = "O\tX\tA+ B- C+"
     gfa = RGFA.new()
     gfa << o
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_version_by_GFA2_specific_line_U
     u = "U\tX\tA B C"
     gfa = RGFA.new()
     gfa << u
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
   def test_version_guess_GFA1_specific_line
@@ -140,13 +140,13 @@ class TestRGFAVersion < Test::Unit::TestCase
     gfa = RGFA.new()
     gfa << l
     gfa.process_line_queue
-    assert_equal(:"1.0", gfa.version)
+    assert_equal(:gfa1, gfa.version)
   end
 
   def test_version_guess_default
     gfa = RGFA.new()
     gfa.process_line_queue
-    assert_equal(:"2.0", gfa.version)
+    assert_equal(:gfa2, gfa.version)
   end
 
 end

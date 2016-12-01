@@ -15,9 +15,9 @@ module RGFA::Lines::Creators
   # @return [RGFA] self
   def add_line(gfa_line)
     case version
-    when :"1.0"
+    when :gfa1
       add_line_GFA1(gfa_line)
-    when :"2.0"
+    when :gfa2
       add_line_GFA2(gfa_line)
     when nil
       add_line_unknown_version(gfa_line)
@@ -44,7 +44,11 @@ module RGFA::Lines::Creators
       gfa_line = gfa_line.to_rgfa_line(validate: @validate)
       header.merge(gfa_line)
       if gfa_line.VN
-        @version = gfa_line.VN.to_sym
+        @version = case gfa_line.VN
+                   when "1.0" then :gfa1
+                   when "2.0" then :gfa2
+                   else gfa_line.VN.to_sym
+                   end
         @version_explanation = "specified in header VN tag"
         validate_version if @validate > 0
         @line_queue.size.times {self << @line_queue.shift}
@@ -56,13 +60,13 @@ module RGFA::Lines::Creators
       process_line_queue
       gfa_line.connect(self)
     when :E, :F, :G, :U, :O
-      @version = :"2.0"
+      @version = :gfa2
       @version_explanation = "implied by: presence of a #{rt} line"
       gfa_line = gfa_line.to_rgfa_line(validate: @validate, version: @version)
       process_line_queue
       gfa_line.connect(self)
     when :L, :C, :P
-      @version_guess = :"1.0"
+      @version_guess = :gfa1
       @line_queue << gfa_line
     else
       @line_queue << gfa_line
@@ -72,7 +76,7 @@ module RGFA::Lines::Creators
 
   def add_line_GFA1(gfa_line)
     if gfa_line.kind_of?(String)
-      gfa_line = gfa_line.to_rgfa_line(version: :"1.0", validate: @validate)
+      gfa_line = gfa_line.to_rgfa_line(version: :gfa1, validate: @validate)
     elsif RGFA::Lines::GFA2Specific.include?(gfa_line.class)
       raise RGFA::VersionError,
         "Version: 1.0 (#{@version_explanation})\t"+
@@ -81,7 +85,7 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :gfa1
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+
@@ -99,7 +103,7 @@ module RGFA::Lines::Creators
 
   def add_line_GFA2(gfa_line)
     if gfa_line.kind_of?(String)
-      gfa_line = gfa_line.to_rgfa_line(version: :"2.0", validate: @validate)
+      gfa_line = gfa_line.to_rgfa_line(version: :gfa2, validate: @validate)
     elsif RGFA::Lines::GFA1Specific.include?(gfa_line.class)
       raise RGFA::VersionError,
         "Version: 2.0 (#{@version_explanation})\t"+
@@ -107,7 +111,7 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :gfa2
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+

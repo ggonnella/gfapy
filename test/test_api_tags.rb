@@ -25,7 +25,7 @@ class TestAPI::Tags < Test::Unit::TestCase
   end
 
   def test_custom_tags
-    [:"1.0", :"2.0"].each do |version|
+    [:gfa1, :gfa2].each do |version|
       # upper case
       assert_nothing_raised do
         RGFA::Line::Header.new(["ZZ:Z:1"], version: version, validate: 0)
@@ -95,7 +95,7 @@ class TestAPI::Tags < Test::Unit::TestCase
   end
 
   def test_duplicate_tag
-    [:"1.0", :"2.0"].each do |version|
+    [:gfa1, :gfa2].each do |version|
       assert_nothing_raised do
         RGFA::Line::Header.new(["zz:i:1", "VN:Z:1", "zz:i:2"],
                                 version: version, validate: 0)
@@ -134,7 +134,7 @@ class TestAPI::Tags < Test::Unit::TestCase
   # - zz -> custom not set
 
   def test_get_tag_content
-    [:"1.0", :"2.0"].each do |version|
+    [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
       l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:1.3","KC:i:10"],
                                            validate: level)
@@ -202,7 +202,7 @@ class TestAPI::Tags < Test::Unit::TestCase
   end
 
   def test_set_tag_content
-    [:"1.0", :"2.0"].each do |version|
+    [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
         l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:13","KC:i:10"],
                                              validate: level)
@@ -249,7 +249,7 @@ class TestAPI::Tags < Test::Unit::TestCase
   end
 
   def test_delete_tag
-    [:"1.0", :"2.0"].each do |version|
+    [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
         l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:13","KC:i:10"],
                                              validate: level)

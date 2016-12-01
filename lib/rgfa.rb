@@ -101,7 +101,7 @@ class RGFA
   attr_accessor :validate
 
   # Recognized GFA specification versions
-  VERSIONS = [:"1.0", :"2.0"]
+  VERSIONS = [:gfa1, :gfa2]
 
   # @!attribute [r] version
   #   @return [RGFA::VERSIONS, nil] GFA specification version
@@ -127,7 +127,7 @@ class RGFA
     if version.nil?
       @version = nil
       @version_explanation = nil
-      @version_guess = :"2.0"
+      @version_guess = :gfa2
     else
       @version = version.to_sym
       @version_explanation = "set during initialization"

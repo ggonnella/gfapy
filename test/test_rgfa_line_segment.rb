@@ -23,11 +23,11 @@ class TestRGFALineSegment < Test::Unit::TestCase
       f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(validate: 3)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line(version: :"1.0")
+      f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line(version: :gfa1)
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
     assert_raises(RGFA::InconsistencyError) do
-      f.join("\t").to_rgfa_line(validate: 3, version: :"1.0")
+      f.join("\t").to_rgfa_line(validate: 3, version: :gfa1)
     end
     f=["S","2","ACGTCACANNN","LN:i:11"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }

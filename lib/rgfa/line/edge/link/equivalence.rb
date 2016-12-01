@@ -94,7 +94,7 @@ module RGFA::Line::Edge::Link::Equivalence
   #   (if not empty)?
   def compatible?(other_oriented_from, other_oriented_to, other_overlap = [],
                   equivalent = true)
-    other_overlap = other_overlap.to_alignment(version: :"1.0", valid: true)
+    other_overlap = other_overlap.to_alignment(version: :gfa1, valid: true)
     is_direct = compatible_direct?(other_oriented_from, other_oriented_to,
                                    other_overlap)
     if is_direct

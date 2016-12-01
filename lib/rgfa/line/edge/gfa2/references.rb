@@ -14,7 +14,7 @@ module RGFA::Line::Edge::GFA2::References
         s = RGFA::Line::Segment::GFA2.new({:sid => get(sid).line,
                                            :slen => 1,
                                            :sequence => "*"},
-                                           version: :"2.0",
+                                           version: :gfa2,
                                            virtual: true)
         s.connect(@rgfa)
       end

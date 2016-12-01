@@ -1,11 +1,11 @@
 module RGFA::Field::AlignmentGFA2
 
   def unsafe_decode(string)
-    string.to_alignment(version: :"2.0", valid: true)
+    string.to_alignment(version: :gfa2, valid: true)
   end
 
   def decode(string)
-    string.to_alignment(version: :"2.0", valid: false)
+    string.to_alignment(version: :gfa2, valid: false)
   end
 
   alias_method :validate_encoded, :decode

@@ -41,7 +41,7 @@ class TestRGFALineLink < Test::Unit::TestCase
   end
 
   def test_coords
-    g = RGFA.new(version: :"1.0")
+    g = RGFA.new(version: :gfa1)
     g << "S\t1\t*\tLN:i:100"
     g << "L\t1\t+\t2\t-\t1M2D10M1I"
     assert_equal([87,100], g.links[0].from_coords)
@@ -54,7 +54,7 @@ class TestRGFALineLink < Test::Unit::TestCase
   end
 
   def test_to_gfa2
-    g = RGFA.new(version: :"1.0")
+    g = RGFA.new(version: :gfa1)
     g << "S\t1\t*\tLN:i:100"
     g << "S\t2\t*\tLN:i:100"
     g << "S\t3\t*\tLN:i:100"

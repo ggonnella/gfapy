@@ -13,10 +13,10 @@ class TestRGFA < Test::Unit::TestCase
   def test_version_empty
     gfa = RGFA.new
     assert_equal(nil, gfa.version)
-    gfa = RGFA.new(version: :"1.0")
-    assert_equal(:"1.0", gfa.version)
-    gfa = RGFA.new(version: :"2.0")
-    assert_equal(:"2.0", gfa.version)
+    gfa = RGFA.new(version: :gfa1)
+    assert_equal(:gfa1, gfa.version)
+    gfa = RGFA.new(version: :gfa2)
+    assert_equal(:gfa2, gfa.version)
     assert_raises(RGFA::VersionError) { RGFA.new(version: :"0.0") }
   end
 
@@ -31,7 +31,7 @@ class TestRGFA < Test::Unit::TestCase
   end
 
   def test_path_names
-    gfa = RGFA.new(version: :"1.0")
+    gfa = RGFA.new(version: :gfa1)
     assert_equal([], gfa.path_names)
     gfa << "P\t3\t1+,4-\t*"
     assert_equal([:"3"], gfa.path_names)
@@ -40,7 +40,7 @@ class TestRGFA < Test::Unit::TestCase
   end
 
   def test_validate
-    gfa = RGFA.new(version: :"1.0")
+    gfa = RGFA.new(version: :gfa1)
     gfa << "S\t1\t*"
     assert_nothing_raised { gfa.validation }
     gfa << "L\t1\t+\t2\t-\t*"

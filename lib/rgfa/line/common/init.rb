@@ -19,8 +19,8 @@ module RGFA::Line::Common::Init
   RECORD_TYPE_VERSIONS =
   {
     :specific =>
-      {:"1.0" => [:C, :L, :P],
-       :"2.0" => [:E, :G, :F, :O, :U, nil]},
+      {:gfa1 => [:C, :L, :P],
+       :gfa2 => [:E, :G, :F, :O, :U, nil]},
     :generic => [:H, :"#"],
     :different => [:S]
   }
@@ -230,9 +230,9 @@ module RGFA::Line::Common::Init
     # @return [Class] a subclass of RGFA::Line
     def subclass(record_type, version: nil)
       case version
-      when :"1.0"
+      when :gfa1
         subclass_GFA1(record_type)
-      when :"2.0"
+      when :gfa2
         subclass_GFA2(record_type)
       when nil
         subclass_unknown_version(record_type)

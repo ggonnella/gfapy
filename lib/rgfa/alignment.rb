@@ -7,8 +7,8 @@ require_relative "alignment/trace"
 
 class String
   # Parses an alignment field
-  # @param version [Symbol] if :"2.0", then CIGARs and placeholders
-  #   are considered valid; if :"1.0", CIGARs (limited to MIDP),
+  # @param version [Symbol] if :gfa2, then CIGARs and placeholders
+  #   are considered valid; if :gfa1, CIGARs (limited to MIDP),
   #   trace alignments and placeholders
   # @return [RGFA::Alignment::CIGAR, RGFA::Alignment::Trace,
   #          RGFA::Alignment::Placeholder]
@@ -17,8 +17,8 @@ class String
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
   # @raise [RGFA::VersionError] if a wrong version is provided
-  def to_alignment(version: :"2.0", valid: false)
-    if ![:"1.0", :"2.0"].include?(version)
+  def to_alignment(version: :gfa2, valid: false)
+    if ![:gfa1, :gfa2].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end
     first = true
@@ -34,7 +34,7 @@ class String
         if char =~ /\d/
           next
         elsif char == ","
-          if version == :"2.0"
+          if version == :gfa2
             t = self.to_trace
             t.validate if !valid
             return t
@@ -42,7 +42,7 @@ class String
             raise RGFA::FormatError,
               "Trace alignments are not allowed in GFA1: #{self.inspect}"
           end
-        elsif char =~ /[MIDP]/ or (char =~ /[=XSHN]/ and version == :"1.0")
+        elsif char =~ /[MIDP]/ or (char =~ /[=XSHN]/ and version == :gfa1)
           return self.to_cigar(valid: valid, version: version)
         end
       end
@@ -56,22 +56,22 @@ end
 class Array
   # Converts an alignment array into a specific array type
   # @return [RGFA::Alignment::CIGAR, RGFA::Alignment::Trace]
-  # @param version [Symbol] if :"2.0", then CIGARs and placeholders
-  #   are considered valid; if :"1.0", CIGARs (limited to MIDP),
+  # @param version [Symbol] if +:gfa2+, then CIGARs and placeholders
+  #   are considered valid; if +:gfa1+, CIGARs (limited to MIDP),
   #   trace alignments and placeholders
   # @raise [RGFA::FormatError] if the content of the
   #   array cannot be parsed
   # @param valid [Boolean] ignored, for compatibility
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @api private
-  def to_alignment(version: :"1.0", valid: nil)
-    if ![:"1.0", :"2.0"].include?(version)
+  def to_alignment(version: :gfa1, valid: nil)
+    if ![:gfa1, :gfa2].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end
     if self.empty?
       return RGFA::Alignment::Placeholder.new
     elsif self[0].kind_of?(Integer)
-      if version == :"2.0"
+      if version == :gfa2
         return RGFA::Alignment::Trace.new(self)
       else
         raise RGFA::FormatError,

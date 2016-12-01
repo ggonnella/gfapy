@@ -36,7 +36,7 @@ class TestAPI::CustomRecords < Test::Unit::TestCase
   end
 
   def test_add_custom_records
-    gfa = RGFA.new(version: :"2.0")
+    gfa = RGFA.new(version: :gfa2)
     x1 = "X\tthis is a custom record"
     assert_nothing_raised { gfa << x1 }
     assert_equal([:X], gfa.custom_record_keys)
@@ -44,7 +44,7 @@ class TestAPI::CustomRecords < Test::Unit::TestCase
   end
 
   def test_delete_custom_records
-    gfa = RGFA.new(version: :"2.0")
+    gfa = RGFA.new(version: :gfa2)
     c = "X\tThis is a custom_record"
     gfa << c
     assert_equal([c], gfa.custom_records(:X).map(&:to_s))

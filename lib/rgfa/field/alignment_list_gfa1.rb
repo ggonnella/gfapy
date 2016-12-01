@@ -1,7 +1,7 @@
 module RGFA::Field::AlignmentListGFA1
 
   def unsafe_decode(string)
-    string.split(",").map {|c| c.to_cigar(valid: true, version: :"1.0")}
+    string.split(",").map {|c| c.to_cigar(valid: true, version: :gfa1)}
   end
 
   def decode(string)
@@ -22,7 +22,7 @@ module RGFA::Field::AlignmentListGFA1
     when RGFA::Placeholder
     when Array
       object.map do |elem|
-        elem.to_cigar(version: :"1.0")
+        elem.to_cigar(version: :gfa1)
       end.each(&:validate)
     else
       raise RGFA::TypeError,

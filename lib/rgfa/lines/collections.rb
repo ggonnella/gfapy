@@ -78,9 +78,9 @@ module RGFA::Lines::Collections
   def custom_record_keys
     keys = (@records.keys-[:H]).select {|k|!@records[k].empty?}
     case @version
-    when :"1.0"
+    when :gfa1
       []
-    when :"2.0"
+    when :gfa2
       keys - NONCUSTOM_GFA2_KEYS
     else
       keys - NONCUSTOM_GFA2_KEYS - GFA1_ONLY_KEYS

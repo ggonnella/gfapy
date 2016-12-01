@@ -56,7 +56,7 @@ module RGFA::Line::Group::Path::References
                                   :to_orient => to.orient,
                                   :overlap => cigar},
                                   virtual: true,
-                                  version: :"1.0")
+                                  version: :gfa1)
         l.connect(@rgfa)
       end
       @refs[:links] << l

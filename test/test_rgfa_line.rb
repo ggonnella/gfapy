@@ -184,9 +184,9 @@ class TestRGFALine < Test::Unit::TestCase
 
   def test_unknown_record_type
     assert_raise(RGFA::TypeError) {
-      "Z\txxx".to_rgfa_line(version: :"1.0")}
+      "Z\txxx".to_rgfa_line(version: :gfa1)}
     assert_nothing_raised {
-      "Z\txxx".to_rgfa_line(version: :"2.0")}
+      "Z\txxx".to_rgfa_line(version: :gfa2)}
     assert_nothing_raised {
       "Z\txxx".to_rgfa_line}
   end

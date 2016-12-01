@@ -1,11 +1,11 @@
 module RGFA::Field::AlignmentGFA1
 
   def decode(string)
-    string.to_cigar(valid: false, version: :"1.0")
+    string.to_cigar(valid: false, version: :gfa1)
   end
 
   def unsafe_decode(string)
-    string.to_cigar(valid: true, version: :"1.0")
+    string.to_cigar(valid: true, version: :gfa1)
   end
 
   def validate_encoded(string)

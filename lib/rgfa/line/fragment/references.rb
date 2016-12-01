@@ -9,7 +9,7 @@ module RGFA::Line::Fragment::References
       s = RGFA::Line::Segment::GFA2.new({:sid => get(:sid),
                                          :slen => 1,
                                          :sequence => "*"},
-                                         version: :"2.0",
+                                         version: :gfa2,
                                          virtual: true)
       s.connect(@rgfa)
     end

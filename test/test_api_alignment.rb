@@ -112,13 +112,13 @@ class TestAPI::Alignment < Test::Unit::TestCase
 
   def test_version_specific_validate
     assert_nothing_raised { @@cigar_gfa1_1_s.
-                            to_alignment(version: :"1.0", valid: false)}
+                            to_alignment(version: :gfa1, valid: false)}
     assert_raises(RGFA::FormatError) { @@cigar_gfa1_1_s.
-                            to_alignment(version: :"2.0", valid: false)}
+                            to_alignment(version: :gfa2, valid: false)}
     assert_nothing_raised { @@cigar_gfa2_1_s.
-                            to_alignment(version: :"1.0", valid: false)}
+                            to_alignment(version: :gfa1, valid: false)}
     assert_nothing_raised { @@cigar_gfa2_1_s.
-                            to_alignment(version: :"2.0", valid: false)}
+                            to_alignment(version: :gfa2, valid: false)}
   end
 
   def test_array_methods
@@ -140,23 +140,23 @@ class TestAPI::Alignment < Test::Unit::TestCase
 
   def test_cigar_complement
     assert_equal(@@cigar_gfa1_1_c_s,
-                 @@cigar_gfa1_1_s.to_alignment(version: :"1.0").complement.to_s)
+                 @@cigar_gfa1_1_s.to_alignment(version: :gfa1).complement.to_s)
     assert_equal(@@cigar_gfa2_1_c_s,
                  @@cigar_gfa2_1_s.to_alignment.complement.to_s)
   end
 
   def test_cigar_length_on
     assert_equal(@@cigar_gfa1_1_rlen,
-                 @@cigar_gfa1_1_s.to_alignment(version: :"1.0").
+                 @@cigar_gfa1_1_s.to_alignment(version: :gfa1).
                  length_on_reference)
     assert_equal(@@cigar_gfa1_1_qlen,
-                 @@cigar_gfa1_1_s.to_alignment(version: :"1.0").
+                 @@cigar_gfa1_1_s.to_alignment(version: :gfa1).
                  length_on_query)
     assert_equal(@@cigar_gfa1_1_qlen,
-                 @@cigar_gfa1_1_c_s.to_alignment(version: :"1.0").
+                 @@cigar_gfa1_1_c_s.to_alignment(version: :gfa1).
                  length_on_reference)
     assert_equal(@@cigar_gfa1_1_rlen,
-                 @@cigar_gfa1_1_c_s.to_alignment(version: :"1.0").
+                 @@cigar_gfa1_1_c_s.to_alignment(version: :gfa1).
                  length_on_query)
     assert_equal(@@cigar_gfa2_1_rlen,
                  @@cigar_gfa2_1_s.to_alignment.length_on_reference)

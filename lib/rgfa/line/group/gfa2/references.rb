@@ -53,7 +53,7 @@ module RGFA::Line::Group::GFA2::References
         "requires a non-existing ref with ID #{ref}"
       end
       line = RGFA::Line::Unknown.new({:name => ref}, virtual: true,
-                                     version: :"2.0")
+                                     version: :gfa2)
       @rgfa << line
     end
     line.add_reference(self, (record_type == :O) ?

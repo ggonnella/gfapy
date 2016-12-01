@@ -42,23 +42,23 @@ class RGFA::Alignment::CIGAR < Array
   # The additional operations allowed in GFA1 have an unclear meaning
   # in the context of GFA and should be avoided.
   #
-  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
-  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @param version [Symbol] <i>(defaults to: +gfa1+)</i> if +:gfa2+,
+  #   then only CIGAR codes M/I/D/P are allowed, if +:gfa1+ all CIGAR codes
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
   # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [RGFA::Alignment::CIGAR]
-  def self.from_string(str, valid: false, version: :"1.0")
+  def self.from_string(str, valid: false, version: :gfa1)
     a = RGFA::Alignment::CIGAR.new
     unless valid
       case version
-      when :"1.0"
+      when :gfa1
         if str !~ /^([0-9]+[MIDPNSHX=])+$/
           raise RGFA::FormatError,
           "The string #{str} does not represent a valid CIGAR string"
         end
-      when :"2.0"
+      when :gfa2
         if str !~ /^([0-9]+[MIDP])+$/
           raise RGFA::FormatError,
           "The string #{str} does not represent a valid GFA2 CIGAR string"
@@ -83,16 +83,16 @@ class RGFA::Alignment::CIGAR < Array
   end
 
   # Validate the instance
-  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
-  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @param version [Symbol] <i>(defaults to: +:gfa1+)</i> if :gfa2,
+  #   then only CIGAR codes M/I/D/P are allowed, if :gfa1 all CIGAR codes
   # @raise [RGFA::ValueError] if a code is invalid or a length is negative
   # @raise [RGFA::TypeError] if a length is not an Integer or
   #   the array contains anything which is not interpretable as a
   #   cigar operation
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  def validate(version: :"1.0")
-    if ![:"1.0", :"2.0"].include?(version)
+  def validate(version: :gfa1)
+    if ![:gfa1, :gfa2].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end
     any? do |op|
@@ -196,14 +196,14 @@ class RGFA::Alignment::CIGAR::Operation
   end
 
   # Validate the operation
-  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
-  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @param version [Symbol] <i>(defaults to: +:gfa1+)</i> if :gfa2,
+  #   then only CIGAR codes M/I/D/P are allowed, if :gfa1 all CIGAR codes
   # @raise [RGFA::ValueError] if the code is invalid or the length is negative
   # @raise [RGFA::TypeError] if the length is not an Integer
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [void]
-  def validate(version: :"1.0")
-    if ![:"1.0", :"2.0"].include?(version)
+  def validate(version: :gfa1)
+    if ![:gfa1, :gfa2].include?(version)
       raise RGFA::VersionError, "Version unknown: #{version}"
     end
     begin
@@ -215,7 +215,7 @@ class RGFA::Alignment::CIGAR::Operation
     if len < 0
       raise RGFA::ValueError
     elsif RGFA::Alignment::CIGAR::Operation::CODE_GFA1_ONLY.include?(code)
-      if version == :"2.0"
+      if version == :gfa2
         raise RGFA::ValueError, "CIGAR operation: #{self.inspect}\n"+
           "CIGAR code is not supported in GFA2: #{code}"
       end
@@ -255,12 +255,12 @@ class String
   #    CIGAR or Placeholder (if +*+)
   # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
   #   the string is guaranteed to be valid
-  # @param version [Symbol] <i>(defaults to: +:1.0+)</i> if :"2.0",
-  #   then only CIGAR codes M/I/D/P are allowed, if :"1.0" all CIGAR codes
+  # @param version [Symbol] <i>(defaults to: +:gfa1+)</i> if :gfa2,
+  #   then only CIGAR codes M/I/D/P are allowed, if :gfa1 all CIGAR codes
   # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @api private
-  def to_cigar(valid: false, version: :"1.0")
+  def to_cigar(valid: false, version: :gfa1)
     if placeholder?
       return RGFA::Alignment::Placeholder.new
     else

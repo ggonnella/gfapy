@@ -11,7 +11,7 @@ module RGFA::Line::Edge::GFA1::References
         raise RGFA::NotFoundError if @rgfa.segments_first_order
         s = RGFA::Line::Segment::GFA1.new({:name => get(dir),
                                          :sequence => "*"},
-                                         version: :"1.0",
+                                         version: :gfa1,
                                          virtual: true)
         s.connect(@rgfa)
       end

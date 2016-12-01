@@ -17,7 +17,7 @@ module RGFA::Line::Common::VersionConversion
 
     # @return [RGFA::Line] convertion to the selected version
     define_method :"to_#{shall_version}" do
-      v = (shall_version == :gfa1) ? :"1.0" : :"2.0"
+      v = (shall_version == :gfa1) ? :gfa1 : :gfa2
       if (v == version)
         return self
       else
