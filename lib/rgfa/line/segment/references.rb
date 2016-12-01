@@ -3,8 +3,8 @@ module RGFA::Line::Segment::References
   # References to the graph lines which involve the segment as dovetail overlap
   # @param extremity [:L,:R, nil] left of right extremity of the segment
   #   (default: both)
-  # @return [Array<RGFA::Line>] an array of lines; the lines themselves can be
-  #   modified, but the array is frozen
+  # @return [Array<RGFA::Line::Edge>] an array of lines; the lines themselves
+  #   can be modified, but the array is frozen
   # @note to add a dovetail overlap, create a L (GFA1) or E (GFA2) line and
   #   connect it to the graph; to remove a dovetail overlap, call
   #   RGFA::Line#disconnect on the corresponding L or E line
@@ -75,6 +75,12 @@ module RGFA::Line::Segment::References
   #   the container segment
   def contained
     edges_to_contained.map(&:to).uniq
+  end
+
+  # List of edges which refer to the segment
+  # @return [Array<RGFA::Line::Edge>]
+  def edges
+    dovetails + containments + internals
   end
 
   private

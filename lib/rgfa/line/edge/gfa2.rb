@@ -26,11 +26,12 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
 
 end
 
-require_relative "common/from_to.rb"
-require_relative "common/alignment_type.rb"
-require_relative "gfa2/to_gfa1.rb"
-require_relative "gfa2/alignment_type.rb"
-require_relative "gfa2/references.rb"
+require_relative "common/from_to"
+require_relative "common/alignment_type"
+require_relative "gfa2/to_gfa1"
+require_relative "gfa2/alignment_type"
+require_relative "gfa2/references"
+require_relative "gfa2/other"
 
 class RGFA::Line::Edge::GFA2
   include RGFA::Line::Edge::Common::FromTo
@@ -38,4 +39,5 @@ class RGFA::Line::Edge::GFA2
   include RGFA::Line::Edge::GFA2::AlignmentType
   include RGFA::Line::Edge::GFA2::ToGFA1
   include RGFA::Line::Edge::GFA2::References
+  include RGFA::Line::Edge::GFA2::Other
 end

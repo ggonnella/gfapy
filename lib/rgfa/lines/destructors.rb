@@ -71,7 +71,7 @@ module RGFA::Lines::Destructors
     when :H
       raise RGFA::AssertionError, "Bug found, please report\n"+
         "gfa_line: #{gfa_line}"
-    when :E, :S, :P, :U, :G, :O
+    when :E, :S, :P, :U, :G, :O, nil
       if gfa_line.name.empty?
         @records[gfa_line.record_type][nil].delete(gfa_line)
       else

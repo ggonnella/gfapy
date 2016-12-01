@@ -7,8 +7,9 @@ module RGFA::Line::Common::ReferencesUpdate
   # when a real line is found which substitutes the virtual line.
   #
   # @note SUBCLASSES which can be referenced by virtual lines
-  #   must implement the #backreferences_keys method to
-  #   support this mechanism
+  #   may implement a specialize #backreferences_keys method to
+  #   support this mechanism (the default will work in all cases
+  #   of the current specification, but is not optimized for record type)
   #
   # @param oldref [RGFA::Line]
   # @param newref [RGFA::Line]
@@ -20,7 +21,12 @@ module RGFA::Line::Common::ReferencesUpdate
     keys = backreference_keys(oldref, key_in_ref)
     update_field_references(oldref, newref, self.class::REFERENCE_FIELDS & keys)
     if instance_variable_defined?(:@refs)
-      update_nonfield_references(oldref, newref, @refs.keys & keys)
+      # note: keeping the two types of nonfield references separate helps
+      #       in subclasses where only one must be redefined (eg GFA2 groups)
+      update_dependent_line_references(oldref, newref,
+                                self.class::DEPENDENT_LINES & @refs.keys & keys)
+      update_other_references(oldref, newref,
+                               self.class::OTHER_REFERENCES & @refs.keys & keys)
     end
   end
 
@@ -72,7 +78,7 @@ module RGFA::Line::Common::ReferencesUpdate
         when RGFA::Line
           elem = newref if elem == oldref
         when RGFA::OrientedLine
-          elem.line == newref if elem.line == newref
+          elem.line = newref if elem.line == oldref
         end
         elem
       end
@@ -92,6 +98,17 @@ module RGFA::Line::Common::ReferencesUpdate
       @refs[key] = ((idx > 0 ? @refs[key][0..idx-1] : []) +
                     (newref ? [newref] : []) + @refs[key][idx+1..-1]).freeze
     end
+  end
+
+  def update_dependent_line_references(oldref, newref, possible_keys)
+    update_nonfield_references(oldref, newref, possible_keys)
+  end
+
+  # @note SUBCLASSES may redefine this method to perform more or different
+  #   operations (in particular, the GFA2 groups must recompute the induced
+  #   set when a reference is solved, thus the method is redefined there)
+  def update_other_references(oldref, newref, possible_keys)
+    update_nonfield_references(oldref, newref, possible_keys)
   end
 
 end

@@ -32,6 +32,7 @@ require_relative "gfa1/to_gfa2"
 require_relative "gfa1/references"
 require_relative "gfa1/oriented_segments"
 require_relative "gfa1/alignment_type"
+require_relative "gfa1/other"
 require_relative "link/canonical"
 require_relative "link/complement"
 require_relative "link/equivalence"
@@ -45,6 +46,7 @@ class RGFA::Line::Edge::Link
   include RGFA::Line::Edge::GFA1::References
   include RGFA::Line::Edge::GFA1::OrientedSegments
   include RGFA::Line::Edge::GFA1::AlignmentType
+  include RGFA::Line::Edge::GFA1::Other
   include RGFA::Line::Edge::Link::Canonical
   include RGFA::Line::Edge::Link::Complement
   include RGFA::Line::Edge::Link::Equivalence

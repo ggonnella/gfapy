@@ -516,15 +516,15 @@ class TestAPI::References < Test::Unit::TestCase
     path2 = "O\tp2\tf+ a+".to_rgfa_line
     assert_equal([OL[:p2,:-], OL[:b,:+], OL[:c,:-], OL[:"e-c+",:-]],
                  path1.items)
-    assert_equal([], path1.implied_items)
     assert_equal([OL[:f,:+], OL[:a,:+]], path2.items)
-    assert_equal([], path2.implied_items)
+    assert_equal([], path1.induced_set)
+    assert_equal([], path2.induced_set)
     # connection
     g << path1
     g << path2
     # edges
     e = {}
-    ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"].each do |name|
+    ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-", "f-b+"].each do |name|
       coord1 = name[1] == "+" ? "900\t1000$" : "0\t100"
       coord2 = name[3] == "+" ? "0\t100" : "900\t1000$"
       g << (e[name] = ("E\t#{name}\t#{name[0..1]}\t#{name[2..3]}\t"+
@@ -533,9 +533,14 @@ class TestAPI::References < Test::Unit::TestCase
     # items
     assert_equal([OL[path2,:-], OL[s[:b],:+], OL[s[:c],:-], OL[e["e-c+"],:-]],
                  path1.items)
-    assert_equal([], path1.implied_items) # TODO
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
-    assert_equal([], path2.implied_items) # TODO
+    # induced set
+    assert_equal([OL[s[:f],:+], OL[e["a-f-"],:-], OL[s[:a],:+]],
+                 path2.induced_set)
+    assert_equal([OL[s[:a],:-], OL[e["a-f-"],:+], OL[s[:f],:-],
+                  OL[e["f-b+"],:+], OL[s[:b],:+], OL[e["b+c-"],:+],
+                  OL[s[:c],:-], OL[e["e-c+"],:-], OL[s[:e],:+]],
+                 path1.induced_set)
     # backreferences
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
       assert_equal([path1], line.ordered_groups)
@@ -547,9 +552,8 @@ class TestAPI::References < Test::Unit::TestCase
     path1.disconnect
     assert_equal([OL[:p2,:-], OL[:b,:+], OL[:c,:-], OL[:"e-c+",:-]],
                  path1.items)
-    assert_equal([], path1.implied_items)
+    assert_equal([], path1.induced_set)
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
-    assert_equal([], path2.implied_items) # TODO
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
       assert_equal([], line.ordered_groups)
     end
@@ -557,9 +561,7 @@ class TestAPI::References < Test::Unit::TestCase
     g << path1
     assert_equal([OL[path2,:-], OL[s[:b],:+], OL[s[:c],:-], OL[e["e-c+"],:-]],
                  path1.items)
-    assert_equal([], path1.implied_items) # TODO
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
-    assert_equal([], path2.implied_items) # TODO
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
       assert_equal([path1], line.ordered_groups)
     end
@@ -587,11 +589,13 @@ class TestAPI::References < Test::Unit::TestCase
     path1 = "O\tpath1\tf+ a+".to_rgfa_line
     assert_equal([:b, :set2, :c, :"e-c+"], set1.items)
     assert_equal([:g, :"c-d+", :path1], set2.items)
-    assert_equal([], set1.implied_items)
-    assert_equal([], set2.implied_items)
+    # induced set of non-connected is empty
+    assert_equal([], set1.induced_set)
     # connection
     g << set1
     g << set2
+    # induced set cannot be computed, as long as not all references are solved
+    assert_raise(RGFA::RuntimeError) {set1.induced_set}
     # connect items
     g << path1
     [:a, :b, :c, :d, :e, :f, :g].each do |name|
@@ -607,8 +611,19 @@ class TestAPI::References < Test::Unit::TestCase
     # items
     assert_equal([s[:b], set2, s[:c], e["e-c+"]], set1.items)
     assert_equal([s[:g], e["c-d+"], path1], set2.items)
-    assert_equal([], set1.implied_items) # TODO
-    assert_equal([], set2.implied_items) # TODO
+    # induced set
+    assert_equal([OL[s[:f],:+], OL[s[:a],:+]],
+                 path1.induced_segments_set)
+    assert_equal([s[:g], s[:c], s[:d], s[:f], s[:a]],
+                 set2.induced_segments_set)
+    assert_equal([s[:b], s[:g], s[:c], s[:d], s[:f], s[:a], s[:e]],
+                 set1.induced_segments_set)
+    assert_equal([e["c-d+"], e["a-f-"]],
+                 set2.induced_edges_set)
+    assert_equal([e["a+b+"],e["b+c-"],e["c-d+"],e["e-c+"],e["a-f-"]],
+                 set1.induced_edges_set)
+    assert_equal(set1.induced_segments_set + set1.induced_edges_set,
+                 set1.induced_set)
     # backreferences
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
       assert_equal([set1], line.unordered_groups)
@@ -619,14 +634,12 @@ class TestAPI::References < Test::Unit::TestCase
     # group disconnection
     set1.disconnect
     assert_equal([:b, :set2, :c, :"e-c+"], set1.items)
-    assert_equal([], set1.implied_items)
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
       assert_equal([], line.unordered_groups)
     end
     # group reconnection
     g << set1
     assert_equal([s[:b], set2, s[:c], e["e-c+"]], set1.items)
-    assert_equal([], set1.implied_items) # TODO
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
       assert_equal([set1], line.unordered_groups)
     end
@@ -661,6 +674,18 @@ class TestAPI::References < Test::Unit::TestCase
     #   test class of generated virtual lines
     #   add real line corresponding to virtual line
     #   test that references are correctly updated
+    g = RGFA.new(version: :"2.0")
+    path1 = "O\tp1\tp2- b+ c- e-c+-".to_rgfa_line
+    path2 = "O\tp2\tf+ a+".to_rgfa_line
+    g << path1
+    path1.items.each do |i|
+      assert(i.line.virtual?)
+    end
+    g << path2
+    assert(!path1.items[0].line.virtual?)
+    path1.items[1..-1].each_with_index do |i|
+      assert(i.line.virtual?)
+    end
   end
 
 end

@@ -54,7 +54,7 @@ module RGFA::Line::Group::GFA2::References
       end
       line = RGFA::Line::Unknown.new({:name => ref}, virtual: true,
                                      version: :"2.0")
-      line.connect(@rgfa)
+      @rgfa << line
     end
     line.add_reference(self, (record_type == :O) ?
                          :ordered_groups : :unordered_groups)

@@ -12,7 +12,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   REFERENCE_FIELDS = [:items]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:ordered_groups, :unordered_groups]
-  OTHER_REFERENCES = [:implied_items]
+  OTHER_REFERENCES = []
 
   define_field_methods
 
@@ -22,8 +22,10 @@ end
 
 require_relative "gfa2/references"
 require_relative "ordered/references"
+require_relative "ordered/induced_set"
 
 class RGFA::Line::Group::Ordered
   include RGFA::Line::Group::GFA2::References
   include RGFA::Line::Group::Ordered::References
+  include RGFA::Line::Group::Ordered::InducedSet
 end

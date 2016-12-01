@@ -30,8 +30,7 @@ module RGFA::Line::Edge::GFA1::References
 
   def import_field_references(previous)
     [:from, :to].each do |dir|
-      set_existing_field(dir, @rgfa.segment(get(dir)),
-                         set_reference: true)
+      set_existing_field(dir, @rgfa.segment(get(dir)), set_reference: true)
     end
   end
 

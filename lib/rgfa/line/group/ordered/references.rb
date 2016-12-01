@@ -10,7 +10,6 @@ module RGFA::Line::Group::Ordered::References
     else
       add_item_to_connected_group(item, true)
     end
-    check_consistency
   end
 
   # Add an item to the group as first item
@@ -23,7 +22,6 @@ module RGFA::Line::Group::Ordered::References
     else
       add_item_to_connected_group(item, false)
     end
-    check_consistency
   end
 
   # Remove the first item from the group
@@ -65,13 +63,7 @@ module RGFA::Line::Group::Ordered::References
   def add_item_to_connected_group(item, append = true)
     item.line = prepare_and_check_ref(item.line)
     self.add_reference(item, :items, append: append)
-    check_consistency
     return nil
-  end
-
-  # Check that the elements in an ordered set are contiguous
-  def check_consistency
-    # not implemented yet
   end
 
   def initialize_references

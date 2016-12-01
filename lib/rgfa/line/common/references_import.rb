@@ -19,9 +19,9 @@ module RGFA::Line::Common::ReferencesImport
 
   def substitute_virtual_line(previous)
     @rgfa = previous.rgfa
+    import_references(previous)
     @rgfa.unregister_line(previous)
     @rgfa.register_line(self)
-    import_references(previous)
     return nil
   end
 
@@ -38,9 +38,6 @@ module RGFA::Line::Common::ReferencesImport
     update_nonfield_backreferences(previous)
   end
 
-  # @note SUBCLASSES shall overwrite this method, if they can be virtual and
-  #   the reference fields are not directly references
-  #   but rather contain the reference (e.g. path segment_names)
   def import_field_references(previous)
     (self.class::REFERENCE_FIELDS +
      self.class::REFERENCE_RELATED_FIELDS).each do |k|
@@ -49,14 +46,26 @@ module RGFA::Line::Common::ReferencesImport
     end
   end
 
-  # @note SUBCLASSES shall overwrite this method, if they can be virtual and
-  #   the reference fields are not directly references
-  #   but rather contain the reference (e.g. path segment_names)
+  # @note currently this method supports fields which are: references,
+  #   oriented lines and arrays of references of oriented lines;
+  #   if SUBCLASSES have reference fields which contain references
+  #   in a different fashion, the method must be updated or overwritten
+  #   in the subclass
   def update_field_backreferences(previous)
     self.class::REFERENCE_FIELDS.each do |k|
       ref = get(k)
       if ref.kind_of?(RGFA::Line)
         ref.update_references(previous, self, k)
+      elsif ref.kind_of?(RGFA::OrientedLine)
+        ref.line.update_references(previous, self, k)
+      elsif ref.kind_of?(Array)
+        ref.each do |item|
+          if item.kind_of?(RGFA::Line)
+            item.update_references(previous, self, k)
+          elsif item.kind_of?(RGFA::OrientedLine)
+            item.line.update_references(previous, self, k)
+          end
+        end
       end
     end
   end
