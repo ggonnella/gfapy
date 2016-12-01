@@ -21,19 +21,19 @@ The method ```RGFA::Line#connected?``` allows to determine if
 a line is connected to an RGFA instance. The method ```RGFA::Line#rgfa```
 returns the RGFA instance to which the line is connected.
 
-### References
+### References for each record type
 
 The following tables list the references for each record type.
 ```[]``` represent arrays.
 
 #### GFA1
 
-| Record type | Fields         | Type of reference |
-|-------------|----------------|-------------------|
-| Link        | from, to       | Segment           |
-| Containment | from, to       | Segment           |
-| Path        | segment_names, | [OrientedLine]    |
-|             | links (1)      | [Link]            |
+| Record type | Fields         | Type of reference       |
+|-------------|----------------|-------------------------|
+| Link        | from, to       | Segment                 |
+| Containment | from, to       | Segment                 |
+| Path        | segment_names, | [OrientedLine(Segment)] |
+|             | links (1)      | [Link]                  |
 
 (1): paths contain information in the fields segment_names and overlaps,
 which allow to find the identify from which they depend; these links can be
@@ -41,15 +41,15 @@ retrieved using ```links``` (which is not a field).
 
 #### GFA2
 
-| Record type | Fields        | Type of reference                        |
-|-------------|---------------|------------------------------------------|
-| Edge        | sid1, sid2    | Segment                                  |
-| Gap         | sid1, sid2    | Segment                                  |
-| Fragment    | sid           | Segment                                  |
-| U Group     | items         | [Edge/Gap/U-Group/Segment]               |
-| O Group     | items         | [OrientedLine(Edge/Gap/O-Group/Segment)] |
+| Record type | Fields        | Type of reference                    |
+|-------------|---------------|--------------------------------------|
+| Edge        | sid1, sid2    | Segment                              |
+| Gap         | sid1, sid2    | Segment                              |
+| Fragment    | sid           | Segment                              |
+| U Group     | items         | [Edge/O-Group/U-Group/Segment]       |
+| O Group     | items         | [OrientedLine(Edge/O-Group/Segment)] |
 
-### Backreferences
+### Backreferences for each record type
 
 When a line containing a reference to another line is connected to a RGFA
 object, backreferences to it are created in the targeted line.
@@ -90,10 +90,9 @@ The following tables list the backreferences collections for each record type.
 |             | unordered_groups              |
 | Edge        | ordered_groups                |
 |             | unordered_groups              |
-| Gap         | ordered_groups                |
+| O Group     | ordered_groups                |
 |             | unordered_groups              |
-| U/O Group   | ordered_groups                |
-|             | unordered_groups              |
+| U Group     | unordered_groups              |
 
 #### Backreference convenience methods
 
@@ -108,14 +107,46 @@ respectively, right end of the segment sequence are returned (equivalent to
 dovetails_L/dovetails_R and gaps_L/gaps_R).
 The segment ```containments``` methods returns both containments
 where the segment is the container or the contained segment.
+The segment ```edges``` method returns all edges (dovetails, containments
+and internals) with a reference to the segment.
 
-The above mentioned methods return lists of edges. Other methods
-directly compute from these edges lists of segments. In particular,
+Other methods
+directly compute list of segments from the edges lists mentioned above.
+In particular,
 the segment ```neighbours``` method computes the set of segment
 instances which are connected by dovetails to the segment.
 The segment ```containers``` and ```contained``` methods similarly
 compute the set of segment instances which, respectively, contains
 the segment, or are contained in the segment.
+
+### Induced sets
+
+The item list in GFA2 sets and paths may not contain elements
+which are implicitly involved.
+For example a path may contain segments, without specifying the
+edges connecting them, if there is only one such edge. Alternatively
+a path may contain edges, without explitely indicating the segments.
+Similarly a set may contain edges, but not the segments refered to
+in them, or contain segments which are connected by edges, without
+the edges themselves.
+Furthermore groups may refer to other groups (set to sets or paths,
+paths to paths only), which then indirectly contain references to
+segments and edges.
+
+The method ```induced_set``` computes the set of segments and edges
+induced by the group. Thereby all references to subgroups are resolved.
+The method can only be applied to connected lines.
+If the group is ordered, then the method returns an ordered list of
+RGFA::OrientedLine instances, starting and
+ending with a segment, and containing edges between pair of segments.
+If the group is unordered, the method returns an array of
+RGFA::Line instances, first all segments, then all edges between those
+segments.
+
+The methods ``induced_segments_set``` and ```induced_edges_set``` return,
+respectively, the list of segments and edges. The elements of the list
+are RGFA::Line instances for unordered groups, and RGFA::OrientedLine instances
+for ordered groups.
 
 ### Disconnecting a line from a RGFA object
 
@@ -139,12 +170,11 @@ refer to a line which is being disconnected.
 
 #### GFA2
 
-| Record type | Dependent lines                |
-|-------------|--------------------------------|
-| Segment     | edges, gaps, fragments, groups |
-| Edge        | groups                         |
-| Gap         | groups                         |
-| Group       | groups                         |
+| Record type | Dependent lines                            |
+|-------------|--------------------------------------------|
+| Segment     | edges, gaps, fragments, u-groups, o-groups |
+| Edge        | u-groups, o-groups                         |
+| U-Group     | groups                                     |
 
 ### Editing reference fields
 
@@ -193,9 +223,11 @@ eventually update their fields and reconnect them at the end of the operation.
 ### Virtual lines
 
 The order of the lines in GFA is not prescribed. Therefore, during parsing,
-it is possible that a line is referenced to, before it is found.
+or constructing a RGFA in memory, it is possible that a line is referenced to,
+before it is added to the RGFA instance.
 Whenever this happens, RGFA creates a "virtual" line instance.
-Usually users do not have to handle with virtual lines, if they work with
+
+Users do not have to handle with virtual lines, if they work with
 complete and valid GFA files.
 
 Virtual lines are similar to normal line instances, with some limitations

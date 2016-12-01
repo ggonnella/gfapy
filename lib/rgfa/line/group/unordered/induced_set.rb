@@ -3,19 +3,34 @@ require "set"
 module RGFA::Line::Group::Unordered::InducedSet
 
   def induced_set
-    return [] if !connected?
+    if !connected?
+      raise RGFA::RuntimeError,
+        "Induced set cannot be computed\n"+
+        "Line is not connected to a RGFA instance\n"+
+        "Line: #{self}"
+    end
     iss = induced_segments_set
     ise = compute_induced_edges_set(iss)
     (iss + ise).freeze
   end
 
   def induced_edges_set
-    return [] if !connected?
+    if !connected?
+      raise RGFA::RuntimeError,
+        "Induced set cannot be computed\n"+
+        "Line is not connected to a RGFA instance\n"+
+        "Line: #{self}"
+    end
     compute_induced_edges_set(induced_segments_set).freeze
   end
 
   def induced_segments_set
-    return [] if !connected?
+    if !connected?
+      raise RGFA::RuntimeError,
+        "Induced set cannot be computed\n"+
+        "Line is not connected to a RGFA instance\n"+
+        "Line: #{self}"
+    end
     segments_set = Set.new
     items.each do |item|
       case item

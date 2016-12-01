@@ -9,6 +9,7 @@ module RGFA::Line::Group::Ordered::References
       add_item_to_unconnected_group(item, true)
     else
       add_item_to_connected_group(item, true)
+      compute_induced_set # check contiguity
     end
   end
 
@@ -21,6 +22,7 @@ module RGFA::Line::Group::Ordered::References
       add_item_to_unconnected_group(item, false)
     else
       add_item_to_connected_group(item, false)
+      compute_induced_set # check contiguity
     end
   end
 
@@ -34,6 +36,7 @@ module RGFA::Line::Group::Ordered::References
     else
       items[0].delete_reference(self, :ordered_groups)
       self.delete_reference(items[0], :items)
+      compute_induced_set # check contiguity
     end
     return nil
   end
@@ -48,6 +51,7 @@ module RGFA::Line::Group::Ordered::References
     else
       items[-1].delete_reference(self, :ordered_groups)
       self.delete_reference(items[-1], :items)
+      compute_induced_set # check contiguity
     end
     return nil
   end

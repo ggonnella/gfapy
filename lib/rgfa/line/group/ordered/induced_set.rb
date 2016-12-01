@@ -11,7 +11,12 @@ module RGFA::Line::Group::Ordered::InducedSet
   end
 
   def induced_set
-    return [] if !connected?
+    if !connected?
+      raise RGFA::RuntimeError,
+        "Induced set cannot be computed\n"+
+        "Line is not connected to a RGFA instance\n"+
+        "Line: #{self}"
+    end
     compute_induced_set[0]
   end
 
