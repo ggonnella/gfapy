@@ -1,7 +1,6 @@
-# Methods in this module are important for lines
-# which can be references by virtual lines
+# Update of references caused by a virtual line becoming real.
 #
-module RGFA::Line::Common::ReferencesUpdate
+module RGFA::Line::Common::UpdateReferences
 
   # This is called on lines which were referenced by virtual lines,
   # when a real line is found which substitutes the virtual line.
@@ -28,12 +27,6 @@ module RGFA::Line::Common::ReferencesUpdate
       update_other_references(oldref, newref,
                                self.class::OTHER_REFERENCES & @refs.keys & keys)
     end
-  end
-
-  # @api private
-  # this could be useful for E if they change nature
-  def move_reference(ref, oldkey, newkey)
-    raise "Not implemented yet"
   end
 
   private

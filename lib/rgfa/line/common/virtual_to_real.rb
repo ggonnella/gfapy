@@ -1,7 +1,7 @@
 # Methods in this module are important for lines
 # which can be virtual
 #
-module RGFA::Line::Common::ReferencesImport
+module RGFA::Line::Common::VirtualToReal
 
   # Is the line virtual?
   #

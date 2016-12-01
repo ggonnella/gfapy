@@ -1,4 +1,4 @@
-module RGFA::Line::Common::ReferencesCreation
+module RGFA::Line::Common::Connection
 
   # In a connected line, some of the fields are converted
   # into references or array of references to other lines.

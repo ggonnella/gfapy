@@ -53,10 +53,10 @@ require_relative "line/common/field_datatype"
 require_relative "line/common/field_data"
 require_relative "line/common/equivalence"
 require_relative "line/common/cloning"
-require_relative "line/common/references_creation"
-require_relative "line/common/references_import"
-require_relative "line/common/references_update"
-require_relative "line/common/references_deletion"
+require_relative "line/common/connection"
+require_relative "line/common/virtual_to_real"
+require_relative "line/common/update_references"
+require_relative "line/common/disconnection"
 require_relative "line/common/validate"
 
 class RGFA::Line
@@ -68,10 +68,10 @@ class RGFA::Line
   include RGFA::Line::Common::FieldData
   include RGFA::Line::Common::Equivalence
   include RGFA::Line::Common::Cloning
-  include RGFA::Line::Common::ReferencesCreation
-  include RGFA::Line::Common::ReferencesImport
-  include RGFA::Line::Common::ReferencesUpdate
-  include RGFA::Line::Common::ReferencesDeletion
+  include RGFA::Line::Common::Connection
+  include RGFA::Line::Common::VirtualToReal
+  include RGFA::Line::Common::UpdateReferences
+  include RGFA::Line::Common::Disconnection
   include RGFA::Line::Common::Validate
 
   # TODO: can this be moved to dynamic fields

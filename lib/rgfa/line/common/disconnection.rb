@@ -1,4 +1,4 @@
-module RGFA::Line::Common::ReferencesDeletion
+module RGFA::Line::Common::Disconnection
 
   # Remove the line from the RGFA instance it belongs to, if any.
   #
