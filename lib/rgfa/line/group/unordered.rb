@@ -21,11 +21,13 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
 end
 
 require_relative "gfa2/references"
+require_relative "gfa2/same_id"
 require_relative "unordered/references"
 require_relative "unordered/induced_set"
 
 class RGFA::Line::Group::Unordered
   include RGFA::Line::Group::GFA2::References
+  include RGFA::Line::Group::GFA2::SameID
   include RGFA::Line::Group::Unordered::References
   include RGFA::Line::Group::Unordered::InducedSet
 end

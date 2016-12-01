@@ -119,6 +119,20 @@ The segment ```containers``` and ```contained``` methods similarly
 compute the set of segment instances which, respectively, contains
 the segment, or are contained in the segment.
 
+### Multiline group definitions
+
+Groups can be defined on multiple lines, by using the same ID
+for each line defining the group. If multiple RGFA::Line::Group
+instances with the same ID are connected to the RGFA, the final
+RGFA will only contain the last instance: all previous one are
+disconnected and their items list prepended to the last instance.
+All tags will be copied to the last instance added.
+
+The tags of multiple line defining a group
+may not contradict each other. Either are the tag names on different
+lines defining the group all different, or, if the same tag is present
+on different lines, the value and datatype must be the same.
+
 ### Induced sets
 
 The item list in GFA2 sets and paths may not contain elements

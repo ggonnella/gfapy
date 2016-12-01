@@ -92,15 +92,18 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     [:a, :b, :c, :d, :e, :f].each do |name|
       g << (s[name] = "S\t#{name}\t1000\t*".to_rgfa_line)
     end
-    path1 = "O\tp1\tp2- b+ c- e-c+-".to_rgfa_line
+    path1_part1 = "O\tp1\tp2- b+".to_rgfa_line
+    path1_part2 = "O\tp1\tc- e-c+-".to_rgfa_line
+    path1 = path1_part2
     path2 = "O\tp2\tf+ a+".to_rgfa_line
-    assert_equal([OL[:p2,:-], OL[:b,:+], OL[:c,:-], OL[:"e-c+",:-]],
-                 path1.items)
+    assert_equal([OL[:p2,:-], OL[:b,:+]], path1_part1.items)
+    assert_equal([OL[:c,:-], OL[:"e-c+",:-]], path1_part2.items)
     assert_equal([OL[:f,:+], OL[:a,:+]], path2.items)
     assert_raise(RGFA::RuntimeError){path1.induced_set}
     assert_raise(RGFA::RuntimeError){path2.induced_set}
     # connection
-    g << path1
+    g << path1_part1
+    g << path1_part2
     g << path2
     # edges
     e = {}

@@ -21,11 +21,13 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
 end
 
 require_relative "gfa2/references"
+require_relative "gfa2/same_id"
 require_relative "ordered/references"
 require_relative "ordered/induced_set"
 
 class RGFA::Line::Group::Ordered
   include RGFA::Line::Group::GFA2::References
+  include RGFA::Line::Group::GFA2::SameID
   include RGFA::Line::Group::Ordered::References
   include RGFA::Line::Group::Ordered::InducedSet
 end
