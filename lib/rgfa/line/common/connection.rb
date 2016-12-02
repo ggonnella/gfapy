@@ -38,13 +38,9 @@ module RGFA::Line::Common::Connection
 
   # @api private
   def add_reference(line, key, append: true)
-    refs[key] ||= []
-    if append
-      @refs[key] += [line]
-    else
-      @refs[key] = [line] + @refs[key]
-    end
-    @refs[key].freeze
+    @refs ||= {}
+    @refs[key] ||= []
+    @refs[key].send(append ? :push : :unshift, line)
   end
 
   protected

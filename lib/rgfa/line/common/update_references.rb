@@ -21,7 +21,7 @@ module RGFA::Line::Common::UpdateReferences
     update_field_references(oldref, newref, self.class::REFERENCE_FIELDS & keys)
     if instance_variable_defined?(:@refs)
       # note: keeping the two types of nonfield references separate helps
-      #       in subclasses where only one must be redefined (eg GFA2 groups)
+      #       in subclasses where only one must be redefined
       update_dependent_line_references(oldref, newref,
                                 self.class::DEPENDENT_LINES & @refs.keys & keys)
       update_other_references(oldref, newref,
@@ -58,24 +58,33 @@ module RGFA::Line::Common::UpdateReferences
     value = get(field)
     case value
     when RGFA::Line
-      if value == oldref
+      if value.equal?(oldref)
         set_existing_field(field, newref, set_reference: true)
       end
     when RGFA::OrientedLine
-      if value.line == oldref
+      if value.line.equal?(oldref)
         value.line = newref
       end
     when Array
-      value.map! do |elem|
-        case elem
-        when RGFA::Line
-          elem = newref if elem == oldref
-        when RGFA::OrientedLine
-          elem.line = newref if elem.line == oldref
-        end
-        elem
-      end
+      update_reference_in_array(value, oldref, newref)
     end
+  end
+
+  def update_reference_in_array(array, oldref, newref)
+    array.map! do |elem|
+      case elem
+      when RGFA::Line
+        elem = newref if elem.equal?(oldref)
+      when RGFA::OrientedLine
+        if elem.line.equal?(oldref)
+          if oldref.respond_to?(:complement?)
+            elem.orient = elem.orient.invert if oldref.complement?(newref)
+          end
+          elem.line = newref
+        end
+      end
+      elem
+    end.compact!
   end
 
   def update_field_references(oldref, newref, possible_fieldnames)
@@ -86,10 +95,8 @@ module RGFA::Line::Common::UpdateReferences
 
   def update_nonfield_references(oldref, newref, possible_keys)
     possible_keys.each do |key|
-      idx = @refs[key].index {|x| x.equal?(oldref)}
-      next if idx.nil?
-      @refs[key] = ((idx > 0 ? @refs[key][0..idx-1] : []) +
-                    (newref ? [newref] : []) + @refs[key][idx+1..-1]).freeze
+      array = @refs[key]
+      update_reference_in_array(array, oldref, newref) if !array.nil?
     end
   end
 
@@ -97,9 +104,7 @@ module RGFA::Line::Common::UpdateReferences
     update_nonfield_references(oldref, newref, possible_keys)
   end
 
-  # @note SUBCLASSES may redefine this method to perform more or different
-  #   operations (in particular, the GFA2 groups must recompute the induced
-  #   set when a reference is solved, thus the method is redefined there)
+  # @note SUBCLASSES may redefine this method
   def update_other_references(oldref, newref, possible_keys)
     update_nonfield_references(oldref, newref, possible_keys)
   end

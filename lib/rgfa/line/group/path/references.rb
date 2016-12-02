@@ -1,15 +1,23 @@
 module RGFA::Line::Group::Path::References
 
+  def captured_edges
+    links
+  end
+
+  def captured_segments
+    segment_names
+  end
+
   private
 
-  # computes the list of links which are required to support
+  # Computes the list of links which are required to support
   # the path
   # @return
   #   [Array<[RGFA::OrientedLine, RGFA::OrientedLine, RGFA::Alignment::CIGAR]>]
   #   an array, which elements are 3-tuples (from oriented segment,
   #   to oriented segment, cigar)
   # @api private
-  def required_links
+  def compute_required_links
     has_undef_overlaps = undef_overlaps?
     retval = []
     segment_names.size.times do |i|
@@ -39,10 +47,14 @@ module RGFA::Line::Group::Path::References
 
   def initialize_links
     refs[:links] = []
-    required_links.each do |from,to,cigar|
+    compute_required_links.each do |from,to,cigar|
       l = nil
+      orient = :+
       if @rgfa.segment(from.line) and @rgfa.segment(to.line)
         l = @rgfa.search_link(from, to, cigar)
+        if !l.nil? and l.compatible_complement?(from, to, cigar)
+          orient = :-
+        end
       end
       if l.nil?
         if @rgfa.segments_first_order
@@ -59,7 +71,7 @@ module RGFA::Line::Group::Path::References
                                   version: :gfa1)
         l.connect(@rgfa)
       end
-      @refs[:links] << l
+      @refs[:links] << OL[l,orient]
       l.add_reference(self, :paths)
     end
   end

@@ -99,7 +99,8 @@ class RGFA::Line
     end
     (self::DEPENDENT_LINES + self::OTHER_REFERENCES).each do |k|
       define_method(k) do
-        refs[k] ||= [].freeze
+        @refs ||= {}
+        @refs.fetch(k, []).clone.freeze
       end
     end
     define_method :all_references do

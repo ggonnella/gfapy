@@ -344,7 +344,8 @@ class RGFA
   # @raise if validation fails
   def validate_path_links
     @records[:P].values.each do |pt|
-      pt.links.each do |l, dir|
+      pt.links.each do |ol|
+        l = ol.line
         if l.virtual?
           raise RGFA::NotFoundError, "Edge::Link: #{l.to_s}\n"+
           "does not exist, but is required by the following paths:\n"+

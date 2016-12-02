@@ -25,22 +25,22 @@ module RGFA::Line::Common::Disconnection
 
   # @api private
   def delete_reference(line, key)
-    return if !@refs[key]
+    return if !@refs or !@refs[key]
     idx = @refs[key].index {|x| x.equal?(line)}
     return if idx.nil?
-    @refs = ((idx == 0 ? [] : @refs[0..idx-1]) + @refs[idx+1..-1]).freeze
+    @refs = ((idx == 0 ? [] : @refs[0..idx-1]) + @refs[idx+1..-1])
   end
 
   # @api private
   def delete_first_reference(key)
-    @refs[key] = refs[key][1..-1]
-    @refs[key].freeze
+    return if !@refs or !@refs[key]
+    @refs[key].shift
   end
 
   # @api private
   def delete_last_reference(key)
-    @refs[key] = refs[key][0..-2]
-    @refs[key].freeze
+    return if !@refs or !@refs[key]
+    @refs[key].pop
   end
 
   private
@@ -53,11 +53,12 @@ module RGFA::Line::Common::Disconnection
   def remove_field_references
     self.class::REFERENCE_FIELDS.each do |k|
       ref = get(k)
-      if ref.kind_of?(RGFA::Line)
+      case ref
+      when RGFA::Line
         set_existing_field(k, ref.to_sym, set_reference: true)
-      elsif ref.kind_of?(RGFA::OrientedLine)
+      when RGFA::OrientedLine
         ref.line = ref.name
-      elsif ref.kind_of?(Array)
+      when Array
         ref.map! do |elem|
           if elem.kind_of?(RGFA::Line)
             elem = elem.to_sym
@@ -70,6 +71,39 @@ module RGFA::Line::Common::Disconnection
     end
   end
 
+  #def each_reference_in(field, &block)
+  #  case field
+  #  when RGFA::Line
+  #    yield field
+  #  when RGFA::OrientedLine
+  #    yield field.line
+  #  when Array
+  #    field.each {|elem| each_reference_in(elem, &block)}
+  #  end
+  #end
+
+  def remove_backreference(ref, k)
+    case ref
+    when RGFA::Line
+      ref.update_references(self, nil, k)
+    when RGFA::OrientedLine
+      ref.line.update_references(self, nil, k)
+    when Array
+      ref.each {|elem| remove_backreference(elem, k)}
+    end
+  end
+
+  def disconnect_dependent_line(ref)
+    case ref
+    when RGFA::Line
+      ref.disconnect
+    when RGFA::OrientedLine
+      ref.line.disconnect
+    when Array
+      ref.each {|elem| disconnect_dependent_line(elem)}
+    end
+  end
+
   # @note currently this method supports fields which are: references,
   #   oriented lines and arrays of references of oriented lines;
   #   if SUBCLASSES have reference fields which contain references
@@ -77,33 +111,22 @@ module RGFA::Line::Common::Disconnection
   #   in the subclass
   def remove_field_backreferences
     self.class::REFERENCE_FIELDS.each do |k|
-      ref = get(k)
-      if ref.kind_of?(RGFA::Line)
-        ref.update_references(self, nil, k)
-      elsif ref.kind_of?(RGFA::OrientedLine)
-        ref.line.update_references(self, nil, k)
-      elsif ref.kind_of?(Array)
-        ref.each do |elem|
-          if elem.kind_of?(RGFA::Line)
-            elem.update_references(self, nil, k)
-          elsif elem.kind_of?(RGFA::OrientedLine)
-            elem.line.update_references(self, nil, k)
-          end
-        end
-      end
+      remove_backreference(get(k), k)
     end
   end
 
   def disconnect_dependent_lines
     self.class::DEPENDENT_LINES.each do |k|
-      refs.fetch(k, []).each {|l| l.disconnect}
+      refs.fetch(k, []).each do |ref|
+        disconnect_dependent_line(ref)
+      end
     end
   end
 
   def remove_nonfield_backreferences
     self.class::OTHER_REFERENCES.each do |k|
-      refs.fetch(k, []).each do |l|
-        l.update_references(self, nil, k)
+      refs.fetch(k, []).each do |ref|
+        remove_backreference(ref, k)
       end
     end
   end

@@ -33,7 +33,7 @@ The following tables list the references for each record type.
 | Link        | from, to       | Segment                 |
 | Containment | from, to       | Segment                 |
 | Path        | segment_names, | [OrientedLine(Segment)] |
-|             | links (1)      | [Link]                  |
+|             | links (1)      | [OrientedLine(Link)]    |
 
 (1): paths contain information in the fields segment_names and overlaps,
 which allow to find the identify from which they depend; these links can be

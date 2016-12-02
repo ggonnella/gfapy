@@ -46,6 +46,19 @@ module RGFA::Line::Common::VirtualToReal
     end
   end
 
+  def update_backreference_in(ref, previous, k)
+    case ref
+    when RGFA::Line
+      ref.update_references(previous, self, k)
+    when RGFA::OrientedLine
+      ref.line.update_references(previous, self, k)
+    when Array
+      ref.each do |item|
+        update_backreference_in(item, previous, k)
+      end
+    end
+  end
+
   # @note currently this method supports fields which are: references,
   #   oriented lines and arrays of references of oriented lines;
   #   if SUBCLASSES have reference fields which contain references
@@ -54,19 +67,7 @@ module RGFA::Line::Common::VirtualToReal
   def update_field_backreferences(previous)
     self.class::REFERENCE_FIELDS.each do |k|
       ref = get(k)
-      if ref.kind_of?(RGFA::Line)
-        ref.update_references(previous, self, k)
-      elsif ref.kind_of?(RGFA::OrientedLine)
-        ref.line.update_references(previous, self, k)
-      elsif ref.kind_of?(Array)
-        ref.each do |item|
-          if item.kind_of?(RGFA::Line)
-            item.update_references(previous, self, k)
-          elsif item.kind_of?(RGFA::OrientedLine)
-            item.line.update_references(previous, self, k)
-          end
-        end
-      end
+      update_backreference_in(ref, previous, k)
     end
   end
 
@@ -76,7 +77,9 @@ module RGFA::Line::Common::VirtualToReal
 
   def update_nonfield_backreferences(previous)
     @refs.each do |k, v|
-      v.each {|l| l.update_references(previous, self, k)}
+      v.each do |ref|
+        update_backreference_in(ref, previous, k)
+      end
     end
   end
 

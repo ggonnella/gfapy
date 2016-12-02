@@ -65,14 +65,14 @@ class TestAPI::ReferencesVirtual < Test::Unit::TestCase
     assert(!path.segment_names[0].line.virtual?)
     assert_equal(sB, path.segment_names[0].line)
     assert_equal([path], sB.paths)
-    path.links.each {|i| assert(i.virtual?)}
+    path.links.each {|i| assert(i.line.virtual?)}
     g << (l = "L\tccc\t+\tb\t-\t2M1D10M".to_rgfa_line)
-    assert(!path.links[0].virtual?)
-    assert_equal(l, path.links[0])
+    assert(!path.links[0].line.virtual?)
+    assert_equal(l, path.links[0].line)
     assert_equal([path], l.paths)
     g << (l = "L\tccc\t-\te\t+\t15M".to_rgfa_line)
-    assert(!path.links[1].virtual?)
-    assert_equal(l, path.links[1])
+    assert(!path.links[1].line.virtual?)
+    assert_equal(l, path.links[1].line)
     assert_equal([path], l.paths)
   end
 

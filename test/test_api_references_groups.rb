@@ -16,7 +16,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([], path.links)
     # connection
     g << path
-    # links
+    # add links
     ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"].each do |name|
       g << (l[name] = name.chars.unshift("L").push("*").join("\t").to_rgfa_line)
     end
@@ -24,7 +24,8 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([OL[s[:f],:+], OL[s[:a],:+], OL[s[:b],:+], OL[s[:c],:-],
                   OL[s[:e],:+]], path.segment_names)
     # links
-    assert_equal([l["a-f-"],l["a+b+"],l["b+c-"],l["e-c+"]], path.links)
+    assert_equal([OL[l["a-f-"],:-], OL[l["a+b+"],:+], OL[l["b+c-"],:+],
+                  OL[l["e-c+"],:-]], path.links)
     # path disconnection
     path.disconnect
     assert_equal([OL[:f,:+], OL[:a,:+], OL[:b,:+], OL[:c,:-], OL[:e,:+]],
