@@ -66,7 +66,7 @@ class TestAPI::ReferencesFGLines < Test::Unit::TestCase
     # gaps
     s = {}; gap = {}
     [:b, :c, :d, :e, :f, :g, :h, :i].each do |name|
-      g << (s[name] = "S\t#{name}\t*".to_rgfa_line)
+      g << (s[name] = "S\t#{name}\t100\t*".to_rgfa_line)
     end
     ["a+b+", "a+c-", "a-d+", "a-e-",
      "f+a+", "g+a-", "h-a+", "i-a-"].each do |name|
