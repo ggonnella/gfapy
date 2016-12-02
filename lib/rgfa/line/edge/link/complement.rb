@@ -18,17 +18,11 @@ module RGFA::Line::Edge::Link::Complement
     l.from_orient = to_orient.invert
     l.to = from
     l.to_orient = from_orient.invert
-    l.overlap = complement_overlap
+    l.overlap = overlap.complement
     l
   end
 
-  # Complements the link inplace, i.e. sets:
-  #   from = to
-  #   from_orient = other_orient(to_orient)
-  #   to = from
-  #   to_orient = other_orient(from_orient)
-  #   overlap = complement_overlap.
-  #
+  # Complements the link inplace.
   # The tags are left unchanged.
   #
   # @note The path references are not complemented by this method; therefore
@@ -46,15 +40,8 @@ module RGFA::Line::Edge::Link::Complement
     tmp = self.from_orient
     self.from_orient = self.to_orient.invert
     self.to_orient = tmp.invert
-    self.overlap = self.complement_overlap
+    self.overlap = self.overlap.complement
     return self
-  end
-
-  # Compute the overlap when the strand of both sequences is inverted.
-  #
-  # @return [RGFA::Alignment::CIGAR, RGFA::Alignment::Placeholder]
-  def complement_overlap
-    self.overlap.to_alignment(version: :gfa1, valid: true).complement
   end
 
 end

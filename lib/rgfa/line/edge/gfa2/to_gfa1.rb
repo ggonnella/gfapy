@@ -21,15 +21,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
     return a
   end
 
-  # Value of the alignment field if +sid1+ and +sid2+ are switched
-  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR] if the alignment is a cigar string,
-  #   the complement cigar string is computed; otherwise a placeholder is
-  #   returned, as the complement of a trace can only be computed by computing
-  #   the alignment
-  def complement_alignment
-    alignment.complement
-  end
-
   # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR]
   #   value of the GFA1 +overlap+ field,
   #   if the edge is a link or containment
@@ -37,14 +28,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def overlap
     check_not_internal(:overlap)
     beg1.first? ? alignment.complement : alignment
-  end
-
-  # @return [RGFA::Alignment::Placeholder, RGFA::Alignment::CIGAR]
-  #   complement of the value of the
-  #   GFA1 +overlap+ field, if the edge is a link or containment
-  # @raise [RGFA::ValueError] if the edge is internal
-  def complement_overlap
-    overlap.complement
   end
 
   def oriented_from

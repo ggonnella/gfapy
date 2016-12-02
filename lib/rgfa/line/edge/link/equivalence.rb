@@ -5,7 +5,8 @@ module RGFA::Line::Edge::Link::Equivalence
   # Thereby, tags are not considered.
   # @see #eql?
   def hash
-    from_end.hash + to_end.hash + overlap.hash + complement_overlap.to_s.hash
+    from_end.to_s.hash + to_end.to_s.hash +
+      overlap.to_s.hash + overlap.complement.to_s.hash
   end
 
   # Compares two links and determine their equivalence.
@@ -21,7 +22,7 @@ module RGFA::Line::Edge::Link::Equivalence
   # @see #same?
   # @see #complement?
   def eql?(other)
-    same?(other) or complement?(other)
+    return (same?(other) or complement?(other))
   end
 
   # Compares the tags of two links.
@@ -79,29 +80,29 @@ module RGFA::Line::Edge::Link::Equivalence
   def complement?(other)
     (from_end == other.to_end and
       to_end == other.from_end and
-      overlap == other.complement_overlap)
+      overlap == other.overlap.complement)
   end
 
   # Compares a link and optionally the complement link,
   # with two oriented_segments and optionally an overlap.
   # @param [RGFA::OrientedLine] other_oriented_from
   # @param [RGFA::OrientedLine] other_oriented_to
-  # @param equivalent [Boolean] shall the complement link also be considered?
+  # @param allow_complement [Boolean]
+  #    shall the complement link also be considered?
   # @param [RGFA::Alignment::CIGAR] other_overlap compared only if not empty
-  # @return [Boolean] does the link or, if +equivalent+,
+  # @return [Boolean] does the link or, if +allow_complement+,
   #   the complement link go from the first
   #   oriented segment to the second with an overlap equal to the provided one
   #   (if not empty)?
   def compatible?(other_oriented_from, other_oriented_to, other_overlap = [],
-                  equivalent = true)
+                  allow_complement = true)
     other_overlap = other_overlap.to_alignment(version: :gfa1, valid: true)
-    is_direct = compatible_direct?(other_oriented_from, other_oriented_to,
-                                   other_overlap)
-    if is_direct
+    if compatible_direct?(other_oriented_from, other_oriented_to, other_overlap)
       return true
-    elsif equivalent
-      return compatible_complement?(other_oriented_from, other_oriented_to,
-                          other_overlap)
+    elsif allow_complement
+      return compatible_complement?(other_oriented_from,
+                                    other_oriented_to,
+                                    other_overlap)
     else
       return false
     end
@@ -133,7 +134,8 @@ module RGFA::Line::Edge::Link::Equivalence
                           other_overlap = [])
     (oriented_to == other_oriented_from.invert and
      oriented_from == other_oriented_to.invert) and
-     (overlap.empty? or other_overlap.empty? or (overlap == other_overlap))
+     (overlap.empty? or other_overlap.empty? or
+        (overlap == other_overlap.complement))
   end
 
   private

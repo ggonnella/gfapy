@@ -23,7 +23,7 @@ class RGFA::Alignment::CIGAR < Array
   #
   # @return [RGFA::Alignment::CIGAR]
   def complement
-    RGFA::Alignment::CIGAR.new(reverse.map do |op|
+    RGFA::Alignment::CIGAR.new(clone.reverse.map do |op|
       if op.code == :I or op.code == :S
         op.code = :D
       elsif op.code == :D or op.code == :N

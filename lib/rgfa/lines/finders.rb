@@ -126,8 +126,8 @@ module RGFA::Lines::Finders
   def search_duplicate(gfa_line)
     case gfa_line.record_type
     when :L
-      search_link(gfa_line.oriented_from,
-                  gfa_line.oriented_to, gfa_line.alignment)
+      return search_link(gfa_line.oriented_from,
+                         gfa_line.oriented_to, gfa_line.alignment)
     when :E, :S, :P, :U, :G, :O
       return search_by_name(gfa_line.name)
     else
