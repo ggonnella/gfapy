@@ -1,13 +1,5 @@
 module RGFA::Line::Group::Path::References
 
-  def captured_edges
-    links
-  end
-
-  def captured_segments
-    segment_names
-  end
-
   private
 
   # Computes the list of links which are required to support
@@ -20,10 +12,11 @@ module RGFA::Line::Group::Path::References
   def compute_required_links
     has_undef_overlaps = undef_overlaps?
     retval = []
+    is_circular = self.circular?
     segment_names.size.times do |i|
       j = i+1
       if j == self.segment_names.size
-        circular? ? j = 0 : break
+        is_circular ? j = 0 : break
       end
       cigar = has_undef_overlaps ?
         RGFA::Alignment::Placeholder.new : self.overlaps[i]

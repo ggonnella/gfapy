@@ -1,28 +1,28 @@
 require "set"
 
-module RGFA::Line::Group::Ordered::InducedSet
+module RGFA::Line::Group::Ordered::CapturedPath
 
-  def induced_segments_set
-    induced_set.select{|x|x.line.kind_of?(RGFA::Line::Segment::GFA2)}
+  def captured_segments
+    captured_path.select{|x|x.line.kind_of?(RGFA::Line::Segment::GFA2)}
   end
 
-  def induced_edges_set
-    induced_set.select{|x|x.line.kind_of?(RGFA::Line::Edge::GFA2)}
+  def captured_edges
+    captured_path.select{|x|x.line.kind_of?(RGFA::Line::Edge::GFA2)}
   end
 
-  def induced_set
+  def captured_path
     if !connected?
       raise RGFA::RuntimeError,
-        "Induced set cannot be computed\n"+
+        "Captured path cannot be computed\n"+
         "Line is not connected to a RGFA instance\n"+
         "Line: #{self}"
     end
-    compute_induced_set[0]
+    compute_captured_path[0]
   end
 
   protected
 
-  def compute_induced_set
+  def compute_captured_path
     path, prev_edge = [], false
     items.each do |item|
       path, prev_edge = push_item_on_se_path(path, prev_edge, item)
@@ -36,13 +36,13 @@ module RGFA::Line::Group::Ordered::InducedSet
     case item.line
     when Symbol
       raise RGFA::RuntimeError,
-        "Induced set cannot be computed; a reference has not been resolved\n"+
+        "Captured path cannot be computed; a reference has not been resolved\n"+
         "Line: #{self}\n"+
         "Unresolved reference: #{item.line} (Symbol found)"
     when RGFA::Line::Segment::GFA2
       if !item.line.connected?
         raise RGFA::RuntimeError,
-          "Induced set cannot be computed; item is not connected\n"+
+          "Captured path cannot be computed; item is not connected\n"+
           "Line: #{self}\n"+
           "Item: #{item.line}"
       end
@@ -51,7 +51,7 @@ module RGFA::Line::Group::Ordered::InducedSet
     when RGFA::Line::Edge::GFA2
       if !item.line.connected?
         raise RGFA::RuntimeError,
-          "Induced set cannot be computed; item is not connected\n"+
+          "Captured path cannot be computed; item is not connected\n"+
           "Line: #{self}\n"+
           "Item: #{item.line}"
       end
@@ -64,11 +64,11 @@ module RGFA::Line::Group::Ordered::InducedSet
     when RGFA::Line::Group::Ordered
       if !item.line.connected?
         raise RGFA::RuntimeError,
-          "Induced set cannot be computed; item is not connected\n"+
+          "Captured path cannot be computed; item is not connected\n"+
           "Line: #{self}\n"+
           "Item: #{item.line}"
       end
-      subpath, prev_edge_subpath = item.line.compute_induced_set
+      subpath, prev_edge_subpath = item.line.compute_captured_path
       raise RGFA::AssertionError if subpath.empty?
       if item.orient == :+
         subpath.each do |subpath_item|
@@ -84,13 +84,13 @@ module RGFA::Line::Group::Ordered::InducedSet
       prev_edge = prev_edge_subpath
     when RGFA::Line::Unknown
       raise RGFA::RuntimeError,
-        "Induced set cannot be computed; a reference has not been resolved\n"+
+        "Captured path cannot be computed; a reference has not been resolved\n"+
         "Line: #{self}\n"+
         "Unresolved reference: #{item.name} (Virtual unknown line)"
     else
       raise RGFA::TypeError,
         "Line: #{self}\t"+
-        "Cannot compute induced set:\t"+
+        "Cannot compute captured path:\t"+
         "Error: items of type #{item.line.class} are not supported\t"+
         "Unsupported item: #{item}"
     end
@@ -115,7 +115,7 @@ module RGFA::Line::Group::Ordered::InducedSet
         # if oss_of_next have no element in common with oss an error will be
         # raised in the next iteration, so does not need to be handled here
       when RGFA::Line::Group::Ordered
-        subpath = item.line.induced_set
+        subpath = item.line.captured_path
         return if subpath.empty? # does not need to be further handled here
         if item.orient == :+
           firstsubpathsegment = supath[0]
@@ -238,7 +238,7 @@ module RGFA::Line::Group::Ordered::InducedSet
     return edges[0]
   end
 
-  def check_induced_set_elem_connected(item)
+  def check_captured_path_elem_connected(item)
     if !item.connected?
       raise RGFA::RuntimeError,
         "Cannot compute induced set\n"+

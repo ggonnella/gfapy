@@ -81,11 +81,12 @@ lib/rgfa/line/group/unordered/references.rb
 lib/rgfa/line/group/unordered/induced_set.rb
 lib/rgfa/line/group/gfa2/references.rb
 lib/rgfa/line/group/gfa2/same_id.rb
+lib/rgfa/line/group/path/captured_path.rb
 lib/rgfa/line/group/path/topology.rb
 lib/rgfa/line/group/path/references.rb
 lib/rgfa/line/group/path/validation.rb
+lib/rgfa/line/group/ordered/captured_path.rb
 lib/rgfa/line/group/ordered/references.rb
-lib/rgfa/line/group/ordered/induced_set.rb
 lib/rgfa/line/group/path.rb
 lib/rgfa/line/group.rb
 lib/rgfa/line/edge/containment/to_gfa2.rb

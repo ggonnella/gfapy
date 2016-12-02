@@ -50,7 +50,7 @@ module RGFA::Line::Group::Unordered::InducedSet
         end
       when RGFA::Line::Group::Ordered
         check_induced_set_elem_connected(item)
-        subset = item.induced_segments_set
+        subset = item.captured_segments
         raise RGFA::AssertionError if subset.empty?
         subset.each do |elem|
           segments_set << elem.line

@@ -100,8 +100,8 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([OL[:p2,:-], OL[:b,:+]], path1_part1.items)
     assert_equal([OL[:c,:-], OL[:"e-c+",:-]], path1_part2.items)
     assert_equal([OL[:f,:+], OL[:a,:+]], path2.items)
-    assert_raise(RGFA::RuntimeError){path1.induced_set}
-    assert_raise(RGFA::RuntimeError){path2.induced_set}
+    assert_raise(RGFA::RuntimeError){path1.captured_path}
+    assert_raise(RGFA::RuntimeError){path2.captured_path}
     # connection
     g << path1_part1
     g << path1_part2
@@ -120,11 +120,11 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
     # induced set
     assert_equal([OL[s[:f],:+], OL[e["a-f-"],:-], OL[s[:a],:+]],
-                 path2.induced_set)
+                 path2.captured_path)
     assert_equal([OL[s[:a],:-], OL[e["a-f-"],:+], OL[s[:f],:-],
                   OL[e["f-b+"],:+], OL[s[:b],:+], OL[e["b+c-"],:+],
                   OL[s[:c],:-], OL[e["e-c+"],:-], OL[s[:e],:+]],
-                 path1.induced_set)
+                 path1.captured_path)
     # backreferences
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
       assert_equal([path1], line.paths)
@@ -136,7 +136,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     path1.disconnect
     assert_equal([OL[:p2,:-], OL[:b,:+], OL[:c,:-], OL[:"e-c+",:-]],
                  path1.items)
-    assert_raise(RGFA::RuntimeError){path1.induced_set}
+    assert_raise(RGFA::RuntimeError){path1.captured_path}
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
       assert_equal([], line.paths)
@@ -198,7 +198,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([s[:g], e["c-d+"], path1], set2.items)
     # induced set
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]],
-                 path1.induced_segments_set)
+                 path1.captured_segments)
     assert_equal([s[:g], s[:c], s[:d], s[:f], s[:a]],
                  set2.induced_segments_set)
     assert_equal([s[:b], s[:g], s[:c], s[:d], s[:f], s[:a], s[:e]],
