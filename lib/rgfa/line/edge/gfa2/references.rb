@@ -62,9 +62,9 @@ module RGFA::Line::Edge::GFA2::References
   def backreference_keys(ref, key_in_ref)
     case ref.record_type
     when :U
-      [:unordered_groups]
+      [:sets]
     when :O
-      [:ordered_groups]
+      [:paths]
     when :S
       [:sid1, :sid2]
     else

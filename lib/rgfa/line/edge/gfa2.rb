@@ -17,7 +17,7 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
   FIELD_ALIAS = { :name => :eid }
   REFERENCE_FIELDS = [:sid1, :sid2]
   REFERENCE_RELATED_FIELDS = [:beg1, :end1, :beg2, :end2]
-  DEPENDENT_LINES = [:ordered_groups, :unordered_groups]
+  DEPENDENT_LINES = [:paths, :sets]
   OTHER_REFERENCES = []
 
   define_field_methods

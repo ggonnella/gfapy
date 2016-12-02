@@ -56,8 +56,7 @@ module RGFA::Line::Group::GFA2::References
                                      version: :gfa2)
       @rgfa << line
     end
-    line.add_reference(self, (record_type == :O) ?
-                         :ordered_groups : :unordered_groups)
+    line.add_reference(self, (record_type == :O) ? :paths : :sets)
     return line
   end
 

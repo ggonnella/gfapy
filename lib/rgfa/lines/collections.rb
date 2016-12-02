@@ -12,69 +12,84 @@ module RGFA::Lines::Collections
 
   COLLECTIONS_MANDATORY_ID = {
     :segments => :S,
-    :paths => :P,
+    :gfa1_paths => :P
   }
 
   COLLECTIONS_OPTIONAL_ID = {
     :edges => :E,
     :gaps => :G,
-    :unordered_groups => :U,
-    :ordered_groups => :O,
+    :sets => :U,
+    :gfa2_paths => :O
   }
 
   # @!method comments
-  #   All comment lines of the graph
+  #   All comment lines of the RGFA
   #   @return [Array<RGFA::Line::Comment>]
   # @!method containments
-  #   All containments in the graph
+  #   All containments in the RGFA
   #   @return [Array<RGFA::Line::Edge::Containment>]
   # @!method fragments
-  #   All fragment lines of the graph
+  #   All fragment lines of the RGFA
   #   @return [Array<RGFA::Line::Fragment>]
   # @!method links
-  #   All links of the graph
+  #   All links of the RGFA
   #   @return [Array<RGFA::Line::Edge::Link>]
   COLLECTIONS_NO_ID.each do |k, v|
     define_method(k){@records[v]}
   end
 
-  # @!method ordered_groups
-  #   All ordered_group lines of the graph
-  #   @return [Array<RGFA::Line::OrderedGroup>]
-  # @!method unordered_groups
-  #   All unordered_group lines of the graph
-  #   @return [Array<RGFA::Line::UnorderedGroup>]
+  # @!method sets
+  #   All unordered group lines of the RGFA
+  #   @return [Array<RGFA::Line::Group::Set>]
+  # @!method set_names
+  #   List all names of sets in the RGFA
+  #   @return [Array<Symbol>]
   # @!method gaps
-  #   All gap lines of the graph
+  #   All gap lines of the RGFA
   #   @return [Array<RGFA::Line::Gap>]
+  # @!method gap_names
+  #   List all names of gaps in the RGFA
+  #   @return [Array<Symbol>]
   # @!method edges
-  #   All edge lines of the graph
+  #   All edge lines of the RGFA
   #   @return [Array<RGFA::Line::Edge::GFA2>]
+  # @!method edge_names
+  #   List all names of edges in the RGFA
+  #   @return [Array<Symbol>]
   COLLECTIONS_OPTIONAL_ID.each do |k, v|
     define_method(k) {@records[v].values.flatten}
-    define_method(:"#{k[0..-2]}_ids") {@records[v].keys - [nil]}
+    define_method(:"#{k[0..-2]}_names") {@records[v].keys - [nil]}
   end
 
-  # @!method paths
-  #   All path lines of the graph
-  #   @return [Array<RGFA::Line::Path>]
-  # @!method path_names
-  #   List all names of path lines in the graph
-  #   @return [Array<Symbol>]
   # @!method segments
-  #   All segment lines of the graph
+  #   All segment lines of the RGFA
   #   @return [Array<RGFA::Line::Segment::GFA1,RGFA::Line::Segment::GFA2>]
   # @!method segment_names
-  #   List all names of segments in the graph
+  #   List all names of segments in the RGFA
   #   @return [Array<Symbol>]
   COLLECTIONS_MANDATORY_ID.each do |k, v|
     define_method(k) {@records[v].values}
     define_method(:"#{k[0..-2]}_names") {@records[v].keys}
   end
 
+  # All path or ordered set lines of the RGFA
+  # @return [Array<RGFA::Line::Group::Path,RGFA::Line::Group::Ordered>]
+  def paths
+    gfa1_paths + gfa2_paths
+  end
+
+  # List all names of path lines in the RGFA
+  # @return [Array<Symbol>]
+  def path_names
+    gfa1_path_names + gfa2_path_names
+  end
+
+
   GFA1_ONLY_KEYS = [:L, :C, :P]
   NONCUSTOM_GFA2_KEYS = [:H, :"#", :F, :S, :E, :G, :U, :O, nil]
 
+  # All record type keys of custom records of the RGFA
+  # @return [Array<Symbol>]
   def custom_record_keys
     keys = (@records.keys-[:H]).select {|k|!@records[k].empty?}
     case @version
@@ -87,7 +102,7 @@ module RGFA::Lines::Collections
     end
   end
 
-  # All custom records of the graph
+  # All custom records of the RGFA
   # @return [Array<RGFA::Line::CustomRecord>]
   def custom_records(record_type=nil)
     if record_type
@@ -103,8 +118,8 @@ module RGFA::Lines::Collections
   def lines
     comments + headers + segments +
       links + containments + edges +
-        paths + ordered_groups + unordered_groups +
-          gaps + fragments + custom_records
+        paths + sets + gaps + fragments +
+          custom_records
   end
 
   def each_line(&block)

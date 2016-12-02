@@ -34,7 +34,7 @@ module RGFA::Line::Group::Ordered::References
     if !connected?
       items = items[1..-1]
     else
-      items[0].delete_reference(self, :ordered_groups)
+      items[0].update_reference(self, :paths)
       self.delete_reference(items[0], :items)
       compute_induced_set # check contiguity
     end
@@ -49,7 +49,7 @@ module RGFA::Line::Group::Ordered::References
     if !connected?
       items = items[0..-2]
     else
-      items[-1].delete_reference(self, :ordered_groups)
+      items[-1].update_reference(self, :paths)
       self.delete_reference(items[-1], :items)
       compute_induced_set # check contiguity
     end

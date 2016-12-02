@@ -65,34 +65,34 @@ The following tables list the backreferences collections for each record type.
 
 #### GFA1
 
-| Record type | Backreferences                |
-|-------------|-------------------------------|
-| Segment     | dovetails_L (type: L)         |
-|             | dovetails_R (type: L)         |
-|             | edges_to_contained (type: C)  |
-|             | edges_to_containers (type: C) |
-|             | paths                         |
-| Link        | paths                         |
+| Record type | Backreferences      | Type |
+|-------------|-----------------------------
+| Segment     | dovetails_L         | L    |
+|             | dovetails_R         | L    |
+|             | edges_to_contained  | C    |
+|             | edges_to_containers | C    |
+|             | paths               | P    |
+| Link        | paths               | P    |
 
 #### GFA2
 
-| Record type | Backreferences                |
-|-------------|-------------------------------|
-| Segment     | dovetails_L (type: E)         |
-|             | dovetails_R (type: E)         |
-|             | edges_to_contained (type: E)  |
-|             | edges_to_containers (type: E) |
-|             | internals (type: E)           |
-|             | gaps_L (type: G)              |
-|             | gaps_R (type: G)              |
-|             | fragments                     |
-|             | ordered_groups                |
-|             | unordered_groups              |
-| Edge        | ordered_groups                |
-|             | unordered_groups              |
-| O Group     | ordered_groups                |
-|             | unordered_groups              |
-| U Group     | unordered_groups              |
+| Record type | Backreferences      | Type |
+|-------------|---------------------|-------
+| Segment     | dovetails_L         | E    |
+|             | dovetails_R         | E    |
+|             | edges_to_contained  | E    |
+|             | edges_to_containers | E    |
+|             | internals           | E    |
+|             | gaps_L              | G    |
+|             | gaps_R              | G    |
+|             | fragments           | F    |
+|             | paths               | O    |
+|             | sets                | U    |
+| Edge        | paths               | O    |
+|             | sets                | U    |
+| O Group     | paths               | O    |
+|             | sets                | U    |
+| U Group     | sets                | U    |
 
 #### Backreference convenience methods
 
@@ -262,18 +262,18 @@ RGFA::Line#connected?/rgfa
 RGFA::Line#virtual?
 RGFA::Line::Segment::GFA1/GFA2#dovetails[_L|_R]/contain(ed|ers)/neighbours
 RGFA::Line::Segment::GFA1#paths
-RGFA::Line::Segment::GFA2#gaps[_L|_R]/fragments/[un]ordered_groups/internals
+RGFA::Line::Segment::GFA2#gaps[_L|_R]/fragments/[un]paths/internals
 RGFA::Line::Fragment#sid
 RGFA::Line::Edge::Containment/Link#from/to
 RGFA::Line::Gap/Edge::GFA2#sid1/sid2
-RGFA::Line::Gap/Edge::GFA2#unordered_groups/ordered_groups
+RGFA::Line::Gap/Edge::GFA2#sets/paths
 RGFA::Line::Group::Path#segment_names
 RGFA::Line::Group::Path#links
 RGFA::Line::Group::Unordered#items
-RGFA::Line::Group::Unordered#ordered_groups
+RGFA::Line::Group::Unordered#paths
 RGFA::Line::Group::Unordered#add_item(item)/rm_item(item)
 RGFA::Line::Group::Ordered#items
-RGFA::Line::Group::Ordered#ordered_groups
+RGFA::Line::Group::Ordered#paths
 RGFA::Line::Group::Ordered#append_item(item)/prepend_item(item)
 RGFA::Line::Group::Ordered#rm_first_item/rm_last_item
 ```

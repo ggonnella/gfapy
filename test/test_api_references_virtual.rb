@@ -87,15 +87,15 @@ class TestAPI::ReferencesVirtual < Test::Unit::TestCase
     g << (childpath = "O\tchildpath\tf+ a+".to_rgfa_line)
     assert(!path.items[0].line.virtual?)
     assert_equal(childpath, path.items[0].line)
-    assert_equal([path], childpath.ordered_groups)
+    assert_equal([path], childpath.paths)
     g << (sB = "S\tb\t1000\t*".to_rgfa_line)
     assert(!path.items[1].line.virtual?)
     assert_equal(sB, path.items[1].line)
-    assert_equal([path], sB.ordered_groups)
+    assert_equal([path], sB.paths)
     g << (edge = "E\tedge\te-\tc+\t0\t100\t900\t1000$\t*".to_rgfa_line)
     assert(!path.items[-1].line.virtual?)
     assert_equal(edge, path.items[-1].line)
-    assert_equal([path], edge.ordered_groups)
+    assert_equal([path], edge.paths)
   end
 
   def test_unordered_groups_create_virtual_unknown_records
@@ -109,19 +109,19 @@ class TestAPI::ReferencesVirtual < Test::Unit::TestCase
     g << (childpath = "O\tchildpath\tf+ a+".to_rgfa_line)
     assert(!set.items[0].virtual?)
     assert_equal(childpath, set.items[0])
-    assert_equal([set], childpath.unordered_groups)
+    assert_equal([set], childpath.sets)
     g << (sB = "S\tb\t1000\t*".to_rgfa_line)
     assert(!set.items[1].virtual?)
     assert_equal(sB, set.items[1])
-    assert_equal([set], sB.unordered_groups)
+    assert_equal([set], sB.sets)
     g << (childset = "U\tchildset\tg edge2".to_rgfa_line)
     assert(!set.items[2].virtual?)
     assert_equal(childset, set.items[2])
-    assert_equal([set], childset.unordered_groups)
+    assert_equal([set], childset.sets)
     g << (edge = "E\tedge\te-\tc+\t0\t100\t900\t1000$\t*".to_rgfa_line)
     assert(!set.items[3].virtual?)
     assert_equal(edge, set.items[3])
-    assert_equal([set], edge.unordered_groups)
+    assert_equal([set], edge.sets)
   end
 
 end

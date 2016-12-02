@@ -123,7 +123,6 @@ lib/rgfa/line/segment/gfa1.rb
 lib/rgfa/line/segment/references.rb
 lib/rgfa/line/segment/gfa1_to_gfa2.rb
 lib/rgfa/line/segment/coverage.rb
-lib/rgfa/line/segment/common_definitions.rb
 lib/rgfa/line/comment.rb
 lib/rgfa/line/segment.rb
 lib/rgfa/line/unknown.rb

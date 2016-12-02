@@ -86,7 +86,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_equal([], l["c-d+"].paths)
   end
 
-  def test_ordered_groups_references
+  def test_gfa2_paths_references
     g = RGFA.new
     s = {}
     [:a, :b, :c, :d, :e, :f].each do |name|
@@ -126,10 +126,10 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
                  path1.induced_set)
     # backreferences
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
-      assert_equal([path1], line.ordered_groups)
+      assert_equal([path1], line.paths)
     end
     [s[:f], s[:a]].each do |line|
-      assert_equal([path2], line.ordered_groups)
+      assert_equal([path2], line.paths)
     end
     # group disconnection
     path1.disconnect
@@ -138,7 +138,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert_raise(RGFA::RuntimeError){path1.induced_set}
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
-      assert_equal([], line.ordered_groups)
+      assert_equal([], line.paths)
     end
     # group reconnection
     g << path1
@@ -146,7 +146,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
                  path1.items)
     assert_equal([OL[s[:f],:+], OL[s[:a],:+]], path2.items)
     [path2, s[:b], s[:c], e["e-c+"]].each do |line|
-      assert_equal([path1], line.ordered_groups)
+      assert_equal([path1], line.paths)
     end
     # item disconnection cascades on group
     assert(path1.connected?)
@@ -164,7 +164,7 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
     assert(!path1.connected?)
   end
 
-  def test_unordered_groups_references
+  def test_sets_references
     g = RGFA.new
     s = {}
     set1 = "U\tset1\tb set2 c e-c+".to_rgfa_line
@@ -210,22 +210,22 @@ class TestAPI::ReferencesGroups < Test::Unit::TestCase
                  set1.induced_set)
     # backreferences
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
-      assert_equal([set1], line.unordered_groups)
+      assert_equal([set1], line.sets)
     end
     [s[:g], e["c-d+"], path1].each do |line|
-      assert_equal([set2], line.unordered_groups)
+      assert_equal([set2], line.sets)
     end
     # group disconnection
     set1.disconnect
     assert_equal([:b, :set2, :c, :"e-c+"], set1.items)
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
-      assert_equal([], line.unordered_groups)
+      assert_equal([], line.sets)
     end
     # group reconnection
     g << set1
     assert_equal([s[:b], set2, s[:c], e["e-c+"]], set1.items)
     [s[:b], set2, s[:c], e["e-c+"]].each do |line|
-      assert_equal([set1], line.unordered_groups)
+      assert_equal([set1], line.sets)
     end
     # item disconnection cascades on group
     assert(set1.connected?)

@@ -36,7 +36,7 @@ module RGFA::Line::Group::Unordered::References
   def rm_item_from_connected_group(item)
     item = @rgfa.search_by_name(item) if item.kind_of?(Symbol)
     check_item_included(item)
-    line.delete_reference(self, :unordered_groups)
+    line.delete_reference(self, :sets)
     self.delete_reference(line, :items)
     return nil
   end

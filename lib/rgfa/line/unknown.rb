@@ -11,7 +11,7 @@ class RGFA::Line::Unknown < RGFA::Line
   }
   REFERENCE_FIELDS = []
   REFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = [:unordered_groups, :ordered_groups]
+  DEPENDENT_LINES = [:sets, :paths]
   OTHER_REFERENCES = []
 
   define_field_methods

@@ -1,9 +1,7 @@
-require_relative "common_definitions"
-
 # A segment line of a RGFA file
 class RGFA::Line::Segment::GFA2 < RGFA::Line
 
-  include RGFA::Line::Segment::CommonDefinitions
+  RECORD_TYPE = :S
   POSFIELDS = [:sid, :slen, :sequence]
   PREDEFINED_TAGS = [:RC, :FC, :KC, :SH, :UR]
   DATATYPE = {
@@ -17,6 +15,12 @@ class RGFA::Line::Segment::GFA2 < RGFA::Line
     :UR => :Z,
   }
   FIELD_ALIAS = { :name => :sid, :length => :slen, :LN => :slen }
+  REFERENCE_FIELDS = []
+  REFERENCE_RELATED_FIELDS = []
+  DEPENDENT_LINES = [:dovetails_L, :dovetails_R, :gaps_L, :gaps_R,
+                     :edges_to_contained, :edges_to_containers,
+                     :fragments, :internals, :paths, :sets]
+  OTHER_REFERENCES = []
 
   define_field_methods
 
