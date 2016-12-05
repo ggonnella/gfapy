@@ -32,7 +32,6 @@ lib/rgfa.rb
 lib/rgfa/lastpos.rb
 lib/rgfa/field.rb
 lib/rgfa/logger.rb
-lib/rgfa/segment_ends_path.rb
 lib/rgfa/graph_operations/connectivity.rb
 lib/rgfa/graph_operations/multiplication.rb
 lib/rgfa/graph_operations/linear_paths.rb
