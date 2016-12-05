@@ -133,7 +133,7 @@ may not contradict each other. Either are the tag names on different
 lines defining the group all different, or, if the same tag is present
 on different lines, the value and datatype must be the same.
 
-### Induced sets
+### Induced set and captured path
 
 The item list in GFA2 sets and paths may not contain elements
 which are implicitly involved.
@@ -147,20 +147,21 @@ Furthermore groups may refer to other groups (set to sets or paths,
 paths to paths only), which then indirectly contain references to
 segments and edges.
 
-The method ```induced_set``` computes the set of segments and edges
-induced by the group. Thereby all references to subgroups are resolved.
-The method can only be applied to connected lines.
-If the group is ordered, then the method returns an ordered list of
-RGFA::OrientedLine instances, starting and
-ending with a segment, and containing edges between pair of segments.
-If the group is unordered, the method returns an array of
-RGFA::Line instances, first all segments, then all edges between those
-segments.
+RGFA provides methods for the computation of the sets of segments
+and edges which are implied by an ordered or unordered group.
+Thereby all references to subgroups are resolved and implicit
+elements are added, as described in the specification.
+The computation can, therefore, only be applied to connected lines.
+For unordered groups, this computation is provided by the method
+```induced_set```, which returns an array of segment and edge instances.
+For ordered group, the computation is provided by the method
+```captured_path```, whcih returns a list of RGFA::OrientedLine instances,
+alternating segment and edge instances (and starting and ending in
+segments).
 
-The methods ``induced_segments_set``` and ```induced_edges_set``` return,
-respectively, the list of segments and edges. The elements of the list
-are RGFA::Line instances for unordered groups, and RGFA::OrientedLine instances
-for ordered groups.
+The methods ```induced_segments_set```, ```induced_edges_set```,
+```captured_segments``` and ```captured_edges``` return, respectively,
+the list of only segments or edges, in ordered or unordered groups.
 
 ### Disconnecting a line from a RGFA object
 
@@ -276,4 +277,10 @@ RGFA::Line::Group::Ordered#items
 RGFA::Line::Group::Ordered#paths
 RGFA::Line::Group::Ordered#append_item(item)/prepend_item(item)
 RGFA::Line::Group::Ordered#rm_first_item/rm_last_item
+RGFA::Line::Group::Ordered#captured_paths
+RGFA::Line::Group::Ordered#captured_segments
+RGFA::Line::Group::Ordered#captured_edges
+RGFA::Line::Group::Unordered#induced_set
+RGFA::Line::Group::Unordered#induced_segments_set
+RGFA::Line::Group::Unordered#induced_edges_set
 ```
