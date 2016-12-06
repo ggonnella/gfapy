@@ -1,25 +1,8 @@
-
-
-
 graph operations
 (including RGFATools)
 divide into: linear_paths.md etc
 
-stuff implemented in rgfa.rb:
-rgfa.md?
-
-adding lines/removing lines/finding lines/renaming lines:
-(printing lines to string, validating lines; an introduction to lines can be here;
-this can come before positionals.md and tags.md)
-lines.md?
+more stuff implemented in rgfa.rb => rgfa.md
 
 validation levels (validation.md)
-
-### other notes
-
-# note: search lines e.g. search_link()
-# maybe implement something like search_by_content?() with equivalent: true for links
-
-shall the stuff under field etc be tested separately
-=> _internals tests
 
