@@ -98,7 +98,7 @@ class TestRGFALineGetters < Test::Unit::TestCase
     pt2 = []
     gfa.paths.each {|pt| pt2 << pt.to_s}
     assert_equal(pt1, pt2)
-    gfa.rm("4")
+    gfa.rm(:"4")
     pt2 = []
     gfa.paths.each {|pt| pt2 << pt.to_s}
     assert_equal([pt1[1]], pt2)

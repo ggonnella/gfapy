@@ -8,8 +8,9 @@ module RGFATools::Artifacts
   # @param minlen [Integer] the minimum length
   # @return [RGFA] self
   def remove_small_components(minlen)
-    rm(connected_components.select {|cc|
-      cc.map{|sn|segment(sn).length}.reduce(:+) < minlen })
+    connected_components.select {|cc|
+      cc.map{|sn|segment(sn).length}.reduce(:+) < minlen }.
+        each{|cc| cc.each {|sn|rm(sn)}}
     self
   end
 

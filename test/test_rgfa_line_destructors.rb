@@ -34,7 +34,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     gfa << c
     assert_not_equal([], gfa.containments)
     assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
-    gfa.rm(gfa.containments_between("1", "0"))
+    gfa.containments_between(:"1", :"0").each(&:disconnect)
     assert_equal([], gfa.containments)
   end
 
@@ -74,7 +74,7 @@ class TestRGFALineDestructors < Test::Unit::TestCase
     gfa.segment("1").disconnect
     assert_equal([s[2]], gfa.segments.map(&:to_s))
     assert_equal([], gfa.links)
-    gfa.rm("2")
+    gfa.rm(:"2")
     assert_equal([], gfa.segments)
   end
 

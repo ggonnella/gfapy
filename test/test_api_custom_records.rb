@@ -48,7 +48,7 @@ class TestAPI::CustomRecords < Test::Unit::TestCase
     c = "X\tThis is a custom_record"
     gfa << c
     assert_equal([c], gfa.custom_records(:X).map(&:to_s))
-    gfa.rm(gfa.custom_records(:X))
+    gfa.custom_records(:X).each(&:disconnect)
     assert_equal([], gfa.custom_records(:X))
   end
 

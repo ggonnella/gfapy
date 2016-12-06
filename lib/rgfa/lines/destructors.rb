@@ -3,64 +3,19 @@
 #
 module RGFA::Lines::Destructors
 
-  # Delete elements from the RGFA graph
-  # @overload rm(segment)
-  #   @param segment
-  #     [Symbol, String, RGFA::Line::Segment::GFA1, RGFA::Line::Segment::GFA2]
-  #     segment name or instance
-  # @overload rm(path)
-  #   @param path [String, Symbol, RGFA::Line::Path]
-  #     path name or instance
-  # @overload rm(link)
-  #   @param link [RGFA::Line::Edge::Link] link line instance
-  # @overload rm(containment)
-  #   @param containment [RGFA::Line::Edge::Containment] containment line instance
-  # @overload rm(comment)
-  #   @param comment [RGFA::Line::Comment] comment line instance
-  # @overload rm(custom_record)
-  #   @param custom_record [RGFA::Line::CustomRecord] custom record instance
-  # @overload rm(array)
-  #   Calls {#rm} using each element of the array as argument
-  #   @param array [Array]
-  # @overload rm(method_name, *args)
-  #   Call a method of RGFA instance, then {#rm} for each returned value
-  #   @param method_name [Symbol] method to call
-  #   @param args arguments of the method
+  # Delete a line from the RGFA graph
+  # @param line [RGFA::Line, Symbol] a line instance or identifier
   # @return [RGFA] self
-  def rm(x, *args)
-    case x
-    when RGFA::Line
-      raise RGFA::ArgumentError,
-        "One argument required if first RGFA::Line" if !args.empty?
-      case x.record_type
-      when :H then raise RGFA::ArgumentError,
-                           "Cannot remove single header lines"
-      else
-        x.disconnect
+  def rm(line, *args)
+    if line.kind_of?(Symbol)
+      lineid = line
+      line = search_by_name(line.to_sym)
+      if !line
+        raise RGFA::NotFoundError,
+          "No line was found with ID '#{lineid}'"
       end
-    when Symbol, String
-      x = x.to_sym
-      l = search_by_name(x)
-      if l
-        if !args.empty?
-          raise RGFA::ArgumentError,
-            "One arguments required if first argument is an ID"
-        end
-        l.disconnect
-      else
-        if respond_to?(x)
-          rm(send(x, *args))
-        else
-          raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
-        end
-      end
-    when Array
-      x.each {|elem| rm(elem, *args)}
-    when nil, RGFA::Placeholder
-      return self
-    else
-      raise RGFA::ArgumentError, "Cannot remove #{x.inspect}"
     end
+    line.disconnect
     return self
   end
 
