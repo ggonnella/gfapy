@@ -40,7 +40,7 @@ module RGFA::Line::Common::VirtualToReal
 
   def import_field_references(previous)
     (self.class::REFERENCE_FIELDS +
-     self.class::REFERENCE_RELATED_FIELDS).each do |k|
+     self.class::BACKREFERENCE_RELATED_FIELDS).each do |k|
       ref = previous.get(k)
       set_existing_field(k, ref, set_reference: true)
     end

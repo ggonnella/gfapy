@@ -19,7 +19,7 @@ class RGFA::Line::Edge::Containment < RGFA::Line::Edge
      :NM => :i,
   }
   REFERENCE_FIELDS = [:from, :to]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 

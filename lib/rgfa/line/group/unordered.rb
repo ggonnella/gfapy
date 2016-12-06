@@ -10,7 +10,7 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
     :items => :identifier_list_gfa2,
   }
   REFERENCE_FIELDS = [:items]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:sets]
   OTHER_REFERENCES = []
 

@@ -16,7 +16,7 @@ class RGFA::Line::Segment::GFA2 < RGFA::Line
   }
   FIELD_ALIAS = { :name => :sid, :length => :slen, :LN => :slen }
   REFERENCE_FIELDS = []
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:dovetails_L, :dovetails_R, :gaps_L, :gaps_R,
                      :edges_to_contained, :edges_to_containers,
                      :fragments, :internals, :paths, :sets]

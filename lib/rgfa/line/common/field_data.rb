@@ -108,7 +108,7 @@ module RGFA::Line::Common::FieldData
   def set_existing_field(fieldname, value, set_reference: false)
     if !set_reference and @rgfa and
         (self.class::REFERENCE_FIELDS.include?(fieldname) or
-         self.class::REFERENCE_RELATED_FIELDS.include?(fieldname))
+         self.class::BACKREFERENCE_RELATED_FIELDS.include?(fieldname))
       raise RGFA::Line::RuntimeError,
         "The value of field '#{fieldname}' cannot be changed"+
         "as the line belongs to a RGFA instance"

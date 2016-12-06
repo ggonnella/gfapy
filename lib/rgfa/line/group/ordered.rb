@@ -10,7 +10,7 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
     :items => :oriented_identifier_list_gfa2,
   }
   REFERENCE_FIELDS = [:items]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:paths, :sets]
   OTHER_REFERENCES = []
 

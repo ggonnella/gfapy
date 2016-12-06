@@ -13,7 +13,7 @@ class RGFA::Line::Gap < RGFA::Line
     :var => :optional_integer
   }
   REFERENCE_FIELDS = [:sid1, :sid2]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 

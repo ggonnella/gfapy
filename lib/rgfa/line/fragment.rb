@@ -15,7 +15,7 @@ class RGFA::Line::Fragment < RGFA::Line
     :alignment => :alignment_gfa2
   }
   REFERENCE_FIELDS = [:sid]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
