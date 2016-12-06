@@ -100,6 +100,10 @@ module RGFA::Lines::Finders
     l
   end
 
+  def fragments_for_external(id)
+    @records[:F][id.to_sym]
+  end
+
   # CHANGE1: use segment.dovetails instead of segment.links
   # CHANGE2: rename to search_dovetail_as_link() or something similar
   #

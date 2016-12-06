@@ -6,7 +6,6 @@ module RGFA::Lines::Collections
   COLLECTIONS_NO_ID = {
     :comments => :"#",
     :containments => :C,
-    :fragments => :F,
     :links => :L,
   }
 
@@ -84,6 +83,17 @@ module RGFA::Lines::Collections
     gfa1_path_names + gfa2_path_names
   end
 
+  def fragments
+    @records[:F].values.flatten
+  end
+
+  def external_names
+    @records[:F].keys
+  end
+
+  def names
+    segment_names + edge_names + gap_names + path_names + set_names
+  end
 
   GFA1_ONLY_KEYS = [:L, :C, :P]
   NONCUSTOM_GFA2_KEYS = [:H, :"#", :F, :S, :E, :G, :U, :O, nil]

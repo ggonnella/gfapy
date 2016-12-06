@@ -146,6 +146,9 @@ module RGFA::Lines::Creators
       else
         @records[gfa_line.record_type][gfa_line.name] = gfa_line
       end
+    when :F
+      @records[:F][gfa_line.external.line] ||= []
+      @records[:F][gfa_line.external.line] << gfa_line
     else
       @records[gfa_line.record_type] ||= []
       @records[gfa_line.record_type] << gfa_line
