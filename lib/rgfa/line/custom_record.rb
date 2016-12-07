@@ -24,7 +24,7 @@ class RGFA::Line::CustomRecord < RGFA::Line
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  define_field_methods
+  apply_definitions
 end
 
 require_relative "custom_record/init.rb"

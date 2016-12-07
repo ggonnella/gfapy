@@ -19,7 +19,7 @@ class RGFA::Line::Fragment < RGFA::Line
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  define_field_methods
+  apply_definitions
 
 end
 

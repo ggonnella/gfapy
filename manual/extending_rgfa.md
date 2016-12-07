@@ -90,11 +90,13 @@ class RGFA::Line::Taxon < RGFA::Line
     :desc => :Z,
     :UL => :Z,
   }
-  FIELD_ALIAS = [:name => :tid]
+  FIELD_ALIAS = {:name => :tid}
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:metagenomic_assignments]
   OTHER_REFERENCES = []
+
+  apply_definitions
 
 end
 
@@ -109,11 +111,13 @@ class RGFA::Line::MetagenomicAssignment < RGFA::Line
     :sid => :identifier_gfa2,
     :score => :optional_integer,
   }
-  FIELD_ALIAS = [:name => :mid]
+  FIELD_ALIAS = {:name => :mid}
   REFERENCE_FIELDS = [:tid, :sid]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
+
+  apply_definitions
 
 end
 ```
@@ -130,52 +134,60 @@ In particular, the method shall change all identifiers in the reference
 fields into references to lines in the GFA (either existing lines or
 virtual lines, which is the way RGFA handles forward-pointing references).
 
-```
+If the referenced line is not yet available, but it may be defined by
+the GFA at a later time, the method will create a virtual line.
+In our example, we know that the reference is to a segment or a taxon line.
+If we would not know that we would instantiate RGFA::Line::Unknown.
+
+When the field content itself is a reference, the content cannot be
+changed directly (using set would raise an exception, as the line is
+already connected when the initialize_referneces method is called).
+Therefore, the private line method set_existing_field shall be used,
+with ```set_reference: true```. If the reference field contains
+an oriented line or an array instead, references can be edited directly.
+
+```ruby
 class RGFA::Line::MetagenomicAssignment
 
   def initialize_references
     s = @rgfa.segment(sid)
     if s.nil?
-      # The referenced line is not yet available, but it may be defined by
-      # the GFA at a later time. Thus this method will create a virtual line.
-      # In this case, we know that the reference is to a segment. If we would
-      # not know that we would have instanciated RGFA::Line::Unknown.
-      s = RGFA::Line::Segment::GFA2.new(["S", sid, "1", "*"], virtual: true)
+      s = RGFA::Line::Segment::GFA2.new([sid.to_s, "1", "*"],
+                                        virtual: true, version: :gfa2)
       s.connect(@rgfa)
     end
-    # As the field content itself is a reference, the content cannot be
-    # changed directly (using set would raise an exception, as the line is
-    # already connected when this method is called). Therefore, we will call
-    # the private line method set_existing_field with ```set_reference: true```.
-    # If the reference field would contain an oriented line or an array,
-    # references could be changed directly.
     set_existing_field(:sid, s, set_reference: true)
-    # Add a backreference from the segment to this line
     s.add_reference(self, :metagenomic_assignments)
 
-    # Now handle the taxon references the same way
-    t = @rgfa.custom_records(:T).find {|line| line.tid == tid}
+    t = @rgfa.search_by_name(tid)
     if t.nil?
-      t = RGFA::Line::Taxon.new(["T", tid, ""], virtual: true)
+      t = RGFA::Line::Taxon.new([tid.to_s, ""],
+                                virtual: true, version: :gfa2)
       t.connect(@rgfa)
     end
     set_existing_field(:tid, t, set_reference: true)
     t.add_reference(self, :metagenomic_assignments)
   end
+  private :initialize_references
 
 end
 ```
 
-The method defined a backreferences to the new line in the
-segment instance, using :metagenomic_assignments as name for the collection
-of backreferences in S to lines of type M. We will need to add this collection
-to the segment definition. As lines of type M will be dependent on S lines
+The method defined backreferences to the new line in the
+segment and taxon instances, using :metagenomic_assignments as name for the collection
+of backreferences in S or T lines to lines of type M. For taxa, this collection
+has been defined in the class definition above. For segments, we will need to
+add this collection to the segment definition and redefine the reference getters
+methods. As lines of type M will be dependent on S lines
 (ie they shall be deleted if the referred segment line is deleted), we will
-add it to DEPENDENT_LINES. If this would not be true, we would use the
-OTHER_REFERENCES array instead.
+add it to the DEPENDENT_LINES list. In case of no dependency, we would use the
+OTHER_REFERENCES list instead.
 
-```
-RGFA::Line::Segment::GFA2::DEPENDENT_LINES << :metagenomic_assignments
+```ruby
+class RGFA::Line::Segment::GFA2
+  DEPENDENT_LINES << :metagenomic_assignments
+  define_reference_getters
+end
 ```
 
 ### Recognizing the record type code
@@ -183,25 +195,45 @@ RGFA::Line::Segment::GFA2::DEPENDENT_LINES << :metagenomic_assignments
 When parsing lines starting with the code for the new record type,
 we want RGFA to return an instance of the correct subclass of Line.
 
-To obtain this, the ```subclass_GFA2``` class Method of ```RGFA::Line``` must
-be extended to handle the new record_type symbol. It must return a class
-(the new subclass of RGFA::Line).
+To obtain this, the ```subclass``` class Method of ```RGFA::Line``` must
+be extended to handle the new record_type symbol, for GFA2 or
+unknown version records. It must return a class (the new subclass of RGFA::Line).
+The new record symbols must also be added to the gfa2 specific
+symbols list in ```RECORD_TYPE_VERSIONS[:specific][:gfa2]```.
 
-In our example the method ```subclass_GFA2``` will be patched as follows:
+In our example the method ```subclass``` will be patched as follows:
 
 ```ruby
-alias_method :orig_subclass_GFA2, :subclass_GFA2
-
-def subclass_GFA2(record_type)
-  case record_type
-  when :M
-    RGFA::Line::MetagenomicAssignment
-  when :T
-    RGFA::Line::Taxon
-  else
-    orig_subclass_GFA2(record_type)
+class RGFA::Line
+  class << self
+    alias_method :orig_subclass, :subclass
+    def subclass_GFA2(record_type, version: nil)
+      if version.nil? or version == :gfa2
+        case record_type.to_sym
+        when :M then return RGFA::Line::MetagenomicAssignment
+        when :T then return RGFA::Line::Taxon
+        end
+      end
+      orig_subclass(record_type, version: version)
+    end
   end
+  RECORD_TYPE_VERSIONS[:specific][:gfa2] << :M
+  RECORD_TYPE_VERSIONS[:specific][:gfa2] << :T
 end
+```
+
+### Allowing to find records
+
+Both record types T and M define a name field.
+This allows to find record of the types using the ```search_by_name```
+method, as well as allowing to replace virtual T lines created
+while parsing M lines, with real T lines, when these are found.
+For this to work, the codes must be added to the list
+```RECORDS_WITH_NAME``` of the ```RGFA``` class:
+
+```ruby
+RGFA::RECORDS_WITH_NAME << :T
+RGFA::RECORDS_WITH_NAME << :M
 ```
 
 ### Defining a field datatype
@@ -215,20 +247,11 @@ will need to be in the form ```taxon:<n>```, where ```<n>``` is a positive
 integer. In the second case, it will need to be a combination of letters,
 numbers and underscores (thereby ```:``` will not be allowed).
 
-The new datatype must have a symbol which identifies it.  The symbol must be
-added to the GFA2_POSFIELD_DATATYPE array of the RGFA::Field module.
 A module must be created, which handles the parsing and writing of fields with
-the new datatype. An entry must be added to the RGFA::Field::FIELD_MODULE
-hash, where the symbol of the new datatype is the key and the value is the
-Module.
-
-```ruby
-RGFA::Field::GFA2_POSFIELD_DATATYPE << :taxon_id
-RGFA::Field::FIELD_MODULE[:taxon_id] = RGFA::Field::TaxonID
-```
-
-The module must define six module functions (see the API documentation of the
-RGFA::Field module for more detail). Decode and unsafe_decode take a string as
+the new datatype.
+The module shall define six module functions
+(see the API documentation of the RGFA::Field module for more detail).
+Decode and unsafe_decode take a string as
 argument and return an appropriate Ruby object.  Encode and unsafe_encode take
 a string representation or another ruby object and converts it into the correct
 string representation.  Validate_encoded validates the string representation.
@@ -259,11 +282,20 @@ module RGFA::Field::TaxonID
   module_function :decode
 
   def validate_decoded(object)
-    validate_encoded(object.to_s)
+    case object
+    when RGFA::Line::Taxon
+      validate_encoded(object.name.to_s)
+    when Symbol
+      validate_encoded(object.to_s)
+    else
+      raise RGFA::TypeError,
+        "Invalid type for taxon ID: #{object.inspect}"
+    end
   end
   module_function :validate_decoded
 
   def unsafe_encode(object)
+    object = object.name if object.kind_of?(RGFA::Line::Taxon)
     object.to_s
   end
   module_function :unsafe_encode
@@ -277,10 +309,21 @@ module RGFA::Field::TaxonID
 end
 ```
 
+The new datatype must have a symbol which identifies it.  The symbol must be
+added to the ```GFA2_POSFIELD_DATATYPE``` list of the ```RGFA::Field``` module.
+An entry must be added to the ```RGFA::Field::FIELD_MODULE```
+hash, where the symbol of the new datatype is the key and the value is the
+module.
+
+```ruby
+RGFA::Field::GFA2_POSFIELD_DATATYPE << :taxon_id
+RGFA::Field::FIELD_MODULE[:taxon_id] = RGFA::Field::TaxonID
+```
+
 Now the new datatype can be put into use by changing the datatype for the tid
 fields of the M and T lines:
 
-```
+```ruby
 RGFA::Line::Taxon::DATATYPE[:tid] = :taxon_id
 RGFA::Line::MetagenomicAssignment::DATATYPE[:tid] = :taxon_id
 ```

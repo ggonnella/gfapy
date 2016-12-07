@@ -117,10 +117,26 @@ module RGFA::Lines::Collections
   def custom_records(record_type=nil)
     if record_type
       return [].freeze if !custom_record_keys.include?(record_type)
-      @records.fetch(record_type, []).clone.freeze
+      collection = @records[record_type]
+      case collection
+      when nil
+        return [].freeze
+      when Array
+        return collection.clone.freeze
+      when Hash
+        return collection.values.freeze
+      end
     else
       cr = []
-      custom_record_keys.each {|k| cr += @records[k]}
+      custom_record_keys.each do |k|
+        collection = @records[k]
+        case collection
+        when Array
+          cr += collection
+        when Hash
+          cr += collection.values
+        end
+      end
       cr.freeze
     end
   end

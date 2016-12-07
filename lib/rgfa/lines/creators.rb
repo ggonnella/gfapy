@@ -135,23 +135,25 @@ module RGFA::Lines::Creators
   # @api private
   def register_line(gfa_line)
     api_private_check_gfa_line(gfa_line, "register_line")
-    case gfa_line.record_type
-    when :H
-      @records[:H].merge(gfa_line)
-    when :S, :P, nil
-      @records[gfa_line.record_type][gfa_line.name] = gfa_line
-    when :E, :U, :G, :O
+    if gfa_line.respond_to?(:name)
+      @records[gfa_line.record_type] ||= {}
       if gfa_line.name.empty?
+        @records[gfa_line.record_type][nil] ||= []
         @records[gfa_line.record_type][nil] << gfa_line
       else
         @records[gfa_line.record_type][gfa_line.name] = gfa_line
       end
-    when :F
-      @records[:F][gfa_line.external.line] ||= []
-      @records[:F][gfa_line.external.line] << gfa_line
     else
-      @records[gfa_line.record_type] ||= []
-      @records[gfa_line.record_type] << gfa_line
+      case gfa_line.record_type
+      when :H
+        @records[:H].merge(gfa_line)
+      when :F
+        @records[:F][gfa_line.external.line] ||= []
+        @records[:F][gfa_line.external.line] << gfa_line
+      else
+        @records[gfa_line.record_type] ||= []
+        @records[gfa_line.record_type] << gfa_line
+      end
     end
   end
 

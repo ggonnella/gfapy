@@ -17,7 +17,7 @@ class RGFA::Line::Gap < RGFA::Line
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  define_field_methods
+  apply_definitions
 
   alias_method :to_sym, :gid
 

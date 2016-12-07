@@ -126,13 +126,15 @@ module RGFA::Lines::Finders
     return nil
   end
 
+  RECORDS_WITH_NAME = [:E, :S, :P, :U, :G, :O, nil]
+
   # @api private
   def search_duplicate(gfa_line)
     case gfa_line.record_type
     when :L
       return search_link(gfa_line.oriented_from,
                          gfa_line.oriented_to, gfa_line.alignment)
-    when :E, :S, :P, :U, :G, :O
+    when *RECORDS_WITH_NAME
       return search_by_name(gfa_line.name)
     else
       return nil
@@ -145,7 +147,8 @@ module RGFA::Lines::Finders
       return nil
     end
     name = name.to_sym
-    [:E, :S, :P, :U, :G, :O, nil].each do |rt|
+    RECORDS_WITH_NAME.each do |rt|
+      return nil if !@records[rt]
       found = @records[rt][name]
       return found if !found.nil?
     end

@@ -22,7 +22,7 @@ class RGFA::Line::Segment::GFA2 < RGFA::Line
                      :fragments, :internals, :paths, :sets]
   OTHER_REFERENCES = []
 
-  define_field_methods
+  apply_definitions
 
   alias_method :to_sym, :sid
 

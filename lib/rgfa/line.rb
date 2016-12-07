@@ -79,7 +79,14 @@ class RGFA::Line
   #
   # This avoids calls to method_missing for fields which are already defined
   #
-  def self.define_field_methods
+  def self.apply_definitions
+    define_field_accessors
+    define_field_aliases
+    define_reference_getters
+  end
+  private_class_method :apply_definitions
+
+  def self.define_field_accessors
     (self::POSFIELDS +
      self::PREDEFINED_TAGS).each do |fieldname|
       define_method(fieldname) do
@@ -92,22 +99,34 @@ class RGFA::Line
         set_existing_field(fieldname, value)
       end
     end
+  end
+  private_class_method :define_field_accessors
+
+  def self.define_field_aliases
     self::FIELD_ALIAS.each do |k,v|
       alias_method :"#{k}",  :"#{v}"
       alias_method :"#{k}!", :"#{v}!"
       alias_method :"#{k}=", :"#{v}="
     end
+  end
+  private_class_method :define_field_aliases
+
+  def self.define_reference_getters
     (self::DEPENDENT_LINES + self::OTHER_REFERENCES).each do |k|
-      define_method(k) do
-        @refs ||= {}
-        @refs.fetch(k, []).clone.freeze
+      if !method_defined?(k)
+        define_method(k) do
+          @refs ||= {}
+          @refs.fetch(k, []).clone.freeze
+        end
       end
     end
-    define_method :all_references do
-      refs.values.flatten
+    if !method_defined?(:all_references)
+      define_method :all_references do
+        refs.values.flatten
+      end
     end
   end
-  private_class_method :define_field_methods
+  private_class_method :define_reference_getters
 
 end
 

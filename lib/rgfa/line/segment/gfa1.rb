@@ -22,7 +22,7 @@ class RGFA::Line::Segment::GFA1 < RGFA::Line::Segment
   gfa2_compatibility = [:gaps_L, :gaps_R, :fragments, :internals, :sets]
   OTHER_REFERENCES = [:paths] + gfa2_compatibility
 
-  define_field_methods
+  apply_definitions
 
   alias_method :to_sym, :name
 

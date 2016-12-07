@@ -14,7 +14,7 @@ class RGFA::Line::Group::Unordered < RGFA::Line::Group
   DEPENDENT_LINES = [:sets]
   OTHER_REFERENCES = []
 
-  define_field_methods
+  apply_definitions
 
   alias_method :to_sym, :pid
 

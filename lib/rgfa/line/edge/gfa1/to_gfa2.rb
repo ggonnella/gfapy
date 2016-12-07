@@ -7,7 +7,7 @@ RGFA::Line::Edge::GFA1 ||= Module.new
 #               +from_coords+, +to_coords+.
 module RGFA::Line::Edge::GFA1::ToGFA2
 
-  def name
+  def eid
     i = get(:ID)
     if i.nil?
       return RGFA::Placeholder.new
@@ -15,8 +15,7 @@ module RGFA::Line::Edge::GFA1::ToGFA2
     end
     return i
   end
-  alias_method :eid, :name
-  alias_method :to_sym, :name
+  alias_method :to_sym, :eid
 
   def sid1
     oriented_from

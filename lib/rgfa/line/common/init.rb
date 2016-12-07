@@ -101,7 +101,7 @@ module RGFA::Line::Common::Init
       end
       validate_record_type_specific_info if @validate >= 3
       if @version.nil?
-        raise "RECORD_TYPE_VERSION has no value for #{record_type}"
+        raise "RECORD_TYPE_VERSIONS has no value for #{record_type}"
       end
     end
   end
