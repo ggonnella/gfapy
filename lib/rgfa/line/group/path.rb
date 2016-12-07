@@ -5,12 +5,14 @@ class RGFA::Line::Group::Path < RGFA::Line::Group
   RECORD_TYPE = :P
   POSFIELDS = [:path_name, :segment_names, :overlaps]
   PREDEFINED_TAGS = []
-  FIELD_ALIAS = { :name => :path_name }
+  FIELD_ALIAS = {}
   DATATYPE = {
     :path_name => :path_name_gfa1,
     :segment_names => :oriented_identifier_list_gfa1,
     :overlaps => :alignment_list_gfa1,
   }
+  NAME_FIELD = :path_name
+  STORAGE_KEY = :name
   REFERENCE_FIELDS = [:segment_names, :overlaps]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []

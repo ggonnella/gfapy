@@ -16,6 +16,8 @@ class RGFA::Line::CustomRecord < RGFA::Line
   POSFIELDS = [:record_type]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
+  NAME_FIELD = nil
+  STORAGE_KEY = nil
   DATATYPE = {
     :record_type => :custom_record_type,
   }

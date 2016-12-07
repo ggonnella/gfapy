@@ -13,6 +13,8 @@ class RGFA::Line::Header < RGFA::Line
     :VN => :Z
   }
   REFERENCE_FIELDS = []
+  NAME_FIELD = nil
+  STORAGE_KEY = :merge
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []

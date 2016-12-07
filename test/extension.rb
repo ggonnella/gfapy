@@ -10,7 +10,9 @@ class RGFA::Line::Taxon < RGFA::Line
     :desc => :Z,
     :UL => :Z,
   }
-  FIELD_ALIAS = {:name => :tid}
+  NAME_FIELD = :tid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = {}
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:metagenomic_assignments]
@@ -31,7 +33,9 @@ class RGFA::Line::MetagenomicAssignment < RGFA::Line
     :sid => :identifier_gfa2,
     :score => :optional_integer,
   }
-  FIELD_ALIAS = {:name => :mid}
+  NAME_FIELD = :mid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = {}
   REFERENCE_FIELDS = [:tid, :sid]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []

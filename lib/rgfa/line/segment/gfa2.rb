@@ -14,7 +14,9 @@ class RGFA::Line::Segment::GFA2 < RGFA::Line
     :SH => :H,
     :UR => :Z,
   }
-  FIELD_ALIAS = { :name => :sid, :length => :slen, :LN => :slen }
+  NAME_FIELD = :sid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = { :length => :slen, :LN => :slen }
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:dovetails_L, :dovetails_R, :gaps_L, :gaps_R,

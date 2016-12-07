@@ -14,7 +14,9 @@ class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
     :end2 => :position_gfa2,
     :alignment => :alignment_gfa2,
   }
-  FIELD_ALIAS = { :name => :eid }
+  NAME_FIELD = :eid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = {}
   REFERENCE_FIELDS = [:sid1, :sid2]
   BACKREFERENCE_RELATED_FIELDS = [:beg1, :end1, :beg2, :end2]
   DEPENDENT_LINES = [:paths, :sets]

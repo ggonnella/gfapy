@@ -4,11 +4,13 @@ class RGFA::Line::Group::Ordered < RGFA::Line::Group
   RECORD_TYPE = :O
   POSFIELDS = [:pid, :items]
   PREDEFINED_TAGS = []
-  FIELD_ALIAS = { :name => :pid }
+  FIELD_ALIAS = {}
   DATATYPE = {
     :pid => :optional_identifier_gfa2,
     :items => :oriented_identifier_list_gfa2,
   }
+  NAME_FIELD = :pid
+  STORAGE_KEY = :name
   REFERENCE_FIELDS = [:items]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:paths, :sets]

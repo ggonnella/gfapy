@@ -78,6 +78,8 @@ class RGFA::Line::Comment < RGFA::Line
     :content => :comment,
     :spacer => :comment,
   }
+  NAME_FIELD = nil
+  STORAGE_KEY = nil
   FIELD_ALIAS = {}
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []

@@ -41,7 +41,15 @@ as the segment contain an additional segment length field, which
 represent an eventually approximate length, which can be taken as a
 drawing indication for segments in graphical programs.
 
-### Fragments
+### Relationships between segments
+
+Segments are put in relation to each other by edges lines (E lines in GFA2,
+L and C Lines in GFA1), as well as gaps. RGFA allows to convert edges
+lines from one spefication version to the other (subject to limitations,
+see the Versions chapter). Gap lines cannot be converted, as no GFA1
+specification exist for them.
+
+### Relationships to external sequences
 
 Fragments represent relationships of segments to external sequences,
 i.e. sequences which are not represented in the GFA file itself.
@@ -60,14 +68,6 @@ an array of F lines.
 
 Conversely, to find all fragments for a particular segment, you may use the
 ```fragments``` method on the segment instance.
-
-### Relationship between segments
-
-Segments are put in relation to each other by edges lines (E lines in GFA2,
-L and C Lines in GFA1), as well as gaps. RGFA allows to convert edges
-lines from one spefication version to the other (subject to limitations,
-see the Versions chapter). Gap lines cannot be converted, as no GFA1
-specification exist for them.
 
 ### Groups
 

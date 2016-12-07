@@ -106,12 +106,21 @@ module RGFA::Line::Common::FieldData
   private
 
   def set_existing_field(fieldname, value, set_reference: false)
-    if !set_reference and @rgfa and
-        (self.class::REFERENCE_FIELDS.include?(fieldname) or
-         self.class::BACKREFERENCE_RELATED_FIELDS.include?(fieldname))
-      raise RGFA::Line::RuntimeError,
-        "The value of field '#{fieldname}' cannot be changed"+
-        "as the line belongs to a RGFA instance"
+    renaming_connected = false
+    if @rgfa
+      if !set_reference and
+          (self.class::REFERENCE_FIELDS.include?(fieldname) or
+           self.class::BACKREFERENCE_RELATED_FIELDS.include?(fieldname))
+        raise RGFA::Line::RuntimeError,
+          "The value of field '#{fieldname}' cannot be changed"+
+          "as the line belongs to a RGFA instance"
+      end
+      if (fieldname == self.class::STORAGE_KEY) or
+         (self.class::STORAGE_KEY == :name and
+           fieldname == self.class::NAME_FIELD)
+        renaming_connected = true
+        @rgfa.unregister_line(self)
+      end
     end
     if value.nil?
       @data.delete(fieldname)
@@ -121,6 +130,9 @@ module RGFA::Line::Common::FieldData
         value.validate_gfa_field(field_datatype(fieldname), fieldname)
       end
       @data[fieldname] = value
+    end
+    if renaming_connected
+      @rgfa.register_line(self)
     end
   end
 

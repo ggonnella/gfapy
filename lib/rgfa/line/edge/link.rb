@@ -17,6 +17,8 @@ class RGFA::Line::Edge::Link < RGFA::Line::Edge
      :FC => :i,
      :KC => :i,
   }
+  NAME_FIELD = nil
+  STORAGE_KEY = nil
   REFERENCE_FIELDS = [:from, :to]
   BACKREFERENCE_RELATED_FIELDS = [:to_orient, :from_orient, :overlap]
   DEPENDENT_LINES = [:paths]

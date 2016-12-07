@@ -22,19 +22,26 @@ module RGFA::Lines::Destructors
   # @api private
   def unregister_line(gfa_line)
     api_private_check_gfa_line(gfa_line, "unregister_line")
-    case gfa_line.record_type
-    when :H
+    if gfa_line.record_type == :H
       raise RGFA::AssertionError, "Bug found, please report\n"+
         "gfa_line: #{gfa_line}"
-    when :E, :S, :P, :U, :G, :O, nil
-      if gfa_line.name.empty?
-        @records[gfa_line.record_type][nil].delete(gfa_line)
-      else
-        @records[gfa_line.record_type].delete(gfa_line.name)
-      end
-    else
-      @records[gfa_line.record_type].delete(gfa_line)
     end
+    collection = @records[gfa_line.record_type]
+    key = gfa_line
+    if collection.kind_of?(Hash)
+      storage_key = gfa_line.class::STORAGE_KEY
+      case storage_key
+      when :name
+        if !gfa_line.name.empty?
+          key = gfa_line.name
+        else
+          collection = collection[nil]
+        end
+      when :external
+        collection = collection[gfa_line.external.name]
+      end
+    end
+    collection.delete(key)
   end
 
   # Delete all links/containments involving two segments

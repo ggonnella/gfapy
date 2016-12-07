@@ -10,6 +10,8 @@ class RGFA::Line::Unknown < RGFA::Line
     :name => :identifier_gfa2,
   }
   REFERENCE_FIELDS = []
+  NAME_FIELD = :name
+  STORAGE_KEY = :name
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:sets, :paths]
   OTHER_REFERENCES = []

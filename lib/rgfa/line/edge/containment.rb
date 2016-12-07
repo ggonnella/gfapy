@@ -18,6 +18,8 @@ class RGFA::Line::Edge::Containment < RGFA::Line::Edge
      :MQ => :i,
      :NM => :i,
   }
+  NAME_FIELD = nil
+  STORAGE_KEY = nil
   REFERENCE_FIELDS = [:from, :to]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []

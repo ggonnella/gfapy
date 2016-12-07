@@ -103,6 +103,9 @@ class RGFA::Line
   private_class_method :define_field_accessors
 
   def self.define_field_aliases
+    if !self::NAME_FIELD.nil? and !self::POSFIELDS.include?(:name)
+      self::FIELD_ALIAS[:name] = self::NAME_FIELD
+    end
     self::FIELD_ALIAS.each do |k,v|
       alias_method :"#{k}",  :"#{v}"
       alias_method :"#{k}!", :"#{v}!"

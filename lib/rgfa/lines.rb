@@ -37,34 +37,6 @@ module RGFA::Lines
                    RGFA::Line::Unknown,
                   ]
 
-  # Rename a segment or a path
-  #
-  # @param old_name [String, Symbol] the name of the segment or path to rename
-  # @param new_name [String, Symbol] the new name for the segment or path
-  #
-  # @raise[RGFA::NotUniqueError]
-  #   if +new_name+ is already a segment or path name
-  # @return [RGFA] self
-  def rename(old_name, new_name)
-    old_name = old_name.to_sym
-    new_name = new_name.to_sym
-    l = search_by_name(new_name)
-    if l
-      raise RGFA::NotUniqueError,
-        "#{new_name} is not unique\n"+
-        "Matching line: #{l}"
-    end
-    l = search_by_name(old_name)
-    if l.nil?
-      raise RGFA::NotFoundError,
-        "No line has ID '#{old_name}'"
-    end
-    l.name = new_name
-    @records[l.record_type].delete(old_name)
-    @records[l.record_type][new_name] = l
-    self
-  end
-
   private
 
   def api_private_check_gfa_line(gfa_line, callermeth)

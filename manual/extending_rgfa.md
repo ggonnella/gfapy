@@ -56,8 +56,12 @@ Thereby some constants must be defined:
 - ```DATATYPE``` is an hash. Each key is a symbol, either contained in
   POSFIELDS or in PREDEFINED_TAGS. The value is a datatype symbol:
   see the RGFA::Field module for a list of possible datatypes.
-  - ```FIELD_ALIAS``` ia an hash which contain aliases to field names;
-it may be empty
+- ```NAME_FIELD``` is the field which contains the name of the line, if any
+- ```STORAGE_KEY``` is the field which shall be used as a key for storing
+  references of the line in RGFA; for custom subclasses,
+  set it to ```:name``` if the line has a name field, to ```nil``` otherwise
+- ```FIELD_ALIAS``` ia an hash which contain aliases to field names;
+  it may be empty
 - ```REFERENCE_FIELDS``` is a list of fields which contain references
   (or arrays of references) to other lines. The references may contain
   an orientation.
@@ -90,7 +94,9 @@ class RGFA::Line::Taxon < RGFA::Line
     :desc => :Z,
     :UL => :Z,
   }
-  FIELD_ALIAS = {:name => :tid}
+  NAME_FIELD = :tid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = {}
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = [:metagenomic_assignments]
@@ -111,7 +117,9 @@ class RGFA::Line::MetagenomicAssignment < RGFA::Line
     :sid => :identifier_gfa2,
     :score => :optional_integer,
   }
-  FIELD_ALIAS = {:name => :mid}
+  NAME_FIELD = :mid
+  STORAGE_KEY = :name
+  FIELD_ALIAS = {}
   REFERENCE_FIELDS = [:tid, :sid]
   BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []

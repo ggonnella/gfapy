@@ -6,7 +6,7 @@ class TestRGFAEdit < Test::Unit::TestCase
   def test_rename
     gfa = ["S\t0\t*", "S\t1\t*", "S\t2\t*", "L\t0\t+\t2\t-\t12M",
     "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M"].to_rgfa
-    gfa.rename("0", "X")
+    gfa.segment("0").name = "X"
     assert_raises(RGFA::NotFoundError){gfa.segment!("0")}
     assert_equal([:"X", :"1", :"2"].sort, gfa.segment_names.sort)
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.links[0].to_s)

@@ -14,6 +14,8 @@ class RGFA::Line::Segment::GFA1 < RGFA::Line::Segment
     :SH => :H,
     :UR => :Z,
   }
+  NAME_FIELD = :name
+  STORAGE_KEY = :name
   FIELD_ALIAS = { :sid => :name }
   REFERENCE_FIELDS = []
   BACKREFERENCE_RELATED_FIELDS = []
