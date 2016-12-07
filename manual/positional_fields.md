@@ -89,6 +89,7 @@ segments returns the segment identifier (or segment reference in connected
 path lines) and the ```orient``` method returns the orientation symbol.
 The ```name``` method returns the symbol of the segment, even if this is
 a reference to a segment.
+A new oriented line can be created using the ```OL[line, orientation]``` method.
 
 Calling ```invert``` returns an oriented segment, with inverted orientation.
 To set the two attributes the methods ```segment=``` and ```orient=```
@@ -106,6 +107,7 @@ p[0].orient = :-
 p[0].segment = "S\tX\t*".to_rgfa_line
 p[0] # => OrientedLine(RGFA::Line("S\tX\t*"), :-)
 p[0].name # => :X
+p[0] = OL[RGFA::Line("S\tY\t*"), :+]
 ```
 
 #### Sequences
@@ -114,7 +116,7 @@ Sequences (S field sequence) are represented by strings in RGFA.
 Depending on the GFA version, the alphabet definition is more or less
 restrictive. The definitions are correctly applied by the validation methods.
 
-The method #rc is provided to compute the reverse complement of a nucleotidic
+The method ```rc``` is provided to compute the reverse complement of a nucleotidic
 sequence. The extended IUPAC alphabet is understood by the method. Applied to
 non nucleotidic sequences, the results will be meaningless:
 ```ruby
@@ -199,6 +201,10 @@ string representation of a field can be read using the
 When setting a value, the user can specify the value of a tag either as a Ruby
 object, or as the string representation of the value.
 
+Note that setting the value of reference and backreferences-related
+fields is generally not allowed, when a line instance is connected to a
+RGFA object (see the References chapter).
+
 ### Validation
 
 The content of all positional fields must be a correctly formatted
@@ -206,7 +212,7 @@ string according to the rules given in the GFA specifications (or a Ruby object
 whose string representation is a correctly formatted string).
 
 Depending on the validation level, more or less checks are done automatically
-(see validation chapter).  Not regarding which validation level is selected,
+(see the Validation chapter).  Not regarding which validation level is selected,
 the user can trigger a manual validation using the
 ```validate_field(fieldname)``` method for a single field, or using
 ```validate```, which does a full validation on the whole line, including all
@@ -244,7 +250,7 @@ container[_orient] for from[_orient]; contained[_orient] for to[_orient]
 
 ### Summary of positional fields-related API methods
 
-```
+```ruby
 RGFA::Line#<fieldname>/<fieldname>=
 RGFA::Line#get/set
 RGFA::Line#validate_field/validate

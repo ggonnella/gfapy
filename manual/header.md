@@ -59,7 +59,7 @@ is output.
 
 ### Summary of headers-related API methods
 
-```
+```ruby
 RGFA#header
 RGFA::Line::Header#add
 RGFA::FieldArray#(array methods)

@@ -47,7 +47,7 @@ same syntax fo lastpos and integer instances.
 ```
 ### Summary of position-related API methods
 
-```
+```ruby
 String#to_pos
 Integer#to_lastpos
 Integer/RGFA::LastPos#first?

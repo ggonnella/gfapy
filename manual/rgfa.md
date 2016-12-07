@@ -67,7 +67,7 @@ can refer to different segments in different F lines, the result is always
 an array of F lines.
 
 Conversely, to find all fragments for a particular segment, you may use the
-```fragments``` method on the segment instance.
+```fragments``` method on the segment instance (see the References chapter).
 
 ### Groups
 
@@ -110,7 +110,8 @@ of some fields (fields which refer to other lines) is only possible for
 instances which are not connected.
 
 In some cases, methods are provided
-to modify the content of connected fields (see the References chapter).
+to modify the content of reference fields of connected line
+(see the References chapter).
 
 ### Removing lines
 
@@ -130,3 +131,36 @@ to a RGFA. All references to the line from other lines will still be up to
 date, as they will refer to the same instance (whose name has been changed)
 and their string representation will use the new name.
 
+### Summary of the API methods mentioned above
+
+```ruby
+RGFA.new
+RGFA.from_file(filename)
+RGFA#to_s
+RGFA#to_file(filename)
+RGFA#segments
+RGFA#paths
+RGFA#edges
+RGFA#links
+RGFA#containments
+RGFA#groups
+RGFA#fragments
+RGFA#comments
+RGFA#custom_lines
+RGFA#custom_lines(key)
+RGFA#header
+RGFA#search_by_name(id)
+RGFA#names
+RGFA#segment_names
+RGFA#edges_names
+RGFA#gap_names
+RGFA#path_names
+RGFA#set_names
+RGFA#external_names
+RGFA#fragments_for_external(id)
+RGFA#add_line(line)
+RGFA#<<(line)
+String#to_rgfa_line
+RGFA#rm(line)
+RGFA::Line#disconnect
+```

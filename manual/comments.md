@@ -36,7 +36,7 @@ Trying to set or get tag values raises exceptions.
 
 ### Summary of comments-related API methods
 
-```
+```ruby
 RGFA#<<(comment_line)
 RGFA#comments
 RGFA::Line::Comment#disconnect

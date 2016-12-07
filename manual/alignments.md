@@ -93,7 +93,7 @@ field contains a defined value (cigar, trace) or not (placeholder).
 
 ### Summary of the API public methods for alignments
 
-```
+```ruby
 (String, RGFA::Alignment::*)#to_s
 (String, RGFA::Alignment::*)#to_alignment
 (String, RGFA::Alignment::*)#placeholder?

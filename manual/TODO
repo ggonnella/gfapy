@@ -1,8 +1,1 @@
-graph operations
-(including RGFATools)
-divide into: linear_paths.md etc
-
-more stuff implemented in rgfa.rb => rgfa.md
-
-validation levels (validation.md)
-
+work on graph_operations.md

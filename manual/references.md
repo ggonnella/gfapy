@@ -208,23 +208,30 @@ readonly as it may be necessary to identify the link in paths.
 The name field of a line (e.g. segment name/sid) is not a reference and thus
 can be edited also in connected lines.  When the name of the line is changed,
 no manual editing of references (e.g. from/to fields in links) is necessary, as
-all lines which refer to the line will still refer to the same instance.  The
-new name will be automatically used when converting to string, such
-as when the RGFA is written to a GFA file.
+all lines which refer to the line will still refer to the same instance.
+The references to the instance in the RGFA lines collections will be
+automatically updated. Also, the new name will be correctly used when
+converting to string, such as when the RGFA is written to a GFA file.
+
+Renaming a line to a name which already exists has the same effect of adding
+a line with that name. That is, in most cases, ```RGFA::NotUniqueError``` is
+raised. An exception are GFA2 groups: in this case
+the line will be appended to the existing line with the same name.
 
 #### Adding and removing group elements
 
+Elements of GFA2 groups can be added and removed from both connected and
+non-connected lines, using the following methods.
+
 To add an item to or remove an item from an unordered group, use the methods
-```RGFA::Line::Group::Unordered#add_item(item)``` and
-```RGFA::Line::Group::Unordered#rm_item(item)```, which take as argument either
+```add_item(item)``` and ```rm_item(item)```, which take as argument either
 a symbol (identifier) or a line instance.
 
 To append or prepend an item to an ordered group, use the methods
-```RGFA::Line::Group::Ordered#append_item(item)``` and
-```RGFA::Line::Group::Ordered#prepend_item(item)```.  To remove the first or
+```append_item(item)``` and ```prepend_item(item)```.  To remove the first or
 the last item of an ordered group use the methods
-```RGFA::Line::Group::Ordered#rm_first_item``` and
-```RGFA::Line::Group::Ordered#rm_last_item```.
+```rm_first_item``` and
+```rm_last_item```.
 
 #### Editing read-only fields of connected lines
 
@@ -256,14 +263,26 @@ and all references are corrected to point to the real line.
 
 ### Summary of references-related API methods
 
-```
+```ruby
 RGFA#<<(line)/rm(line)
-RGFA::Line#connect(rgfa)/disconnect
-RGFA::Line#connected?/rgfa
+RGFA::Line#connect(rgfa)
+RGFA::Line#disconnect
+RGFA::Line#connected?
+RGFA::Line#rgfa
 RGFA::Line#virtual?
-RGFA::Line::Segment::GFA1/GFA2#dovetails[_L|_R]/contain(ed|ers)/neighbours
-RGFA::Line::Segment::GFA1#paths
-RGFA::Line::Segment::GFA2#gaps[_L|_R]/fragments/[un]paths/internals
+RGFA::Line::Segment::GFA1/GFA2#dovetails(_L|_R)
+RGFA::Line::Segment::GFA1/GFA2#dovetails
+RGFA::Line::Segment::GFA1/GFA2#neighbours
+RGFA::Line::Segment::GFA1/GFA2#contain(ed|ers)
+RGFA::Line::Segment::GFA1/GFA2#edges_to_contain(ed|ers)
+RGFA::Line::Segment::GFA1/GFA2#containments
+RGFA::Line::Segment::GFA1/GFA2#internals
+RGFA::Line::Segment::GFA1/GFA2#edges
+RGFA::Line::Segment::GFA2#gaps(_L|_R)
+RGFA::Line::Segment::GFA2#gaps
+RGFA::Line::Segment::GFA2#fragments
+RGFA::Line::Segment::GFA1/GFA2#paths
+RGFA::Line::Segment::GFA2#sets
 RGFA::Line::Fragment#sid
 RGFA::Line::Edge::Containment/Link#from/to
 RGFA::Line::Gap/Edge::GFA2#sid1/sid2
@@ -272,11 +291,14 @@ RGFA::Line::Group::Path#segment_names
 RGFA::Line::Group::Path#links
 RGFA::Line::Group::Unordered#items
 RGFA::Line::Group::Unordered#paths
-RGFA::Line::Group::Unordered#add_item(item)/rm_item(item)
+RGFA::Line::Group::Unordered#add_item(item)
+RGFA::Line::Group::Unordered#rm_item(item)
 RGFA::Line::Group::Ordered#items
 RGFA::Line::Group::Ordered#paths
-RGFA::Line::Group::Ordered#append_item(item)/prepend_item(item)
-RGFA::Line::Group::Ordered#rm_first_item/rm_last_item
+RGFA::Line::Group::Ordered#append_item(item)
+RGFA::Line::Group::Ordered#prepend_item(item)
+RGFA::Line::Group::Ordered#rm_first_item
+RGFA::Line::Group::Ordered#rm_last_item
 RGFA::Line::Group::Ordered#captured_paths
 RGFA::Line::Group::Ordered#captured_segments
 RGFA::Line::Group::Ordered#captured_edges

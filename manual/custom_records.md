@@ -18,7 +18,7 @@ or write custom record contents.
 The custom records contained in a RGFA object can be retrieved using its
 ```custom_records``` method. If no argument is provided, all custom
 records are returned. If a record type symbol is provided (e.g.
-```g#custom_records(:X)```), records of that type will be returned.
+```g.custom_records(:X)```), records of that type will be returned.
 
 Adding custom records to and removing them from a RGFA instance
 is similar to any other line. So to delete a custom record, ```disconnect```
@@ -59,6 +59,17 @@ Due to the parsing heuristics mentioned in the Tags section above, invalid
 tags are sometimes wrongly taken as positional fields. Therefore,
 the user shall validate the number of positional fields
 (```line.positional_fieldnames.size```).
+
+### Extensions
+
+The support for custom fields is limited, as RGFA does not know which and
+how many fields are there and how shall they be validated.
+It is possible to create an extension of RGFA, which defines new record
+types: this will allow to use these record types in a similar way
+to the built-in types. However, extending the library requires sligthly
+more advanced programming than just using the predefined record types.
+In the chapter Extending RGFA these extensions are discussed and an
+example is made.
 
 ### Summary of custom-record related API methods
 ```

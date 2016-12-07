@@ -108,22 +108,23 @@ is necessary if full validation is active).
 
 ### Arrays of numerical values
 
-B and H tags represent array with particular constraints (e.g. they can only
-contain numeric values, and in some cases the values must be in predefined
-ranges).  In order to represent them correctly and allow for validation, Ruby
-classes have been defined for both kind of tags: RGFA::ByteArray for H and
-RGFA::NumericArray for B fields.
+```B``` and ```H``` tags represent array with particular constraints (e.g. they
+can only contain numeric values, and in some cases the values must be in
+predefined ranges).  In order to represent them correctly and allow for
+validation, Ruby classes have been defined for both kind of tags:
+```RGFA::ByteArray``` for ```H``` and ```RGFA::NumericArray``` for ```B```
+fields.
 
 Both are subclasses of Array.  Object of the two classes can be created by
-converting the string representation (using #to_byte_array and
-#to_numeric_array). The same two methods can be applied also to existing Array
-instances containing numerical values.
+converting the string representation (using ```to_byte_array``` and
+```to_numeric_array```). The same two methods can be applied also to existing
+Array instances containing numerical values.
 
 Instances of the classes behave as normal arrays, except that they provide a
 #validate method, which checks the constraints, and that their #to_s method
 computes the GFA string representation of the field value.
 
-For numeric values, the ```#compute_subtype``` method allows to compute the
+For numeric values, the ```compute_subtype``` method allows to compute the
 subtype which will be used for the string representation.  Unsigned subtypes
 are used if all values are positive.  The smallest possible subtype range is
 selected.  The subtype may change when the range of the elements changes.
@@ -139,21 +140,21 @@ positional fields.
 For easier access, the entire header of the GFA is summarized in a single line
 instance. Different GFA header lines can contain the same tag (this was a
 discussed topic, it is not forbidden by the current specifications, but this
-may change). A class (RGFA::FieldArray) has been defined to handle this special
-case (see Header chapter for details).
+may change). A class (```RGFA::FieldArray```) has been defined to handle this
+special case (see Header chapter for details).
 
-Comment lines are represented by a subclass of the same class (RGFA::Line) as
-the records. However, they cannot contain tags: the entire line is taken as
+Comment lines are represented by a subclass of the same class (```RGFA::Line```)
+as the records. However, they cannot contain tags: the entire line is taken as
 content of the comment.
 
-Virtual RGFA::Line instances (e.g. Segment instances automatically created
+Virtual ```RGFA::Line``` instances (e.g. Segment instances automatically created
 because of not yet resolved references found in edges) cannot be modified by
 the user, and tags cannot be specified for them. This includes all instances of
-the RGFA::Line::Unknown class.
+the ```RGFA::Line::Unknown``` class.
 
 ### Summary of tags-related API methods
 
-```
+```ruby
 RGFA::Line#tn/tn!/tn= # tn = tag name
 RGFA::Line#get/get!/set
 RGFA::Line#delete
