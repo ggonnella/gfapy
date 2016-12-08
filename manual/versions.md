@@ -1,21 +1,86 @@
 ## GFA versions
 
-There are some differences between the two versions of GFA.
+Two versions of GFA have been defined: GFA1 and GFA2.
+There are some differences between the two versions.
+
 The header lines and comments are the same in both versions.
-Segments only have some minor versions (a length field in GFA2).
-The two edges types of GFA1 (links and containments) are generalized into
-the E lines of GFA2. Paths have a different syntax and are called ordered
-groups in GFA2. Unordered groups have been introduced to represent
-generic subgraphs. Some other new line types have been introduced for
+Segment lines have a different syntax,
+as they have an additional positional field in GFA2.
+All edges lines are version-specific: the two edges types of GFA1
+(links and containments) are generalized into the E lines of GFA2.
+
+Paths have a different syntax and are also called ordered
+groups in GFA2. Sets or unordered groups have been introduced in GFA2
+to represent generic subgraphs and are version-specific.
+Other line types exist only in GFA2, for
 documenting read-to-contig alignments (fragments) and for scaffolding (gaps).
+Furthermore GFA2 allows to create user-specific record types, by using
+non-standard codes.
 
-### Version auto-detection (process_line_queue method) # XXX
+### Version autodetection
 
-### Version of a RGFA object or RGFA::Line (version method) # XXX
+RGFA tries to autodetect the version of a GFA file from its syntax.
 
-### Conversion of RGFA or RGFA::Line instances # XXX
+If the GFA is valid, this is generally possible. Any meaningful
+GFA file will contain segments, as the only other record type
+which is not dependent on segments are header. Therefore, as soon
+as a segment is found, the version can be detected from the S line
+syntax.
 
-### Segments
+Comments and header lines are not version specific.
+However, if an header line is found, which declares a version using the
+VN tag, the declared version is processed as follows. If the version
+is still unknown, it is set to the declared version (and then the syntax
+of the following lines must adhere to that version).
+If the version was already known, then
+it is checked that the version declared by the header is the same.
+
+If an edge, a gap, a fragment, an ordered or an unordered group are found,
+the version is set to GFA2, as these lines are only defined in GFA2.
+When links and containments are found, the version is not set,
+as due to custom lines their presence is not forbidden in GFA2.
+
+### Setting and reading the version
+
+Besides relying on autodetection, it is possible to explicitely set the
+version of the RGFA or line objects, if this is known.
+Methods which create RGFA, i.e. ```new``` and ```from_file```, as well
+as methods which create RGFA lines, i.e. ```new```
+and the string method ```to_rgfa_line```, all accept a version
+parameter, which can be set to the symbols ```:gfa1``` or ```:gfa2```.
+
+Both the RGFA and the RGFA Line instances respond to the method
+```version``` which returns one of: ```:gfa1```, ```:gfa2``` or ```:unknown```.
+
+### Line queue
+
+The version autodetection feature is achieved by deferring the processing
+of version-specific lines (ie everything besides headers and comments)
+which are found before the version can be detected as explained above.
+These lines are put on a line queue. Once the version is clear,
+the method ```process_line_queue``` is called on the RGFA instance.
+
+This method can also be called by the user, if e.g. an example GFA is
+created programmatically, where the version is unclear. For the reasons
+explained above, this will generally not be the case, as such a GFA file
+would only contain headers and comments.
+
+### Conversion of RGFA or RGFA::Line instances
+
+The conversion of GFA lines between GFA version is possible in some
+cases. When possible, this is achieved by using the ```to_gfa1```
+and ```to_gfa2``` methods on the line instances. It is also possible
+to directly output the line as a string in the other version
+using the ```to_gfa1_s``` and ```to_gfa2_s``` methods.
+
+Some lines do not require conversion (headers - except changing
+the value of the VN tag, comments).
+The conversions of GFA2-specific information (gaps, fragments, sets,
+custom records) is not possible. The other lines (segments,
+edges/links/containments, paths) can be converted if they
+fulfill some requirements described below.
+
+#### Segments
 
 GFA2 segments contain an additional field (slen: length of the sequence),
 compared to GFA1.
@@ -28,7 +93,7 @@ by a comma).
 Conversion from GFA1 to GFA2 is possible, unless no sequence
 and no LN tag are present.
 
-### Edges
+#### Edges
 
 GFA2 generalizes the links and containments into edge lines, which can
 represent also alignments which are not representable in GFA1.
@@ -44,35 +109,18 @@ a dovetail overlap or an alignment. Also trace alignments are not supported
 in GFA1, so the overlap will be set to *. Edge identifiers are stored
 in id:Z: tags.
 
-### Groups
+#### Paths
 
-GFA1 defines only paths, while GFA2 has ordered groups (equivalent to paths)
-and unordered groups.
+Conversion of paths from GFA1 to GFA2 is possible, if the links specified
+in the path are the only between pairs of segments, or if the links contain
+an ID optional tag.
 
-Conversion from GFA1 to GFA2 is possible by storing
-an identifier for each link in the id tag.
-
-Conversion from GFA2 to GFA1 is possible for O groups, if they contain
-only segments and/or edges representing dovetail overlaps. Subgroups
+Conversion of paths from GFA2 to GFA1 is possible, if they contain
+only segments and/or edges representing dovetail overlaps. Child paths
 are also allowed, but only if they are also composed only of segments
-and/or edges and/or subgroups with the same limitations.
+and/or edges and/or child paths with the same limitations.
 
-### GFA2-only
-
-GFA2 edges representing internal overlaps, as well as relationships
-other than edges (ie. gaps and fragments) cannot be converted to GFA1.
-
-Unordered groups cannot be converted to GFA1.
-
-Custom records (i.e. lines with user defined record types)
-are not supported in GFA1.
-
-### Requirements for version convertion
-
-The following tables summarize the requirements for each kind of record,
-so that a convertion to the other GFA version is possible.
-
-#### GFA1 to GFA2
+#### Conversion from GFA1 to GFA2: requirements
 
 | Record type | Requirements                                     |
 |-------------|--------------------------------------------------|
@@ -83,7 +131,7 @@ so that a convertion to the other GFA version is possible.
 | Containment | CIGAR and segment lengths available              |
 | Path        | Links must have an id tag                        |
 
-#### GFA2 to GFA1
+#### Conversion from GFA2 to GFA1: requirements
 
 | Record type | Requirements                                     |
 |-------------|--------------------------------------------------|
@@ -92,11 +140,24 @@ so that a convertion to the other GFA version is possible.
 | Segment     | Sequence alphabet compatible with GFA1           |
 |             | Identifier compatible with GFA1 name             |
 | Edge        | Dovetail overlap or containment                  |
-| O Group     | Items are dovetails/segments (also in subgroups) |
-| U Group     | Cannot be converted!                             |
+| Path        | All edges are dovetails                          |
+| Sets        | Cannot be converted!                             |
 | Gap         | Cannot be converted!                             |
 | Fragment    | Cannot be converted!                             |
 | Custom      | Cannot be converted!                             |
 
 ## Summary of API methods related to GFA versions
 
+```ruby
+RGFA.new(version:x)
+RGFA.from_file(version:x)
+RGFA::Line.new(version:x)
+String.to_rgfa_line(version:x)
+RGFA#version
+RGFA#process_line_queue
+RGFA::Line#version
+RGFA::Line#to_gfa1
+RGFA::Line#to_gfa2
+RGFA::Line#to_gfa1_s
+RGFA::Line#to_gfa2_s
+```

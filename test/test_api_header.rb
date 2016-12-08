@@ -47,4 +47,15 @@ class TestAPI::Header < Test::Unit::TestCase
     assert_equal(nil, g.header.xx)
   end
 
+  def test_header_from_string
+    assert_nothing_raised { "H\tVN:Z:1.0".to_rgfa_line }
+    assert_equal(RGFA::Line::Header, "H\tVN:Z:1.0".to_rgfa_line.class)
+    assert_raises(RGFA::FormatError) do
+      "H\tH2\tVN:Z:1.0".to_rgfa_line
+    end
+    assert_raises(RGFA::TypeError) do
+      "H\tVN:i:1.0".to_rgfa_line
+    end
+  end
+
 end

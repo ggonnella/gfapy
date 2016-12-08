@@ -6,7 +6,7 @@ module RGFA::Line::Header::VersionConversion
   def to_gfa2_a
     a = ["H"]
     (a << "VN:Z:2.0") if self.VN
-    (tagnames-:VN).each {|fn| a << field_to_s(fn, tag: true)}
+    (tagnames-[:VN]).each {|fn| a << field_to_s(fn, tag: true)}
     return a
   end
 
@@ -16,7 +16,7 @@ module RGFA::Line::Header::VersionConversion
   def to_gfa1_a
     a = ["H"]
     (a << "VN:Z:1.0") if self.VN
-    (tagnames-:VN).each {|fn| a << field_to_s(fn, tag: true)}
+    (tagnames-[:VN]).each {|fn| a << field_to_s(fn, tag: true)}
     return a
   end
 
