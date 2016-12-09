@@ -1,7 +1,8 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFAFieldValidator < Test::Unit::TestCase
+# XXX: see parser
+class (TestInternals||=Module.new)::FieldValidator < Test::Unit::TestCase
 
   def test_field_gfa_field_validate_i
     assert_nothing_raised { "1".validate_gfa_field(:i) }

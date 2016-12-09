@@ -1,7 +1,15 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFAFieldParser < Test::Unit::TestCase
+# Test the methods in RGFA::Field::Parser using different data types
+# and examples of valid and invalid data for each datatype
+
+# XXX: positionals
+# XXX: invalid data
+# XXX: coordinate with validator/writer and with test_api_tags and
+#      test_api_positionals
+
+class (TestInternals||=Module.new)::FieldParser < Test::Unit::TestCase
 
   def test_parse_gfa_tag
     o = "AA:i:1"

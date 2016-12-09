@@ -1,7 +1,8 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFAFieldWriter < Test::Unit::TestCase
+# XXX: see parser
+class (TestInternals||=Module.new)::FieldWriter < Test::Unit::TestCase
 
   def test_field_writer_i
     assert_equal("13", 13.to_gfa_field)

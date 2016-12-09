@@ -14,7 +14,8 @@ class TestRGFALineLink < Test::Unit::TestCase
     assert_equal(fields[2].to_sym, str.to_rgfa_line.from_orient)
     assert_equal(fields[3].to_sym, str.to_rgfa_line.to)
     assert_equal(fields[4].to_sym, str.to_rgfa_line.to_orient)
-    assert_equal([RGFA::Alignment::CIGAR::Operation.new(12,:M)], str.to_rgfa_line.overlap)
+    assert_equal([RGFA::Alignment::CIGAR::Operation.new(12,:M)],
+                 str.to_rgfa_line.overlap)
     assert_equal(1232, str.to_rgfa_line.RC)
     assert_equal(3, str.to_rgfa_line.NM)
     assert_equal(2321, str.to_rgfa_line.FC)
@@ -73,6 +74,20 @@ class TestRGFALineLink < Test::Unit::TestCase
                  g.links[3].to_gfa2_s)
     assert_equal(RGFA::Line::Edge::Link, g.links[0].to_gfa1.class)
     assert_equal(RGFA::Line::Edge::GFA2, g.links[0].to_gfa2.class)
+  end
+
+  def test_link_other
+    l = "L\t1\t+\t2\t-\t*".to_rgfa_line
+    assert_equal(:"2", l.other(:"1"))
+    assert_equal(:"1", l.other(:"2"))
+    assert_raise(RGFA::NotFoundError){l.other(:"0")}
+  end
+
+  def test_link_circular
+    l = "L\t1\t+\t2\t-\t*".to_rgfa_line
+    assert_equal(false, l.circular?)
+    l = "L\t1\t+\t1\t-\t*".to_rgfa_line
+    assert_equal(true, l.circular?)
   end
 
 end
