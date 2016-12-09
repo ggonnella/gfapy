@@ -162,13 +162,40 @@ class RGFA
     return nil
   end
 
-  # Creates a string representation of RGFA conforming to the current
-  # specifications
+  # Creates a string representation of RGFA
   # @return [String]
   def to_s
     s = ""
     each_line {|line| s << line.to_s; s << "\n"}
     return s
+  end
+
+  # Creates a string representation of RGFA using the GFA1 specification
+  # @return [String] to_s if version is :gfa1, otherwise the converted GFA
+  def to_gfa1_s
+    s = ""
+    each_line {|line| s << line.to_gfa1_s; s << "\n"}
+    return s
+  end
+
+  # Creates a string representation of RGFA using the GFA2 specification
+  # @return [String] to_s if version is :gfa2, otherwise the converted GFA
+  def to_gfa2_s
+    s = ""
+    each_line {|line| s << line.to_gfa2_s; s << "\n"}
+    return s
+  end
+
+  # Converts to GFA1 if possible
+  # @return [RGFA] self if version is :gfa1, otherwise the converted GFA
+  def to_gfa1
+    to_gfa1_s.to_rgfa
+  end
+
+  # Converts to GFA2 if possible
+  # @return [RGFA] self if version is :gfa1, otherwise the converted GFA
+  def to_gfa2
+    to_gfa2_s.to_rgfa
   end
 
   # Return the gfa itself

@@ -8,7 +8,7 @@ RGFA::Line::Edge::GFA1 ||= Module.new
 module RGFA::Line::Edge::GFA1::ToGFA2
 
   def eid
-    i = get(:ID)
+    i = get(:id)
     if i.nil?
       return RGFA::Placeholder.new
       #i = "#{from_name}#{from_orient} #{to_name}#{to_orient} #{overlap}"
@@ -47,14 +47,14 @@ module RGFA::Line::Edge::GFA1::ToGFA2
 
   def to_gfa2_a
     a = ["E"]
-    i = get(:ID)
+    i = get(:id)
     a << (i ? i.to_s : "*")
     a << sid1.to_s
     a << sid2.to_s
     a += from_coords.map(&:to_s)
     a += to_coords.map(&:to_s)
     a << field_to_s(:overlap)
-    (tagnames-[:ID]).each {|fn| a << field_to_s(fn, tag: true)}
+    (tagnames-[:id]).each {|fn| a << field_to_s(fn, tag: true)}
     return a
   end
 

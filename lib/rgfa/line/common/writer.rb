@@ -8,7 +8,7 @@ module RGFA::Line::Common::Writer
   # @return [Array<String>] an array of string representations of the fields
   # @api private
   def to_a
-    a = [record_type]
+    a = [record_type.to_s]
     positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
     tagnames.each {|fn| a << field_to_s(fn, tag: true)}
     if virtual?

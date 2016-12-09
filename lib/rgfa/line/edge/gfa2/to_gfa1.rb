@@ -6,16 +6,16 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def to_gfa1_a
     check_not_internal("GFA1 representation")
     a = [alignment_type]
-    a << oriented_from.name
-    a << oriented_from.orient
-    a << oriented_to.name
-    a << oriented_to.orient
+    a << oriented_from.name.to_s
+    a << oriented_from.orient.to_s
+    a << oriented_to.name.to_s
+    a << oriented_to.orient.to_s
     if alignment_type == :C
       a << pos.to_s
     end
     a << overlap.to_s
     if !eid.placeholder?
-      a << eid.to_gfa_field(datatype: :Z, fieldname: :ID)
+      a << eid.to_gfa_tag(:id, datatype: :Z)
     end
     tagnames.each {|fn| a << field_to_s(fn, tag: true)}
     return a

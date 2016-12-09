@@ -37,6 +37,7 @@ module RGFA::Line::Group::Path::CapturedPath
       retval << links[-1]
       retval << segment_names[0]
     end
+    return retval
   end
 
 end

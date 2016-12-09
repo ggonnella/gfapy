@@ -26,10 +26,12 @@ require_relative "gfa2/references"
 require_relative "gfa2/same_id"
 require_relative "ordered/references"
 require_relative "ordered/captured_path"
+require_relative "ordered/to_gfa1"
 
 class RGFA::Line::Group::Ordered
   include RGFA::Line::Group::GFA2::References
   include RGFA::Line::Group::GFA2::SameID
   include RGFA::Line::Group::Ordered::References
   include RGFA::Line::Group::Ordered::CapturedPath
+  include RGFA::Line::Group::Ordered::ToGFA1
 end

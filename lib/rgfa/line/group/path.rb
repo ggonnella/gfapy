@@ -28,10 +28,12 @@ require_relative "path/topology"
 require_relative "path/references"
 require_relative "path/validation"
 require_relative "path/captured_path"
+require_relative "path/to_gfa2"
 
 class RGFA::Line::Group::Path
   include RGFA::Line::Group::Path::Topology
   include RGFA::Line::Group::Path::References
   include RGFA::Line::Group::Path::Validation
   include RGFA::Line::Group::Path::CapturedPath
+  include RGFA::Line::Group::Path::ToGFA2
 end
