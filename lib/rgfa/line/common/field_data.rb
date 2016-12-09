@@ -103,6 +103,12 @@ module RGFA::Line::Common::FieldData
     end
   end
 
+  protected
+
+  def data
+    @data
+  end
+
   private
 
   def set_existing_field(fieldname, value, set_reference: false)

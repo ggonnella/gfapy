@@ -38,6 +38,12 @@ module RGFA::Line::Common::FieldDatatype
     @datatype[fieldname] = datatype
   end
 
+  protected
+
+  def datatype
+    @datatype
+  end
+
   private
 
   def field_datatype(fieldname)
