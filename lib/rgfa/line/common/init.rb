@@ -243,6 +243,10 @@ module RGFA::Line::Common::Init
     end
 
     def subclass_GFA1(record_type)
+      if record_type.nil?
+        raise RGFA::VersionError,
+          "RGFA uses virtual records of unknown type for GFA2 only"
+      end
       case record_type.to_sym
       when :H then RGFA::Line::Header
       when :S then RGFA::Line::Segment::GFA1
@@ -250,8 +254,8 @@ module RGFA::Line::Common::Init
       when :L then RGFA::Line::Edge::Link
       when :C then RGFA::Line::Edge::Containment
       when :P then RGFA::Line::Group::Path
-      else raise RGFA::TypeError,
-            "Record type unknown: '#{record_type}'"
+      else raise RGFA::VersionError,
+            "Custom record types are not supported in GFA1: '#{record_type}'"
       end
     end
 

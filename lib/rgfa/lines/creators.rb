@@ -76,10 +76,14 @@ module RGFA::Lines::Creators
 
   def add_line_GFA1(gfa_line)
     if gfa_line.kind_of?(String)
-      gfa_line = gfa_line.to_rgfa_line(version: :gfa1, validate: @validate)
+      if gfa_line[0] == "S"
+        gfa_line = gfa_line.to_rgfa_line(validate: @validate)
+      else
+        gfa_line = gfa_line.to_rgfa_line(version: :gfa1, validate: @validate)
+      end
     elsif RGFA::Lines::GFA2Specific.include?(gfa_line.class)
       raise RGFA::VersionError,
-        "Version: 1.0 (#{@version_explanation})\t"+
+        "Version: 1.0 (#{@version_explanation})\n"+
         "Cannot add instance of incompatible line type "+
         "(#{gfa_line.class})"
     end
@@ -92,7 +96,14 @@ module RGFA::Lines::Creators
           "File version: 1.0 (#{@version_explanation})"
       end
       header.merge(gfa_line)
-    when :S, :L, :P, :C, :"#"
+    when :S
+      if gfa_line.version == :gfa2
+        raise RGFA::VersionError,
+          "Version: 1.0 (#{@version_explanation})\n"+
+          "GFA2 segment found: #{gfa_line}"
+      end
+      gfa_line.connect(self)
+    when :L, :P, :C, :"#"
       gfa_line.connect(self)
     else
       raise RGFA::TypeError,
@@ -103,10 +114,14 @@ module RGFA::Lines::Creators
 
   def add_line_GFA2(gfa_line)
     if gfa_line.kind_of?(String)
-      gfa_line = gfa_line.to_rgfa_line(version: :gfa2, validate: @validate)
+      if gfa_line[0] == "S"
+        gfa_line = gfa_line.to_rgfa_line(validate: @validate)
+      else
+        gfa_line = gfa_line.to_rgfa_line(version: :gfa2, validate: @validate)
+      end
     elsif RGFA::Lines::GFA1Specific.include?(gfa_line.class)
       raise RGFA::VersionError,
-        "Version: 2.0 (#{@version_explanation})\t"+
+        "Version: 2.0 (#{@version_explanation})\n"+
         "Cannot add instance of incompatible line type "+
         "(#{gfa_line.class})"
     end
@@ -119,6 +134,13 @@ module RGFA::Lines::Creators
           "File version: 2.0 (#{@version_explanation})"
       end
       header.merge(gfa_line)
+    when :S
+      if gfa_line.version == :gfa1
+        raise RGFA::VersionError,
+          "Version: 2.0 (#{@version_explanation})\n"+
+          "GFA1 segment found: #{gfa_line}"
+      end
+      gfa_line.connect(self)
     else
       gfa_line.connect(self)
     end

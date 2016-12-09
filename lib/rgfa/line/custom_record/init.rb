@@ -25,6 +25,12 @@ module RGFA::Line::CustomRecord::Init
 
   def delayed_initialize_positional_fields(strings, n_positional_fields)
     @positional_fieldnames = []
+    if ["P", "C", "L"].include?(strings[0])
+      raise RGFA::VersionError,
+        "GFA-like line (P,C,L) found in GFA2\n"+
+        "Line: #{strings.join(' ')}\n"+
+        "Custom lines with record_type P, C and L are not supported by RGFA."
+    end
     init_field_value(:record_type, :custom_record_type, strings[0],
                      errmsginfo: strings)
     1.upto(n_positional_fields-1) do |i|

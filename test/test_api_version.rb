@@ -90,7 +90,7 @@ class TestAPI::Version < Test::Unit::TestCase
     sv2 = "S\tB\t100\t*"
     gfa = RGFA.new()
     gfa << sv1
-    assert_raises(RGFA::FormatError) { gfa << sv2 }
+    assert_raises(RGFA::VersionError) { gfa << sv2 }
   end
 
   def test_GFA1_segment_in_GFA2
@@ -98,7 +98,7 @@ class TestAPI::Version < Test::Unit::TestCase
     sv2 = "S\tB\t100\t*"
     gfa = RGFA.new()
     gfa << sv2
-    assert_raises(RGFA::FormatError) { gfa << sv1 }
+    assert_raises(RGFA::VersionError) { gfa << sv1 }
   end
 
   def test_version_by_GFA2_specific_line_E
@@ -136,10 +136,26 @@ class TestAPI::Version < Test::Unit::TestCase
     assert_equal(:gfa2, gfa.version)
   end
 
-  def test_version_guess_GFA1_specific_line
-    l = "L\tA\t-\tB\t+\t*"
+  def test_version_guess_GFA1_specific_line_L
+    str = "L\tA\t-\tB\t+\t*"
     gfa = RGFA.new()
-    gfa << l
+    gfa << str
+    gfa.process_line_queue
+    assert_equal(:gfa1, gfa.version)
+  end
+
+  def test_version_guess_GFA1_specific_line_C
+    str = "C\tA\t+\tB\t-\t10\t*"
+    gfa = RGFA.new()
+    gfa << str
+    gfa.process_line_queue
+    assert_equal(:gfa1, gfa.version)
+  end
+
+  def test_version_guess_GFA1_specific_line_P
+    str = "P\t1\ta-,b+\t*"
+    gfa = RGFA.new()
+    gfa << str
     gfa.process_line_queue
     assert_equal(:gfa1, gfa.version)
   end
@@ -174,21 +190,19 @@ class TestAPI::Version < Test::Unit::TestCase
   end
 
   def test_link_version
-    assert_equal(:gfa1, "L\tA\t+\tB\t-\t*".to_rgfa_line.version)
-    assert_equal(:gfa1,
-                 "L\tA\t+\tB\t-\t*".to_rgfa_line(version: :gfa1).version)
-    l = "L\tA\t+\tB\t-\t*".to_rgfa_line(version: :gfa2)
-    assert_equal(RGFA::Line::CustomRecord, l.class)
+    str = "L\tA\t+\tB\t-\t*"
+    assert_equal(:gfa1, str.to_rgfa_line.version)
+    assert_equal(:gfa1, str.to_rgfa_line(version: :gfa1).version)
+    assert_raises(RGFA::VersionError){str.to_rgfa_line(version: :gfa2)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::Edge::Link.new(["A","+","B","-","*"], version: :gfa2)}
   end
 
   def test_containment_version
-    assert_equal(:gfa1, "C\tA\t+\tB\t-\t10\t*".to_rgfa_line.version)
-    assert_equal(:gfa1,
-                 "C\tA\t+\tB\t-\t10\t*".to_rgfa_line(version: :gfa1).version)
-    c = "C\tA\t+\tB\t-\t10\t*".to_rgfa_line(version: :gfa2)
-    assert_equal(RGFA::Line::CustomRecord, c.class)
+    str = "C\tA\t+\tB\t-\t10\t*"
+    assert_equal(:gfa1, str.to_rgfa_line.version)
+    assert_equal(:gfa1, str.to_rgfa_line(version: :gfa1).version)
+    assert_raises(RGFA::VersionError){str.to_rgfa_line(version: :gfa2)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::Edge::Containment.new(["A","+","B","-","10","*"],
                                         version: :gfa2)}
@@ -198,7 +212,7 @@ class TestAPI::Version < Test::Unit::TestCase
     assert_equal(:gfa2, "E\t*\tA-\tB+\t0\t100\t0\t100\t*".to_rgfa_line.version)
     assert_equal(:gfa2, "E\t*\tA-\tB+\t0\t100\t0\t100\t*".to_rgfa_line(version:
                                                             :gfa2).version)
-    assert_raises(RGFA::TypeError){
+    assert_raises(RGFA::VersionError){
       "E\t*\tA-\tB+\t0\t100\t0\t100\t*".to_rgfa_line(version: :gfa1)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::Edge::GFA2.new(["A-","B+", "0", "100", "0", "100", "*"],
@@ -209,7 +223,7 @@ class TestAPI::Version < Test::Unit::TestCase
     assert_equal(:gfa2, "G\t*\tA-\tB+\t100\t*".to_rgfa_line.version)
     assert_equal(:gfa2, "G\t*\tA-\tB+\t100\t*".to_rgfa_line(version:
                                                             :gfa2).version)
-    assert_raises(RGFA::TypeError){
+    assert_raises(RGFA::VersionError){
       "G\t*\tA-\tB+\t100\t*".to_rgfa_line(version: :gfa1)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::Gap.new(["A-","B+", "100", "*"], version: :gfa1)}
@@ -219,7 +233,7 @@ class TestAPI::Version < Test::Unit::TestCase
     assert_equal(:gfa2, "F\tA\tread1-\t0\t100\t0\t100\t*".to_rgfa_line.version)
     assert_equal(:gfa2, "F\tA\tread1-\t0\t100\t0\t100\t*".to_rgfa_line(version:
                                                             :gfa2).version)
-    assert_raises(RGFA::TypeError){
+    assert_raises(RGFA::VersionError){
       "F\tA\tread1-\t0\t100\t0\t100\t*".to_rgfa_line(version: :gfa1)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::Fragment.new(["A","read-", "0", "100", "0", "100", "*"],
@@ -229,7 +243,7 @@ class TestAPI::Version < Test::Unit::TestCase
   def test_custom_record_version
     assert_equal(:gfa2, "X\tVN:Z:1.0".to_rgfa_line.version)
     assert_equal(:gfa2, "X\tVN:Z:1.0".to_rgfa_line(version: :gfa2).version)
-    assert_raises(RGFA::TypeError){
+    assert_raises(RGFA::VersionError){
       "X\tVN:Z:1.0".to_rgfa_line(version: :gfa1)}
     assert_raises(RGFA::VersionError){
       RGFA::Line::CustomRecord.new(["X","VN:Z:1.0"], version: :gfa1)}

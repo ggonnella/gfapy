@@ -1,52 +1,43 @@
 ## GFA versions
 
 Two versions of GFA have been defined: GFA1 and GFA2.
-There are some differences between the two versions.
-
-The header lines and comments are the same in both versions.
-Segment lines have a different syntax,
-as they have an additional positional field in GFA2.
-All edges lines are version-specific: the two edges types of GFA1
-(links and containments) are generalized into the E lines of GFA2.
-
-Paths have a different syntax and are also called ordered
-groups in GFA2. Sets or unordered groups have been introduced in GFA2
-to represent generic subgraphs and are version-specific.
-Other line types exist only in GFA2, for
-documenting read-to-contig alignments (fragments) and for scaffolding (gaps).
-Furthermore GFA2 allows to create user-specific record types, by using
-non-standard codes.
+The header lines and comments have the same syntax in both versions.  Segment
+lines have a different syntax, as they have an additional positional field in
+GFA2. Edges lines are version-specific: L and C are found only in GFA1,
+and E only in GFA2. Group lines are also version-specific: P in GFA1, O and U
+in GFA2. F and G lines are GFA2-specific. Furthermore, GFA2 allows to create
+user-specific record types, by using non-standard codes.
 
 ### Version autodetection
 
-RGFA tries to autodetect the version of a GFA file from its syntax.
+RGFA tries to autodetect the version of a GFA file from its syntax.  The
+version of a valid GFA can always be recognized, unless it contains only header
+and comment lines, as any other line refer to segments, and segments are
+version-specific.  If a GFA contains only header and commments, the version
+does not matter.
 
-If the GFA is valid, this is generally possible. Any meaningful
-GFA file will contain segments, as the only other record type
-which is not dependent on segments are header. Therefore, as soon
-as a segment is found, the version can be detected from the S line
-syntax.
+The version is set as soon as a version-specific element is found.
+Here is the list of such elements:
+- segment lines (different number of positional fields in GFA1 and GFA2)
+- version tag in header (VN:Z:1.0 or VN:Z:2.0)
+- E/G/F/O/U lines (GFA2 specific)
+- custom record-type lines (GFA2 specific)
 
-Comments and header lines are not version specific.
-However, if an header line is found, which declares a version using the
-VN tag, the declared version is processed as follows. If the version
-is still unknown, it is set to the declared version (and then the syntax
-of the following lines must adhere to that version).
-If the version was already known, then
-it is checked that the version declared by the header is the same.
+If subsequent version-specific elements are found which contrast with the first
+one, RGFA::VersionError is raised.
 
-If an edge, a gap, a fragment, an ordered or an unordered group are found,
-the version is set to GFA2, as these lines are only defined in GFA2.
-When links and containments are found, the version is not set,
-as due to custom lines their presence is not forbidden in GFA2.
+P/C/L lines are technically not GFA1-specific, as they could be custom records
+in GFA2. However, their use in GFA2 is not supported by RGFA and an exception
+is thrown if these records are found in that version.  Thus if these lines are
+found, their processing is delayed until a version-specific signal is found.
+If the version is GFA2, RGFA::VersionError is raised.
 
 ### Setting and reading the version
 
-Besides relying on autodetection, it is possible to explicitely set the
-version of the RGFA or line objects, if this is known.
-Methods which create RGFA, i.e. ```new``` and ```from_file```, as well
-as methods which create RGFA lines, i.e. ```new```
-and the string method ```to_rgfa_line```, all accept a version
+Besides relying on autodetection, it is possible to explicitely set the version
+of the RGFA or line objects, if this is known.  Methods which create RGFA, i.e.
+```new``` and ```from_file```, as well as methods which create RGFA lines, i.e.
+```new``` and the string method ```to_rgfa_line```, all accept a version
 parameter, which can be set to the symbols ```:gfa1``` or ```:gfa2```.
 
 Both the RGFA and the RGFA Line instances respond to the method
