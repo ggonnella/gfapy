@@ -91,6 +91,43 @@ class TestAPI::VersionConversion < Test::Unit::TestCase
     assert_raise(RGFA::ValueError){internal.to_rgfa_line.to_gfa1}
   end
 
+  def test_L_to_E
+    g = RGFA.new(version: :gfa1)
+    g << "S\t1\t*\tLN:i:100"
+    g << "S\t2\t*\tLN:i:100"
+    g << "S\t3\t*\tLN:i:100"
+    g << "S\t4\t*\tLN:i:100"
+    g << "L\t1\t+\t2\t+\t10M"
+    g << "L\t1\t-\t2\t-\t20M"
+    g << "L\t3\t-\t4\t+\t30M"
+    g << "L\t3\t+\t4\t-\t40M"
+    assert_equal("E	*	1+	2+	90	100$	0	10	10M",
+                 g.links[0].to_gfa2_s)
+    assert_equal("E	*	1-	2-	0	20	80	100$	20M",
+                 g.links[1].to_gfa2_s)
+    assert_equal("E	*	3-	4+	0	30	0	30	30M",
+                 g.links[2].to_gfa2_s)
+    assert_equal("E	*	3+	4-	60	100$	60	100$	40M",
+                 g.links[3].to_gfa2_s)
+    assert_equal(RGFA::Line::Edge::Link, g.links[0].to_gfa1.class)
+    assert_equal(RGFA::Line::Edge::GFA2, g.links[0].to_gfa2.class)
+  end
+
+  def test_E_to_L
+    e1 = "E\t*\t1+\t2+\t90\t100$\t0\t10\t10M".to_rgfa_line
+    l1 = "L\t1\t+\t2\t+\t10M"
+    assert_equal(l1, e1.to_gfa1_s)
+    e2 = "E\t*\t1+\t2+\t0\t20\t80\t100$\t20M".to_rgfa_line
+    l2 = "L\t2\t+\t1\t+\t20M"
+    assert_equal(l2, e2.to_gfa1_s)
+    e3 = "E\t*\t3-\t4+\t0\t30\t0\t30\t30M".to_rgfa_line
+    l3 = "L\t4\t+\t3\t-\t30M"
+    assert_equal(l3, e3.to_gfa1_s)
+    e4 = "E\t*\t3+\t4-\t60\t100$\t60\t100$\t40M".to_rgfa_line
+    l4 = "L\t3\t+\t4\t-\t40M"
+    assert_equal(l4, e4.to_gfa1_s)
+  end
+
   def test_path_conversion
     path_gfa1 = "P\t1\ta+,b-\t100M"
     path_gfa2 = "O\t1\ta+ a_to_b+ b-"

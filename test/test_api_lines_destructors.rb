@@ -1,7 +1,9 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFALineDestructors < Test::Unit::TestCase
+TestAPI ||= Module.new
+TestAPI::Lines ||= Module.new
+class TestAPI::Lines::Destructors < Test::Unit::TestCase
 
   def test_delete_links
     gfa = RGFA.new

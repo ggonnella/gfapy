@@ -1,7 +1,9 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFALineCreators < Test::Unit::TestCase
+TestAPI ||= Module.new
+TestAPI::Lines ||= Module.new
+class TestAPI::Lines::Creators < Test::Unit::TestCase
 
   def test_add_headers
     gfa = RGFA.new

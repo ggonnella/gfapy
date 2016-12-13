@@ -27,9 +27,6 @@ module RGFA::Lines::Collections
   # @!method containments
   #   All containments in the RGFA
   #   @return [Array<RGFA::Line::Edge::Containment>]
-  # @!method fragments
-  #   All fragment lines of the RGFA
-  #   @return [Array<RGFA::Line::Fragment>]
   # @!method links
   #   All links of the RGFA
   #   @return [Array<RGFA::Line::Edge::Link>]

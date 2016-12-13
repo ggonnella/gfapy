@@ -89,7 +89,7 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :gfa1
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"1.0"
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+
@@ -127,7 +127,7 @@ module RGFA::Lines::Creators
     end
     case gfa_line.record_type
     when :H
-      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :gfa2
+      if @validate > 0 and gfa_line.VN and gfa_line.VN.to_sym != :"2.0"
         raise RGFA::VersionError,
           "Header line specified wrong version (#{gfa_line.VN})\n"+
           "Line: #{gfa_line}\n"+

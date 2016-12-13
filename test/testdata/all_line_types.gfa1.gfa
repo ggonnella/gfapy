@@ -1,0 +1,22 @@
+# File used for the collections test
+S	1	*
+S	3	CGATGCTAGCTGACTGTCGATGCTGTGTG
+L	1	+	2	+	12M	id:Z:1_to_2
+S	5	*
+S	13	*
+C	2	+	6	+	10	122M	id:Z:2_to_6
+P	14	11+,12+	122M
+S	11	*
+H	ac:Z:test2
+S	12	*
+S	4	*
+H	VN:Z:1.0
+L	1	+	3	+	12M	id:Z:1_to_3
+L	11	+	12	+	122M	id:Z:11_to_12
+S	6	*
+L	11	+	13	+	120M	id:Z:11_to_13
+P	15	11+,13+	120M
+S	2	*	xx:Z:sometag
+H	aa:i:12	ab:Z:test1
+H	aa:i:15
+C	1	+	5	+	12	120M	id:Z:1_to_5

@@ -1,9 +1,11 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFALineSegment < Test::Unit::TestCase
+TestAPI ||= Module.new
 
-  def test_from_string
+class TestAPI::GFA2Lines < Test::Unit::TestCase
+
+  def test_S
     fields=["S","1","ACGTCACANNN","RC:i:1232","LN:i:11","ab:Z:abcd",
             "FC:i:2321","KC:i:1212"]
     str=fields.join("\t")
@@ -33,18 +35,6 @@ class TestRGFALineSegment < Test::Unit::TestCase
     assert_nothing_raised { f.join("\t").to_rgfa_line }
     f=["S","2","*","LN:i:3"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }
-  end
-
-  def test_forbidden_segment_names
-    assert_nothing_raised { "S\tA+B\t*".to_rgfa_line }
-    assert_nothing_raised { "S\tA-B\t*".to_rgfa_line }
-    assert_nothing_raised { "S\tA,B\t*".to_rgfa_line }
-    assert_raises(RGFA::FormatError) do
-      "S\tA+,B\t*".to_rgfa_line(validate: 3)
-    end
-    assert_raises(RGFA::FormatError) do
-      "S\tA-,B\t*".to_rgfa_line(validate: 3)
-    end
   end
 
   def test_coverage

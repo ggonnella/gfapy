@@ -2,7 +2,10 @@ require_relative "../lib/rgfa.rb"
 require "test/unit"
 require "tempfile"
 
-class TestRGFA < Test::Unit::TestCase
+TestAPI ||= Module.new
+TestAPI::RGFA ||= Module.new
+
+class TestAPI::RGFA::Basics < Test::Unit::TestCase
 
   def test_initialize
     assert_nothing_raised { RGFA.new }
