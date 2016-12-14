@@ -57,8 +57,9 @@
 #   l.to_s # => "# hallo"
 #   l.spacer = ""
 #   l.to_s # => "#hallo"
-#   l = "# hallo".to_rgfa_line(vlevel: 3)
-#   l.spacer = "\n" # raises RGFA::FormatError as validation >= 3
+#   l = "# hallo".to_rgfa_line(vlevel: 2)
+#   l.spacer = "\n" # raises RGFA::FormatError as validation >= 2
+#   # XXX check validation levels here
 #
 # @example Comment lines have no tags
 #   RGFA::Line::Comment.new(["hallo", " ", "zz:Z:hallo"])

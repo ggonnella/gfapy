@@ -132,7 +132,7 @@ class TestRGFALine < Test::Unit::TestCase
   end
 
   def test_field_setters_existing_tags
-    l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"], vlevel: 5)
+    l = RGFA::Line::Header.new(["xx:i:13","VN:Z:HI"], vlevel: 3)
     assert_equal(13, l.xx)
     l.xx = 15
     assert_equal(15, l.xx)

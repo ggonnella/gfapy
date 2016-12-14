@@ -27,7 +27,7 @@ module RGFA::Line::Header::Multiline
       prev = RGFA::FieldArray.new(get_datatype(fieldname), [prev])
       set_existing_field(fieldname, prev)
     end
-    if @vlevel > 3
+    if @vlevel > 1
       prev.vpush(value, datatype, fieldname)
     else
       prev << value
@@ -46,7 +46,7 @@ module RGFA::Line::Header::Multiline
   def field_to_s(fieldname, tag: false)
     prev = get(fieldname)
     if prev.kind_of?(RGFA::FieldArray)
-      prev.validate_gfa_field(nil, fieldname) if @vlevel >= 4
+      prev.validate_gfa_field(nil, fieldname) if @vlevel >= 2
       return tag ? prev.to_gfa_tag(fieldname)
                  : prev.to_gfa_field(fieldname: fieldname)
     else

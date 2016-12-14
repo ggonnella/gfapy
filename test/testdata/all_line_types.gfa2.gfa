@@ -30,4 +30,4 @@ U	16sub	2 3
 S	2	120	*	xx:Z:sometag
 H	aa:i:12	ab:Z:test1
 H	aa:i:15
-E	1_to_5	1+	5+	0	122$	2	124	zz:Z:tag
+E	1_to_5	1+	5+	0	122$	2	124	*	zz:Z:tag

@@ -7,17 +7,17 @@ class TestAPI::Tags < Test::Unit::TestCase
   def test_predefined_tags
     # correct type:
     assert_nothing_raised do
-      RGFA::Line::Header.new(["VN:Z:1"], vlevel: 5)
+      RGFA::Line::Header.new(["VN:Z:1"], vlevel: 3)
     end
     # custom tags with the same letters as predefined tags but lower case
     assert_nothing_raised do
-      RGFA::Line::Header.new(["vn:i:1"], vlevel: 5)
+      RGFA::Line::Header.new(["vn:i:1"], vlevel: 3)
     end
     # wrong type
     assert_nothing_raised do
       RGFA::Line::Header.new(["VN:i:1"], vlevel: 0)
     end
-    [3,4,5].each do |level|
+    [1,2,3].each do |level|
       assert_raise(RGFA::TypeError) do
         RGFA::Line::Header.new(["VN:i:1"], vlevel: level)
       end
@@ -36,7 +36,7 @@ class TestAPI::Tags < Test::Unit::TestCase
       assert_nothing_raised do
         "H\tZZ:Z:1".to_rgfa(version: version, vlevel: 0)
       end
-      [3,4,5].each do |level|
+      [1,2,3].each do |level|
         assert_raise(RGFA::FormatError) do
           RGFA::Line::Header.new(["ZZ:Z:1"], version: version, vlevel: level)
         end
@@ -48,7 +48,7 @@ class TestAPI::Tags < Test::Unit::TestCase
         end
       end
       # lower case
-      [0,3,4,5].each do |level|
+      [0,1,2,3].each do |level|
         assert_nothing_raised do
           RGFA::Line::Header.new(["zz:Z:1"], version: version, vlevel: 0)
           "H\tzz:Z:1".to_rgfa_line(version: version, vlevel: 0)
@@ -84,7 +84,7 @@ class TestAPI::Tags < Test::Unit::TestCase
       RGFA::Line::Header.new(["zz:i:1A"], vlevel: 0)
     end
     # level > 0, wrong data is catched
-    [3,4,5].each do |level|
+    [1,2,3].each do |level|
       assert_raise(RGFA::ValueError) do
         RGFA::Line::Header.new(["zz:B:i,1,1,A"], vlevel: level)
       end
@@ -108,7 +108,7 @@ class TestAPI::Tags < Test::Unit::TestCase
         "H\tzz:i:1\tVN:Z:0\tzz:i:2".to_rgfa(version: version,
                                             vlevel: 0)
       end
-      [3,4,5].each do |level|
+      [1,2,3].each do |level|
         assert_raise(RGFA::NotUniqueError) do
           RGFA::Line::Header.new(["zz:i:1", "VN:Z:0", "zz:i:2"],
                                  version: version,
@@ -135,7 +135,7 @@ class TestAPI::Tags < Test::Unit::TestCase
 
   def test_get_tag_content
     [:gfa1, :gfa2].each do |version|
-      [0,3,4,5].each do |level|
+      [0,1,2,3].each do |level|
       l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:1.3","KC:i:10"],
                                            vlevel: level)
         # tagnames
@@ -229,16 +229,16 @@ class TestAPI::Tags < Test::Unit::TestCase
         assert_nothing_raised { l.set_datatype(:zz, :i) }
         if level == 0
           assert_nothing_raised { l.set_datatype(:XX, :Z) }
-        elsif level >= 3
+        elsif level >= 1
           assert_raise(RGFA::FormatError) { l.set_datatype(:XX, :Z) }
         end
         # change datatype for existing custom tag
         assert_nothing_raised { l.xx = 1.1 }
         assert_nothing_raised { l.xx = "1.1" }
-        if level == 4
+        if level == 2
           assert_nothing_raised { l.xx = "1A" }
           assert_raise(RGFA::FormatError) { l.to_s }
-        elsif level == 5
+        elsif level == 3
           assert_raise(RGFA::FormatError) { l.xx = "1A" }
         end
         assert_nothing_raised { l.set_datatype(:xx, :Z); l.xx = "1A" }

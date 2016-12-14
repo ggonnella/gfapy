@@ -5,7 +5,7 @@
 #
 class RGFA::Line::Segment::Factory < RGFA::Line::Segment
 
-  def self.new(data, vlevel: 2, virtual: false, version: nil)
+  def self.new(data, vlevel: 1, virtual: false, version: nil)
     if version == :gfa1
       return RGFA::Line::Segment::GFA1.new(data,
                vlevel: vlevel, virtual: virtual, version: version)

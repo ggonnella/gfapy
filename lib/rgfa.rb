@@ -66,7 +66,7 @@
 #   puts gfa.info(short = true) # compact format, in one line
 #
 # @example Validation
-#   gfa = RGFA.from_file(filename, vlevel: 1) # default level is 2
+#   gfa = RGFA.from_file(filename, vlevel: 1) # default level is 1
 #   gfa.vlevel = 3 # change validation level
 #   gfa.validate # run post-validations (e.g. check segment names in links)
 #
@@ -95,7 +95,7 @@ class RGFA
   include RGFA::LoggerSupport
 
   # @!attribute [rw] vlevel
-  #   @return [Integer (0..5)] validation level
+  #   @return [Integer (0..3)] validation level
   attr_accessor :vlevel
 
   # Recognized GFA specification versions
@@ -106,11 +106,11 @@ class RGFA
   attr_reader :version
 
   # @!macro vlevel
-  #   @param vlevel [Integer] (<i>defaults to: +2+</i>)
+  #   @param vlevel [Integer] (<i>defaults to: +1+</i>)
   #     the validation level; see "Validation level" under
   #     {RGFA::Line#initialize}.
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
-  def initialize(vlevel: 2, version: nil)
+  def initialize(vlevel: 1, version: nil)
     @vlevel = vlevel
     @records = {}
     @records[:H] = RGFA::Line::Header.new([], vlevel: @vlevel)
@@ -239,7 +239,7 @@ class RGFA
   # @!macro vlevel
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
-  def self.from_file(filename, vlevel: 2, version: nil)
+  def self.from_file(filename, vlevel: 1, version: nil)
     gfa = RGFA.new(vlevel: vlevel, version: version)
     gfa.read_file(filename)
     return gfa
@@ -398,7 +398,7 @@ class String
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
   # @!macro vlevel
-  def to_rgfa(vlevel: 2, version: nil)
+  def to_rgfa(vlevel: 1, version: nil)
     gfa = RGFA.new(vlevel: vlevel, version: version)
     split("\n").each {|line| gfa << line}
     gfa.process_line_queue
@@ -417,7 +417,7 @@ class Array
   # @return [RGFA]
   # @api private?
   # @!macro vlevel
-  def to_rgfa(vlevel: 2, version: nil)
+  def to_rgfa(vlevel: 1, version: nil)
     gfa = RGFA.new(vlevel: vlevel, version: version)
     each {|line| gfa << line}
     gfa.process_line_queue

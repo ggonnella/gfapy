@@ -23,22 +23,22 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "C\tH".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[6]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[7]="MQ:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[7]="MQ:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[8]="NM:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[8]="NM:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
   end
 
@@ -64,19 +64,19 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "L\tH".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[2]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[4]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[5]="x"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[6]="RC:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[6]="RC:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::TypeError) do
-      f=fields.dup; f[7]="NM:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[7]="NM:Z:1232"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
   end
 
@@ -124,14 +124,14 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "S\tH".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[2]="!@#?"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::TypeError) do
       f=fields.dup; f[3]="RC:Z:1232"; f.join("\t").to_rgfa_line(version: :gfa1)
     end
     f=["S","2","ACGTCACANNN","LN:i:3"]
     assert_raises(RGFA::InconsistencyError) do
-      f.join("\t").to_rgfa_line(vlevel: 3, version: :gfa1)
+      f.join("\t").to_rgfa_line(vlevel: 1, version: :gfa1)
     end
     f=["S","2","ACGTCACANNN","LN:i:11"]
     assert_nothing_raised { f.join("\t").to_rgfa_line }
@@ -144,10 +144,10 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     assert_nothing_raised { "S\tA-B\t*".to_rgfa_line }
     assert_nothing_raised { "S\tA,B\t*".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      "S\tA+,B\t*".to_rgfa_line(vlevel: 3)
+      "S\tA+,B\t*".to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      "S\tA-,B\t*".to_rgfa_line(vlevel: 3)
+      "S\tA-,B\t*".to_rgfa_line(vlevel: 1)
     end
   end
 
@@ -187,27 +187,27 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     assert_raises(RGFA::FormatError) { (str+"\tH1").to_rgfa_line }
     assert_raises(RGFA::FormatError) { "P\tH".to_rgfa_line }
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[2]="1,2,3"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::InconsistencyError) do
       f=fields.dup; f[2]="1+,2+"; f[3]="9M,12M,3M";
-                    f.join("\t").to_rgfa_line(vlevel: 3)
+                    f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_nothing_raised do
-      f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[3]="*,*"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_nothing_raised do
       f=fields.dup; f[3]="9M2I3D1M,12M,12M"; f.join("\t").
         to_rgfa_line(vlevel: 3)
     end
     assert_nothing_raised do
-      f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[3]="*"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[3]="12,12"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
     assert_raises(RGFA::FormatError) do
-      f=fields.dup; f[3]="12M|12M"; f.join("\t").to_rgfa_line(vlevel: 3)
+      f=fields.dup; f[3]="12M|12M"; f.join("\t").to_rgfa_line(vlevel: 1)
     end
   end
 

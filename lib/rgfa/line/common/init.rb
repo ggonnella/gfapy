@@ -78,7 +78,7 @@ module RGFA::Line::Common::Init
   # - 5: complete validation;
   #      as 4, plus field validation on all access (get/set)
   #
-  def initialize(data, vlevel: 2, virtual: false, version: nil)
+  def initialize(data, vlevel: 1, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
       raise RGFA::RuntimeError, "This class shall not be directly instantiated"
     end
@@ -99,7 +99,7 @@ module RGFA::Line::Common::Init
         initialize_positional_fields(data)
         initialize_tags(data)
       end
-      validate_record_type_specific_info if @vlevel >= 3
+      validate_record_type_specific_info if @vlevel >= 1
       if @version.nil?
         raise "RECORD_TYPE_VERSIONS has no value for #{record_type}"
       end
@@ -155,11 +155,11 @@ module RGFA::Line::Common::Init
   end
 
   def init_field_value(n ,t, s, errmsginfo: nil)
-    if @vlevel >= 3
+    if @vlevel >= 1
       s = s.parse_gfa_field(t, safe: true, fieldname: n,
                             line: errmsginfo)
     elsif !DELAYED_PARSING_DATATYPES.include?(t)
-      s = s.parse_gfa_field(t, safe: @vlevel >= 2, fieldname: n,
+      s = s.parse_gfa_field(t, safe: @vlevel >= 1, fieldname: n,
                             line: errmsginfo)
     end
     @data[n] = s
@@ -302,10 +302,10 @@ class String
   #   record type child class of {RGFA::Line}
   # @return [subclass of RGFA::Line]
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
-  # @param vlevel [Integer] <i>(defaults to: 2)</i>
+  # @param vlevel [Integer] <i>(defaults to: 1)</i>
   #   see RGFA::Line#initialize
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
-  def to_rgfa_line(vlevel: 2, version: nil)
+  def to_rgfa_line(vlevel: 1, version: nil)
     if self[0] == "#"
       self =~ /^#(\s*)(.*)$/
       return RGFA::Line::Comment.new([$2, $1],
@@ -330,11 +330,11 @@ class Array
   #  need the array, you must create a copy before calling it
   # @return [subclass of RGFA::Line]
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
-  # @param vlevel [Integer] <i>(defaults to: 2)</i>
+  # @param vlevel [Integer] <i>(defaults to: 1)</i>
   #   see RGFA::Line#initialize
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
   # @api private
-  def to_rgfa_line(vlevel: 2, version: nil)
+  def to_rgfa_line(vlevel: 1, version: nil)
     sk = RGFA::Line.subclass(self[0], version: version)
     if sk == RGFA::Line::CustomRecord
       sk.new(self, vlevel: vlevel, version: version)

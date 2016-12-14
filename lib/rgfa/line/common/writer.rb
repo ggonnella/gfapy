@@ -35,7 +35,7 @@ module RGFA::Line::Common::Writer
     if !field.kind_of?(String)
       field = field.to_gfa_field(datatype: t, fieldname: fieldname)
     end
-    field.validate_gfa_field(t, fieldname) if @vlevel >= 4
+    field.validate_gfa_field(t, fieldname) if @vlevel >= 2
     return tag ? field.to_gfa_tag(fieldname, datatype: t) : field
   end
 
