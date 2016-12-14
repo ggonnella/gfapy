@@ -30,7 +30,7 @@ module RGFA::Line::Common::Init
   #   of a GFA file line; note: an hash
   #   is also allowed, but this is for internal usage and shall be considered
   #   private
-  # @param validate [Integer] see paragraph Validation
+  # @param vlevel [Integer] see paragraph Validation
   # @param virtual [Boolean] <i>(default: +false+)</i>
   #   mark the line as virtual, i.e. not yet found in the GFA file;
   #   e.g. a link is allowed to refer to a segment which is not
@@ -78,11 +78,11 @@ module RGFA::Line::Common::Init
   # - 5: complete validation;
   #      as 4, plus field validation on all access (get/set)
   #
-  def initialize(data, validate: 2, virtual: false, version: nil)
+  def initialize(data, vlevel: 2, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
       raise RGFA::RuntimeError, "This class shall not be directly instantiated"
     end
-    @validate = validate
+    @vlevel = vlevel
     @virtual = virtual
     @datatype = {}
     @data = {}
@@ -99,7 +99,7 @@ module RGFA::Line::Common::Init
         initialize_positional_fields(data)
         initialize_tags(data)
       end
-      validate_record_type_specific_info if @validate >= 3
+      validate_record_type_specific_info if @vlevel >= 3
       if @version.nil?
         raise "RECORD_TYPE_VERSIONS has no value for #{record_type}"
       end
@@ -155,11 +155,11 @@ module RGFA::Line::Common::Init
   end
 
   def init_field_value(n ,t, s, errmsginfo: nil)
-    if @validate >= 3
+    if @vlevel >= 3
       s = s.parse_gfa_field(t, safe: true, fieldname: n,
                             line: errmsginfo)
     elsif !DELAYED_PARSING_DATATYPES.include?(t)
-      s = s.parse_gfa_field(t, safe: @validate >= 2, fieldname: n,
+      s = s.parse_gfa_field(t, safe: @vlevel >= 2, fieldname: n,
                             line: errmsginfo)
     end
     @data[n] = s
@@ -171,7 +171,7 @@ module RGFA::Line::Common::Init
         "Bug found, please report\n"+
         "strings: #{strings.inspect}"
     end
-    if (@validate >= 1) and (strings.size < n_positional_fields)
+    if (@vlevel >= 1) and (strings.size < n_positional_fields)
       raise RGFA::FormatError,
         "#{n_positional_fields} positional fields expected, "+
         "#{strings.size}) found\n#{strings.inspect}"
@@ -190,7 +190,7 @@ module RGFA::Line::Common::Init
   end
 
   def initialize_tag(n, t, s, errmsginfo: nil)
-    if (@validate > 0)
+    if @vlevel > 0
       if @data.has_key?(n)
         raise RGFA::NotUniqueError,
           "Tag #{n} found multiple times"
@@ -302,17 +302,17 @@ class String
   #   record type child class of {RGFA::Line}
   # @return [subclass of RGFA::Line]
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
-  # @param validate [Integer] <i>(defaults to: 2)</i>
+  # @param vlevel [Integer] <i>(defaults to: 2)</i>
   #   see RGFA::Line#initialize
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
-  def to_rgfa_line(validate: 2, version: nil)
+  def to_rgfa_line(vlevel: 2, version: nil)
     if self[0] == "#"
       self =~ /^#(\s*)(.*)$/
       return RGFA::Line::Comment.new([$2, $1],
-                                     validate: validate,
+                                     vlevel: vlevel,
                                      version: version)
     else
-      split(RGFA::Line::SEPARATOR).to_rgfa_line(validate: validate,
+      split(RGFA::Line::SEPARATOR).to_rgfa_line(vlevel: vlevel,
                                                 version: version)
     end
   end
@@ -330,15 +330,16 @@ class Array
   #  need the array, you must create a copy before calling it
   # @return [subclass of RGFA::Line]
   # @raise [RGFA::Error] if the fields do not comply to the RGFA specification
-  # @param validate [Integer] <i>(defaults to: 2)</i>
+  # @param vlevel [Integer] <i>(defaults to: 2)</i>
   #   see RGFA::Line#initialize
   # @param version [RGFA::VERSIONS, nil] GFA version, nil if unknown
-  def to_rgfa_line(validate: 2, version: nil)
+  # @api private
+  def to_rgfa_line(vlevel: 2, version: nil)
     sk = RGFA::Line.subclass(self[0], version: version)
     if sk == RGFA::Line::CustomRecord
-      sk.new(self, validate: validate, version: version)
+      sk.new(self, vlevel: vlevel, version: version)
     else
-      sk.new(self[1..-1], validate: validate, version: version)
+      sk.new(self[1..-1], vlevel: vlevel, version: version)
     end
   end
 

@@ -2,55 +2,56 @@
 
 # Main class of the RGFA library.
 #
-# RGFA provides a representation of a GFA graph.
-# It supports creating a graph from scratch, input and output from/to file
-# or strings, as well as several operations on the graph.
-# The examples below show how to create a RGFA object from scratch or
-# from a GFA file, write the RGFA to file, output the string representation or
-# a statistics report, and control the validation level.
+# RGFA provides a representation of a GFA graph.  It supports creating a graph
+# from scratch, input and output from/to file or strings, as well as several
+# operations on the graph. Using the RGFA class, it is possible to
+# to create a RGFA object from scratch or from a GFA file, write the RGFA object
+# to a GFA file, or output it as string.
 #
 # == Interacting with the graph
 #
-# - {RGFA::Lines}: module with methods for finding, editing, iterating over,
-#   removing lines belonging to a RGFA instance. Specialized modules exist
-#   for each kind of line:
-#   - {RGFA::Lines::Headers}: accessing and creating header information is done
-#     using a single header line object ({#header RGFA#header})
-#   - {RGFA::Lines::Segments}
-#   - {RGFA::Lines::Edge::Links}
-#   - {RGFA::Lines::Edge::Containments}
-#   - {RGFA::Lines::Paths}
-#   - {RGFA::Lines::Comments}
-#   - {RGFA::Lines::Gaps}
-#   - {RGFA::Lines::Fragments}
-#   - {RGFA::Lines::Edge::GFA2s}
-#   - {RGFA::Lines::OrderedGroups}
-#   - {RGFA::Lines::UnorderedGroups}
-#   - {RGFA::Lines::CustomRecords}
+# Most interaction with the GFA involve interacting with
+# its record, i.e. instances of a subclass of the {RGFA::Line} class:
 #
-# - {RGFA::Line}: most interaction with the GFA involve interacting with
-#   its record, i.e. instances of a subclass of this class. Subclasses:
-#   - {RGFA::Line::Header}
-#   - {RGFA::Line::Segment::GFA1}
-#   - {RGFA::Line::Segment::GFA2}
-#   - {RGFA::Line::Edge::Link}
-#   - {RGFA::Line::Edge::Containment}
-#   - {RGFA::Line::Edge::GFA2}
-#   - {RGFA::Line::Group::Path}
-#   - {RGFA::Line::Group::Ordered}
-#   - {RGFA::Line::Group::Unordered}
-#   - {RGFA::Line::Comment}
-#   - {RGFA::Line::Gap}
-#   - {RGFA::Line::Fragment}
-#   - {RGFA::Line::CustomRecord}
+# GFA-version independent line types:
+# - {RGFA::Line::Header}
+# - {RGFA::Line::Comment}
 #
-# - Further modules contain methods useful for interacting with the graph
-#   - {RGFA::GraphOperations::Connectivity} analysis of the graph connectivity
-#   - {RGFA::GraphOperations::LinearPaths} finding and merging of linear paths
-#   - {RGFA::GraphOperations::Multiplication} separation of the
-#       implicit instances of a repeat
+# GFA1 line types:
+# - {RGFA::Line::Segment::GFA1}
+# - {RGFA::Line::Edge::Link}
+# - {RGFA::Line::Edge::Containment}
+# - {RGFA::Line::Group::Path}
 #
-# - Additional functionality is provided by {RGFATools}
+# GFA2 line types:
+# - {RGFA::Line::Segment::GFA2}
+# - {RGFA::Line::Edge::GFA2}
+# - {RGFA::Line::Group::Ordered}
+# - {RGFA::Line::Group::Unordered}
+# - {RGFA::Line::Gap}
+# - {RGFA::Line::Fragment}
+# - {RGFA::Line::CustomRecord}
+# - {RGFA::Line::Unknown}
+#
+# Basic graph operations, such as finding, editing, iterating over and removing
+# lines belonging to a RGFA instance can be done using code in the {RGFA::Lines}
+# modules:
+# - {RGFA::Lines::Headers}
+# - {RGFA::Lines::Collections}
+# - {RGFA::Lines::Creators}
+# - {RGFA::Lines::Destructors}
+# - {RGFA::Lines::Finders}
+#
+# More complicated graph operations, constructed using the basic operations
+# on lines and the graph, are defined by the modules in the
+# {RGFA::GraphOperations} namespace:
+# - {RGFA::GraphOperations::Connectivity}
+# - {RGFA::GraphOperations::LinearPaths}
+# - {RGFA::GraphOperations::Multiplication}
+# - {RGFA::GraphOperations::RGL}
+# Additional functionality is provided by {RGFATools}.
+#
+# == Examples
 #
 # @example Creating an empty RGFA object
 #   gfa = RGFA.new
@@ -65,13 +66,11 @@
 #   puts gfa.info(short = true) # compact format, in one line
 #
 # @example Validation
-#   gfa = RGFA.from_file(filename, validate: 1) # default level is 2
-#   gfa.validate = 3 # change validation level
-#   gfa.turn_off_validations # equivalent to gfa.validate = 0
+#   gfa = RGFA.from_file(filename, vlevel: 1) # default level is 2
+#   gfa.vlevel = 3 # change validation level
 #   gfa.validate # run post-validations (e.g. check segment names in links)
 #
-class RGFA
-end
+class RGFA; end
 
 require_relative "./rgfa/alignment.rb"
 require_relative "./rgfa/byte_array.rb"
@@ -95,9 +94,9 @@ class RGFA
   include RGFA::GraphOperations
   include RGFA::LoggerSupport
 
-  # @!attribute [rw] validate
+  # @!attribute [rw] vlevel
   #   @return [Integer (0..5)] validation level
-  attr_accessor :validate
+  attr_accessor :vlevel
 
   # Recognized GFA specification versions
   VERSIONS = [:gfa1, :gfa2]
@@ -106,15 +105,15 @@ class RGFA
   #   @return [RGFA::VERSIONS, nil] GFA specification version
   attr_reader :version
 
-  # @!macro validate
-  #   @param validate [Integer] (<i>defaults to: +2+</i>)
+  # @!macro vlevel
+  #   @param vlevel [Integer] (<i>defaults to: +2+</i>)
   #     the validation level; see "Validation level" under
   #     {RGFA::Line#initialize}.
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
-  def initialize(validate: 2, version: nil)
-    @validate = validate
+  def initialize(vlevel: 2, version: nil)
+    @vlevel = vlevel
     @records = {}
-    @records[:H] = RGFA::Line::Header.new([], validate: @validate)
+    @records[:H] = RGFA::Line::Header.new([], vlevel: @vlevel)
     [:S, :P, :F, nil].each {|rt| @records[rt] = {}}
     [:E, :U, :G, :O].each {|rt| @records[rt] = {nil => []}}
     [:C, :L, :"#"].each {|rt| @records[rt] = []}
@@ -139,24 +138,20 @@ class RGFA
   # to a segment are added after the segment. Default: do not
   # require any particular ordering.
   #
+  # @api private
+  #
   # @return [void]
   def require_segments_first_order
     @segments_first_order = true
   end
 
+  # XXX
   attr_reader :segments_first_order
-
-  # Set the validation level to 0.
-  # See "Validation level" under {RGFA::Line#initialize}.
-  # @return [void]
-  def turn_off_validations
-    @validate = 0
-  end
 
   # Post-validation of the RGFA
   # @return [void]
   # @raise if validation fails
-  def validation
+  def validate
     validate_segment_references
     validate_path_links
     return nil
@@ -205,10 +200,11 @@ class RGFA
   end
 
   # Create a copy of the RGFA instance.
+  # XXX: update
   # @return [RGFA]
   def clone
-    cpy = to_s.to_rgfa(validate: 0)
-    cpy.validate = @validate
+    cpy = to_s.to_rgfa(vlevel: 0)
+    cpy.vlevel = @vlevel
     cpy.enable_progress_logging if @progress
     cpy.require_segments_first_order if @segments_first_order
     return cpy
@@ -233,18 +229,18 @@ class RGFA
       process_line_queue
     end
     progress_log_end(:read_file) if @progress
-    validate if @validate >= 1
+    validate if @vlevel >= 1
     self
   end
 
   # Creates a RGFA instance parsing the file with specified +filename+
   # @param [String] filename
   # @raise if file cannot be opened for reading
-  # @!macro validate
+  # @!macro vlevel
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
-  def self.from_file(filename, validate: 2, version: nil)
-    gfa = RGFA.new(validate: validate, version: version)
+  def self.from_file(filename, vlevel: 2, version: nil)
+    gfa = RGFA.new(vlevel: vlevel, version: version)
     gfa.read_file(filename)
     return gfa
   end
@@ -278,6 +274,7 @@ class RGFA
   #
   # @return [String] sequence and topology information collected from the graph.
   #
+  # XXX: update
   def info(short = false)
     q, n50, tlen = lenstats
     nde = n_dead_ends()
@@ -315,6 +312,7 @@ class RGFA
   #
   # @return [Integer] number of dead ends in the graph
   #
+  # XXX: why public? ; move to topology?
   def n_dead_ends
     segments.inject(0) do |n,s|
       [:L, :R].each {|e| n+= 1 if s.dovetails(e).empty?}
@@ -323,6 +321,7 @@ class RGFA
   end
 
   # Compare two RGFA instances.
+  # XXX: update!
   # @return [Boolean] are the lines of the two instances equivalent?
   def ==(other)
     segments == other.segments and
@@ -398,12 +397,12 @@ class String
   # separately to the gfa.
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
-  # @!macro validate
-  def to_rgfa(validate: 2, version: nil)
-    gfa = RGFA.new(validate: validate, version: version)
+  # @!macro vlevel
+  def to_rgfa(vlevel: 2, version: nil)
+    gfa = RGFA.new(vlevel: vlevel, version: version)
     split("\n").each {|line| gfa << line}
     gfa.process_line_queue
-    gfa.validate if validate >= 1
+    gfa.validate if vlevel >= 1
     return gfa
   end
 
@@ -416,12 +415,13 @@ class Array
   # into a +RGFA+ instance.
   # @param version [RGFA::VERSIONS] GFA version, nil if unknown
   # @return [RGFA]
-  # @!macro validate
-  def to_rgfa(validate: 2, version: nil)
-    gfa = RGFA.new(validate: validate, version: version)
+  # @api private?
+  # @!macro vlevel
+  def to_rgfa(vlevel: 2, version: nil)
+    gfa = RGFA.new(vlevel: vlevel, version: version)
     each {|line| gfa << line}
     gfa.process_line_queue
-    gfa.validate if validate >= 1
+    gfa.validate if vlevel >= 1
     return gfa
   end
 

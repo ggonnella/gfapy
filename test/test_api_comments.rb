@@ -27,7 +27,7 @@ class TestAPI::Comments < Test::Unit::TestCase
    assert_raises(RGFA::FormatError) {RGFA::Line::Comment.new(["hallo\nhallo"])}
    assert_raises(RGFA::FormatError) {RGFA::Line::Comment.new(["hallo", "\n"])}
    assert_nothing_raised {
-       RGFA::Line::Comment.new(["hallo", "\n"], validate: 0) }
+       RGFA::Line::Comment.new(["hallo", "\n"], vlevel: 0) }
    l = RGFA::Line::Comment.new(["hallo"])
    assert_nothing_raised {l.content = "hallo\n"}
    assert_raises(RGFA::FormatError) { l.to_s }
@@ -35,7 +35,7 @@ class TestAPI::Comments < Test::Unit::TestCase
    assert_nothing_raised {l.to_s}
    assert_nothing_raised {l.spacer = "\n"}
    assert_raises(RGFA::FormatError) { l.to_s }
-   l = RGFA::Line::Comment.new(["hallo"], validate: 5)
+   l = RGFA::Line::Comment.new(["hallo"], vlevel: 5)
    assert_raises(RGFA::FormatError) { l.content = "hallo\n" }
    assert_raises(RGFA::FormatError) { l.spacer = "\n" }
   end

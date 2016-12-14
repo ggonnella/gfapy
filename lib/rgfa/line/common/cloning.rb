@@ -22,7 +22,7 @@ module RGFA::Line::Common::Cloning
         data_cpy[k] = v
       end
     end
-    cpy = self.class.new(data_cpy, validate: @validate, virtual: @virtual,
+    cpy = self.class.new(data_cpy, vlevel: @vlevel, virtual: @virtual,
                                    version: @version)
     cpy.instance_variable_set("@datatype", @datatype.clone)
     # @refs and @rgfa are not set, so that the cpy is disconnected

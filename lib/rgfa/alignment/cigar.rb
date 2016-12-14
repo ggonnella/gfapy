@@ -49,6 +49,7 @@ class RGFA::Alignment::CIGAR < Array
   # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
   # @raise [RGFA::VersionError] if a wrong version is provided
   # @return [RGFA::Alignment::CIGAR]
+  # @api private
   def self.from_string(str, valid: false, version: :gfa1)
     a = RGFA::Alignment::CIGAR.new
     unless valid

@@ -27,7 +27,7 @@ module RGFA::Line::Common::FieldData
   # @param fieldname [Symbol] the name of the field to set
   #   (positional field, predefined tag (uppercase) or custom tag (lowercase))
   # @raise [RGFA::FormatError] if +fieldname+ is not a
-  #   valid predefined or custom tag name (and +validate[:tags]+)
+  #   valid predefined or custom tag name
   # @return [Object] +value+
   def set(fieldname, value)
     if @data.has_key?(fieldname) or predefined_tag?(fieldname)
@@ -36,7 +36,7 @@ module RGFA::Line::Common::FieldData
       return set(self.class::FIELD_ALIAS[fieldname], value)
     elsif virtual?
       raise RGFA::RuntimeError, "Virtual lines do not have tags"
-    elsif (@validate == 0) or valid_custom_tagname?(fieldname)
+    elsif (@vlevel == 0) or valid_custom_tagname?(fieldname)
       define_field_methods(fieldname)
       if !@datatype[fieldname].nil?
         return set_existing_field(fieldname, value)
@@ -62,14 +62,14 @@ module RGFA::Line::Common::FieldData
       if t != :Z and t != :seq
         # value was not parsed or was set to a string by the user
         return (@data[fieldname] = v.parse_gfa_field(t,
-                                                     safe: @validate >= 2,
+                                                     safe: @vlevel >= 2,
                                                      fieldname: fieldname,
                                                      line: @data))
       else
-         v.validate_gfa_field(t, fieldname) if (@validate >= 5)
+         v.validate_gfa_field(t, fieldname) if (@vlevel >= 5)
       end
     elsif !v.nil?
-      if (@validate >= 5)
+      if (@vlevel >= 5)
         t = field_datatype(fieldname)
         v.validate_gfa_field(t, fieldname)
       end
@@ -131,7 +131,7 @@ module RGFA::Line::Common::FieldData
     if value.nil?
       @data.delete(fieldname)
     else
-      if @validate >= 5
+      if @vlevel >= 5
         field_or_default_datatype(fieldname, value)
         value.validate_gfa_field(field_datatype(fieldname), fieldname)
       end

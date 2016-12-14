@@ -49,11 +49,13 @@ class RGFA::Alignment::Trace < Array
     placeholder? ? "*" : (each(&:to_s).join(","))
   end
 
+  # @api private
   def self.from_string(str)
     RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
   end
 
   # @return [RGFA::Alignment::Trace] self
+  # @api private
   def to_trace
     self
   end
@@ -74,6 +76,7 @@ end
 class String
   # Parse trace string
   # @return [RGFA::Alignment::Trace]
+  # @api private
   # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid
   #   trace string
   def to_trace

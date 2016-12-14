@@ -28,7 +28,7 @@ module RGFA::Line::Common::FieldDatatype
           "The datatype of a predefined tag cannot be changed"
         return
       end
-    elsif !valid_custom_tagname?(fieldname) and @validate > 0
+    elsif !valid_custom_tagname?(fieldname) and @vlevel > 0
       raise RGFA::FormatError,
         "#{fieldname} is not a valid custom tag name"
     end

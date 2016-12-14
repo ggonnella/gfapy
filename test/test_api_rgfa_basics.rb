@@ -45,17 +45,17 @@ class TestAPI::RGFA::Basics < Test::Unit::TestCase
   def test_validate
     gfa = RGFA.new(version: :gfa1)
     gfa << "S\t1\t*"
-    assert_nothing_raised { gfa.validation }
+    assert_nothing_raised { gfa.validate }
     gfa << "L\t1\t+\t2\t-\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validation }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "S\t2\t*"
-    assert_nothing_raised { gfa.validation }
+    assert_nothing_raised { gfa.validate }
     gfa << "P\t3\t1+,4-\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validation }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "S\t4\t*"
-    assert_raise(RGFA::NotFoundError) { gfa.validation }
+    assert_raise(RGFA::NotFoundError) { gfa.validate }
     gfa << "L\t4\t+\t1\t-\t*"
-    assert_nothing_raised { gfa.validation }
+    assert_nothing_raised { gfa.validate }
   end
 
   def test_to_s

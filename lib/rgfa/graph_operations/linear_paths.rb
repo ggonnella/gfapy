@@ -236,7 +236,8 @@ module RGFA::GraphOperations::LinearPaths
     if !merged.sequence.placeholder?
       if merged.LN.nil?
         merged.LN = merged.sequence.length
-      elsif @validate and merged.LN != merged.sequence.length
+      elsif @vlevel >= 5 and merged.LN != merged.sequence.length
+        # XXX
         raise RGFA::InconsistencyError,
               "Computed sequence length #{merged.sequence.length} "+
               "and computed LN #{merged.LN} differ"

@@ -1,10 +1,10 @@
 ## Validation
 
-Different validation levels are available. They represent different
-compromises between speed and warrant of validity.
-The validation level can be specified when
-the RGFA object is created, using the ```validate``` parameter of
-```RGFA.new``` and ```RGFA.from_file```. The default value is 2.
+Different validation levels are available. They represent different compromises
+between speed and warrant of validity.  The validation level can be specified
+when the RGFA object is created, using the ```vlevel``` parameter of
+```RGFA.new``` and ```RGFA.from_file```.
+The default validation level value is 2.
 
 ### Manual validation
 
@@ -13,11 +13,10 @@ always check the value of a field calling ```validate_field(fieldname)```
 on the line instance. If no exeption is raised, the field content
 is valid.
 
-To check if the entire content of the line is valid, the user
-can call ```validate``` on the line instance. This will check
-all fields and perform cross-field validations,
-such as comparing the length of
-the sequence of a GFA1 segment, to the value of the LN tag (if present).
+To check if the entire content of the line is valid, the user can call
+```validate``` on the line instance. This will check all fields and perform
+cross-field validations, such as comparing the length of the sequence of a GFA1
+segment, to the value of the LN tag (if present).
 
 It is also possible to validate the structure of the GFA, for example
 to check if there are unresolved references to lines. To do this,

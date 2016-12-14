@@ -7,19 +7,19 @@ class TestAPI::Tags < Test::Unit::TestCase
   def test_predefined_tags
     # correct type:
     assert_nothing_raised do
-      RGFA::Line::Header.new(["VN:Z:1"], validate: 5)
+      RGFA::Line::Header.new(["VN:Z:1"], vlevel: 5)
     end
     # custom tags with the same letters as predefined tags but lower case
     assert_nothing_raised do
-      RGFA::Line::Header.new(["vn:i:1"], validate: 5)
+      RGFA::Line::Header.new(["vn:i:1"], vlevel: 5)
     end
     # wrong type
     assert_nothing_raised do
-      RGFA::Line::Header.new(["VN:i:1"], validate: 0)
+      RGFA::Line::Header.new(["VN:i:1"], vlevel: 0)
     end
     [3,4,5].each do |level|
       assert_raise(RGFA::TypeError) do
-        RGFA::Line::Header.new(["VN:i:1"], validate: level)
+        RGFA::Line::Header.new(["VN:i:1"], vlevel: level)
       end
     end
   end
@@ -28,31 +28,31 @@ class TestAPI::Tags < Test::Unit::TestCase
     [:gfa1, :gfa2].each do |version|
       # upper case
       assert_nothing_raised do
-        RGFA::Line::Header.new(["ZZ:Z:1"], version: version, validate: 0)
+        RGFA::Line::Header.new(["ZZ:Z:1"], version: version, vlevel: 0)
       end
       assert_nothing_raised do
-        "H\tZZ:Z:1".to_rgfa_line(version: version, validate: 0)
+        "H\tZZ:Z:1".to_rgfa_line(version: version, vlevel: 0)
       end
       assert_nothing_raised do
-        "H\tZZ:Z:1".to_rgfa(version: version, validate: 0)
+        "H\tZZ:Z:1".to_rgfa(version: version, vlevel: 0)
       end
       [3,4,5].each do |level|
         assert_raise(RGFA::FormatError) do
-          RGFA::Line::Header.new(["ZZ:Z:1"], version: version, validate: level)
+          RGFA::Line::Header.new(["ZZ:Z:1"], version: version, vlevel: level)
         end
         assert_raise(RGFA::FormatError) do
-          "H\tZZ:Z:1".to_rgfa_line(version: version, validate: level)
+          "H\tZZ:Z:1".to_rgfa_line(version: version, vlevel: level)
         end
         assert_raise(RGFA::FormatError) do
-          "H\tZZ:Z:1".to_rgfa(version: version, validate: level)
+          "H\tZZ:Z:1".to_rgfa(version: version, vlevel: level)
         end
       end
       # lower case
       [0,3,4,5].each do |level|
         assert_nothing_raised do
-          RGFA::Line::Header.new(["zz:Z:1"], version: version, validate: 0)
-          "H\tzz:Z:1".to_rgfa_line(version: version, validate: 0)
-          "H\tzz:Z:1".to_rgfa(version: version, validate: 0)
+          RGFA::Line::Header.new(["zz:Z:1"], version: version, vlevel: 0)
+          "H\tzz:Z:1".to_rgfa_line(version: version, vlevel: 0)
+          "H\tzz:Z:1".to_rgfa(version: version, vlevel: 0)
         end
       end
     end
@@ -76,20 +76,20 @@ class TestAPI::Tags < Test::Unit::TestCase
     # validation level 0
     # - some wrong data passes through
     assert_nothing_raised {
-      RGFA::Line::Header.new(["zz:B:i,1,1,A"], validate: 0) }
+      RGFA::Line::Header.new(["zz:B:i,1,1,A"], vlevel: 0) }
     assert_nothing_raised {
-      RGFA::Line::Header.new(["zz:Z:i,\t1,1,A"], validate: 0) }
+      RGFA::Line::Header.new(["zz:Z:i,\t1,1,A"], vlevel: 0) }
     # - some errors are catched
     assert_raise(RGFA::FormatError) do
-      RGFA::Line::Header.new(["zz:i:1A"], validate: 0)
+      RGFA::Line::Header.new(["zz:i:1A"], vlevel: 0)
     end
     # level > 0, wrong data is catched
     [3,4,5].each do |level|
       assert_raise(RGFA::ValueError) do
-        RGFA::Line::Header.new(["zz:B:i,1,1,A"], validate: level)
+        RGFA::Line::Header.new(["zz:B:i,1,1,A"], vlevel: level)
       end
       assert_raise(RGFA::FormatError) do
-        RGFA::Line::Header.new(["zz:i:1A"], validate: level)
+        RGFA::Line::Header.new(["zz:i:1A"], vlevel: level)
       end
     end
   end
@@ -98,29 +98,29 @@ class TestAPI::Tags < Test::Unit::TestCase
     [:gfa1, :gfa2].each do |version|
       assert_nothing_raised do
         RGFA::Line::Header.new(["zz:i:1", "VN:Z:1", "zz:i:2"],
-                                version: version, validate: 0)
+                                version: version, vlevel: 0)
       end
       assert_nothing_raised do
         "H\tzz:i:1\tVN:Z:0\tzz:i:2".to_rgfa_line(version: version,
-                                                 validate: 0)
+                                                 vlevel: 0)
       end
       assert_nothing_raised do
         "H\tzz:i:1\tVN:Z:0\tzz:i:2".to_rgfa(version: version,
-                                            validate: 0)
+                                            vlevel: 0)
       end
       [3,4,5].each do |level|
         assert_raise(RGFA::NotUniqueError) do
           RGFA::Line::Header.new(["zz:i:1", "VN:Z:0", "zz:i:2"],
                                  version: version,
-                                 validate: level)
+                                 vlevel: level)
         end
         assert_raise(RGFA::NotUniqueError) do
           "H\tzz:i:1\tVN:Z:0\tzz:i:2".to_rgfa_line(version: version,
-                                                   validate: level)
+                                                   vlevel: level)
         end
         assert_raise(RGFA::NotUniqueError) do
           "H\tzz:i:1\tVN:Z:#{version}\tzz:i:2".to_rgfa(version: version,
-                                                       validate: level)
+                                                       vlevel: level)
         end
       end
     end
@@ -137,7 +137,7 @@ class TestAPI::Tags < Test::Unit::TestCase
     [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
       l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:1.3","KC:i:10"],
-                                           validate: level)
+                                           vlevel: level)
         # tagnames
         assert_equal([:xx, :KC], l.tagnames)
         # test presence of tag
@@ -205,7 +205,7 @@ class TestAPI::Tags < Test::Unit::TestCase
     [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
         l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:13","KC:i:10"],
-                                             validate: level)
+                                             vlevel: level)
         # set tag content, fieldname methods
         assert_nothing_raised { l.KC = 12 }; assert_equal(12, l.KC)
         assert_nothing_raised { l.RC = 12 }; assert_equal(12, l.RC)
@@ -252,7 +252,7 @@ class TestAPI::Tags < Test::Unit::TestCase
     [:gfa1, :gfa2].each do |version|
       [0,3,4,5].each do |level|
         l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:13","KC:i:10"],
-                                             validate: level)
+                                             vlevel: level)
         # delete method
         assert_nothing_raised { l.delete(:KC) }
         assert_equal(nil, l.KC)
@@ -263,7 +263,7 @@ class TestAPI::Tags < Test::Unit::TestCase
         assert_equal([], l.tagnames)
         assert_nothing_raised { l.delete(:zz) }
         l = RGFA::Line::Segment::Factory.new(["12","*","xx:f:13","KC:i:10"],
-                                             validate: level)
+                                             vlevel: level)
         # set to nil
         assert_nothing_raised { l.set(:KC,nil) }
         assert_equal(nil, l.KC)
