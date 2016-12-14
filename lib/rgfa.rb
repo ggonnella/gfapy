@@ -45,7 +45,7 @@
 # More complicated graph operations, constructed using the basic operations
 # on lines and the graph, are defined by the modules in the
 # {RGFA::GraphOperations} namespace:
-# - {RGFA::GraphOperations::Connectivity}
+# - {RGFA::GraphOperations::Topology}
 # - {RGFA::GraphOperations::LinearPaths}
 # - {RGFA::GraphOperations::Multiplication}
 # - {RGFA::GraphOperations::RGL}
@@ -134,20 +134,6 @@ class RGFA
     end
   end
 
-  # Require that the links, containments and paths referring
-  # to a segment are added after the segment. Default: do not
-  # require any particular ordering.
-  #
-  # @api private
-  #
-  # @return [void]
-  def require_segments_first_order
-    @segments_first_order = true
-  end
-
-  # XXX
-  attr_reader :segments_first_order
-
   # Post-validation of the RGFA
   # @return [void]
   # @raise if validation fails
@@ -199,14 +185,25 @@ class RGFA
     self
   end
 
-  # Create a copy of the RGFA instance.
-  # XXX: update
-  # @return [RGFA]
+  # Create a deep copy of the RGFA instance.
+  #
+  # The clone is created by writing the instance to string and
+  # reading the string content (during the writing and reading,
+  # no validation is performed; therefore malformed GFA may return
+  # a copy which is not exact). Instance variables other than the
+  # lines content are copied after that.
+  #
+  # @return [RGFA] a deep copy of the RGFA instance.
   def clone
+    self_vlevel = @vlevel
+    @vlevel = 0
     cpy = to_s.to_rgfa(vlevel: 0)
+    @vlevel = self_vlevel
     cpy.vlevel = @vlevel
     cpy.enable_progress_logging if @progress
     cpy.require_segments_first_order if @segments_first_order
+    cpy.instance_variable_set("@default", @default)
+    cpy.instance_variable_set("@extensions_enabled", @extensions_enabled)
     return cpy
   end
 
@@ -254,72 +251,6 @@ class RGFA
     File.open(filename, "w") {|f| each_line {|l| f.puts l}}
   end
 
-  # Output basic statistics about the graph's sequence and topology
-  # information.
-  #
-  # @param [boolean] short compact output as a single text line
-  #
-  # Compact output has the following keys:
-  # - +ns+: number of segments
-  # - +nl+: number of links
-  # - +cc+: number of connected components
-  # - +de+: number of dead ends
-  # - +tl+: total length of segment sequences
-  # - +50+: N50 segment sequence length
-  #
-  # Normal output outputs a table with the same information, plus some
-  # additional one: the length of the largest
-  # component, as well as the shortest and largest and 1st/2nd/3rd quartiles
-  # of segment sequence length.
-  #
-  # @return [String] sequence and topology information collected from the graph.
-  #
-  # XXX: update
-  def info(short = false)
-    q, n50, tlen = lenstats
-    nde = n_dead_ends()
-    pde = "%.2f%%" % ((nde.to_f*100) / (segments.size*2))
-    cc = connected_components()
-    cc.map!{|c|c.map{|sn|segment!(sn).length!}.inject(:+)}
-    if short
-      return "ns=#{segments.size}\t"+
-             "nl=#{links.size}\t"+
-             "cc=#{cc.size}\t"+
-             "de=#{nde}\t"+
-             "tl=#{tlen}\t"+
-             "50=#{n50}"
-    end
-    retval = []
-    retval << "Segment count:               #{segments.size}"
-    retval << "Edge::Links count:                 #{links.size}"
-    retval << "Total length (bp):           #{tlen}"
-    retval << "Dead ends:                   #{nde}"
-    retval << "Percentage dead ends:        #{pde}"
-    retval << "Connected components:        #{cc.size}"
-    retval << "Largest component (bp):      #{cc.last}"
-    retval << "N50 (bp):                    #{n50}"
-    retval << "Shortest segment (bp):       #{q[0]}"
-    retval << "Lower quartile segment (bp): #{q[1]}"
-    retval << "Median segment (bp):         #{q[2]}"
-    retval << "Upper quartile segment (bp): #{q[3]}"
-    retval << "Longest segment (bp):        #{q[4]}"
-    return retval
-  end
-
-  # Counts the dead ends.
-  #
-  # Dead ends are here defined as segment ends without connections.
-  #
-  # @return [Integer] number of dead ends in the graph
-  #
-  # XXX: why public? ; move to topology?
-  def n_dead_ends
-    segments.inject(0) do |n,s|
-      [:L, :R].each {|e| n+= 1 if s.dovetails(e).empty?}
-      n
-    end
-  end
-
   # Compare two RGFA instances.
   # XXX: update!
   # @return [Boolean] are the lines of the two instances equivalent?
@@ -331,8 +262,26 @@ class RGFA
       paths == other.paths
   end
 
+  # @api private
+  module API_PRIVATE
+
+    # Require that the links, containments and paths referring
+    # to a segment are added after the segment. Default: do not
+    # require any particular ordering.
+    #
+    # @return [void]
+    def require_segments_first_order
+      @segments_first_order = true
+    end
+
+    attr_reader :segments_first_order
+
+  end
+  include API_PRIVATE
+
   private
 
+  # Compute segment length statistics
   def lenstats
     sln = segments.map(&:length!).sort
     n = sln.size
