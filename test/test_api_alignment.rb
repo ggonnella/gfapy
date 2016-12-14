@@ -54,9 +54,11 @@ class TestAPI::Alignment < Test::Unit::TestCase
   ]
 
   @@cigar_op_1 = RGFA::Alignment::CIGAR::Operation.new(1,:D)
+  @@cigar_op_1_s = "1D"
   @@cigar_op_1_len = 1
   @@cigar_op_1_code = :D
   @@cigar_op_2 = RGFA::Alignment::CIGAR::Operation.new(2,:I)
+  @@cigar_op_2_s = "2I"
   @@cigar_op_2_len = 2
   @@cigar_op_2_code = :I
 
@@ -67,6 +69,15 @@ class TestAPI::Alignment < Test::Unit::TestCase
     assert_equal(@@placeholder_s, @@placeholder.to_s)
     assert_equal(@@placeholder_s, @@cigar_empty.to_s)
     assert_equal(@@placeholder_s, @@trace_empty.to_s)
+  end
+
+  def test_cigar_clone
+    cigar1_clone = @@cigar_1.clone
+    assert_equal(@@cigar_1_s,  cigar1_clone.to_s)
+    cigar1_clone[0].code = "="
+    # copy is deep, only the clone has changed:
+    assert_not_equal(@@cigar_1_s,  cigar1_clone.to_s)
+    assert_equal(@@cigar_1_s,  @@cigar_1.to_s)
   end
 
   def test_to_alignment
@@ -131,11 +142,13 @@ class TestAPI::Alignment < Test::Unit::TestCase
   def test_cigar_operation_methods
     assert_equal(@@cigar_op_1_len, @@cigar_op_1.len)
     assert_equal(@@cigar_op_1_code, @@cigar_op_1.code)
+    assert_equal(@@cigar_op_1_s, @@cigar_op_1.to_s)
     @@cigar_op_1.len =  @@cigar_op_2_len
     @@cigar_op_1.code = @@cigar_op_2_code
     assert_equal(@@cigar_op_2, @@cigar_op_1)
     assert_equal(@@cigar_op_2_len, @@cigar_op_1.len)
     assert_equal(@@cigar_op_2_code, @@cigar_op_1.code)
+    assert_equal(@@cigar_op_2_s, @@cigar_op_2.to_s)
   end
 
   def test_cigar_complement

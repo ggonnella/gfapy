@@ -49,17 +49,6 @@ class RGFA::Alignment::Trace < Array
     placeholder? ? "*" : (each(&:to_s).join(","))
   end
 
-  # @api private
-  def self.from_string(str)
-    RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
-  end
-
-  # @return [RGFA::Alignment::Trace] self
-  # @api private
-  def to_trace
-    self
-  end
-
   # @param valid [nil] ignored, for compatibility
   # @param version [nil] ignored, for compatibility
   # @return [RGFA::Alignment::CIGAR] self
@@ -71,15 +60,43 @@ class RGFA::Alignment::Trace < Array
     return RGFA::Alignment::Placeholder.new
   end
 
+  # @api private
+  module API_PRIVATE
+
+    # @return [RGFA::Alignment::Trace] self
+    def to_trace
+      self
+    end
+
+  end
+  include API_PRIVATE
+
+  # @api private
+  module API_PRIVATE_CLASS_METHODS
+
+    def from_string(str)
+      RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
+    end
+
+  end
+  extend API_PRIVATE_CLASS_METHODS
+
 end
 
 class String
-  # Parse trace string
-  # @return [RGFA::Alignment::Trace]
+
   # @api private
-  # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid
-  #   trace string
-  def to_trace
-    RGFA::Alignment::Trace.from_string(self)
+  module API_PRIVATE
+
+    # Parse trace string
+    # @return [RGFA::Alignment::Trace]
+    # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid
+    #   trace string
+    def to_trace
+      RGFA::Alignment::Trace.from_string(self)
+    end
+
   end
+  include API_PRIVATE
+
 end

@@ -8,7 +8,7 @@ class RGFA::Alignment::CIGAR < Array
   #
   # @example Computing the complement CIGAR
   #
-  #   RGFA::Alignment::CIGAR.from_string("2M1D3M").complement.to_s
+  #   "2M1D3M".to_alignment.complement.to_s
   #   # => "3M1I2M"
   #
   #   # S1 + S2 + 2M1D3M
@@ -31,49 +31,6 @@ class RGFA::Alignment::CIGAR < Array
       end
       op
     end)
-  end
-
-  # Parse a CIGAR string into an array of CIGAR operations.
-  #
-  # Each operation is represented by a {RGFA::Alignment::CIGAR::Operation},
-  # i.e. a tuple of operation length and operation code.
-  #
-  # The operation code is one of MIDP for GFA2 or MIDPNSHX= for GFA1.
-  # The additional operations allowed in GFA1 have an unclear meaning
-  # in the context of GFA and should be avoided.
-  #
-  # @param version [Symbol] <i>(defaults to: +gfa1+)</i> if +:gfa2+,
-  #   then only CIGAR codes M/I/D/P are allowed, if +:gfa1+ all CIGAR codes
-  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
-  #   the string is guaranteed to be valid
-  # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
-  # @raise [RGFA::VersionError] if a wrong version is provided
-  # @return [RGFA::Alignment::CIGAR]
-  # @api private
-  def self.from_string(str, valid: false, version: :gfa1)
-    a = RGFA::Alignment::CIGAR.new
-    unless valid
-      case version
-      when :gfa1
-        if str !~ /^([0-9]+[MIDPNSHX=])+$/
-          raise RGFA::FormatError,
-          "The string #{str} does not represent a valid CIGAR string"
-        end
-      when :gfa2
-        if str !~ /^([0-9]+[MIDP])+$/
-          raise RGFA::FormatError,
-          "The string #{str} does not represent a valid GFA2 CIGAR string"
-        end
-      else
-        raise RGFA::VersionError, "Version unknown: #{version}"
-      end
-    end
-    str.scan(/[0-9]+[MIDPNSHX=]/).each do |op|
-      len = op[0..-2].to_i
-      code = op[-1..-1].to_sym
-      a << RGFA::Alignment::CIGAR::Operation.new(len, code)
-    end
-    return a
   end
 
   # String representation of the CIGAR
@@ -107,25 +64,11 @@ class RGFA::Alignment::CIGAR < Array
     end
   end
 
-  # @return [RGFA::Alignment::CIGAR] self
-  # @param valid [nil] ignored, for compatibility
-  # @param version [nil] ignored, for compatibility
-  # @api private
-  def to_cigar(valid: nil, version: :nil)
-    self
-  end
-
   # @param valid [nil] ignored, for compatibility
   # @param version [nil] ignored, for compatibility
   # @return [RGFA::Alignment::CIGAR] self
   def to_alignment(valid: nil, version: :nil)
     self
-  end
-
-  # Create a copy
-  # @return [RGFA::Alignment::CIGAR]
-  def clone
-    RGFA::Alignment::CIGAR.new(map{|x|x.clone})
   end
 
   # Lenght of the aligned substring on the reference sequence
@@ -157,6 +100,71 @@ class RGFA::Alignment::CIGAR < Array
     end
     return l
   end
+
+  # Create a deep copy
+  # @return [RGFA::Alignment::CIGAR]
+  def clone
+    RGFA::Alignment::CIGAR.new(map{|x|x.clone})
+  end
+
+  # @api private
+  module API_PRIVATE
+
+    # @return [RGFA::Alignment::CIGAR] self
+    # @param valid [nil] ignored, for compatibility
+    # @param version [nil] ignored, for compatibility
+    def to_cigar(valid: nil, version: :nil)
+      self
+    end
+
+  end
+  include API_PRIVATE
+
+  # @api private
+  module API_PRIVATE_CLASS_METHODS
+    # Parse a CIGAR string into an array of CIGAR operations.
+    #
+    # Each operation is represented by a {RGFA::Alignment::CIGAR::Operation},
+    # i.e. a tuple of operation length and operation code.
+    #
+    # The operation code is one of MIDP for GFA2 or MIDPNSHX= for GFA1.
+    # The additional operations allowed in GFA1 have an unclear meaning
+    # in the context of GFA and should be avoided.
+    #
+    # @param version [Symbol] <i>(defaults to: +gfa1+)</i> if +:gfa2+,
+    #   then only CIGAR codes M/I/D/P are allowed, if +:gfa1+ all CIGAR codes
+    # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+    #   the string is guaranteed to be valid
+    # @raise [RGFA::FormatError] if the string is not a valid CIGAR string
+    # @raise [RGFA::VersionError] if a wrong version is provided
+    # @return [RGFA::Alignment::CIGAR]
+    def from_string(str, valid: false, version: :gfa1)
+      a = RGFA::Alignment::CIGAR.new
+      unless valid
+        case version
+        when :gfa1
+          if str !~ /^([0-9]+[MIDPNSHX=])+$/
+            raise RGFA::FormatError,
+            "The string #{str} does not represent a valid CIGAR string"
+          end
+        when :gfa2
+          if str !~ /^([0-9]+[MIDP])+$/
+            raise RGFA::FormatError,
+            "The string #{str} does not represent a valid GFA2 CIGAR string"
+          end
+        else
+          raise RGFA::VersionError, "Version unknown: #{version}"
+        end
+      end
+      str.scan(/[0-9]+[MIDPNSHX=]/).each do |op|
+        len = op[0..-2].to_i
+        code = op[-1..-1].to_sym
+        a << RGFA::Alignment::CIGAR::Operation.new(len, code)
+      end
+      return a
+    end
+  end
+  extend API_PRIVATE_CLASS_METHODS
 
 end
 
@@ -226,47 +234,61 @@ class RGFA::Alignment::CIGAR::Operation
     end
   end
 
-  # @return [RGFA::Alignment::CIGAR::Operation] self
   # @api private
-  def to_cigar_operation
-    self
+  module API_PRIVATE
+    # @return [RGFA::Alignment::CIGAR::Operation] self
+    def to_cigar_operation
+      self
+    end
   end
+  include API_PRIVATE
+
 end
 
 class Array
-  # Create a {RGFA::Alignment::CIGAR} instance from the content of the array.
-  # @param valid [nil] ignored, for compatibility
-  # @param version [nil] ignored, for compatibility
-  # @return [RGFA::Alignment::CIGAR]
+
   # @api private
-  def to_cigar(valid: nil, version: nil)
-    RGFA::Alignment::CIGAR.new(self)
+  module API_PRIVATE
+    # Create a {RGFA::Alignment::CIGAR} instance from the content of the array.
+    # @param valid [nil] ignored, for compatibility
+    # @param version [nil] ignored, for compatibility
+    # @return [RGFA::Alignment::CIGAR]
+    def to_cigar(valid: nil, version: nil)
+      RGFA::Alignment::CIGAR.new(self)
+    end
+
+    # Create a {RGFA::Alignment::CIGAR::Operation} instance from the array content
+    # @return [RGFA::Alignment::CIGAR::Operation]
+    def to_cigar_operation
+      RGFA::Alignment::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
+    end
   end
-  # Create a {RGFA::Alignment::CIGAR::Operation} instance from the array content
-  # @return [RGFA::Alignment::CIGAR::Operation]
-  # @api private
-  def to_cigar_operation
-    RGFA::Alignment::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
-  end
+  include API_PRIVATE
+
 end
 
 class String
-  # Parse CIGAR string
-  # @return [RGFA::Alignment::CIGAR,RGFA::Alignment::Placeholder]
-  #    CIGAR or Placeholder (if +*+)
-  # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
-  #   the string is guaranteed to be valid
-  # @param version [Symbol] <i>(defaults to: +:gfa1+)</i> if :gfa2,
-  #   then only CIGAR codes M/I/D/P are allowed, if :gfa1 all CIGAR codes
-  # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
-  # @raise [RGFA::VersionError] if a wrong version is provided
+
   # @api private
-  def to_cigar(valid: false, version: :gfa1)
-    if placeholder?
-      return RGFA::Alignment::Placeholder.new
-    else
-      return RGFA::Alignment::CIGAR.from_string(self, valid: valid,
-                                                version: version)
+  module API_PRIVATE
+    # Parse CIGAR string
+    # @return [RGFA::Alignment::CIGAR,RGFA::Alignment::Placeholder]
+    #    CIGAR or Placeholder (if +*+)
+    # @param valid [Boolean] <i>(defaults to: +false+)</i> if +true+,
+    #   the string is guaranteed to be valid
+    # @param version [Symbol] <i>(defaults to: +:gfa1+)</i> if :gfa2,
+    #   then only CIGAR codes M/I/D/P are allowed, if :gfa1 all CIGAR codes
+    # @raise [RGFA::ValueError] if the string is not a valid CIGAR string
+    # @raise [RGFA::VersionError] if a wrong version is provided
+    def to_cigar(valid: false, version: :gfa1)
+      if placeholder?
+        return RGFA::Alignment::Placeholder.new
+      else
+        return RGFA::Alignment::CIGAR.from_string(self, valid: valid,
+                                                  version: version)
+      end
     end
   end
+  include API_PRIVATE
+
 end
