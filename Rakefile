@@ -53,7 +53,7 @@ task :pdf do
   File.open("pdfdoc/cover.html", "w") do |f|
     f.puts ERB.new(IO.read("pdfdoc/cover.html.erb")).result(binding)
   end
-  system("yard2.0 --one-file -o pdfdoc")
+  system("yard2.0 --one-file --no-api private -o pdfdoc")
   system("wkhtmltopdf cover pdfdoc/cover.html "+
                      "toc "+
                      "pdfdoc/index.html "+
