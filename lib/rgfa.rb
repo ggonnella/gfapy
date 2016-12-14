@@ -114,6 +114,7 @@ class RGFA
     @vlevel = vlevel
     @records = {}
     @records[:H] = RGFA::Line::Header.new([], vlevel: @vlevel)
+    @records[:H].connect(self)
     [:S, :P, :F, nil].each {|rt| @records[rt] = {}}
     [:E, :U, :G, :O].each {|rt| @records[rt] = {nil => []}}
     [:C, :L, :"#"].each {|rt| @records[rt] = []}

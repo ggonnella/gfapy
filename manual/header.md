@@ -5,63 +5,115 @@ lines may be present in any part of the file, not necessarily at the beginning.
 
 Although the header may consist of multiple lines, its content refers to the
 whole file. Therefore in RGFA the header is accessed using a single line
-instance (accessible by the RGFA#header method).  Header lines contain only
+instance (accessible by the ```header``` method).  Header lines contain only
 tags. If not header line is present in the GFA, then the header line object
 will be empty (i.e. contain no tags).
 
-Header lines cannot be connected to the RGFA (i.e. calling RGFA::Line#connect
-raises an exception). Instead they are merged to the existing header of the
-RGFA object, using the ```RGFA#<<(line)``` method.
+Header lines cannot be connected to the RGFA as other lines (i.e. calling
+```connect``` on them raises an exception). Instead they are merged to the
+existing header, when the ```add_line(line)``` method is called on the RGFA.
 
-### Accessing the header tags
+### Multiple definitions of the predefined header tags
 
-The specification does not explicitely forbid to have the same tag on different
-lines. However, some users prefer to have unique tags in the whole header.
-Therefore there are two flavours of headers: headers for which the same tag
-cannot be present even in different lines ("unique tags" headers), and headers
-for which this is possible ("duplicated tags" headers).
+For the predefined tags (```VN``` and ```TS```), the presence of multiple
+values in different lines is an error, unless the value is the same in each
+instance (in which case the repeated definitions are ignored).
 
-For unique tags headers, the access to the tags is the same as for any other
-line (see Tags chapter).  For duplicated tags headers, see the next section.
+```
+H VN:Z:1.0
+# other lines
+# ...
+# the following raises an exception:
+H VN:Z:2.0
+```
 
-### Duplicated tags headers
+### Multiple definitions of custom header tags
 
-Tags of duplicated tags headers are read, validated and their datatypes
-set, using the same methods as for all other lines (see Tags chapter).
+If the tags are present only once in the header in its entirety, the access to
+the tags is the same as for any other line (see Tags chapter).
+
+However, the specification does not forbid custom tags to be defined with
+different values in different header lines (which we name
+"multi-definition tags"). This particular case is handled in the next
+sections.
+
+### Reading multi-definitions tags
+
+Reading, validating and setting the datatype of multi-definition tags is
+done using the same methods as for all other lines (see Tags chapter).
 However, if a tag is defined multiple times on multiple H lines, reading
-the tag will return an array of the values on the lines.  This array is an
+the tag will return an array of the values on the lines. This array is an
 instance of the subclass ```RGFA::FieldArray``` of Array.
 
-The field array of a tag can be modified directly (e.g. adding new values
-or removing some values).
-If you edit the array, make sure that all elements of the array are compatible
-with the datatype of the tag (calling validate_field will check this condition).
-Note that some array methods will return an object of the class Array.
-These must be transformed back to a field array using the
-```Array#to_rgfa_field_array(datatype)``` method; thereby you will usually
-use the datatype returned by ```RGFA::Line#get_datatype(tagname)```.
+```
+H xx:i:1
+H xx:i:2
+H xx:i:3
+# => gfa.header.xx value is RGFA::FieldArray[1,2,3]
+```
 
-Another difference from unique tags headers is how to set values. Calling set,
-if a tag was already defined, overwrites its value. Therefore, adding a new tag
-to a duplicated tags headers can be done using the
-```RGFA::Line::Header#add(fieldname, value)``` method.  If the tag does not
-exist, add will be a synonymous of set and simply create it.  If it exists, it
-creates a field array (if a single value was present) or adds the new value to
-the existing field array (if multiple values were present).
+### Setting a tag
 
-Note that when calling the #to_s method on the header line directly, a single
-non GFA-standard string is output, eventually with multiple instances of the
-tag. Similarly when calling #field_to_s on a field array tag, the output
-string will contain the instances of the tag, separated by tabs.
-However, when the graph is output to string (using RGFA#to_s), the header
-is split into multiple H lines with single tags, so that standard-compliant GFA
-is output.
-
-### Summary of headers-related API methods
+Calling set, if a tag was already defined, overwrites its value.
+For this reason, another method is defined, for supporting multi-definition
+tags: ```add```. When ```add(tagname, value)``` is called on the RGFA header,
+if the tag does not exist, add will be a synonymous of set and simply create
+it.  If it exists, it creates a field array (if a single value was present)
+or adds the new value to the existing field array (if multiple values were
+present).
 
 ```ruby
-RGFA#header
-RGFA::Line::Header#add
-RGFA::FieldArray#(array methods)
-Array#to_rgfa_array(tagname)
+# header.xx is not set
+gfa.header.add(:xx, 1)
+# header.xx is 1
+gfa.header.add(:xx, 2)
+# header.xx is a field array [1,2]
+```
+
+### Modifying field array values
+
+Field arrays can be modified directly (e.g. adding new values or removing some
+values). However, if this is done, some additional work is sometimes needed.
+
+First, if values are added to the array, or its values
+are modified, the user is responsible to check that the array values
+remain compatible with the datatype of the tag (which can be checked
+by calling ```validate_field(tagname)``` on the header).
+
+```ruby
+gfa.header.xx # => RGFAFieldArray[1,2,3]
+gfa.header.xx << 4
+gfa.header.xx << 5
+gfa.validate_field(:xx)
+```
+
+Second, if the field array is modified using array methods (such as ```map```)
+which return an Array class instance, this must be transformed back into a field
+array calling ```to_rgfa_field_array(datatype)``` method; thereby datatype
+can be set to the value returned by calling ```get_datatype(tagname)```
+on the header.
+
+```ruby
+gfa.header.map = gfa.header.map {|elem| elem + 1}.
+                   to_rgfa_field_array(gfa.header.get_datatype(:xx))
+```
+
+### String representation of the header
+
+Note that when converting the header line to string, a single-line string is
+returned, eventually with multiple instances of the tag (in which case it is
+not standard-compliant).  Similarly when calling #field_to_s on a field array
+tag, the output string will contain the instances of the tag, separated by
+tabs. However, when the RGFA is output to file or string, the header is
+splitted into multiple H lines with single tags, so that standard-compliant GFA
+is output. These can be retrieved using the ```headers``` method on the RGFA:
+
+```ruby
+gfa.header.to_s # H VN:Z:1.0 xx:i:1 xx:i:2 (compact, but invalid GFA)
+gfa.header.field_to_s(:xx) # => xx:i:1 xx:i:2
+gfa.headers # => [] of three Header instances, with a single tag each
+gfa.to_s # => (valid GFA)
+         # H VN:Z:1.0
+         # H xx:i:1
+         # H xx:i:2
 ```

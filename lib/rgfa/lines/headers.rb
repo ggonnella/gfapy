@@ -48,7 +48,6 @@ module RGFA::Lines::Headers
   #     values, i.e.\ changes in the lines will not affect the RGFA object; to
   #     update the values in the RGFA use the #header method.
   # @return [Array<RGFA::Line::Header>]
-  # @api private
   def headers
     @records[:H].split
   end

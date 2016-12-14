@@ -19,6 +19,7 @@ module RGFA::Lines
   include RGFA::Lines::Destructors
   include RGFA::Lines::Finders
 
+  # @api private
   GFA1Specific = [
                    RGFA::Line::Edge::Link,
                    RGFA::Line::Edge::Containment,
@@ -26,6 +27,7 @@ module RGFA::Lines
                    RGFA::Line::Segment::GFA1,
                  ]
 
+  # @api private
   GFA2Specific = [
                    RGFA::Line::CustomRecord,
                    RGFA::Line::Fragment,

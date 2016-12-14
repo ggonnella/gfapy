@@ -141,6 +141,7 @@ lib/rgfa/line/common/disconnection.rb
 lib/rgfa/line/common/update_references.rb
 lib/rgfa/line/common/writer.rb
 lib/rgfa/line/common/validate.rb
+lib/rgfa/line/header/field_data.rb
 lib/rgfa/line/header/version_conversion.rb
 lib/rgfa/line/header/connection.rb
 lib/rgfa/line/header/multiline.rb

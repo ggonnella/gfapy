@@ -17,9 +17,6 @@ class RGFA::Line
   # List of allowed record_type values
   RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", :G, :F, :E, :O, :U, nil ]
 
-  # Direction of a segment for links/containments
-  DIRECTION = [:from, :to]
-
   # Orientation of segments in paths/links/containments
   ORIENTATION = [:+, :-]
 
