@@ -43,9 +43,13 @@ class RGFA::ByteArray < Array
     end.join
   end
 
-  # GFA tag datatype to use, if none is provided
-  # @return [RGFA::Field::TAG_DATATYPE]
-  def default_gfa_tag_datatype; :H; end
+  # @api private
+  module API_PRIVATE
+    # GFA tag datatype to use, if none is provided
+    # @return [RGFA::Field::TAG_DATATYPE]
+    def default_gfa_tag_datatype; :H; end
+  end
+  include API_PRIVATE
 
 end
 

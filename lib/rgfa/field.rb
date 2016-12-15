@@ -37,7 +37,6 @@ require_relative "field/sequence_gfa2.rb"
 require_relative "field/string.rb"
 
 # Decoding, validation and encoding of GFA fields.
-# @api private
 #
 # For each datatype a module under field/ exists, which defines
 # the following methods as module functions:
@@ -76,6 +75,7 @@ require_relative "field/string.rb"
 # the submodules defined in this file, ie RGFA::Field::Parser,
 # RGFA::Field::Validator, RGFA::Field::Writer.
 #
+# @api private
 module RGFA::Field
 
   # Symbol representing a GFA1-specific datatype for positional fields
@@ -157,7 +157,6 @@ module RGFA::Field
     # see +safe+, but not encoded) or an object of a class compatible
     # with the specified datatype, if a datatype is specified (see +datatype+),
     # e.g. Integer # for i fields.
-    # @api private
     # @param datatype [RGFA::Field::FIELD_DATATYPE] datatype to use. If no
     #   datatype is specified, any class will do and the default datatype
     #   will be chosen (see RGFA::DefaultDatatype module).
@@ -207,7 +206,6 @@ module RGFA::Field
     # @param fieldname [Symbol] the tag name
     # @param datatype [RGFA::Field::TAG_DATATYPE] (<i>defaults to: the value
     #  returned by {#default_gfa_tag_datatype}</i>)
-    # @api private
     def to_gfa_tag(fieldname, datatype: default_gfa_tag_datatype)
       return "#{fieldname}:#{datatype}:"+
       "#{to_gfa_field(datatype: datatype, fieldname: fieldname)}"
@@ -230,7 +228,6 @@ module RGFA::Field
     # @raise [RGFA::TypeError] if the specified datatype is unknown
     # @raise [RGFA::FormatError] if the string syntax is not valid
     # @raise [RGFA::ValueError] if the decoded value is not valid
-    # @api private
     def parse_gfa_field(datatype,
                         safe: true,
                         fieldname: nil,
@@ -280,7 +277,6 @@ module RGFA::Field
     #   a valid GFA tag
     # @return [Array(Symbol, RGFA::Field::FIELD_DATATYPE, String)]
     #   the parsed content of the field
-    # @api private
     def parse_gfa_tag
       if self =~ /^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$/
         return $1.to_sym, $2.to_sym, $3
@@ -305,7 +301,7 @@ module RGFA::Field
     #   @raise [RGFA::FormatError] if the object type or content
     #     is not compatible to the provided datatype
     #   @return [void]
-    #   @api private
+    # @api private
     module Encoded
       def validate_gfa_field(datatype, fieldname=nil)
         mod = RGFA::Field::FIELD_MODULE[datatype]
@@ -320,6 +316,7 @@ module RGFA::Field
     # Validates a non-string Ruby object field content
     # according to the field datatype.
     # @!macro validate_gfa_field
+    # @api private
     module Decoded
       def validate_gfa_field(datatype, fieldname=nil)
         mod = RGFA::Field::FIELD_MODULE[datatype]
@@ -352,13 +349,13 @@ end
 # Custom classes shall define the default_gfa_tag_datatype
 # function in their class definition and not here.
 #
+# @api private
 module RGFA::DefaultDatatypes
 
   module Object
     # @!macro [new] gfa_datatype
     #   GFA tag datatype to use, if none is provided
     #   @return [RGFA::Field::TAG_DATATYPE]
-    #   @api private
     def default_gfa_tag_datatype; :Z; end
   end
 

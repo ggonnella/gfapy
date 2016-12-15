@@ -73,35 +73,6 @@ class RGFA::NumericArray < Array
   # @raise [RGFA::ValueError] if the array is not valid
   alias_method :validate, :compute_subtype
 
-  # Computes the subtype for integers in a given range.
-  #
-  # If all elements are non-negative, an unsigned subtype is selected,
-  # otherwise a signed subtype.
-  #
-  # @param range [Range] the integer range
-  #
-  # @raise [RGFA::ValueError] if the integer range is outside
-  #   all subtype ranges
-  #
-  # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
-  def self.integer_type(range)
-    if range.min < 0
-      SIGNED_INT_SUBTYPE.each do |st|
-        st_range = RGFA::NumericArray::SUBTYPE_RANGE[st]
-        if st_range.include?(range.min) and st_range.include?(range.max)
-          return st
-        end
-      end
-    else
-      UNSIGNED_INT_SUBTYPE.each do |st|
-        return st if range.max < RGFA::NumericArray::SUBTYPE_RANGE[st].max
-      end
-    end
-    raise RGFA::ValueError,
-      "NumericArray: values are outside of all integer subtype ranges\n"+
-      "Content: #{inspect}"
-  end
-
   # Return self
   # @param valid [nil] ignored, for compatibility
   # @return [RGFA::NumericArray]
@@ -118,9 +89,48 @@ class RGFA::NumericArray < Array
     "#{subtype},#{join(",")}"
   end
 
-  # GFA tag datatype to use, if none is provided
-  # @return [RGFA::Field::TAG_DATATYPE]
-  def default_gfa_tag_datatype; :B; end
+  # @api private
+  module API_PRIVATE
+
+    # GFA tag datatype to use, if none is provided
+    # @return [RGFA::Field::TAG_DATATYPE]
+    def default_gfa_tag_datatype; :B; end
+
+  end
+  include API_PRIVATE
+
+  # @api private
+  module API_PRIVATE_CLASS_METHODS
+    # Computes the subtype for integers in a given range.
+    #
+    # If all elements are non-negative, an unsigned subtype is selected,
+    # otherwise a signed subtype.
+    #
+    # @param range [Range] the integer range
+    #
+    # @raise [RGFA::ValueError] if the integer range is outside
+    #   all subtype ranges
+    #
+    # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
+    def integer_type(range)
+      if range.min < 0
+        SIGNED_INT_SUBTYPE.each do |st|
+          st_range = RGFA::NumericArray::SUBTYPE_RANGE[st]
+          if st_range.include?(range.min) and st_range.include?(range.max)
+            return st
+          end
+        end
+      else
+        UNSIGNED_INT_SUBTYPE.each do |st|
+          return st if range.max < RGFA::NumericArray::SUBTYPE_RANGE[st].max
+        end
+      end
+      raise RGFA::ValueError,
+        "NumericArray: values are outside of all integer subtype ranges\n"+
+        "Content: #{inspect}"
+    end
+  end
+  extend API_PRIVATE_CLASS_METHODS
 
 end
 
