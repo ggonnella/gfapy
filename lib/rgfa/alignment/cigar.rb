@@ -2,6 +2,7 @@ RGFA::Alignment ||= Module.new
 
 # Array of {RGFA::Alignment::CIGAR::Operation CIGAR operations}.
 # Represents the contents of a CIGAR string.
+# @tested_in api_alignment
 class RGFA::Alignment::CIGAR < Array
 
   # Compute the CIGAR for the segments when these are switched.
@@ -108,6 +109,7 @@ class RGFA::Alignment::CIGAR < Array
   end
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
 
     # @return [RGFA::Alignment::CIGAR] self
@@ -169,6 +171,7 @@ class RGFA::Alignment::CIGAR < Array
 end
 
 # An operation in a CIGAR string
+# @tested_in api_alignment
 class RGFA::Alignment::CIGAR::Operation
 
   # @!attribute [rw] len
@@ -219,10 +222,17 @@ class RGFA::Alignment::CIGAR::Operation
       len = Integer(@len)
     rescue
       raise RGFA::TypeError, "CIGAR operation: #{self.inspect}\n"+
-        "Len class is not Integer but #{len.class}"
+        "CIGAR length cannot be casted to Integer (class: #{len.class})"
+    end
+    begin
+      code = @code.to_sym
+    rescue
+      raise RGFA::TypeError, "CIGAR operation: #{self.inspect}\n"+
+        "CIGAR code cannot be casted to symbol (class: #{code.class})"
     end
     if len < 0
-      raise RGFA::ValueError
+      raise RGFA::ValueError,
+        "Length of CIGAR operation #{self} is invalid (#{len})"
     elsif RGFA::Alignment::CIGAR::Operation::CODE_GFA1_ONLY.include?(code)
       if version == :gfa2
         raise RGFA::ValueError, "CIGAR operation: #{self.inspect}\n"+
@@ -235,6 +245,7 @@ class RGFA::Alignment::CIGAR::Operation
   end
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
     # @return [RGFA::Alignment::CIGAR::Operation] self
     def to_cigar_operation
@@ -248,6 +259,7 @@ end
 class Array
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
     # Create a {RGFA::Alignment::CIGAR} instance from the content of the array.
     # @param valid [nil] ignored, for compatibility
@@ -257,7 +269,8 @@ class Array
       RGFA::Alignment::CIGAR.new(self)
     end
 
-    # Create a {RGFA::Alignment::CIGAR::Operation} instance from the array content
+    # Create a {RGFA::Alignment::CIGAR::Operation} instance
+    # from the array content
     # @return [RGFA::Alignment::CIGAR::Operation]
     def to_cigar_operation
       RGFA::Alignment::CIGAR::Operation.new(Integer(self[0]), self[1].to_sym)
@@ -270,6 +283,7 @@ end
 class String
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
     # Parse CIGAR string
     # @return [RGFA::Alignment::CIGAR,RGFA::Alignment::Placeholder]

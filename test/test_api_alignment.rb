@@ -151,6 +151,27 @@ class TestAPI::Alignment < Test::Unit::TestCase
     assert_equal(@@cigar_op_2_s, @@cigar_op_2.to_s)
   end
 
+  def test_cigar_operation_validation
+    assert_nothing_raised { @@cigar_op_1.validate }
+    assert_nothing_raised { @@cigar_op_1.validate(version: :gfa2) }
+    assert_nothing_raised { @@cigar_op_2.validate }
+    assert_nothing_raised { @@cigar_op_2.validate(version: :gfa2) }
+    assert_raise(RGFA::VersionError) { @@cigar_op_1.validate(version: :gfaX) }
+    stringlen = RGFA::Alignment::CIGAR::Operation.new("1", :M)
+    assert_nothing_raised { stringlen.validate }
+    stringcode = RGFA::Alignment::CIGAR::Operation.new(1, "M")
+    assert_nothing_raised { stringcode.validate }
+    malformed1 = RGFA::Alignment::CIGAR::Operation.new([1], :M)
+    assert_raise(RGFA::TypeError) { malformed1.validate }
+    malformed2 = RGFA::Alignment::CIGAR::Operation.new(-1, :M)
+    assert_raise(RGFA::ValueError) { malformed2.validate }
+    malformed3 = RGFA::Alignment::CIGAR::Operation.new(1, :L)
+    assert_raise(RGFA::ValueError) { malformed3.validate }
+    gfa1only = RGFA::Alignment::CIGAR::Operation.new(1, :X)
+    assert_nothing_raised { gfa1only.validate }
+    assert_raise(RGFA::ValueError) { gfa1only.validate(version: :gfa2) }
+  end
+
   def test_cigar_complement
     assert_equal(@@cigar_gfa1_1_c_s,
                  @@cigar_gfa1_1_s.to_alignment(version: :gfa1).complement.to_s)

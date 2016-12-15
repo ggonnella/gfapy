@@ -22,6 +22,27 @@ class (TestUnit||=Module.new)::Alignment < Test::Unit::TestCase
 
   @@trace_1 = RGFA::Alignment::Trace.new([12,12,0])
   @@trace_1_s = "12,12,0"
+  @@trace_1_a = [12,12,0]
+
+  def test_array_to_alignment
+    assert_kind_of(RGFA::Alignment::Placeholder, [].to_alignment)
+    assert_equal(@@cigar_1, @@cigar_1_a.to_alignment)
+    assert_raise(RGFA::VersionError) {@@trace_1_a.to_alignment}
+    assert_equal(@@trace_1, @@trace_1_a.to_alignment(version: :gfa2))
+    assert_raise(RGFA::VersionError) {@@cigar_1_a.to_alignment(version: :gfaX)}
+    assert_raise(RGFA::FormatError) {["x",2,1].to_alignment}
+    # only the first element is checked, therefore:
+    malformed1 = [1,2,"x"]
+    assert_nothing_raised {malformed1.to_alignment(version: :gfa2)}
+    assert_kind_of(RGFA::Alignment::Trace,
+                   malformed1.to_alignment(version: :gfa2))
+    assert_raise(RGFA::TypeError) {
+                 malformed1.to_alignment(version: :gfa2).validate }
+    malformed2 = [RGFA::Alignment::CIGAR::Operation.new(12,:M),2,"x"]
+    assert_nothing_raised {malformed2.to_alignment}
+    assert_kind_of(RGFA::Alignment::CIGAR, malformed2.to_alignment)
+    assert_raise(RGFA::TypeError) { malformed2.to_alignment.validate }
+  end
 
   def test_to_cigar
     assert_equal(@@cigar_1, @@cigar_1.to_cigar)

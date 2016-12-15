@@ -12,6 +12,7 @@ RGFA::Alignment ||= Module.new
 # Note: a complement operation such as for CIGARs cannot be defined
 # for a trace, without computing the alignment.
 #
+# @tested_in api_alignment
 class RGFA::Alignment::Trace < Array
 
   # Validate the numeric array
@@ -61,6 +62,7 @@ class RGFA::Alignment::Trace < Array
   end
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
 
     # @return [RGFA::Alignment::Trace] self
@@ -72,6 +74,7 @@ class RGFA::Alignment::Trace < Array
   include API_PRIVATE
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE_CLASS_METHODS
 
     def from_string(str)
@@ -86,6 +89,7 @@ end
 class String
 
   # @api private
+  # @tested_in unit_alignment
   module API_PRIVATE
 
     # Parse trace string

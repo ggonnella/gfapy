@@ -149,6 +149,7 @@ module RGFA::Field
   }
 
   # Encoding of Ruby objects to GFA string representation
+  # @tested_in internals_field_writer
   # @api private
   module Writer
 
@@ -213,6 +214,7 @@ module RGFA::Field
   end
 
   # Decoding of the GFA string representations into Ruby objects
+  # @tested_in internals_field_parser
   # @api private
   module Parser
 
@@ -290,6 +292,7 @@ module RGFA::Field
 
   # Validates the content of a GFA field, which can be a GFA string
   # representation or a Ruby object, according to the field datatype.
+  # @tested_in internals_field_validator
   # @api private
   module Validator
 
@@ -349,6 +352,7 @@ end
 # Custom classes shall define the default_gfa_tag_datatype
 # function in their class definition and not here.
 #
+# @tested_in internals_tag_datatype
 # @api private
 module RGFA::DefaultDatatypes
 
