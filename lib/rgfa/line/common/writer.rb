@@ -1,5 +1,8 @@
 module RGFA::Line::Common::Writer
 
+  # Separator in the string representation of RGFA lines
+  SEPARATOR = "\t"
+
   # @return [String] a string representation of self
   def to_s
     to_a.join(RGFA::Line::SEPARATOR)

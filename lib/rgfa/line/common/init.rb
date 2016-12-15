@@ -1,5 +1,8 @@
 module RGFA::Line::Common::Init
 
+  # List of allowed record_type values
+  RECORD_TYPES = [ :H, :S, :L, :C, :P, :"#", :G, :F, :E, :O, :U, nil ]
+
   # List of data types which are parsed only on access;
   # all other are parsed when read.
   DELAYED_PARSING_DATATYPES = [
@@ -104,6 +107,13 @@ module RGFA::Line::Common::Init
         raise "RECORD_TYPE_VERSIONS has no value for #{record_type}"
       end
     end
+  end
+
+  # @return self
+  # @param vlevel [Boolean] ignored (compatibility reasons)
+  # @param version [Boolean] ignored (compatibility reasons)
+  def to_rgfa_line(vlevel: nil, version: nil)
+    self
   end
 
   private

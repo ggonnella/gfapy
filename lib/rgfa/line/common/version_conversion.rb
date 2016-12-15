@@ -1,5 +1,9 @@
 module RGFA::Line::Common::VersionConversion
 
+  # @!attribute [r] version
+  #   @return [RGFA::VERSIONS, nil] GFA specification version
+  attr_reader :version
+
   [:gfa1, :gfa2].each do |shall_version|
     # @note RGFA::Line subclasses do not usually redefine this method, but
     #   the corresponding versioned to_a method

@@ -130,14 +130,64 @@ module RGFA::Line::Common::DynamicFields
     end
   end
 
-  def self.included?(base)
+  def self.included(base)
     base.extend(ClassMethods)
-    base.class_eval do
+    base.instance_eval do
+      private_class_method :apply_definitions
+      private_class_method :define_field_accessors
+      private_class_method :define_field_aliases
+      private_class_method :define_reference_getters
     end
   end
 
   module ClassMethods
-    # TODO: this should contain define_field_methods
+
+    def apply_definitions
+      define_field_accessors
+      define_field_aliases
+      define_reference_getters
+    end
+
+    def define_field_accessors
+      (self::POSFIELDS +
+       self::PREDEFINED_TAGS).each do |fieldname|
+        define_method(fieldname) do
+          get(fieldname)
+        end
+        define_method :"#{fieldname}!" do
+          get!(fieldname)
+        end
+        define_method :"#{fieldname}=" do |value|
+          set_existing_field(fieldname, value)
+        end
+      end
+    end
+    def define_field_aliases
+      if !self::NAME_FIELD.nil? and !self::POSFIELDS.include?(:name)
+        self::FIELD_ALIAS[:name] = self::NAME_FIELD
+      end
+      self::FIELD_ALIAS.each do |k,v|
+        alias_method :"#{k}",  :"#{v}"
+        alias_method :"#{k}!", :"#{v}!"
+        alias_method :"#{k}=", :"#{v}="
+      end
+    end
+
+    def define_reference_getters
+      (self::DEPENDENT_LINES + self::OTHER_REFERENCES).each do |k|
+        if !method_defined?(k)
+          define_method(k) do
+            @refs ||= {}
+            @refs.fetch(k, []).clone.freeze
+          end
+        end
+      end
+      if !method_defined?(:all_references)
+        define_method :all_references do
+          refs.values.flatten
+        end
+      end
+    end
   end
 
 end

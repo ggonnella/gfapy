@@ -1,5 +1,10 @@
 module RGFA::Line::Common::FieldData
 
+  # @return [Symbol] record type code
+  def record_type
+    self.class::RECORD_TYPE
+  end
+
   # @return [Array<Symbol>] name of the positional fields
   # @note these names are not always the field names
   #   in the specification,
