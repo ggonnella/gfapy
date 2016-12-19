@@ -1,6 +1,9 @@
+# Create methods for access to non-existing but valid tag names.
+# @tested_in unit_line_dynamic_fields
 module RGFA::Line::Common::DynamicFields
 
   # Methods are dynamically created for non-existing but valid tag names.
+  #
   # Methods for predefined tags and positional fields
   # are created dynamically for each subclass; methods for existing tags
   # are created on instance initialization.
@@ -162,6 +165,7 @@ module RGFA::Line::Common::DynamicFields
         end
       end
     end
+
     def define_field_aliases
       if !self::NAME_FIELD.nil? and !self::POSFIELDS.include?(:name)
         self::FIELD_ALIAS[:name] = self::NAME_FIELD
@@ -188,6 +192,7 @@ module RGFA::Line::Common::DynamicFields
         end
       end
     end
+
   end
 
 end

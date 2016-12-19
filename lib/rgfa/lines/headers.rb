@@ -30,6 +30,8 @@ require_relative "../field_array"
 #   rgfa.header.add(:xx, 100) # => RGFA::FieldArray<[100,100] @datatype: :i>
 #   rgfa.header.add(:xx, 100) # => RGFA::FieldArray<[100,100,100] @datatype :i>
 #
+# @tested_in api_header
+#
 module RGFA::Lines::Headers
 
   # @return [RGFA::Line::Header] an header line representing the entire header

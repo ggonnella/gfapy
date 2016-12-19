@@ -1,3 +1,6 @@
+# Sets the reference to the segment in fragments, when they are connected
+# to a RGFA instance; creates a virtual segment, if the segment has not
+# been found yet
 module RGFA::Line::Fragment::References
 
   private

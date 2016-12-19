@@ -1,7 +1,9 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class (TestUnit||=Module.new)::LineHeader < Test::Unit::TestCase
+TestUnit ||= Module.new
+
+class TestUnit::Header < Test::Unit::TestCase
 
   def test_new
     assert_nothing_raised {

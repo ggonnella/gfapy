@@ -101,7 +101,13 @@ class TestAPI::Positionals < Test::Unit::TestCase
     end
   end
 
-  def test_fieldnames
+  def test_positional_fieldnames
+    @@l.each do |rt, line|
+      assert_equal(@@fieldnames[rt], line.positional_fieldnames)
+    end
+  end
+
+  def test_field_getters_and_setters
     @@fieldnames.each do |rt, fn_list|
       fn_list.each_with_index do |fn, i|
         i+=1 # skip record_type
@@ -229,6 +235,9 @@ class TestAPI::Positionals < Test::Unit::TestCase
     s = @@l[:S2].clone
     s.sequence = ";;;{}"
     assert_nothing_raised { s.validate }
+    # to_sequence
+    assert_kind_of(RGFA::Placeholder,"*".to_sequence)
+    assert_kind_of(String,"ACG".to_sequence)
   end
 
   def test_sequence_rc

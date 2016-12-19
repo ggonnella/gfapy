@@ -4,6 +4,7 @@ require "test/unit"
 TestAPI ||= Module.new
 class TestAPI::ReferencesEdit < Test::Unit::TestCase
 
+  # XXX
   def test_reference_fields_editing
     # for each kind of line
     #   for each reference field (hard code here)

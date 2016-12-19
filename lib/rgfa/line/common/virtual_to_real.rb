@@ -1,6 +1,7 @@
-# Methods in this module are important for lines
-# which can be virtual
+# Support of virtual lines and the creation of real lines which substitute
+# previously introduced virtual lines.
 #
+# @tested_in api_references_virtual
 module RGFA::Line::Common::VirtualToReal
 
   # Is the line virtual?

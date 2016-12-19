@@ -4,6 +4,8 @@ require_relative "error.rb"
 # Array of positive integers <= 255;
 # representation of the data contained in an H field
 #
+# @tested_in api_tags
+#
 class RGFA::ByteArray < Array
 
   # Validates the byte array content
@@ -44,6 +46,7 @@ class RGFA::ByteArray < Array
   end
 
   # @api private
+  # @tested_in internals_tag_datatype
   module API_PRIVATE
     # GFA tag datatype to use, if none is provided
     # @return [RGFA::Field::TAG_DATATYPE]
@@ -54,6 +57,7 @@ class RGFA::ByteArray < Array
 end
 
 # Method to create a RGFA::ByteArray from an Array
+# @tested_in api_tags
 class Array
   # Create a RGFA::ByteArray from an Array instance
   # @param valid [nil] ignored, for compatibility
@@ -64,6 +68,7 @@ class Array
 end
 
 # Method to parse the string representation of a RGFA::ByteArray
+# @tested_in api_tags
 class String
   # Convert a GFA string representation of a byte array to a byte array
   # @return [RGFA::ByteArray] the byte array

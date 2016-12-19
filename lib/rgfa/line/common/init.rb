@@ -1,3 +1,7 @@
+#
+# Initialization of line instances.
+# @tested_in unit_line
+#
 module RGFA::Line::Common::Init
 
   # List of allowed record_type values
@@ -205,19 +209,13 @@ module RGFA::Line::Common::Init
         raise RGFA::NotUniqueError,
           "Tag #{n} found multiple times"
       elsif predefined_tag?(n)
-        unless t == self.class::DATATYPE[n]
-          raise RGFA::TypeError,
-            "Tag #{n} must be of type "+
-            "#{self.class::DATATYPE[n]}, #{t} found"
-        end
-      elsif not valid_custom_tagname?(n)
-        raise RGFA::FormatError,
-          "Custom tags must be lower case; found: #{n}"
+        validate_predefined_tag_type(n, t)
       else
+        validate_custom_tagname(n)
         @datatype[n] = t
       end
     else
-      (@datatype[n] = t) if !field_datatype(t)
+      (@datatype[n] = t) if !field_datatype(n)
     end
     init_field_value(n, t, s, errmsginfo: errmsginfo)
   end

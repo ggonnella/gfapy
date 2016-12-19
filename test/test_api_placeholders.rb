@@ -33,6 +33,7 @@ class TestAPI::Placeholders < Test::Unit::TestCase
     assert(@@p[1].placeholder?)
     assert(@@p[0..-1].placeholder?)
     assert_equal(0, @@p.length)
+    assert_equal(0, @@p.size)
     # sequence
     assert(@@p.rc.placeholder?)
     # integer

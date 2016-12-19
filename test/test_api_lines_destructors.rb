@@ -12,15 +12,18 @@ class TestAPI::Lines::Destructors < Test::Unit::TestCase
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
     assert_equal([l], gfa.links.map(&:to_s))
-    assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
-    gfa.search_link(OL["1", "+"], OL["2", "+"], "12M").disconnect
+    assert_equal([l],
+                 gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
+    gfa.segment(:"1").oriented_relations(:+, OL[:"2", :+]).map(&:disconnect)
     assert_equal([], gfa.links)
-    assert_equal(nil, gfa.link(["1", :R], ["2", :L]))
+    assert_equal([], gfa.segment(:"1").end_relations(:R, [:"2", :L]))
     assert_equal([c], gfa.containments.map(&:to_s))
-    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
+    assert_equal(c,
+                 gfa.segment(:"1").relations_to(gfa.segment(:"0"),
+                                    :edges_to_contained)[0].to_s)
     gfa << l
     assert_not_equal([], gfa.links)
-    gfa.rm(gfa.search_link(OL["1","+"],OL["2","+"], "12M"))
+    gfa.segment(:"1").oriented_relations(:+, OL[:"2", :+]).map(&:disconnect)
     assert_equal([], gfa.links)
   end
 
@@ -30,26 +33,18 @@ class TestAPI::Lines::Destructors < Test::Unit::TestCase
     l = "L\t1\t+\t2\t+\t12M"
     c = "C\t1\t+\t0\t+\t12\t12M"
     (s + [l,c]).each {|line| gfa << line }
-    gfa.containments_between("1", "0").map(&:disconnect)
+    gfa.segment(:"1").relations_to(gfa.segment(:"0"), :edges_to_contained).
+                                   each(&:disconnect)
     assert_equal([], gfa.containments)
-    assert_equal(nil, gfa.containments_between("1", "0")[0])
+    assert_equal(nil, gfa.segment(:"1").relations_to(:"0",
+                                                     :edges_to_contained)[0])
     gfa << c
     assert_not_equal([], gfa.containments)
-    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
-    gfa.containments_between(:"1", :"0").each(&:disconnect)
+    assert_equal(c, gfa.segment(:"1").relations_to(:"0",
+                                                   :edges_to_contained)[0].to_s)
+    gfa.segment(:"1").relations_to(gfa.segment(:"0"), :edges_to_contained).
+                                   each(&:disconnect)
     assert_equal([], gfa.containments)
-  end
-
-  def test_unconnect_segments
-    gfa = RGFA.new
-    s = ["S\t0\t*", "S\t1\t*", "S\t2\t*"]
-    l = "L\t1\t+\t2\t+\t12M"
-    c = "C\t1\t+\t0\t+\t12\t12M"
-    (s + [l,c]).each {|line| gfa << line }
-    gfa.unconnect_segments("0", "1")
-    gfa.unconnect_segments("2", "1")
-    assert_equal([], gfa.containments)
-    assert_equal([], gfa.links)
   end
 
   def test_delete_segment

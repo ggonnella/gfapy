@@ -1,11 +1,13 @@
+#
+# In a connected line, some of the fields are converted into references or
+# array of references to other lines.  Furthermore instance variables are
+# populated with backreferences to the line (e.g. connection of a segment are
+# stored as references in segment arrays), to allow graph traversal.
+#
+# @tested_in unit_line_connection
+#
 module RGFA::Line::Common::Connection
 
-  # In a connected line, some of the fields are converted
-  # into references or array of references to other lines.
-  # Furthermore instance variables are populated with back
-  # references to the line (e.g. connection of a segment
-  # are stored as references in segment arrays), to allow
-  # graph traversal.
   # @return [Boolean] is the line connected to other lines of a RGFA instance?
   def connected?
     !@rgfa.nil?
@@ -37,11 +39,16 @@ module RGFA::Line::Common::Connection
   end
 
   # @api private
-  def add_reference(line, key, append: true)
-    @refs ||= {}
-    @refs[key] ||= []
-    @refs[key].send(append ? :push : :unshift, line)
+  module API_PRIVATE
+
+    def add_reference(line, key, append: true)
+      @refs ||= {}
+      @refs[key] ||= []
+      @refs[key].send(append ? :push : :unshift, line)
+    end
+
   end
+  include API_PRIVATE
 
   protected
 

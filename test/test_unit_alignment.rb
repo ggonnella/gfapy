@@ -64,6 +64,7 @@ class (TestUnit||=Module.new)::Alignment < Test::Unit::TestCase
     assert_equal(@@trace_1, @@trace_1.to_trace)
     assert_equal(RGFA::Alignment::Placeholder,
                  RGFA::Alignment::Placeholder.new.to_trace.class)
+    assert_raise(RGFA::FormatError) {"A,1,2".to_trace}
   end
 
 end

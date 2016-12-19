@@ -1,3 +1,5 @@
+# Disallow connection by user to RGFA lines
+# @tested_in api_header
 module RGFA::Line::Header::Connection
 
   # @api private
@@ -22,7 +24,6 @@ module RGFA::Line::Header::Connection
     end
 
   end
-
   include API_PRIVATE
 
 end

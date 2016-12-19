@@ -1,3 +1,4 @@
+# @tested_in unit_line_connection
 module RGFA::Line::Common::Disconnection
 
   # Remove the line from the RGFA instance it belongs to, if any.
@@ -24,24 +25,28 @@ module RGFA::Line::Common::Disconnection
   end
 
   # @api private
-  def delete_reference(line, key)
-    return if !@refs or !@refs[key]
-    idx = @refs[key].index {|x| x.equal?(line)}
-    return if idx.nil?
-    @refs = ((idx == 0 ? [] : @refs[0..idx-1]) + @refs[idx+1..-1])
-  end
+  module API_PRIVATE
 
-  # @api private
-  def delete_first_reference(key)
-    return if !@refs or !@refs[key]
-    @refs[key].shift
-  end
+    def delete_reference(line, key)
+      return if !@refs or !@refs[key]
+      idx = @refs[key].index {|x| x.equal?(line)}
+      return if idx.nil?
+      @refs[key] =
+        ((idx == 0 ? [] : @refs[key][0..idx-1]) + @refs[key][idx+1..-1])
+    end
 
-  # @api private
-  def delete_last_reference(key)
-    return if !@refs or !@refs[key]
-    @refs[key].pop
+    def delete_first_reference(key)
+      return if !@refs or !@refs[key]
+      @refs[key].shift
+    end
+
+    def delete_last_reference(key)
+      return if !@refs or !@refs[key]
+      @refs[key].pop
+    end
+
   end
+  include API_PRIVATE
 
   private
 
@@ -71,16 +76,17 @@ module RGFA::Line::Common::Disconnection
     end
   end
 
-  #def each_reference_in(field, &block)
-  #  case field
-  #  when RGFA::Line
-  #    yield field
-  #  when RGFA::OrientedLine
-  #    yield field.line
-  #  when Array
-  #    field.each {|elem| each_reference_in(elem, &block)}
-  #  end
-  #end
+  # note: consider implementing the following method:
+  # def each_reference_in(field, &block)
+  #   case field
+  #   when RGFA::Line
+  #     yield field
+  #   when RGFA::OrientedLine
+  #     yield field.line
+  #   when Array
+  #     field.each {|elem| each_reference_in(elem, &block)}
+  #   end
+  # end
 
   def remove_backreference(ref, k)
     case ref

@@ -1,0 +1,93 @@
+# rgfa.rb
+RGFA#vlevel
+RGFA#vlevel=(level)
+RGFA#version
+RGFA.new(validate:, version:)
+RGFA#validation
+RGFA#to_s
+RGFA#to_gfa1_s
+RGFA#to_gfa2_s
+RGFA#to_gfa1
+RGFA#to_gfa2
+RGFA#to_rgfa
+RGFA#clone
+RGFA#read_file(filename)
+RGFA.from_file(filename, validate:, version:)
+RGFA.to_file(filename)
+RGFA#info
+RGFA#n_dead_ends
+RGFA#==
+String#to_rgfa(validate:, version:)
+Array#to_rgfa(validate:, version:)
+# lib/rgfa/alignment*
+String#to_alignment(version:, valid:)
+RGFA::Alignment::CIGAR#complement
+RGFA::Alignment::CIGAR#to_s
+RGFA::Alignment::CIGAR#validate(version:)
+RGFA::Alignment::CIGAR#to_alignment(valid:, version:)
+RGFA::Alignment::CIGAR#clone
+RGFA::Alignment::CIGAR#length_on_reference
+RGFA::Alignment::CIGAR#length_on_query
+RGFA::Alignment::CIGAR::Operation#len
+RGFA::Alignment::CIGAR::Operation#code
+RGFA::Alignment::CIGAR::Operation.new(len, code)
+RGFA::Alignment::CIGAR::Operation#to_s
+RGFA::Alignment::CIGAR::Operation#==
+RGFA::Alignment::CIGAR::Operation#validate(version:)
+RGFA::Alignment::Placeholder#complement
+RGFA::Alignment::Placeholder#to_alignment(valid:, version:)
+RGFA::Alignment::Trace#validate(ts:)
+RGFA::Alignment::Trace#to_s
+RGFA::Alignment::Trace#to_alignment(valid:, version:)
+RGFA::Alignment::Trace#complement
+# lib/rgfa/field_array.rb
+RGFA::FieldArray.new
+RGFA::FieldArray#validate
+### Summary of headers-related API methods
+RGFA#header
+RGFA::Line::Header#add
+RGFA::FieldArray#(array methods)
+Array#to_rgfa_field_array(datatype)
+### Summary of tags-related API methods
+RGFA::Line#tn/tn!/tn= # tn = tag name
+RGFA::Line#get/get!/set
+RGFA::Line#delete
+RGFA::Line#get_datatype/set_datatype
+RGFA::Line#validate_field/validate
+String#to_byte_array/to_numeric_array
+Array#to_byte_array/to_numeric_array
+RGFA::NumericArray/RGFA::ByteArray#to_s
+RGFA::NumericArray/RGFA::ByteArray#validate
+RGFA::NumericArray#compute_subtype
+### rgfa.md
+```ruby
+RGFA.new
+RGFA.from_file(filename)
+RGFA#to_s
+RGFA#to_file(filename)
+RGFA#segments
+RGFA#paths
+RGFA#edges
+RGFA#links
+RGFA#containments
+RGFA#groups
+RGFA#fragments
+RGFA#comments
+RGFA#custom_lines
+RGFA#custom_lines(key)
+RGFA#header
+RGFA#line(name)
+RGFA#names
+RGFA#segment_names
+RGFA#edges_names
+RGFA#gap_names
+RGFA#path_names
+RGFA#set_names
+RGFA#external_names
+RGFA#fragments_for_external(id)
+RGFA#add_line(line)
+RGFA#<<(line)
+String#to_rgfa_line
+RGFA#rm(line)
+RGFA::Line#disconnect
+```

@@ -2,6 +2,7 @@ require_relative "error"
 
 # A segment or segment name and an end symbol (:L or :R)
 #
+# @tested_in unit_segment_end
 class RGFA::SegmentEnd < Array
 
   def initialize(segment, end_type)
@@ -82,7 +83,7 @@ class RGFA::SegmentEnd < Array
 
   # Compare the segment names and end types of two instances
   #
-  # @param [RGFA::SegmentInfo] other the other instance
+  # @param [RGFA::SegmentEnd] other the other instance
   # @return [Boolean]
   def <=>(other)
     to_s <=> other.to_segment_end.to_s

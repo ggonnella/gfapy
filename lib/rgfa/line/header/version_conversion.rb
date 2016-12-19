@@ -1,6 +1,7 @@
 module RGFA::Line::Header::VersionConversion
 
   # @api private
+  # @tested_in unit_header
   module API_PRIVATE
 
     # Return the string representation of the tags, changing the value

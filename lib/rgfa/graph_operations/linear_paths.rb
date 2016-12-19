@@ -215,7 +215,14 @@ module RGFA::GraphOperations::LinearPaths
     progress_log(:merge_linear_paths, 0.95) if @progress
     (segpath.size-1).times do |i|
       b = segpath[i+1].to_segment_end.invert
-      l = link!(a, b)
+      ls = segment(a.segment).end_relations(a.end_type, b, :dovetails)
+      if ls.size != 1
+        msg = "A single link was expected between #{a} and #{b}, "+
+          "#{ls.size} were found"
+        msg << ":\n#{l.map(&:to_s).join("\n")}" if ls.size > 0
+        raise RGFA::ValueError, msg
+      end
+      l = ls[0]
       if l.overlap == []
         cut = 0
       elsif l.overlap.all?{|op|[:M, :"="].include?(op.code)}

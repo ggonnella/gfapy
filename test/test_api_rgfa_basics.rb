@@ -38,7 +38,7 @@ class TestAPI::RGFA::Basics < Test::Unit::TestCase
     assert_equal([], gfa.path_names)
     gfa << "P\t3\t1+,4-\t*"
     assert_equal([:"3"], gfa.path_names)
-    gfa.path("3").disconnect
+    gfa.paths[0].disconnect
     assert_equal([], gfa.path_names)
   end
 

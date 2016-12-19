@@ -1,3 +1,8 @@
+#
+# Methods for the validation of single fields and of the entire line
+#
+# @tested_in api_positionals, api_tags
+#
 module RGFA::Line::Common::Validate
 
   # Raises an error if the content of the field does not correspond to
@@ -20,21 +25,48 @@ module RGFA::Line::Common::Validate
   # @return [void]
   def validate
     fieldnames = positional_fieldnames + tagnames
+    validate_tagnames_and_types if @vlevel == 0 # otherwise validated at init
     fieldnames.each {|fieldname| validate_field(fieldname) }
     validate_record_type_specific_info
   end
 
   private
 
-  def valid_custom_tagname?(fieldname)
-    /^[a-z][a-z0-9]$/ =~ fieldname
+  def validate_tagnames_and_types
+    tagnames.each do |n|
+      if predefined_tag?(n)
+        validate_predefined_tag_type(n, field_datatype(n))
+      elsif not valid_custom_tagname?(n)
+        raise RGFA::FormatError,
+          "Custom tags must be lower case; found: #{n}"
+      end
+    end
+  end
+
+  def validate_predefined_tag_type(tagname, datatype)
+    unless datatype == self.class::DATATYPE[tagname]
+      raise RGFA::TypeError,
+        "Tag #{tagname} must be of type "+
+        "#{self.class::DATATYPE[tagname]}, #{datatype} found"
+    end
+  end
+
+  def validate_custom_tagname(tagname)
+    if not valid_custom_tagname?(tagname)
+      raise RGFA::FormatError,
+        "Custom tags must be lower case; found: #{tagname}"
+    end
+  end
+
+  def valid_custom_tagname?(tagname)
+    /^[a-z][a-z0-9]$/ =~ tagname
   end
 
   def validate_record_type_specific_info
   end
 
-  def predefined_tag?(fieldname)
-    self.class::PREDEFINED_TAGS.include?(fieldname)
+  def predefined_tag?(tagname)
+    self.class::PREDEFINED_TAGS.include?(tagname)
   end
 
 end

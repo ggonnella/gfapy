@@ -83,7 +83,66 @@ module RGFA::Line::Segment::References
     dovetails + containments + internals
   end
 
+  # List of edges or gaps which connect to the specified segment
+  # @param segment [Symbol, RGFA::Segment] a segment name or instance
+  # @param collection [Symbol] <i>(defaults to: +edges+)</i> which edges or gaps
+  #   shall be considered; a method of segment which returns an array of
+  #   instances which respond to the method +other+ (e.g. edges, gaps,
+  #   containments, edges_to_contained; dovetails_L; gaps_L; etc)
+  # @return [Array<RGFA::Line::Edge, RGFA::Line::Gap>]
+  def relations_to(segment, collection = :edges)
+    case segment
+    when Symbol
+      relations_to_symbol(segment, collection)
+    when RGFA::Line
+      relations_to_line(segment, collection)
+    end
+  end
+
+  # List of edges or gaps which connect to the specified oriented segment
+  # @param orientation [:+,:-] orientation of self
+  # @param oriented_segment [RGFA::OrientedLine] an oriented line
+  # @param collection [Symbol] <i>(defaults to: +edges+)</i> which edges or gaps
+  #   shall be considered; a method of segment which returns an array of
+  #   instances which respond to the method +other_oriented_segment+
+  #   (e.g. edges, gaps, containments, edges_to_contained; dovetails_L;
+  #   gaps_L; etc)
+  # @return [Array<RGFA::Line::Edge, RGFA::Line::Gap>]
+  def oriented_relations(orientation, oriented_segment, collection = :edges)
+    send(collection).select do |e|
+      (e.other_oriented_segment(OL[self, orientation]) rescue nil) ==
+        oriented_segment.to_oriented_line
+    end
+  end
+
+  # List of edges or gaps which connect to the specified segment end
+  # @param orientation [:+,:-] orientation of self
+  # @param oriented_segment [RGFA::OrientedLine] an oriented segment
+  # @param collection [Symbol] <i>(defaults to: +edges+)</i> which edges or gaps
+  #   shall be considered; a method of segment which returns an array of
+  #   instances which respond to the method +other_end+
+  #   (e.g. dovetails, gaps)
+  # @return [Array<RGFA::Line::Edge, RGFA::Line::Gap>]
+  def end_relations(extremity, segment_end, collection = :edges)
+    send(collection).select do |e|
+      (e.other_end([self, extremity].to_segment_end) rescue nil) ==
+        segment_end.to_segment_end
+    end
+  end
+
   private
+
+  def relations_to_symbol(segment_symbol, collection)
+    send(collection).select do |e|
+      e.other(self).name == segment_symbol
+    end
+  end
+
+  def relations_to_line(segment, collection)
+    send(collection).select do |e|
+      e.other(self).eql?(segment)
+    end
+  end
 
   def connectivity_symbols(n,m)
     [connectivity_symbol(n), connectivity_symbol(m)]

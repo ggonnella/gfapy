@@ -1,5 +1,8 @@
+# Output the spacer before the content
+# @tested_in api_comments
 module RGFA::Line::Comment::Writer
 
+  # @return [String] a string representation of self
   def to_s
     "##{spacer}#{content}"
   end
@@ -7,8 +10,14 @@ module RGFA::Line::Comment::Writer
   alias_method :to_gfa1_s, :to_s
   alias_method :to_gfa2_s, :to_s
 
-  def to_a
-    ["#", content, spacer]
+  # @api private
+  module API_PRIVATE
+
+    def to_a
+      ["#", content, spacer]
+    end
+
   end
+  include API_PRIVATE
 
 end

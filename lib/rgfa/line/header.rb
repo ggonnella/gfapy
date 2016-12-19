@@ -1,8 +1,6 @@
 # A header line of a RGFA file
 #
-# For examples on how to set the header data, see {RGFA::Headers}.
-#
-# @see RGFA::Line
+# @tested_in api_header
 class RGFA::Line::Header < RGFA::Line
 
   RECORD_TYPE = :H

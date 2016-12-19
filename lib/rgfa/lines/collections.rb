@@ -1,20 +1,28 @@
 #
 # Methods for the RGFA class, which allow to add lines.
 #
+# @tested_in api_lines_collections
+#
 module RGFA::Lines::Collections
 
-  COLLECTIONS_NO_ID = {
+  # Names of the collections and record type of lines which
+  # do not have a name field
+  COLLECTIONS_NO_NAME = {
     :comments => :"#",
     :containments => :C,
     :links => :L,
   }
 
-  COLLECTIONS_MANDATORY_ID = {
+  # Names of the collections and record type of lines which
+  # have a mandatory name field
+  COLLECTIONS_MANDATORY_NAME = {
     :segments => :S,
     :gfa1_paths => :P
   }
 
-  COLLECTIONS_OPTIONAL_ID = {
+  # Names of the collections and record type of lines which
+  # have an optional name field
+  COLLECTIONS_OPTIONAL_NAME = {
     :edges => :E,
     :gaps => :G,
     :sets => :U,
@@ -30,7 +38,7 @@ module RGFA::Lines::Collections
   # @!method links
   #   All links of the RGFA
   #   @return [Array<RGFA::Line::Edge::Link>]
-  COLLECTIONS_NO_ID.each do |k, v|
+  COLLECTIONS_NO_NAME.each do |k, v|
     define_method(k){@records[v]}
   end
 
@@ -52,7 +60,7 @@ module RGFA::Lines::Collections
   # @!method edge_names
   #   List all names of edges in the RGFA
   #   @return [Array<Symbol>]
-  COLLECTIONS_OPTIONAL_ID.each do |k, v|
+  COLLECTIONS_OPTIONAL_NAME.each do |k, v|
     define_method(k) {@records[v].values.flatten}
     define_method(:"#{k[0..-2]}_names") {@records[v].keys - [nil]}
   end
@@ -63,7 +71,7 @@ module RGFA::Lines::Collections
   # @!method segment_names
   #   List all names of segments in the RGFA
   #   @return [Array<Symbol>]
-  COLLECTIONS_MANDATORY_ID.each do |k, v|
+  COLLECTIONS_MANDATORY_NAME.each do |k, v|
     define_method(k) {@records[v].values}
     define_method(:"#{k[0..-2]}_names") {@records[v].keys}
   end
@@ -80,19 +88,30 @@ module RGFA::Lines::Collections
     gfa1_path_names + gfa2_path_names
   end
 
+  # All fragments of the RGFA instance
+  # @return [Array<RGFA::Line::Fragment>]
   def fragments
     @records[:F].values.flatten
   end
 
+  # All names of external sequences mentioned in fragments
+  # @return [Array<Symbol>]
   def external_names
     @records[:F].keys
   end
 
+  # All names of lines
+  # (segments and paths in GFA1/GFA2; edges, gaps, sets in GFA2)
+  # @return [Array<Symbol>]
   def names
     segment_names + edge_names + gap_names + path_names + set_names
   end
 
+  # Record types only allowed in GFA1 (in RGFA)
   GFA1_ONLY_KEYS = [:L, :C, :P]
+
+  # Record types allowed in GFA2 (except custom lines);
+  # nil is a placeholder for virtual lines of unknown type
   NONCUSTOM_GFA2_KEYS = [:H, :"#", :F, :S, :E, :G, :U, :O, nil]
 
   # All record type keys of custom records of the RGFA
@@ -109,7 +128,7 @@ module RGFA::Lines::Collections
     end
   end
 
-  # All custom records of the RGFA
+  # All custom records of the RGFA instance
   # @return [Array<RGFA::Line::CustomRecord>]
   def custom_records(record_type=nil)
     if record_type
@@ -138,6 +157,8 @@ module RGFA::Lines::Collections
     end
   end
 
+  # All lines of the RGFA instance
+  # @return [Array<RGFA::Line>]
   def lines
     comments + headers + segments +
       links + containments + edges +
@@ -145,6 +166,8 @@ module RGFA::Lines::Collections
           custom_records
   end
 
+  # Iterate over each line of the RGFA instance
+  # @yield [Array<RGFA::Line>]
   def each_line(&block)
     lines.each(&block)
   end

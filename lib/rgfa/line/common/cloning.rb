@@ -1,14 +1,17 @@
 module RGFA::Line::Common::Cloning
 
-  # Copy of a RGFA::Line instance.
+  # Clone a RGFA::Line instance.
+  #
   # The copy will be disconnected, ie do not belong to the RGFA and do not
-  # contain cross-references to other lines. This allows to edit the line
-  # (eg. changing the unique ID) before adding it.
-  # To achieve this, all reference fields are copied in their string
-  # representation.
-  # All other fields are copied as they are, and a deep copy is done for
-  # arrays, strings and JSON fields.
-  # @return [RGFA::Line]
+  # contain cross-references to other lines. This allows to edit the line (eg.
+  # changing the unique ID) before adding it. To achieve this, all reference
+  # fields are copied in their string representation. All other fields are
+  # copied as they are, and a deep copy is done for arrays, strings and JSON
+  # fields.
+  #
+  # @tested_in unit_line_cloning
+  #
+  # @return [RGFA::Line] deep disconnected copy of the line instance
   def clone
     data_cpy = {}
     @data.each_pair do |k, v|

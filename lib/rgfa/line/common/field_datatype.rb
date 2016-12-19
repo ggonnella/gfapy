@@ -1,3 +1,8 @@
+#
+# Methods to set and get the datatype of fields.
+#
+# @tested_in api_tags
+#
 module RGFA::Line::Common::FieldDatatype
 
   # Returns a symbol, which specifies the datatype of a field

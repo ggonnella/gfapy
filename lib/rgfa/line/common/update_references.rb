@@ -1,33 +1,42 @@
 # Update of references caused by a virtual line becoming real.
 #
+# @tested_in unit_line_connection
+#
 module RGFA::Line::Common::UpdateReferences
 
-  # This is called on lines which were referenced by virtual lines,
-  # when a real line is found which substitutes the virtual line.
-  #
-  # @note SUBCLASSES which can be referenced by virtual lines
-  #   may implement a specialize #backreferences_keys method to
-  #   support this mechanism (the default will work in all cases
-  #   of the current specification, but is not optimized for record type)
-  #
-  # @param oldref [RGFA::Line]
-  # @param newref [RGFA::Line]
-  # @param key_in_ref [Array<Symbol>]
-  # @return [void]
-  #
   # @api private
-  def update_references(oldref, newref, key_in_ref)
-    keys = backreference_keys(oldref, key_in_ref)
-    update_field_references(oldref, newref, self.class::REFERENCE_FIELDS & keys)
-    if instance_variable_defined?(:@refs)
-      # note: keeping the two types of nonfield references separate helps
-      #       in subclasses where only one must be redefined
-      update_dependent_line_references(oldref, newref,
-                                self.class::DEPENDENT_LINES & @refs.keys & keys)
-      update_other_references(oldref, newref,
-                               self.class::OTHER_REFERENCES & @refs.keys & keys)
+  module API_PRIVATE
+
+    # When a line is found, which substitutes a virtual line, this method
+    # is called on each line which had references to the virtual line.
+    #
+    # @note SUBCLASSES which can be referenced by virtual lines
+    #   may implement a specialize #backreferences_keys method to
+    #   support this mechanism (the default will work in all cases
+    #   of the current specification, but is not optimized for record type)
+    #
+    # @param oldref [RGFA::Line]
+    # @param newref [RGFA::Line]
+    # @param key_in_ref [Array<Symbol>] key of the reference in the
+    #   line _referencing_ this line (note: not _in this line_)
+    # @return [void]
+    #
+    def update_references(oldref, newref, key_in_ref)
+      keys = backreference_keys(oldref, key_in_ref)
+      update_field_references(oldref, newref,
+                              self.class::REFERENCE_FIELDS & keys)
+      if instance_variable_defined?(:@refs)
+        # note: keeping the two types of nonfield references separate helps
+        #       in subclasses where only one must be redefined
+        update_dependent_line_references(oldref, newref,
+                              self.class::DEPENDENT_LINES & @refs.keys & keys)
+        update_other_references(oldref, newref,
+                              self.class::OTHER_REFERENCES & @refs.keys & keys)
+      end
     end
+
   end
+  include API_PRIVATE
 
   private
 

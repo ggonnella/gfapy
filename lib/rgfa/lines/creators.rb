@@ -13,6 +13,8 @@ module RGFA::Lines::Creators
   #   with the same name are added
   # @raise [RGFA::ArgumentError] if the argument is not a RGFA::Line or String
   # @return [RGFA] self
+  #
+  # @tested_in api_lines_creators
   def add_line(gfa_line)
     case version
     when :gfa1
@@ -27,6 +29,62 @@ module RGFA::Lines::Creators
     return self
   end
   alias_method :<<, :add_line
+
+  # Process the lines in the line queue in which lines of type P,L,C are put
+  # during parsing while waiting for an additional signal which allows to
+  # identify the version as GFA1.
+  #
+  # The user usually does not need to call this method, unless a RGFA is created
+  # from scratch in memory and the user wants to do something on an incomplete
+  # or invalid GFA (as any valid GFA will contain segments, it will call this
+  # method automatically).
+  #
+  # @tested_in api_lines_version
+  #
+  # @return [void]
+  def process_line_queue
+    if @version.nil?
+      @version = @version_guess
+    end
+    @line_queue.size.times {self << @line_queue.shift}
+  end
+
+  # @api private
+  module API_PRIVATE
+
+    # Register a line in the RGFA, i.e. add a reference to the
+    # appropriate reference collection in the @records hash.
+    #
+    # @tested_in unit_rgfa_lines
+    #
+    # @return [void]
+    def register_line(gfa_line)
+      api_private_check_gfa_line(gfa_line, "register_line")
+      storage_key = gfa_line.class::STORAGE_KEY
+      case storage_key
+      when :merge
+        @records[gfa_line.record_type].merge(gfa_line)
+      when :name
+        @records[gfa_line.record_type] ||= {}
+        if gfa_line.name.empty?
+          @records[gfa_line.record_type][nil] ||= []
+          @records[gfa_line.record_type][nil] << gfa_line
+        else
+          @records[gfa_line.record_type][gfa_line.name] = gfa_line
+        end
+      when :external
+        @records[gfa_line.record_type][gfa_line.external.line] ||= []
+        @records[gfa_line.record_type][gfa_line.external.line] << gfa_line
+      when nil
+        @records[gfa_line.record_type] ||= []
+        @records[gfa_line.record_type] << gfa_line
+      end
+    end
+
+  end
+  include API_PRIVATE
+
+  private
 
   def add_line_unknown_version(gfa_line)
     if gfa_line.kind_of?(String)
@@ -72,7 +130,6 @@ module RGFA::Lines::Creators
       @line_queue << gfa_line
     end
   end
-  private :add_line_unknown_version
 
   def add_line_GFA1(gfa_line)
     if gfa_line.kind_of?(String)
@@ -110,7 +167,6 @@ module RGFA::Lines::Creators
         "Invalid record type #{rt}" # should be unreachable
     end
   end
-  private :add_line_GFA1
 
   def add_line_GFA2(gfa_line)
     if gfa_line.kind_of?(String)
@@ -143,38 +199,6 @@ module RGFA::Lines::Creators
       gfa_line.connect(self)
     else
       gfa_line.connect(self)
-    end
-  end
-  private :add_line_GFA2
-
-  def process_line_queue
-    if @version.nil?
-      @version = @version_guess
-    end
-    @line_queue.size.times {self << @line_queue.shift}
-  end
-
-  # @api private
-  def register_line(gfa_line)
-    api_private_check_gfa_line(gfa_line, "register_line")
-    storage_key = gfa_line.class::STORAGE_KEY
-    case storage_key
-    when :merge
-      @records[gfa_line.record_type].merge(gfa_line)
-    when :name
-      @records[gfa_line.record_type] ||= {}
-      if gfa_line.name.empty?
-        @records[gfa_line.record_type][nil] ||= []
-        @records[gfa_line.record_type][nil] << gfa_line
-      else
-        @records[gfa_line.record_type][gfa_line.name] = gfa_line
-      end
-    when :external
-      @records[gfa_line.record_type][gfa_line.external.line] ||= []
-      @records[gfa_line.record_type][gfa_line.external.line] << gfa_line
-    when nil
-      @records[gfa_line.record_type] ||= []
-      @records[gfa_line.record_type] << gfa_line
     end
   end
 

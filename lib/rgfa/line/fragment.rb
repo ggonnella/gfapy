@@ -1,4 +1,5 @@
 # A fragment line of a GFA2 file
+# @tested_in api_references_f_g_lines, api_positionals
 class RGFA::Line::Fragment < RGFA::Line
 
   RECORD_TYPE = :F

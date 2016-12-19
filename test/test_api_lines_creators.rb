@@ -37,11 +37,9 @@ class TestAPI::Lines::Creators < Test::Unit::TestCase
     gfa << s2
     assert_nothing_raised { gfa << l1 }
     assert_equal([l1], gfa.links)
-    assert_equal(l1, gfa.link(["1", :R], ["2", :L]))
-    assert_equal(l1, gfa.link(["2", :L], ["1", :R]))
-    assert_equal(nil, gfa.link(["2", :R], ["1", :L]))
-    assert_nothing_raised {gfa.link!(["1", :R], ["2", :L])}
-    assert_raises(RGFA::NotFoundError) {gfa.link!(["2", :R], ["1", :L])}
+    assert_equal([l1], gfa.segment(:"1").end_relations(:R, ["2", :L]))
+    assert_equal([l1], gfa.segment(:"2").end_relations(:L, ["1", :R]))
+    assert_equal([], gfa.segment(:"2").end_relations(:R, ["1", :L]))
     assert_nothing_raised { gfa << l2 }
   end
 
@@ -55,8 +53,10 @@ class TestAPI::Lines::Creators < Test::Unit::TestCase
     gfa << s2
     assert_nothing_raised { gfa << c1 }
     assert_equal([c1], gfa.containments)
-    assert_equal([c1], gfa.containments_between("1", "2"))
-    assert_equal([], gfa.containments_between("2", "1"))
+    assert_equal([c1],
+             gfa.segment(:"1").relations_to(:"2", :edges_to_contained))
+    assert_equal([],
+             gfa.segment(:"2").relations_to(:"1", :edges_to_contained))
     assert_nothing_raised { gfa << c2 }
   end
 
@@ -72,10 +72,8 @@ class TestAPI::Lines::Creators < Test::Unit::TestCase
     assert_nothing_raised { gfa << p1 }
     assert_equal([p1], gfa.paths)
     assert_equal([:"4"], gfa.path_names)
-    assert_equal(p1, gfa.path("4"))
-    assert_equal(nil, gfa.path("5"))
-    assert_nothing_raised {gfa.path!("4")}
-    assert_raises(RGFA::NotFoundError) {gfa.path!("5")}
+    assert_equal(p1, gfa.line(:"4"))
+    assert_equal(nil, gfa.line(:"5"))
     assert_raises(RGFA::NotUniqueError) { gfa << p2 }
     assert_nothing_raised { gfa << p3 }
   end

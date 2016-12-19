@@ -1,4 +1,5 @@
 # A link connects two segments, or a segment to itself.
+# @tested_in api_positionals, api_references_edges_gfa1
 class RGFA::Line::Edge::Link < RGFA::Line::Edge
 
   RECORD_TYPE = :L

@@ -148,6 +148,8 @@ lib/rgfa/line/header/multiline.rb
 lib/rgfa/line/comment/tags.rb
 lib/rgfa/line/comment/init.rb
 lib/rgfa/line/comment/writer.rb
+lib/rgfa/line/unknown/writer.rb
+lib/rgfa/line/unknown/virtual.rb
 lib/rgfa/sequence.rb
 lib/rgfa/numeric_array.rb
 lib/rgfa/byte_array.rb

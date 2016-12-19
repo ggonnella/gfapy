@@ -1,5 +1,6 @@
 # A GFA2 line which was referred to only by G or O lines
 # and has not been found yet (ie is always virtual)
+# @tested_in api_positionals, unit_unknown, api_references
 class RGFA::Line::Unknown < RGFA::Line
 
   RECORD_TYPE = nil
@@ -19,9 +20,12 @@ class RGFA::Line::Unknown < RGFA::Line
   apply_definitions
 
   alias_method :to_sym, :name
+end
 
-  def virtual?
-    true
-  end
+require_relative "unknown/writer.rb"
+require_relative "unknown/virtual.rb"
 
+class RGFA::Line::Unknown
+  include RGFA::Line::Unknown::Writer
+  include RGFA::Line::Unknown::Virtual
 end

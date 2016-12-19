@@ -1,3 +1,4 @@
+# @tested_in unit_line_diff
 module RGFA::Line::Common::Equivalence
 
   # Equivalence check
@@ -21,10 +22,17 @@ module RGFA::Line::Common::Equivalence
     return true
   end
 
+  # Returns always false, as a line is not a placeholder (for compatibility
+  # with other objects which can be representable as placeholders, such as
+  # symbols, strings, arrays).
+  # @return [false]
+  def placeholder?
+    false
+  end
+
   # Computes the differences between the line and another line.
   # @return [Array<Array<Symbol, String>>] information about the differences;
   #   an empty array if no difference found
-  # @api private
   def diff(other)
     if self.record_type != other.record_type
       return [:incompatible, :record_type, self.record_type, other.record_type]
@@ -64,7 +72,6 @@ module RGFA::Line::Common::Equivalence
 
   # Computes a RGFA Ruby script for converting line into other
   # @return [String]
-  # @api private
   def diffscript(other, selfvar)
     diffinfo = diff(other)
     outscript = []

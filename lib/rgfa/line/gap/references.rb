@@ -1,3 +1,9 @@
+# Sets the reference to the segments in gaps, when they are connected
+# to a RGFA instance; creates virtual segments, if the segments have not
+# been found yet.
+#
+# Computes the key to the reference to the gap in segments (gaps_R or gaps_L)
+# depending on the orientations.
 module RGFA::Line::Gap::References
 
   private
@@ -35,15 +41,6 @@ module RGFA::Line::Gap::References
     else
       raise RGFA::AssertionError, "Bug found, please report\n"+
         "snum: #{snum}"
-    end
-  end
-
-  def import_field_references(previous)
-    [:sid1, :sid2].each do |sid|
-      orient = get(sid).orient
-      linesymbol = get(sid).line
-      set_existing_field(sid, OL[@rgfa.segment(linesymbol),orient],
-                         set_reference: true)
     end
   end
 

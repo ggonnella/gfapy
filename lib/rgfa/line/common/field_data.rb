@@ -1,3 +1,8 @@
+#
+# Access to the data contained in fields.
+#
+# @tested_in api_tags, api_positionals, unit_line
+#
 module RGFA::Line::Common::FieldData
 
   # @return [Symbol] record type code

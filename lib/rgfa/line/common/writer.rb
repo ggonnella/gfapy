@@ -1,3 +1,8 @@
+#
+# Methods to write a single field or the entire line to string.
+#
+# @tested_in unit_line, api_tags, api_positionals
+#
 module RGFA::Line::Common::Writer
 
   # Separator in the string representation of RGFA lines
@@ -6,18 +11,6 @@ module RGFA::Line::Common::Writer
   # @return [String] a string representation of self
   def to_s
     to_a.join(RGFA::Line::SEPARATOR)
-  end
-
-  # @return [Array<String>] an array of string representations of the fields
-  # @api private
-  def to_a
-    a = [record_type.to_s]
-    positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
-    tagnames.each {|fn| a << field_to_s(fn, tag: true)}
-    if virtual?
-      a << "co:Z:RGFA_virtual_line"
-    end
-    return a
   end
 
   # @!macro [new] field_to_s
@@ -42,6 +35,11 @@ module RGFA::Line::Common::Writer
     return tag ? field.to_gfa_tag(fieldname, datatype: t) : field
   end
 
+  # Return a description of the internal state of the instance.
+  # Wraps the superclass inspect method, in order to provide a more
+  # compact description, due to the references and backreferences
+  # contained in line instances.
+  # @return [String]
   def inspect
     if instance_variable_defined?(:@refs) and !@refs.nil?
       local_refs = @refs
@@ -60,6 +58,23 @@ module RGFA::Line::Common::Writer
     @rgfa = local_rgfa if local_rgfa
     retval
   end
+
+  # @api private
+  module API_PRIVATE
+
+    # @return [Array<String>] an array of string representations of the fields
+    def to_a
+      a = [record_type.to_s]
+      positional_fieldnames.each {|fn| a << field_to_s(fn, tag: false)}
+      tagnames.each {|fn| a << field_to_s(fn, tag: true)}
+      if virtual?
+        a << "co:Z:RGFA_virtual_line"
+      end
+      return a
+    end
+
+  end
+  include API_PRIVATE
 
   private
 

@@ -57,7 +57,7 @@ class RGFA::Line::MetagenomicAssignment
     set_existing_field(:sid, s, set_reference: true)
     s.add_reference(self, :metagenomic_assignments)
 
-    t = @rgfa.search_by_name(tid)
+    t = @rgfa.line(tid)
     if t.nil?
       t = RGFA::Line::Taxon.new([tid.to_s, "*"],
                                 virtual: true, version: :gfa2)

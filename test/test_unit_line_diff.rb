@@ -1,7 +1,9 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class (TestInternals||=Module.new)::LineDiff < Test::Unit::TestCase
+TestUnit ||= Module.new
+
+class TestUnit::LineDiff < Test::Unit::TestCase
 
   def test_line_diff_two_segments
     a = "S\tA\t*\tLN:i:200\txx:Z:a".to_rgfa_line

@@ -21,7 +21,7 @@ The access to the header is done using a single line, which is retrieved using
 the ```header``` method.
 
 Some lines use identifiers: segments, gaps, edges, paths and sets. Given an
-identifier, the line can be retrieved using the ```search_by_name(id)```
+identifier, the line can be retrieved using the ```line(id)```
 method. Note that identifier are represented in RGFA by Ruby symbols.
 The list of all identifier can be retrieved using the ```names``` method;
 for the identifiers of a single line type, use ```segment_names```,
@@ -117,7 +117,7 @@ to modify the content of reference fields of connected line
 
 Removing a line can be done using the ```rm(line)``` method. The argument
 can be a line instance or a symbol (in which case the line is searched
-using the ```search_by_name``` method, then eliminated).
+using the ```line(name)``` method, then eliminated).
 A line instance can also be disconnected using the ```disconnect``` method
 on it. Disconnecting a line may trigger other operations, such as the
 disconnection of other lines (see the References chapter).
@@ -131,36 +131,3 @@ to a RGFA. All references to the line from other lines will still be up to
 date, as they will refer to the same instance (whose name has been changed)
 and their string representation will use the new name.
 
-### Summary of the API methods mentioned above
-
-```ruby
-RGFA.new
-RGFA.from_file(filename)
-RGFA#to_s
-RGFA#to_file(filename)
-RGFA#segments
-RGFA#paths
-RGFA#edges
-RGFA#links
-RGFA#containments
-RGFA#groups
-RGFA#fragments
-RGFA#comments
-RGFA#custom_lines
-RGFA#custom_lines(key)
-RGFA#header
-RGFA#search_by_name(id)
-RGFA#names
-RGFA#segment_names
-RGFA#edges_names
-RGFA#gap_names
-RGFA#path_names
-RGFA#set_names
-RGFA#external_names
-RGFA#fragments_for_external(id)
-RGFA#add_line(line)
-RGFA#<<(line)
-String#to_rgfa_line
-RGFA#rm(line)
-RGFA::Line#disconnect
-```

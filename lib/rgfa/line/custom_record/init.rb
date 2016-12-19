@@ -1,9 +1,16 @@
+# Allow to parse as tags all fields which are valid GFA tags on the right end
+# of the line
+# @tested_in api_custom_records
 module RGFA::Line::CustomRecord::Init
 
+  # List of names of positional fields (:field1, :field2, ...)
+  # @return [Array<Symbol>]
   def positional_fieldnames
     @positional_fieldnames
   end
 
+  # List of tag names
+  # @return [Array<Symbol>]
   def tagnames
     (@data.keys - @positional_fieldnames - [:record_type])
   end

@@ -3,6 +3,7 @@
 # also contain the same tag defined multiple times in different lines, with
 # multiple values.
 #
+# @tested_in api_header, unit_header
 module RGFA::Line::Header::Multiline
 
   # Tags which are allowed to be defined with a single value in the header
@@ -86,6 +87,7 @@ module RGFA::Line::Header::Multiline
   end
 
   # @api private
+  # @tested_in unit_header
   module API_PRIVATE
 
     # Count the tags which are represented by FieldArray (i.e. with multiple

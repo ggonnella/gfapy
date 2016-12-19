@@ -1,3 +1,8 @@
+# A positive integer, with the additional marking (represented
+# by a postfix $), which denotes the last position of a sequence.
+#
+# @tested_in api_positions
+#
 class RGFA::LastPos
 
   # Create a new LastPos.

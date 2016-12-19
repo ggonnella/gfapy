@@ -20,6 +20,8 @@ class TestAPI::Header < Test::Unit::TestCase
   end
 
   def test_header_version_editing
+    standalone = "H\txx:i:1\tVN:Z:1.0".to_rgfa_line
+    assert_nothing_raised {standalone.VN = "2.0"}
     g = RGFA.new
     g << "H\txx:i:1\tVN:Z:1.0"
     assert_nothing_raised { g.header.xx = 2}

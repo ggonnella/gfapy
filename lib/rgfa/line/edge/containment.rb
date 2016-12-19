@@ -1,4 +1,5 @@
 # A containment line of a RGFA file
+# @tested_in api_positionals, api_references_edges_gfa1
 class RGFA::Line::Edge::Containment < RGFA::Line::Edge
 
   RECORD_TYPE = :C

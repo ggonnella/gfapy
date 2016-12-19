@@ -4,6 +4,8 @@
 #
 # @api private
 #
+# @tested_in NOT_TESTED
+#
 class RGFA::Logger
 
   # Information about the progress of a computation

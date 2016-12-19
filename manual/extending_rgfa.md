@@ -167,7 +167,7 @@ class RGFA::Line::MetagenomicAssignment
     set_existing_field(:sid, s, set_reference: true)
     s.add_reference(self, :metagenomic_assignments)
 
-    t = @rgfa.search_by_name(tid)
+    t = @rgfa.line(tid)
     if t.nil?
       t = RGFA::Line::Taxon.new([tid.to_s, ""],
                                 virtual: true, version: :gfa2)
@@ -232,12 +232,11 @@ end
 
 ### Allowing to find records
 
-Both record types T and M define a name field.
-This allows to find record of the types using the ```search_by_name```
-method, as well as allowing to replace virtual T lines created
-while parsing M lines, with real T lines, when these are found.
-For this to work, the codes must be added to the list
-```RECORDS_WITH_NAME``` of the ```RGFA``` class:
+Both record types T and M define a name field.  This allows to find record of
+the types using the ```line()``` method of the ```RGFA``` class, as well as
+allowing to replace virtual T lines created while parsing M lines, with real T
+lines, when these are found.  For this to work, the codes must be added to the
+list ```RECORDS_WITH_NAME``` of the ```RGFA``` class:
 
 ```ruby
 RGFA::RECORDS_WITH_NAME << :T

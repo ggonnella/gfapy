@@ -70,6 +70,8 @@
 #   l.zz = 1 # raises NoMethodError
 #   l.set(:zz, 1) # raises RGFA::RuntimeError
 #   l.get(:zz) # returns nil
+#
+# @tested_in api_comments
 class RGFA::Line::Comment < RGFA::Line
 
   RECORD_TYPE = :"#"

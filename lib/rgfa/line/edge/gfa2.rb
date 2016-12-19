@@ -1,4 +1,5 @@
 # An edge line of a GFA2 file
+# @tested_in api_positionals, api_references_edges_gfa2
 class RGFA::Line::Edge::GFA2 < RGFA::Line::Edge
 
   RECORD_TYPE = :E

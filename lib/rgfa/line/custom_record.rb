@@ -10,6 +10,7 @@
 # - from the first exception to the first field, they are all considered
 #   positional fields with name field0, field1, etc
 #
+# @tested_in api_custom_records
 class RGFA::Line::CustomRecord < RGFA::Line
 
   RECORD_TYPE = nil

@@ -1,5 +1,6 @@
 # A placeholder is used in mandatory fields when a value is not specified.
 # Its string representation is an asterisk (+*+).
+# @tested_in api_placeholder
 class RGFA::Placeholder
   # @return [String] string representation (+*+)
   def to_s

@@ -379,9 +379,8 @@ if rt.include?("-c")
   end
   (cdiff1-cexcl1).uniq.each do |l|
     if out_script
-      # TODO: handle multiple containments for a segments pair
-      puts "gfa.rm(gfa.containments_between(#{l.from.to_sym.inspect}, "+
-                                           "#{l.to.to_sym.inspect}))"
+      puts "gfa.segment(#{l.from.to_sym.inspect}).relations_to("+
+               "#{l.to.to_sym.inspect}, :edges_to_contained).each(&:disconnect)"
     else
       puts "<\t[containments/different]\t#{l.to_s}"
     end

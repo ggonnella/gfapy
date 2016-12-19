@@ -1,3 +1,6 @@
+# Allows to create comments by using a default single-space spacer
+# or by adding a spacer as second string in the array passed to
+# RGFA::Line::Comment.new
 module RGFA::Line::Comment::Init
 
   private

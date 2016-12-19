@@ -126,6 +126,31 @@ class TestAPI::Tags < Test::Unit::TestCase
     end
   end
 
+  def test_validate_field
+    l = RGFA::Line::Header.new(["zz:i:1", "VN:Z:1.0"],
+                                version: :gfa1, vlevel: 0)
+    l.zz = "x"
+    assert_raise(RGFA::FormatError) { l.validate_field(:zz) }
+    l.set_datatype(:zz, :Z)
+    assert_nothing_raised { l.validate_field(:zz) }
+  end
+
+  def test_validate
+    # wrong tag value
+    l = RGFA::Line::Header.new(["zz:i:1", "VN:Z:1.0"],
+                                version: :gfa1, vlevel: 0)
+    l.zz = "x"
+    assert_raise(RGFA::FormatError) { l.validate }
+    # wrong predefined tag name
+    l = RGFA::Line::Header.new(["zz:i:1", "VZ:Z:1.0"],
+                                version: :gfa1, vlevel: 0)
+    assert_raise(RGFA::FormatError) { l.validate }
+    # wrong predefined tag datatype
+    l = RGFA::Line::Header.new(["zz:i:1", "VN:i:1"],
+                                version: :gfa1, vlevel: 0)
+    assert_raise(RGFA::FormatError) { l.validate }
+  end
+
   # test tags for get/set tests:
   # - KC -> predefined, set
   # - RC -> predefined, not set;

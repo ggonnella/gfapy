@@ -3,6 +3,7 @@ require_relative "error"
 #
 # Extensions of the String class to handle nucleotidic sequences
 #
+# @tested_in api_positionals
 module RGFA::Sequence
 
   # Computes the reverse complement of a nucleotidic sequence

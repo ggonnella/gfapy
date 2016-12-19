@@ -48,8 +48,10 @@ module RGFATools::SuperfluousLinks
   # @!macro segment_param
   # @return [RGFA] self
   def remove_self_link(segment)
-    segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
-    unconnect_segments(segment_name, segment_name)
+    segment = segment!(segment) if !segment.kind_of?(RGFA::Line)
+    segment.dovetails.each do |e|
+      e.disconnect! if e.from == e.to
+    end
     self
   end
 

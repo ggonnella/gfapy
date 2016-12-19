@@ -17,30 +17,35 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     assert_equal(s, gfa.segments.map(&:to_s))
     assert_equal([l], gfa.links.select{|n|!n.virtual?}.map(&:to_s))
     assert_equal([c], gfa.containments.map(&:to_s))
-    assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
-    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
-    assert_raises(RGFA::NotFoundError){gfa.link(["1a", :R], ["2", :L])}
-    assert_raises(RGFA::NotFoundError){gfa.containments_between("5", "0")}
-    assert_equal(6000, gfa.segment("1").RC)
-    gfa.multiply("1", 2)
-    assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
-    assert_equal(c, gfa.containments_between("1", "0")[0].to_s)
-    assert_not_equal(nil, gfa.link(["1b", :R], ["2", :L]))
-    assert_not_equal([], gfa.containments_between("1b", "0"))
-    assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(3000, gfa.segment("1b").RC)
-    gfa.multiply("1b", 3 , copy_names:["6","7"])
-    assert_equal(l, gfa.link(["1", :R], ["2", :L]).to_s)
-    assert_not_equal(nil, gfa.link(["1b", :R], ["2", :L]))
-    assert_not_equal(nil, gfa.link(["6", :R], ["2", :L]))
-    assert_not_equal(nil, gfa.link(["7", :R], ["2", :L]))
-    assert_not_equal([], gfa.containments_between("1b", "0"))
-    assert_not_equal([], gfa.containments_between("6", "0"))
-    assert_not_equal([], gfa.containments_between("7", "0"))
-    assert_equal(3000, gfa.segment("1").RC)
-    assert_equal(1000, gfa.segment("1b").RC)
-    assert_equal(1000, gfa.segment("6").RC)
-    assert_equal(1000, gfa.segment("7").RC)
+    assert_equal([l],
+                 gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_equal([c], gfa.segment(:"1").relations_to(:"0").map(&:to_s))
+    assert_equal(6000, gfa.segment(:"1").RC)
+    gfa.multiply(:"1", 2)
+    assert_equal([l],
+                 gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_equal([c], gfa.segment(:"1").relations_to(:"0").map(&:to_s))
+    assert_not_equal([],
+                gfa.segment(:"1b").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([], gfa.segment(:"1b").relations_to(:"0"))
+    assert_equal(3000, gfa.segment(:"1").RC)
+    assert_equal(3000, gfa.segment(:"1b").RC)
+    gfa.multiply(:"1b", 3 , copy_names:["6","7"])
+    assert_equal([l],
+                 gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([],
+                gfa.segment(:"1b").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([],
+                 gfa.segment(:"6").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([],
+                 gfa.segment(:"7").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([], gfa.segment(:"1b").relations_to(:"0"))
+    assert_not_equal([], gfa.segment(:"6").relations_to(:"0"))
+    assert_not_equal([], gfa.segment(:"7").relations_to(:"0"))
+    assert_equal(3000, gfa.segment(:"1").RC)
+    assert_equal(1000, gfa.segment(:"1b").RC)
+    assert_equal(1000, gfa.segment(:"6").RC)
+    assert_equal(1000, gfa.segment(:"7").RC)
   end
 
   def test_multiply_segment_copy_names
@@ -49,31 +54,31 @@ class TestAPI::Multiplication < Test::Unit::TestCase
            "S\t1b\t*\tRC:i:6000",
            "S\t2\t*\tRC:i:60000",
            "S\t3\t*\tRC:i:60000"].to_rgfa
-    gfa.multiply("2", 2, copy_names: :upcase)
+    gfa.multiply(:"2", 2, copy_names: :upcase)
     assert_nothing_raised {gfa.segment!("2B")}
-    gfa.multiply("2", 2, copy_names: :upcase)
+    gfa.multiply(:"2", 2, copy_names: :upcase)
     assert_nothing_raised {gfa.segment!("2C")}
-    gfa.multiply("2", 2, copy_names: :copy)
+    gfa.multiply(:"2", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("2_copy")}
-    gfa.multiply("2", 2, copy_names: :copy)
+    gfa.multiply(:"2", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("2_copy2")}
-    gfa.multiply("2", 2, copy_names: :copy)
+    gfa.multiply(:"2", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("2_copy3")}
-    gfa.multiply("2_copy", 2, copy_names: :copy)
+    gfa.multiply(:"2_copy", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("2_copy4")}
-    gfa.multiply("2_copy4", 2, copy_names: :copy)
+    gfa.multiply(:"2_copy4", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("2_copy5")}
-    gfa.multiply("2", 2, copy_names: :number)
+    gfa.multiply(:"2", 2, copy_names: :number)
     assert_nothing_raised {gfa.segment!("4")}
-    gfa.multiply("1b", 2)
+    gfa.multiply(:"1b", 2)
     assert_nothing_raised {gfa.segment!("1c")}
-    gfa.multiply("1b", 2, copy_names: :number)
+    gfa.multiply(:"1b", 2, copy_names: :number)
     assert_nothing_raised {gfa.segment!("1b2")}
-    gfa.multiply("1b", 2, copy_names: :copy)
+    gfa.multiply(:"1b", 2, copy_names: :copy)
     assert_nothing_raised {gfa.segment!("1b_copy")}
-    gfa.multiply("1b_copy", 2, copy_names: :lowcase)
+    gfa.multiply(:"1b_copy", 2, copy_names: :lowcase)
     assert_nothing_raised {gfa.segment!("1b_copz")}
-    gfa.multiply("1b_copy", 2, copy_names: :upcase)
+    gfa.multiply(:"1b_copy", 2, copy_names: :upcase)
     assert_nothing_raised {gfa.segment!("1b_copyB")}
   end
 

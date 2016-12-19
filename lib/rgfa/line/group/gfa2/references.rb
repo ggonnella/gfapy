@@ -46,7 +46,7 @@ module RGFA::Line::Group::GFA2::References
   end
 
   def line_for_ref_symbol(ref)
-    line = @rgfa.search_by_name(ref)
+    line = @rgfa.line(ref)
     if line.nil?
       if @rgfa.segments_first_order
         raise RGFA::NotFoundError, "Group: #{self}\n"+

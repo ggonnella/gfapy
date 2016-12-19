@@ -1,3 +1,5 @@
+# Disallow editing the VN tag in connected header lines
+# @tested_in api_header
 module RGFA::Line::Header::FieldData
 
   private

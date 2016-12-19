@@ -70,19 +70,25 @@ class RGFA::Alignment::Trace < Array
       self
     end
 
-  end
-  include API_PRIVATE
+    module ClassMethods
 
-  # @api private
-  # @tested_in unit_alignment
-  module API_PRIVATE_CLASS_METHODS
+      # @return [RGFA::Alignment::Trace] trace from trace string representation
+      # @raise [RGFA::FormatError] if after splitting by comma, some elements
+      #   are not integers
+      def from_string(str)
+        begin
+          RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
+        rescue
+          raise RGFA::FormatError,
+            "'#{str}' is not a valid string representing a trace"
+        end
+      end
 
-    def from_string(str)
-      RGFA::Alignment::Trace.new(str.split(",").map{|i|Integer(i)})
     end
 
   end
-  extend API_PRIVATE_CLASS_METHODS
+  include API_PRIVATE
+  extend API_PRIVATE::ClassMethods
 
 end
 
@@ -94,8 +100,7 @@ class String
 
     # Parse trace string
     # @return [RGFA::Alignment::Trace]
-    # @raise [RGFA::Alignment::Trace::TypeError] if the string is not a valid
-    #   trace string
+    # @raise [RGFA::FormatError] if the string is not a valid trace string
     def to_trace
       RGFA::Alignment::Trace.from_string(self)
     end

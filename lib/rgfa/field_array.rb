@@ -1,4 +1,5 @@
 # Array representing multiple values of the same tag in different header lines
+# @tested_in api_header
 class RGFA::FieldArray < Array
   attr_reader :datatype
 
@@ -16,6 +17,7 @@ class RGFA::FieldArray < Array
   end
 
   # @api private
+  # @tested_in unit_field_array
   module API_PRIVATE
 
     # Run a datatype-specific validation on each element of the array,
@@ -90,6 +92,7 @@ class Array
   # Create a {RGFA::FieldArray} from an array
   # @param datatype [RGFA::Field::TAG_DATATYPE] the datatype to use
   # @return [RGFA::FieldArray]
+  # @tested_in api_array
   def to_rgfa_field_array(datatype=nil)
     if kind_of?(RGFA::FieldArray)
       self

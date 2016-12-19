@@ -3,6 +3,8 @@ require_relative "error"
 #
 # A numeric array representable using the data type B of the GFA specification
 #
+# @tested_in api_tags
+#
 class RGFA::NumericArray < Array
 
   # Subtypes for signed integers, from the smallest to the largest
@@ -94,24 +96,22 @@ class RGFA::NumericArray < Array
 
     # GFA tag datatype to use, if none is provided
     # @return [RGFA::Field::TAG_DATATYPE]
+    # @tested_in internals_tag_datatype
     def default_gfa_tag_datatype; :B; end
 
-  end
-  include API_PRIVATE
-
-  # @api private
-  module API_PRIVATE_CLASS_METHODS
+    module ClassMethods
     # Computes the subtype for integers in a given range.
     #
     # If all elements are non-negative, an unsigned subtype is selected,
     # otherwise a signed subtype.
     #
-    # @param range [Range] the integer range
+    # @param range [Range<Integer,Integer>] the integer range
     #
     # @raise [RGFA::ValueError] if the integer range is outside
     #   all subtype ranges
     #
     # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
+    # @tested_in unit_numeric_array
     def integer_type(range)
       if range.min < 0
         SIGNED_INT_SUBTYPE.each do |st|
@@ -129,8 +129,11 @@ class RGFA::NumericArray < Array
         "NumericArray: values are outside of all integer subtype ranges\n"+
         "Content: #{inspect}"
     end
+    end
+
   end
-  extend API_PRIVATE_CLASS_METHODS
+  include API_PRIVATE
+  extend API_PRIVATE::ClassMethods
 
 end
 
@@ -139,12 +142,17 @@ end
 #
 class Array
   # Create a numeric array from an Array instance
+  #
   # @param valid [Boolean] <i>(default: +false+)</i>
   #   if +false+, validate the range of the numeric values, according
   #   to the array subtype; if +true+ the string is guaranteed to be valid
+  #
   # @raise [RGFA::ValueError] if any value is not compatible with the subtype
   # @raise [RGFA::TypeError] if the subtype code is invalid
+  #
   # @return [RGFA::NumericArray] the numeric array
+  #
+  # @tested_in api_tags
   def to_numeric_array(valid: false)
     na = RGFA::NumericArray.new(self)
     na.validate if !valid
@@ -156,13 +164,20 @@ end
 # Method to create a numeric array from a string
 #
 class String
+
   # Create a numeric array from a string
+  #
   # @param valid [Boolean] <i>(default: +false+)</i>
   #   if +false+, validate the range of the numeric values, according
   #   to the array subtype; if +true+ the string is guaranteed to be valid
+  #
   # @raise [RGFA::ValueError] if any value is not compatible with the subtype
   # @raise [RGFA::TypeError] if the subtype code is invalid
+  #
   # @return [RGFA::NumericArray] the numeric array
+  #
+  # @tested_in api_tags
+  #
   def to_numeric_array(valid: false)
     unless valid
       if empty?
@@ -201,4 +216,5 @@ class String
     end
     elems.to_numeric_array(valid: true)
   end
+
 end
