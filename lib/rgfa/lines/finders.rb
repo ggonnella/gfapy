@@ -1,6 +1,8 @@
 #
 # Methods for the RGFA class, which allow to add lines.
 #
+# @tested_in api_lines_finders
+#
 module RGFA::Lines::Finders
 
   # @!macro [new] segment
@@ -40,13 +42,16 @@ module RGFA::Lines::Finders
   #   not exist +nil+ is returned
   def line(l)
     return nil if l.placeholder?
-    return l if l.kind_of?(RGFA::Line)
-    RECORDS_WITH_NAME.each do |rt|
-      return nil if !@records[rt]
-      found = @records[rt][l.to_sym]
-      return found if !found.nil?
+    case l
+    when RGFA::Line
+      return l
+    when Symbol
+      return line_by_name(l)
+    when String
+      return line_by_name(l.to_sym)
+    else
+      return nil
     end
-    return nil
   end
 
   # Find the line with the given name, and raise an exception if it does not
@@ -74,6 +79,35 @@ module RGFA::Lines::Finders
   # @return [Array<RGFA::Line::Fragment>]
   def fragments_for_external(id)
     @records[:F].fetch(id.to_sym, [])
+  end
+
+  # @overload select(hash)
+  #   Searches a line based on the value of some of its fields
+  #   @param hash [Hash] an hash field name => field content; if the key :name
+  #     exists, the name field of the line type is searched first, then the
+  #     other fields are compared; placeholder values are ignored.
+  #   @return [Array<RGFA::Line>] a list of lines whose fields are compatible
+  #     with the values given in +hash+
+  # @overload select(line)
+  #   Searches a line based on a given line instance
+  #   @param line [RGFA::Line] a line
+  #   @return [Array<RGFA::Line>] a list of lines with the same values in
+  #     the mandatory fields and specified tags, as +line+; additional tags
+  #     may be present; fields whose value is a placeholder are not compared
+  def select(hash_or_line)
+    is_hash = hash_or_line.kind_of?(Hash)
+    name = is_hash ? hash_or_line[:name] : hash_or_line.get(:name)
+    if !name.nil? and !name.placeholder?
+      collection = [line_by_name(name)]
+    else
+      record_type = is_hash ? hash_or_line[:record_type] :
+                              hash_or_line.record_type
+      collection = collection_for_select(record_type)
+    end
+    method = is_hash ? :field_values? : :eql_fields?
+    collection.select do |line|
+      line.send(method, hash_or_line, [:record_type, :name])
+    end
   end
 
   # @api private
@@ -113,5 +147,33 @@ module RGFA::Lines::Finders
 
   end
   include API_PRIVATE
+
+  private
+
+  def line_by_name(name)
+    RECORDS_WITH_NAME.each do |rt|
+      next if !@records[rt]
+      found = @records[rt][name]
+      return found if !found.nil?
+    end
+    return nil
+  end
+
+  # Computes a collection of lines compatible with the given
+  # record_type.
+  #
+  # @param record_type [Symbol] The record type.
+  def collection_for_select(record_type)
+    case record_type
+    when nil
+      return lines
+    when :S, :P
+      collection = @records[record_type].values
+    when :E, :G, :U, :O, :F
+      collection = @records[record_type].values.flatten
+    else
+      collection = @records[record_type]
+    end
+  end
 
 end

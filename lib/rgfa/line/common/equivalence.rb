@@ -1,4 +1,4 @@
-# @tested_in unit_line_diff
+# @tested_in unit_line_equivalence
 module RGFA::Line::Common::Equivalence
 
   # Equivalence check
@@ -10,6 +10,7 @@ module RGFA::Line::Common::Equivalence
   # @see RGFA::Line::Edge::Link#==
   def ==(other)
     return self.to_sym == other.to_sym if other.kind_of?(Symbol)
+    return false if !other.kind_of?(RGFA::Line)
     return false if (other.record_type != self.record_type)
     return false if other.data.keys.sort != data.keys.sort
     other.data.each do |k, v|
@@ -122,5 +123,70 @@ module RGFA::Line::Common::Equivalence
     end
     return outscript.join("\n")
   end
+
+  # @api private
+  module API_PRIVATE
+
+    # Compares the field values line instance to an hash of
+    # fieldnames => values.
+    #
+    # Each field in the line must have a value equal to that indicated
+    # in the hash, except those indicated in the +ignore_fields+ array
+    # and those containing placeholder values. The values can be decoded
+    # (e.g. 1, an Integer) or encoded (e.g. "1", a String).
+    #
+    # @param hash [Hash(Symbol=>Object)] an hash value of fieldnames => values
+    # @param ignore_fields [Array] list of hash keys to skip in the comparison
+    #
+    # @return [Boolean]
+    def field_values?(hash, ignore_fields = [])
+      if hash[:record_type] and !ignore_fields.include?(:record_type)
+        return false if record_type != hash[:record_type]
+      end
+      ((hash.keys - ignore_fields) - [:record_type]).each do |fieldname|
+        value = get(fieldname)
+        return false if value.nil?
+        next if value.placeholder?
+        if value != hash[fieldname]
+          return false if field_to_s(fieldname) != hash[fieldname]
+        end
+      end
+      return true
+    end
+
+    # Compares the fields of the line to those of a reference line.
+    #
+    # The record type, positional fields and tags are compared, except
+    # those listed in the +ignore_fields+ list. Fields containing placeholder
+    # values in any of the two lines are ignored.
+    #
+    # @param refline [RGFA::Line] a reference line instance for the comparison
+    # @param ignore_fields [Array] list of fields (record_type, positional
+    #   fields and/or tags) to skip in the comparison; the special value +:name+
+    #   will exclude the name field from the comparison
+    #
+    # @return [Boolean]
+    def eql_fields?(refline, ignore_fields = [])
+      unless ignore_fields.include?(:record_type)
+        return false if self.record_type != refline.record_type
+      end
+      fieldnames = (refline.positional_fieldnames + refline.tagnames)
+      fieldnames -= ignore_fields
+      if ignore_fields.include?(:name)
+        fieldnames.delete(refline.class::NAME_FIELD)
+      end
+      fieldnames.each do |fieldname|
+        refvalue = refline.get(fieldname)
+        next if refvalue.placeholder?
+        value = get(fieldname)
+        return false if value.nil?
+        next if value.placeholder?
+        return false if value != refvalue
+      end
+      return true
+    end
+
+  end
+  include API_PRIVATE
 
 end
