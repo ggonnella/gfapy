@@ -1,7 +1,9 @@
 require_relative "../lib/rgfa.rb"
 require "test/unit"
 
-class TestRGFATraverse < Test::Unit::TestCase
+TestAPI||=Module.new
+
+class TestAPI::LinearPaths < Test::Unit::TestCase
 
   def test_linear_path_merging
     s = ["S\t0\tACGA",

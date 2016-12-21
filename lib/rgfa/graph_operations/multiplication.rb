@@ -4,6 +4,8 @@ require_relative "../error.rb"
 # Method for the RGFA class, which allow to split a segment into
 # multiple copies.
 #
+# @tested_in api_multiplication
+#
 module RGFA::GraphOperations::Multiplication
 
   # Create multiple copies of a segment.

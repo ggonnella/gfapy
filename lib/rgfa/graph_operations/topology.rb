@@ -1,6 +1,8 @@
 #
 # Methods which analyse the topology of the graph.
 #
+# @tested_in XXX
+#
 module RGFA::GraphOperations::Topology
 
   require "set"
