@@ -111,9 +111,12 @@ module RGFA::Lines::Finders
   end
 
   # @api private
+  # @tested_in unit_lines_finders
   module API_PRIVATE
 
     # Search a possible duplicate of the gfa_line.
+    # @param gfa_line [RGFA::Line]
+    # @return [RGFA::Line, nil]
     def search_duplicate(gfa_line)
       case gfa_line.record_type
       when :L
@@ -150,6 +153,9 @@ module RGFA::Lines::Finders
 
   private
 
+  # Searches a line by its name
+  # @param name [Symbol]
+  # @return [RGFA::Line, nil]
   def line_by_name(name)
     RECORDS_WITH_NAME.each do |rt|
       next if !@records[rt]
