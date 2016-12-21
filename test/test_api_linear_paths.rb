@@ -95,4 +95,12 @@ class TestAPI::LinearPaths < Test::Unit::TestCase
                  gfa.linear_paths.map{|sp|sp.map{|sn_et|sn_et.to_segment_end.name.to_s}})
   end
 
+  def test_linear_path_merge_example1_gfa2
+    gfa = RGFA.from_file("test/testdata/example1.gfa2")
+    assert_equal([%w[18 19 1],
+                  %w[11 9 12],
+                  %w[22 16 20 21 23]],
+                 gfa.linear_paths.map{|sp|sp.map{|sn_et|sn_et.to_segment_end.name.to_s}})
+  end
+
 end

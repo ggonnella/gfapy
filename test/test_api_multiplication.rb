@@ -92,6 +92,16 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
   end
 
+  def test_links_distribution_l1_m2_gfa2
+    g1 = RGFA.from_file("test/testdata/links_distri.l1.gfa2")
+    g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.gfa2")
+    assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
+    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    g1.multiply_extended(:"1", 2)
+    assert_equal(g2.segment_names.sort,g1.segment_names.sort)
+    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+  end
+
   def test_enable_extensions
     g1 = RGFA.from_file("test/testdata/links_distri.l1.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.gfa")
