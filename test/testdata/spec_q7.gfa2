@@ -1,0 +1,9 @@
+H	VN:Z:2.0
+H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/7#issuecomment-219685552
+S	11	5	ACCTT	pg:J:{"Human":[{"target":"chr1","pos":1500,"strand":true}],"Mouse":[{"target":"chr2","pos":2000,"strand":false}],"ecoli":[{"target":"chr1","pos":2000,"strand":false},{"target":"chr1","pos":3000,"strand":true}]}
+S	12	6	TCAAGG
+S	13	7	CTTGATT
+E	11+_12-	11+	12-	1	5$	2	6$	4M
+E	12-_13+	12-	13+	0	5	0	5	5M
+E	11+_13+	11+	13+	2	5$	0	3	3M
+O	14	11+ 11+_12-+ 12- 12-_13++ 13+

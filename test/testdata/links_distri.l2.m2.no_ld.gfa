@@ -1,9 +1,9 @@
 H	VN:Z:1.0
-S	1	*
-S	2a	*
-S	2b	*
-S	1b	*
-L	1	+	2a	+	*
-L	1	+	2b	+	*
-L	1b	+	2a	+	*
-L	1b	+	2b	+	*
+S	1	*	LN:i:100
+S	2a	*	LN:i:100
+S	2b	*	LN:i:100
+S	1b	*	LN:i:100
+L	1	+	2a	+	10M
+L	1	+	2b	+	10M
+L	1b	+	2a	+	10M
+L	1b	+	2b	+	10M

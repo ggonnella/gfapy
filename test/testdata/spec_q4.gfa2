@@ -1,0 +1,14 @@
+# P	more_than_circular	1+,2+,3+,1+	*,*,0M
+H	VN:Z:2.0
+H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/23#issuecomment-172869000
+H	co:Z:similar to spec_q3
+H	co:Z:more_than_circular should be invalid, 3+/1+/0M is not supported by a link
+S	1	6	AGCGTA
+S	2	6	TAACAG
+S	3	6	GTCATC
+E	1+_2+	1+	2+	4	6$	0	2	2M
+E	2+_3+	2+	3+	4	6$	0	2	2M
+E	3+_1+	3+	1+	4	6$	0	2	2M
+O	linear_path	1+ 1+_2++ 2+ 2+_3++ 3+
+O	circular_path	1+ 1+_2++ 2+ 2+_3++ 3+ 3+_1++ 1+
+O	is_this_okay	1+ 1+_2++ 2+ 2+_3++ 3+

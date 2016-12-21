@@ -3,7 +3,7 @@ H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/23
 H	co:Z:modified: the final "," of circular was eliminated
 S	1	AGCGTA
 S	2	TAACAG
-L	1	+	2	+	2M
-L	2	+	1	+	2M
+L	1	+	2	+	2M	id:Z:1+_2+
+L	2	+	1	+	2M	id:Z:2+_1+
 P	linear	1+,2+	2M
 P	circular	1+,2+	2M,2M

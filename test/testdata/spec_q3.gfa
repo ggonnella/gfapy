@@ -4,9 +4,9 @@ H	co:Z:is_this_okay is OK and shall be interpreted as a linear path
 S	1	AGCGTA
 S	2	TAACAG
 S	3	GTCATC
-L	1	+	2	+	2M
-L	2	+	3	+	2M
-L	3	+	1	+	2M
+L	1	+	2	+	2M	id:Z:1+_2+
+L	2	+	3	+	2M	id:Z:2+_3+
+L	3	+	1	+	0M	id:Z:3+_1+
 P	linear_path	1+,2+,3+	*,*
 P	circular_path	1+,2+,3+	*,*,*
 P	more_than_circular	1+,2+,3+,1+	*,*,0M

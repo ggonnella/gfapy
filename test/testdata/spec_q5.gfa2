@@ -1,0 +1,8 @@
+H	ul:Z:https://github.com/pmelsted/GFA-spec/issues/8
+H	co:Z:the last 3 links are equivalent to the first 3
+S	read0	5500	*
+S	read1	4000	*
+S	read2	5500	*
+E	*	read0+	read1-	3500	5500$	2000	4000$	2000M
+E	*	read1-	read2+	0	3000	0	3000	3000M
+E	*	read0+	read2+	4500	5500$	0	1000	1000M

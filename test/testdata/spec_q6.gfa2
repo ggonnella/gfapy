@@ -1,0 +1,9 @@
+S	0	3	GAT	tn:Z:Human
+S	1	3	CCC	tn:Z:Mouse
+S	2	3	TAC	tn:Z:Human,Mouse
+S	3	1	A	tn:Z:Human
+S	4	3	TTA	tn:Z:Mouse
+E	*	0+	2+	3$	3$	0	0	0M	tn:Z:Human
+E	*	1+	2+	3$	3$	0	0	0M	tn:Z:Mouse
+E	*	2+	3+	3$	3$	0	0	0M	tn:Z:Human
+E	*	2+	4+	3$	3$	0	0	0M	tn:Z:Mouse

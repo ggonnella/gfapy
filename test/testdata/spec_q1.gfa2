@@ -1,0 +1,8 @@
+#invalid:	P	C	1+	*	st:i:5
+#invalid:	P	D	2+	*	st:i:2	en:i:5
+H	VN:Z:2.0
+S	1	6	AGCGTA
+S	2	6	TAACAG
+E	1+_2+	1+	2+	6$	6$	0	0	0M
+O	A	1+ 1+_2++ 2+
+O	B	1+ 1+_2++ 2+
