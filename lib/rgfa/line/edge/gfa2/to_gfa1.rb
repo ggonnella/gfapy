@@ -56,7 +56,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
     oriented_from.line
   end
 
-  # Set the field which will be returned by calling from
+  # Set the line of the field which will be returned by calling from
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def from=(value)
@@ -70,6 +70,13 @@ module RGFA::Line::Edge::GFA2::ToGFA1
     oriented_from.orient
   end
 
+  # Set the orientation of the field which will be returned by calling from
+  # @param value [:+,:-]
+  # @return [nil]
+  def from_orient=(value)
+    oriented_from.orient = value
+  end
+
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +to+ field,
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
@@ -77,7 +84,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
     oriented_to.line
   end
 
-  # Set the field which will be returned by calling to
+  # Set the line of the field which will be returned by calling to
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def to=(value)
@@ -89,6 +96,13 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def to_orient
     oriented_to.orient
+  end
+
+  # Set the orientation of the field which will be returned by calling to
+  # @param value [:+,:-]
+  # @return [nil]
+  def to_orient=(value)
+    oriented_to.orient = value
   end
 
   # @return [Integer] value of the GFA1 +pos+ field,

@@ -1,0 +1,8 @@
+H	VN:Z:1.0
+S	0	ACGA
+S	1	ACGA
+S	2	ACGT
+S	3	TCGA
+L	0	+	1	+	1M
+L	1	+	2	-	1M
+L	2	-	3	+	1M

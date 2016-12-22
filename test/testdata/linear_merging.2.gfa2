@@ -1,0 +1,8 @@
+H	VN:Z:2.0
+S	0	4	ACGA
+S	1	4	ACGA
+S	2	4	ACGT
+S	3	4	TCGA
+E	*	0+	1+	3	4$	0	1	1M
+E	*	1+	2-	3	4$	3	4$	1M
+E	*	2-	3+	0	1	0	1	1M
