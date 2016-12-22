@@ -24,7 +24,7 @@ module RGFA::Line::Edge::GFA2::AlignmentType
         return :I
       end
     else
-      if (st1 == :pfx or st2 == :sfx) and (st1 == st2)
+      if (st1 == :pfx and st2 == :pfx) or (st1 == :sfx and st2 == :sfx)
         return :L
       else
         return :I

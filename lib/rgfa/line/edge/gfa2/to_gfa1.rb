@@ -4,13 +4,18 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   in GFA1, if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def to_gfa1_a
-    check_not_internal("GFA1 representation")
-    a = [alignment_type]
-    a << oriented_from.name.to_s
-    a << oriented_from.orient.to_s
-    a << oriented_to.name.to_s
-    a << oriented_to.orient.to_s
-    if alignment_type == :C
+    at = alignment_type()
+    if at == :internal
+      raise RGFA::ValueError,
+        "Internal overlap, cannot convert to GFA1\n#{self}"
+    end
+    a = [at]
+    (sid1_from? ? [:sid1, :sid2] : [:sid2, :sid1]).each do |sid|
+      ol = get(sid)
+      a << ol.name.to_s
+      a << ol.orient.to_s
+    end
+    if at == :C
       a << pos.to_s
     end
     a << overlap.to_s
@@ -27,30 +32,27 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @raise [RGFA::ValueError] if the edge is internal
   def overlap
     check_not_internal(:overlap)
-    beg1.first? ? alignment.complement : alignment
+    sid1_from? ? alignment : alignment.complement
   end
 
+  # @return [RGFA::OrientedLine] value of the GFA1 +from+ and +from_orient+
+  #   fields, if the edge is a link or containment
+  # @raise [RGFA::ValueError] if the edge is internal
   def oriented_from
-    if beg1.first?
-      (beg2.first? and end2.last?) ? sid1 : sid2
-    else
-      sid1
-    end
+    sid1_from? ? sid1 : sid2
   end
 
+  # @return [RGFA::OrientedLine] value of the GFA1 +to+ and +to_orient+
+  #   fields, if the edge is a link or containment
+  # @raise [RGFA::ValueError] if the edge is internal
   def oriented_to
-    if beg1.first?
-      (beg2.first? and end2.last?) ? sid2 : sid1
-    else
-      sid2
-    end
+    sid1_from? ? sid2 : sid1
   end
 
   # @return [Symbol, RGFA::Line::Segment::GFA2] value of the GFA1 +from+ field,
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def from
-    check_not_internal(:from)
     oriented_from.line
   end
 
@@ -58,7 +60,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def from=(value)
-    check_not_internal(:from)
     oriented_from.line = value
   end
 
@@ -66,7 +67,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def from_orient
-    check_not_internal(:from_orient)
     oriented_from.orient
   end
 
@@ -74,7 +74,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def to
-    check_not_internal(:to)
     oriented_to.line
   end
 
@@ -82,7 +81,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
   # @return [nil]
   def to=(value)
-    check_not_internal(:to)
     oriented_to.line = value
   end
 
@@ -90,7 +88,6 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   #   if the edge is a link or containment
   # @raise [RGFA::ValueError] if the edge is internal
   def to_orient
-    check_not_internal(:to_orient)
     oriented_to.orient
   end
 
@@ -122,6 +119,42 @@ module RGFA::Line::Edge::GFA2::ToGFA1
       raise RGFA::ValueError,
         "Line: #{self.to_s}\n"+
         "Internal alignment, #{fn} is not defined"
+    end
+  end
+
+  # Role of a segment in an overlap, given coordinates and orientation.
+  # @returns [Symbol] :pfx, :sfx, :contained, :other
+  def segment_role(begpos, endpos, orient)
+    if begpos.first?
+      if endpos.last?
+        return :contained
+      else
+        return orient == :+ ? :pfx : :sfx
+      end
+    else
+      if endpos.last?
+        return orient == :+ ? :sfx : :pfx
+      else
+        return :other
+      end
+    end
+  end
+
+  # @return [Boolean] does the sid1 correspond to from in GFA1?
+  def sid1_from?
+    sr1 = segment_role(beg1, end1, sid1.orient)
+    sr2 = segment_role(beg2, end2, sid2.orient)
+    if sr2 == :contained
+      return true
+    elsif sr1 == :contained
+      return false
+    elsif sr1 == :sfx and sr2 == :pfx
+      return true
+    elsif sr2 == :sfx and sr1 == :pfx
+      return false
+    else
+      raise RGFA::ValueError, "Internal overlap, from undefined\n#{self}\n"+
+         "Roles: segment1 is #{sr1}; segment2 is #{sr2}"
     end
   end
 
