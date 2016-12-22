@@ -253,14 +253,9 @@ class RGFA
   end
 
   # Compare two RGFA instances.
-  # XXX: update!
   # @return [Boolean] are the lines of the two instances equivalent?
   def ==(other)
-    segments == other.segments and
-      links == other.links and
-      containments == other.containments and
-      headers == other.headers and
-      paths == other.paths
+    lines == other.lines
   end
 
   # @api private

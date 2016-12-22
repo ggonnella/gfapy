@@ -9,8 +9,8 @@ module RGFA::Lines::Collections
   # do not have a name field
   COLLECTIONS_NO_NAME = {
     :comments => :"#",
-    :containments => :C,
-    :links => :L,
+    :gfa1_containments => :C,
+    :gfa1_links => :L,
   }
 
   # Names of the collections and record type of lines which
@@ -23,7 +23,7 @@ module RGFA::Lines::Collections
   # Names of the collections and record type of lines which
   # have an optional name field
   COLLECTIONS_OPTIONAL_NAME = {
-    :edges => :E,
+    :gfa2_edges => :E,
     :gaps => :G,
     :sets => :U,
     :gfa2_paths => :O
@@ -32,12 +32,6 @@ module RGFA::Lines::Collections
   # @!method comments
   #   All comment lines of the RGFA
   #   @return [Array<RGFA::Line::Comment>]
-  # @!method containments
-  #   All containments in the RGFA
-  #   @return [Array<RGFA::Line::Edge::Containment>]
-  # @!method links
-  #   All links of the RGFA
-  #   @return [Array<RGFA::Line::Edge::Link>]
   COLLECTIONS_NO_NAME.each do |k, v|
     define_method(k){@records[v]}
   end
@@ -54,12 +48,6 @@ module RGFA::Lines::Collections
   # @!method gap_names
   #   List all names of gaps in the RGFA
   #   @return [Array<Symbol>]
-  # @!method edges
-  #   All edge lines of the RGFA
-  #   @return [Array<RGFA::Line::Edge::GFA2>]
-  # @!method edge_names
-  #   List all names of edges in the RGFA
-  #   @return [Array<Symbol>]
   COLLECTIONS_OPTIONAL_NAME.each do |k, v|
     define_method(k) {@records[v].values.flatten}
     define_method(:"#{k[0..-2]}_names") {@records[v].keys - [nil]}
@@ -74,6 +62,50 @@ module RGFA::Lines::Collections
   COLLECTIONS_MANDATORY_NAME.each do |k, v|
     define_method(k) {@records[v].values}
     define_method(:"#{k[0..-2]}_names") {@records[v].keys}
+  end
+
+  # All edge lines of the RGFA
+  # @return [Array<RGFA::Line::Edge>]
+  def edges
+    if version == :gfa1
+      gfa1_links + gfa1_containments
+    elsif version == :gfa2
+      gfa2_edges
+    else
+      gfa1_links + gfa1_containments + gfa2_edges
+    end
+  end
+
+  # All dovetail lines of the RGFA
+  # (GFA1 links, GFA2 dovetail edges)
+  # @return [Array<RGFA::Line::Edge>]
+  def dovetails
+    if version == :gfa1
+      gfa1_links
+    elsif version == :gfa2
+      gfa2_edges.select {|e| e.dovetail?}
+    else
+      gfa1_links + gfa2_edges.select {|e| e.dovetail?}
+    end
+  end
+
+  # All containment lines of the RGFA
+  # (GFA1 containments, GFA2 containment edges)
+  # @return [Array<RGFA::Line::Edge>]
+  def containments
+    if version == :gfa1
+      gfa1_containments
+    elsif version == :gfa2
+      gfa2_edges.select {|e| e.containment?}
+    else
+      gfa1_containments + gfa2_edges.select {|e| e.containment?}
+    end
+  end
+
+  # List all names of edges in the RGFA
+  # @return [Array<Symbol>]
+  def edge_names
+    gfa2_edge_names
   end
 
   # All path or ordered set lines of the RGFA
@@ -160,8 +192,7 @@ module RGFA::Lines::Collections
   # All lines of the RGFA instance
   # @return [Array<RGFA::Line>]
   def lines
-    comments + headers + segments +
-      links + containments + edges +
+    comments + headers + segments + edges +
         paths + sets + gaps + fragments +
           custom_records
   end

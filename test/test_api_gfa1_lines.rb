@@ -84,13 +84,13 @@ class TestAPI::GFA1Lines < Test::Unit::TestCase
     g = RGFA.new(version: :gfa1)
     g << "S\t1\t*\tLN:i:100"
     g << "L\t1\t+\t2\t-\t1M2D10M1I"
-    assert_equal([87,100], g.links[0].from_coords)
-    assert_raises(RGFA::ValueError) {g.links[0].to_coords}
+    assert_equal([87,100], g.dovetails[0].from_coords)
+    assert_raises(RGFA::ValueError) {g.dovetails[0].to_coords}
     g << "S\t2\t*\tLN:i:100"
-    assert_equal([88,100], g.links[0].to_coords)
+    assert_equal([88,100], g.dovetails[0].to_coords)
     g << "L\t3\t-\t4\t+\t10M2P3D1M"
-    assert_equal([0,14], g.links[1].from_coords)
-    assert_equal([0,11], g.links[1].to_coords)
+    assert_equal([0,14], g.dovetails[1].from_coords)
+    assert_equal([0,11], g.dovetails[1].to_coords)
   end
 
   def test_L_other

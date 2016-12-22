@@ -102,15 +102,15 @@ class TestAPI::VersionConversion < Test::Unit::TestCase
     g << "L\t3\t-\t4\t+\t30M"
     g << "L\t3\t+\t4\t-\t40M"
     assert_equal("E	*	1+	2+	90	100$	0	10	10M",
-                 g.links[0].to_gfa2_s)
+                 g.dovetails[0].to_gfa2_s)
     assert_equal("E	*	1-	2-	0	20	80	100$	20M",
-                 g.links[1].to_gfa2_s)
+                 g.dovetails[1].to_gfa2_s)
     assert_equal("E	*	3-	4+	0	30	0	30	30M",
-                 g.links[2].to_gfa2_s)
+                 g.dovetails[2].to_gfa2_s)
     assert_equal("E	*	3+	4-	60	100$	60	100$	40M",
-                 g.links[3].to_gfa2_s)
-    assert_equal(RGFA::Line::Edge::Link, g.links[0].to_gfa1.class)
-    assert_equal(RGFA::Line::Edge::GFA2, g.links[0].to_gfa2.class)
+                 g.dovetails[3].to_gfa2_s)
+    assert_equal(RGFA::Line::Edge::Link, g.dovetails[0].to_gfa1.class)
+    assert_equal(RGFA::Line::Edge::GFA2, g.dovetails[0].to_gfa2.class)
   end
 
   def test_E_to_L

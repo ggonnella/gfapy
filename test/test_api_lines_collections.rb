@@ -14,10 +14,15 @@ class TestAPI::Lines::Collections < Test::Unit::TestCase
     # containments
     assert_equal(2, gfa.containments.size)
     assert_equal(["2_to_6", "1_to_5"], gfa.containments.map(&:id))
-    # links
-    assert_equal(4, gfa.links.size)
+    # dovetails
+    assert_equal(4, gfa.dovetails.size)
     assert_equal(["1_to_2", "1_to_3", "11_to_12", "11_to_13"],
-                 gfa.links.map(&:id))
+                 gfa.dovetails.map(&:id))
+    # edges
+    assert_equal(6, gfa.edges.size)
+    assert_equal(["1_to_2", "1_to_3", "11_to_12",
+                  "11_to_13", "2_to_6", "1_to_5"],
+                 gfa.edges.map(&:id))
     # segments
     assert_equal([:"1", :"3", :"5", :"13", :"11", :"12", :"4", :"6", :"2"],
                  gfa.segments.map(&:name))
@@ -32,10 +37,8 @@ class TestAPI::Lines::Collections < Test::Unit::TestCase
     assert_equal(gfa.segment_names + gfa.path_names,
                  gfa.names)
     # lines
-    assert_equal(gfa.comments + gfa.headers +
-                 gfa.segments + gfa.links +
-                 gfa.containments + gfa.paths,
-                 gfa.lines)
+    assert_equal(gfa.comments + gfa.headers + gfa.segments + gfa.edges +
+                 gfa.paths, gfa.lines)
   end
 
   def test_gfa2_collections
@@ -51,6 +54,12 @@ class TestAPI::Lines::Collections < Test::Unit::TestCase
     assert_equal([:"1_to_2", :"2_to_6", :"1_to_3",
                   :"11_to_12", :"11_to_13", :"1_to_5"],
                  gfa.edge_names)
+    # dovetails
+    assert_equal([:"1_to_2", :"1_to_3", :"11_to_12", :"11_to_13"],
+                 gfa.dovetails.map(&:name))
+    # containments
+    assert_equal([:"2_to_6", :"1_to_5"],
+                 gfa.containments.map(&:name))
     # gaps
     assert_equal([:"1_to_11", :"2_to_12"], gfa.gaps.map(&:name))
     # gap_names

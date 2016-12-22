@@ -19,7 +19,7 @@ module RGFA::Line::Edge::Common::AlignmentType
 
   # @return [Boolean] does the line represent a dovetail overlap?
   #   (GFA1 link or GFA2 edge equivalent to a GFA1 link)?
-  def link?
+  def dovetail?
     alignment_type == :L
   end
 

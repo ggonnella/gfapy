@@ -37,7 +37,7 @@ class TestAPI::LinearPaths < Test::Unit::TestCase
     assert_raises(RGFA::NotFoundError) {gfa.segment!("2")}
     assert_raises(RGFA::NotFoundError) {gfa.segment!("3")}
     assert_nothing_raised {gfa.segment!("0_1_2_3")}
-    assert_equal([], gfa.links)
+    assert_equal([], gfa.dovetails)
     assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2_3").sequence)
   end
 
@@ -56,7 +56,7 @@ class TestAPI::LinearPaths < Test::Unit::TestCase
     assert_nothing_raised { gfa.merge_linear_paths }
     assert_equal([:"0_1_2_3"], gfa.segment_names)
     assert_equal(1, gfa.segments.size)
-    assert_equal([], gfa.links)
+    assert_equal([], gfa.dovetails)
     s = ["S\t0\t*",
          "S\t1\t*",
          "S\t2\t*",

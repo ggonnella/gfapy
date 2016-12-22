@@ -15,7 +15,7 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     p = "P\t3\t2+,0-\t12M"
     (s + [l,c,p]).each {|line| gfa << line }
     assert_equal(s, gfa.segments.map(&:to_s))
-    assert_equal([l], gfa.links.select{|n|!n.virtual?}.map(&:to_s))
+    assert_equal([l], gfa.dovetails.select{|n|!n.virtual?}.map(&:to_s))
     assert_equal([c], gfa.containments.map(&:to_s))
     assert_equal([l],
                  gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
@@ -86,20 +86,20 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     g1 = RGFA.from_file("test/testdata/links_distri.l1.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_links_distribution_l1_m2_gfa2
     g1 = RGFA.from_file("test/testdata/links_distri.l1.gfa2")
     g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.gfa2")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.edges.map(&:to_s).sort, g1.edges.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.edges.map(&:to_s).sort, g1.edges.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_enable_extensions
@@ -108,120 +108,120 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     g1.enable_extensions
     g2.enable_extensions
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_links_distribution_l2_m2
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_no_links_distribution_l2_m2
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :off)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_links_distribution_l2_m3
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m3.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 3)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_no_links_distribution_l2_m3
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m3.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 3, distribute: :off)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_links_distribution_l3_m2
     g1 = RGFA.from_file("test/testdata/links_distri.l3.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_no_links_distribution_l3_m2
     g1 = RGFA.from_file("test/testdata/links_distri.l3.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :off)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_muliply_without_rgfatools
     g1 = RGFA.from_file("test/testdata/links_distri.l3.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply(:"1", 2)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_distribution_policy_equal_with_equal
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :equal)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_distribution_policy_equal_with_not_equal
     g1 = RGFA.from_file("test/testdata/links_distri.l3.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :equal)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_distribution_policy_B
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.no_ld.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :L)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_distribution_policy_E
     g1 = RGFA.from_file("test/testdata/links_distri.l2.gfa")
     g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.gfa")
     assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_not_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_not_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
     g1.multiply_extended(:"1", 2, distribute: :R)
     assert_equal(g2.segment_names.sort,g1.segment_names.sort)
-    assert_equal(g2.links.map(&:to_s).sort, g1.links.map(&:to_s).sort)
+    assert_equal(g2.dovetails.map(&:to_s).sort, g1.dovetails.map(&:to_s).sort)
   end
 
   def test_auto_select_distribute_end_lB_eq_lE

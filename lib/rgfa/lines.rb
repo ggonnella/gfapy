@@ -46,7 +46,7 @@ module RGFA::Lines
       raise RGFA::TypeError,
         "Note: ##{callermeth} is API private, do not call it directly\n"+
         "Error: line class is #{gfa_line.class} and not RGFA::Line"
-    elsif gfa_line.rgfa != self
+    elsif !gfa_line.rgfa.equal?(self)
       raise RGFA::RuntimeError,
         "Note: ##{callermeth} is API private, do not call it directly\n"+
         "Error: line.rgfa is "+

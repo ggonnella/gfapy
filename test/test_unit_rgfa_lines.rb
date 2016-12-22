@@ -60,9 +60,9 @@ class TestUnit::RGFALines < Test::Unit::TestCase
     l = RGFA::Line::Edge::Link.new({}, version: :gfa1)
     l.instance_variable_set("@rgfa", g)
     assert_nothing_raised { g.register_line(l) }
-    assert_equal([l], g.links)
+    assert_equal([l], g.dovetails)
     assert_nothing_raised { g.unregister_line(l) }
-    assert_equal([], g.links)
+    assert_equal([], g.dovetails)
   end
 
 end

@@ -5,6 +5,8 @@ TestAPI ||= Module.new
 TestAPI::Lines ||= Module.new
 class TestAPI::Lines::Creators < Test::Unit::TestCase
 
+  # XXX missing GFA2
+
   def test_add_headers
     gfa = RGFA.new
     h = "H\tVN:Z:1.0"
@@ -36,7 +38,7 @@ class TestAPI::Lines::Creators < Test::Unit::TestCase
     gfa << s1
     gfa << s2
     assert_nothing_raised { gfa << l1 }
-    assert_equal([l1], gfa.links)
+    assert_equal([l1], gfa.dovetails)
     assert_equal([l1], gfa.segment(:"1").end_relations(:R, ["2", :L]))
     assert_equal([l1], gfa.segment(:"2").end_relations(:L, ["1", :R]))
     assert_equal([], gfa.segment(:"2").end_relations(:R, ["1", :L]))
