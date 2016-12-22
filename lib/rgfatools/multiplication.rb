@@ -139,6 +139,7 @@ module RGFATools::Multiplication
   end
 
   # (keep separate for testing)
+  # @tested_in unit_multiplication
   def auto_select_distribute_end(factor, bsize, esize, equal_only)
     if esize == factor
       return :R
