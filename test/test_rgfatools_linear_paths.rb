@@ -4,49 +4,31 @@ require "test/unit"
 class TestRGFAToolsLinearPaths < Test::Unit::TestCase
 
   def test_linear_path_merging
-    s = ["S\t0\tACGA",
-         "S\t1\tACGA",
-         "S\t2\tACGA",
-         "S\t3\tACGA"]
-    l = ["L\t0\t+\t1\t+\t1M",
-         "L\t1\t+\t2\t-\t1M",
-         "L\t2\t-\t3\t+\t1M"]
-    gfa = RGFA.new
-    (s + l).each {|line| gfa << line }
-    gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]],
-                          enable_tracking: true)
-    assert_nothing_raised {gfa.segment!("0_1_2^_3")}
-    assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
-    gfa = RGFA.new
-    gfa.enable_extensions
-    (s + l).each {|line| gfa << line }
-    gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]])
-    assert_nothing_raised {gfa.segment!("0_1_2^_3")}
-    assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
+    ["gfa", "gfa2"].each do |sfx|
+      gfa = RGFA.from_file("test/testdata/linear_merging.2.#{sfx}")
+      gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]],
+                            enable_tracking: true)
+      assert_nothing_raised {gfa.segment!("0_1_2^_3")}
+      assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
+      gfa = RGFA.from_file("test/testdata/linear_merging.2.#{sfx}")
+      gfa.enable_extensions
+      gfa.merge_linear_path([["0", :R],["1", :R],["2", :L],["3", :R]])
+      assert_nothing_raised {gfa.segment!("0_1_2^_3")}
+      assert_equal("ACGACGACGTCGA", gfa.segment("0_1_2^_3").sequence)
+    end
   end
 
   def test_linear_path_merge_all
-    s = ["S\t0\t*",
-         "S\t1\t*",
-         "S\t2\t*",
-         "S\t3\t*"]
-    l = ["L\t0\t+\t1\t+\t1M",
-         "L\t1\t+\t2\t-\t1M",
-         "L\t2\t-\t3\t+\t1M"]
-    gfa = RGFA.new
-    gfa.enable_extensions
-    (s + l).each {|line| gfa << line }
-    gfa.merge_linear_paths
-    assert_equal([:"0_1_2^_3"], gfa.segment_names)
-    l = ["L\t0\t+\t1\t+\t1M",
-         "L\t0\t+\t2\t+\t1M",
-         "L\t1\t+\t2\t-\t1M",
-         "L\t2\t-\t3\t+\t1M"].map(&:to_rgfa_line)
-    gfa = RGFA.new
-    gfa.enable_extensions
-    (s + l).each {|line| gfa << line }
-    gfa.merge_linear_paths
-    assert_equal([:"0",:"3",:"1_2^"], gfa.segments.map(&:name))
+    ["gfa", "gfa2"].each do |sfx|
+      gfa = RGFA.from_file("test/testdata/linear_merging.3.#{sfx}")
+      gfa.enable_extensions
+      gfa.merge_linear_paths
+      assert_equal([:"0_1_2^_3"], gfa.segment_names)
+      gfa = RGFA.from_file("test/testdata/linear_merging.4.#{sfx}")
+      gfa.enable_extensions
+      gfa.merge_linear_paths
+      assert_equal([:"0",:"3",:"1_2^"], gfa.segments.map(&:name))
+    end
   end
 
 end
