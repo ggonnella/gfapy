@@ -381,7 +381,8 @@ module RGFA::DefaultDatatypes
   module Array
     # @!macro gfa_datatype
     def default_gfa_tag_datatype
-      (all?{|i|i.kind_of?(Integer)} or all?{|i|i.kind_of?(Float)}) ? :B : :J
+      (!empty? and
+       (all?{|i|i.kind_of?(Integer)} or all?{|i|i.kind_of?(Float)})) ? :B : :J
     end
   end
 
