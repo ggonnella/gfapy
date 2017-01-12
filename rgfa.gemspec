@@ -35,6 +35,7 @@ lib/rgfa/logger.rb
 lib/rgfa/graph_operations/topology.rb
 lib/rgfa/graph_operations/multiplication.rb
 lib/rgfa/graph_operations/linear_paths.rb
+lib/rgfa/graph_operations/redundant_linear_paths.rb
 lib/rgfa/graph_operations/rgl.rb
 lib/rgfa/error.rb
 lib/rgfa/segment_end.rb

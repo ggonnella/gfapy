@@ -1,4 +1,5 @@
 require_relative "../segment_end"
+require_relative "./redundant_linear_paths"
 
 #
 # Methods for the RGFA class, which allow to find and merge linear paths.
@@ -69,24 +70,47 @@ module RGFA::GraphOperations::LinearPaths
   #   @option options [Boolean] :cut_counts (false)
   #     if true, total count in merged segment m, composed of segments
   #     s of set S is multiplied by the factor Sum(|s in S|)/|m|
+  #   @option options [Boolean] :redundant (false)
+  #     if true, junctions are output multiple times, merging them with
+  #     all paths which start or end in them; default: they are
+  #     merged only with the path on the side which has one link only,
+  #     if any, and left as separate nodes otherwise
+  #   @option options [symbol] :jntag (:jn)
+  #     specify temporary optional tag used for storing information about
+  #     junctions used by the merged_linear_paths method when deleting
+  #     them; it should be a tag which is otherwise not present in the segments
   #
   # @return [RGFA] self
   # @see #merge_linear_paths
   def merge_linear_path(segpath, **options)
     return if segpath.size < 2
     segpath.map!{|se|se.to_segment_end}
-    if segpath[1..-2].any? do |sn_et|
-        segment(sn_et.segment).connectivity != [1,1]
-      end
-      raise RGFA::ValueError, "The specified path is not linear"
+    if options[:redundant]
+      first_redundant, last_redundant =
+        extend_path_to_junctions(segpath)
+    else
+      first_redundant, last_redundant = false
     end
     merged, first_reversed, last_reversed =
       create_merged_segment(segpath, options)
     self << merged
-    link_merged(merged.name, segpath.first.to_segment_end.invert,
-                first_reversed)
-    link_merged(merged.name, segpath.last, last_reversed)
-    segpath.each do |sn_et|
+    if first_redundant
+      link_duplicated_first(merged,
+                            segment(segpath.first.to_segment_end.segment),
+                            first_reversed, options[:jntag])
+    else
+      link_merged(merged.name, segpath.first.to_segment_end.invert,
+                  first_reversed)
+    end
+    if last_redundant
+      link_duplicated_last(merged, segment(segpath.last.segment),
+                           last_reversed, options[:jntag])
+    else
+      link_merged(merged.name, segpath.last, last_reversed)
+    end
+    idx1 = first_redundant ? 1 : 0
+    idx2 = last_redundant ? -2 : -1
+    segpath[idx1..idx2].each do |sn_et|
       segment(sn_et.segment).disconnect
       progress_log(:merge_linear_paths, 0.05) if @progress
     end
@@ -108,6 +132,7 @@ module RGFA::GraphOperations::LinearPaths
       merge_linear_path(path, **options)
     end
     progress_log_end(:merge_linear_paths)
+    remove_junctions(options[:jntag]) if options[:redundant]
     self
   end
 
@@ -201,6 +226,7 @@ module RGFA::GraphOperations::LinearPaths
 
   def create_merged_segment(segpath, options)
     merged = segment!(segpath.first.segment).clone
+    merged.set(options[:jntag] || :jn, nil)
     total_cut = 0
     a = segpath.first
     first_reversed = (a.end_type == :L)
@@ -282,5 +308,7 @@ module RGFA::GraphOperations::LinearPaths
       self << l2
     end
   end
+
+  include RGFA::GraphOperations::RedundantLinearPaths
 
 end
