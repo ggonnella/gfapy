@@ -84,7 +84,7 @@ module RGFA::Line::Common::Disconnection
   #   when RGFA::OrientedLine
   #     yield field.line
   #   when Array
-  #     field.each {|elem| each_reference_in(elem, &block)}
+  #     field.dup.each {|elem| each_reference_in(elem, &block)}
   #   end
   # end
 
@@ -95,7 +95,7 @@ module RGFA::Line::Common::Disconnection
     when RGFA::OrientedLine
       ref.line.update_references(self, nil, k)
     when Array
-      ref.each {|elem| remove_backreference(elem, k)}
+      ref.dup.each {|elem| remove_backreference(elem, k)}
     end
   end
 
@@ -106,7 +106,7 @@ module RGFA::Line::Common::Disconnection
     when RGFA::OrientedLine
       ref.line.disconnect
     when Array
-      ref.each {|elem| disconnect_dependent_line(elem)}
+      ref.dup.each {|elem| disconnect_dependent_line(elem)}
     end
   end
 
@@ -123,7 +123,7 @@ module RGFA::Line::Common::Disconnection
 
   def disconnect_dependent_lines
     self.class::DEPENDENT_LINES.each do |k|
-      refs.fetch(k, []).each do |ref|
+      refs.fetch(k, []).dup.each do |ref|
         disconnect_dependent_line(ref)
       end
     end
@@ -131,7 +131,7 @@ module RGFA::Line::Common::Disconnection
 
   def remove_nonfield_backreferences
     self.class::OTHER_REFERENCES.each do |k|
-      refs.fetch(k, []).each do |ref|
+      refs.fetch(k, []).dup.each do |ref|
         remove_backreference(ref, k)
       end
     end
