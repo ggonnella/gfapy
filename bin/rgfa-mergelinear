@@ -12,6 +12,15 @@ gfa = RGFA.new
 gfa.enable_progress_logging(part: 0.01)
 gfa.vlevel = 0
 gfa.read_file(ARGV[0])
+if redundant
+  # remove isolated segments, as this mode is for comparison
+  # with readjoiner contigs, and isolated vertices are not output by readjoiner
+  gfa.connected_components.each do |cc|
+    if cc.size == 1
+      gfa.segment(cc[0]).disconnect
+    end
+  end
+end
 gfa.merge_linear_paths(redundant: redundant,
                        disable_tracking: true)
 #                       merged_name: :short)
