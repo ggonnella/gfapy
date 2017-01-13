@@ -13,9 +13,8 @@ module RGFA::GraphOperations::LinearPaths
   #
   # Find a path without branches.
   #
-  # The path must
-  # include +segment+ and excludes segments in +exclude+.
-  # Any segment used in the returned path will be added to +exclude+
+  # The path must include +s+ and exclude all segments in the +exclude+ set. Any
+  # segment used in the returned path will be added to the +exclude+ set.
   #
   # @param s [String,Symbol,RGFA::Line::Segment::GFA1,RGFA::Line::Segment::GFA2]
   #   a segment name or instance
@@ -33,14 +32,22 @@ module RGFA::GraphOperations::LinearPaths
         segpath += traverse_linear_path(RGFA::SegmentEnd.new(s, et), exclude)
       end
     end
-    return (segpath.size < 2) ? nil : segpath
+    return segpath
   end
 
   # Find all unbranched paths in the graph.
   #
-  # @return [Array<Array<RGFA::SegmentEnd>>]
-  def linear_paths
+  # @param redundant [Boolean]
+  #     if true, junctions are added to paths ends, also if the same end of the
+  #     junction node has also additional links
+  #
+  # @return [Array<Array<RGFA::SegmentEnd,Boolean>>] the booleans are added
+  #           if the +redundant+ parameter is set, as first and last element
+  #           (they are set if the first / last segment are junctions shall
+  #           be duplicated when merging paths)
+  def linear_paths(redundant = false)
     exclude = Set.new
+    junction_exclude = Set.new if redundant
     retval = []
     segnames = segment_names
     progress_log_init(:linear_paths, "segments", segnames.size,
@@ -48,10 +55,22 @@ module RGFA::GraphOperations::LinearPaths
     segnames.each do |sn|
       progress_log(:linear_paths) if @progress
       next if exclude.include?(sn)
-      retval << linear_path(sn, exclude)
+      lp = linear_path(sn, exclude)
+      if !redundant
+        retval << lp if lp.size > 1
+      else
+        if lp.empty?
+          # add paths from junction to junction neighbours
+          retval += junction_junction_paths(sn, junction_exclude)
+        else
+          # extend linear path to junction neighbours
+          extend_linear_path_to_junctions(lp)
+          retval << lp
+        end
+      end
     end
     progress_log_end(:linear_paths)
-    return retval.compact
+    return retval
   end
 
   # Merge a linear path, i.e. a path of segments without extra-branches
@@ -59,7 +78,7 @@ module RGFA::GraphOperations::LinearPaths
   #   Limitations: all containments und paths involving merged segments are
   #   deleted.
   #
-  # @param segpath [Array<RGFA::SegmentEnd>] a linear path, such as that
+  # @param segpath [Array<RGFA::SegmentEnd,Boolean>] a linear path, such as that
   #   retrieved by {#linear_path}
   # @!macro [new] merge_options
   #   @param options [Hash] optional keyword arguments
@@ -84,13 +103,13 @@ module RGFA::GraphOperations::LinearPaths
   # @see #merge_linear_paths
   def merge_linear_path(segpath, **options)
     return if segpath.size < 2
-    segpath.map!{|se|se.to_segment_end}
-    if options[:redundant]
-      first_redundant, last_redundant =
-        extend_path_to_junctions(segpath)
+    if options[:redundant] and ((segpath[0] == true) or (segpath[0] == false))
+      first_redundant = segpath.shift
+      last_redundant = segpath.pop
     else
       first_redundant, last_redundant = false
     end
+    segpath.map!{|se|se.to_segment_end}
     merged, first_reversed, last_reversed =
       create_merged_segment(segpath, options)
     self << merged
@@ -124,7 +143,7 @@ module RGFA::GraphOperations::LinearPaths
   #
   # @return [RGFA] self
   def merge_linear_paths(**options)
-    paths = linear_paths
+    paths = linear_paths(options[:redundant])
     psize = paths.flatten.size / 2
     progress_log_init(:merge_linear_paths, "segments", psize,
       "Merge #{paths.size} linear paths (#{psize} segments)") if @progress

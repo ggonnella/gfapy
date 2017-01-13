@@ -8,7 +8,26 @@ module RGFA::GraphOperations::RedundantLinearPaths
 
   private
 
-  def extend_path_to_junctions(segpath)
+  def junction_junction_paths(sn, exclude)
+    retval = []
+    exclude << sn
+    s = segment(sn)
+    s.dovetails(:L).each do |dL|
+      eL = dL.other_end([s, :L])
+      next if exclude.include?(eL.name) or
+        eL.segment.dovetails(eL.end_type).size == 1
+      retval << [true, eL, [s, :R], true]
+    end
+    s.dovetails(:R).each do |dR|
+      eR = dR.other_end([s, :R])
+      next if exclude.include?(eR.name) or
+        eR.segment.dovetails(eR.end_type).size == 1
+      retval << [true, [s, :R], eR.invert, true]
+    end
+    return retval
+  end
+
+  def extend_linear_path_to_junctions(segpath)
     segpath[0] = segpath[0].to_segment_end
     segfirst = segment(segpath[0].segment)
     segfirst_d = segfirst.dovetails(segpath[0].end_type.invert)
@@ -16,6 +35,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
     if segfirst_d.size == 1
       segpath.unshift(segfirst_d[0].other_end(segpath[0].invert))
     end
+    segpath.unshift(redundant_first)
     segpath[-1] = segpath[-1].to_segment_end
     seglast = segment(segpath[-1].segment)
     seglast_d = seglast.dovetails(segpath[-1].end_type)
@@ -23,7 +43,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
     if seglast_d.size == 1
       segpath << seglast_d[0].other_end(segpath[-1]).invert
     end
-    return redundant_first, redundant_last
+    segpath << redundant_last
   end
 
   def link_duplicated_first(merged, first, reversed, jntag)
@@ -40,7 +60,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
     # create temporary link
     len = first.sequence.size
     if version == :gfa1
-      self << RGFA::Line::Edge::Link.new([first.name,
+      self << RGFA::Line::Edge::Link.new([first.name.to_s,
                                           reversed ? "-" : "+",
                                           merged.name.to_s,"+",
                                           "#{len}M", "co:Z:temporary"])
@@ -73,7 +93,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
     len = last.sequence.size
     if version == :gfa1
       self << RGFA::Line::Edge::Link.new([merged.name.to_s, "+",
-                                          last.name,
+                                          last.name.to_s,
                                           reversed ? "-" : "+",
                                           "#{len}M", "co:Z:temporary"])
     elsif version == :gfa2
