@@ -69,7 +69,11 @@ module RGFA::Lines::Destructors
           delete_if_empty = gfa_line.external.name
         end
       end
-      collection.delete(key)
+      if collection.kind_of?(Array)
+        collection.delete_if {|line| line.object_id == key.object_id}
+      else
+        collection.delete(key)
+      end
       if delete_if_empty and collection.empty?
         @records[gfa_line.record_type].delete(delete_if_empty)
       end
