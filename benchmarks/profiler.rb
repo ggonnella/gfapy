@@ -21,8 +21,9 @@ else
 end
 
 merge = ARGV.delete("--merge")
+help = ARGV.delete("--help")
 
-if ARGV.size != 1
+if ARGV.size != 1 or help
   STDERR.puts "Running time and memory profiler for RGFA"
   STDERR.puts
   STDERR.puts "Usage: #$0 [options] <gfafile>"
@@ -44,11 +45,23 @@ if merge
 end
 
 filename = ARGV[0]
+#if !File.exist?(filename)
+#  STDERR.puts "Specified file does not exist: #{filename}"
+#  exit 1
+#end
 
 puts "# --- RGFA profiler ---"
 puts "# Input file: #{filename}"
 puts "# Profiling: #{proflabel}"
 puts "# Actions: #{actions.join(", ")}"
+puts "# Date: #{`date`}"
+puts "# Host: #{`hostname`}"
+gitbranch = `git rev-parse --abbrev-ref HEAD 2> /dev/null`
+if $?.exitstatus == 0
+  gitlog = `git log --oneline -n 1 2> /dev/null`
+  puts "# Branch: #{gitbranch}"
+  puts "# Last Commit: #{gitlog}"
+end
 puts "# ---"
 puts
 
