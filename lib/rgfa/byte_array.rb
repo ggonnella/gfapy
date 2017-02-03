@@ -2,7 +2,7 @@ require_relative "error.rb"
 
 #
 # Array of positive integers <= 255;
-# representation of the data contained in an H field
+# representation of the data contained in a H field
 #
 # @tested_in api_tags
 #
@@ -20,7 +20,6 @@ class RGFA::ByteArray < Array
           "in array: #{self.inspect}"
       end
     end
-    self.trust
     return nil
   end
 

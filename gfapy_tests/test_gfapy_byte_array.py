@@ -3,25 +3,26 @@ import gfapy
 
 class TestByteArray(unittest.TestCase):
 
-  def test_byte_array_creation(self):
-    a = gfapy.ByteArray([1,2,3,4,5])
-    for i in range(1,5):
-      self.assertEqual(a[i-1], i)
-
-  def test_byte_array_validation(self):
-    a = gfapy.ByteArray([1,2,3,4,5]) 
-    self.assertRaises(gfapy.ValueError, gfapy.ByteArray, [1,2,3,4,356])
-
-  def test_from_string(self):
-    a = gfapy.ByteArray("12ACF4AA601C1F")
-    b = gfapy.ByteArray([18, 172, 244, 170, 96, 28, 31])
+  def test_byte_arrays(self):
+    # creation: from list, from string
+    a_lst = [18, 172, 244, 170, 96, 28, 31]
+    a = gfapy.ByteArray(a_lst)
+    for i in range(0,len(a_lst)):
+      self.assertEqual(a[i], a_lst[i])
+    a_str = "12ACF4AA601C1F"
+    b = gfapy.ByteArray(a_str)
     self.assertEqual(a,b)
+    # validation
+    self.assertRaises(gfapy.ValueError, gfapy.ByteArray, [1,2,3,4,356])
     self.assertRaises(gfapy.FormatError, gfapy.ByteArray, "12ACF4AA601C1")
-
-  def test_to_string(self):
-    a = gfapy.ByteArray([18,172,244,170,96,28,31])
-    b = "12ACF4AA601C1F"
-    c = gfapy.ByteArray(b)
-    self.assertEqual(str(a), b)
-    #self.assertEqual(str(c), b)
+    self.assertRaises(gfapy.FormatError, gfapy.ByteArray, "")
+    self.assertRaises(gfapy.FormatError, gfapy.ByteArray, "12ACG4AA601C1")
+    # to_s
+    self.assertEqual(str(b), a_str)
+    self.assertEqual(str(a), a_str)
+    # read only; transform to list to edit a value
+    tmp = list(a)
+    tmp[3]=1
+    a = gfapy.ByteArray(tmp)
+    self.assertEqual(a, gfapy.ByteArray([18,172,244,1,96,28,31]))
 
