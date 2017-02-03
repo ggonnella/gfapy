@@ -7,11 +7,12 @@ class VersionError(Error):
   pass
 
 class RuntimeError(Error):
-  """The User tried to do something not allowed"""
+  """The user tried to do something not allowed"""
   pass
 
 class ValueError(Error):
   """An object has the right type/form, but an invalid content
+
   e.g. number out-of-range; string/array too big/small
   """
   pass
@@ -26,6 +27,7 @@ class FormatError(Error):
 
 class TypeError(Error):
   """A wrong type has been used or specified
+
   e.g. a field contains an array instead of an integer;
        an invalid record type or datatype is found by parsing
   """
@@ -53,8 +55,7 @@ class InconsistencyError(Error):
 class NotFoundError(Error):
   """An element which has been required is not found
 
-  e.g. a tag! method has been used and the tag is not set;
-       a record finder ! method does not find the record
+  e.g. a tag or record which is required is not found
   """
   pass
 
