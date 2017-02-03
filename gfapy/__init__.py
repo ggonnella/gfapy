@@ -9,6 +9,7 @@ from gfapy.alignment.placeholder import AlignmentPlaceholder
 from gfapy.alignment.trace import Trace
 from gfapy.numeric_array import NumericArray
 from gfapy.lastpos import LastPos
+from gfapy.lastpos import isfirstpos, islastpos, posvalue
 from gfapy.segment_end_path import SegmentEndsPath
 from gfapy.segment_end import *
 from gfapy.oriented_line import OrientedLine

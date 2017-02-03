@@ -11,7 +11,7 @@ class TestLineEdge(unittest.TestCase):
     l2 = "L\t2\t+\t1\t+\t20M"
     self.assertEqual(l2, e2.to_gfa1_s())
     e3 = gfapy.Line.from_string("E\t*\t3-\t4+\t0\t30\t0\t30\t30M")
-    l3 = "L\t4\t+\t3\t-\t30M"
+    l3 = "L\t3\t-\t4\t+\t30M"
     self.assertEqual(l3, e3.to_gfa1_s())
     e4 = gfapy.Line.from_string("E\t*\t3+\t4-\t60\t100$\t60\t100$\t40M")
     l4 = "L\t3\t+\t4\t-\t40M"

@@ -15,21 +15,31 @@ class ToGFA1:
     gfapy.ValueError
       If the edge is internal.
     """
-    self._check_not_internal("GFA1 representation")
-    a = [ self.alignment_type ]
-    a.append(self.oriented_from.name)
-    a.append(self.oriented_from.orient)
-    a.append(self.oriented_to.name)
-    a.append(self.oriented_to.orient)
+    at = self.alignment_type
+    if at == "internal":
+      raise gfapy.ValueError(
+        "Line: {}\n".format(str(self))+
+        "Internal overlap, cannot convert to GFA1")
+    a = [ at ]
+    if self.is_sid1_from():
+      ol1 = self.get("sid1")
+      ol2 = self.get("sid2")
+    else:
+      ol1 = self.get("sid2")
+      ol2 = self.get("sid1")
+    a.append(ol1.name)
+    a.append(ol1.orient)
+    a.append(ol2.name)
+    a.append(ol2.orient)
     if self.alignment_type == "C":
       a.append(str(self.pos))
-    s = str(self.overlap)
-    a.append(s)
+    a.append(str(self.overlap))
     if not self.eid.is_placeholder():
-      a.append(self.eid.to_gfa_field(datatype = "Z", fieldname = "ID"))
+      a.append(self.eid.to_gfa_tag("ID", datatype = "Z"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a
+
 
   @property
   def overlap(self):
@@ -45,22 +55,17 @@ class ToGFA1:
       If the edge is internal.
     """
     self._check_not_internal("overlap")
-    return self.alignment.complement() if gfapy.LastPos.get_is_first(self.beg1) else self.alignment
+    return self.alignment.complement() if self.is_sid1_from() else self.alignment
 
   @property
   def oriented_from(self):
-    if gfapy.LastPos.get_is_first(self.beg1):
-      return tself.sid1 if (gfapy.LastPos.get_is_first(self.beg2) and gfapy.LastPos.get_is_last(self.end2)) else self.sid2
-    else:
-      return self.sid1
+    return self.sid1 if self.is_sid1_from() else self.sid2
 
   @property
   def oriented_to(self):
-    if gfapy.LastPos.get_is_first(self.beg1):
-      return self.sid2 if (gfapy.LastPos.get_is_first(self.beg2) and gfapy.LastPos.get_is_last(self.end2)) else self.sid1
-    else:
-      return self.sid2
+    return self.sid2 if self.is_sid1_from() else self.sid1
 
+  # cannot be called from as from is a keyword :(
   @property
   def frm(self):
     """
@@ -74,7 +79,6 @@ class ToGFA1:
     gfapy.ValueError
       If the edge is internal.
     """
-    self._check_not_internal("from")
     return self.oriented_from.line
 
   @frm.setter
@@ -86,7 +90,6 @@ class ToGFA1:
     ----------
     str, gfapy.Line.Segment.GFA2
     """
-    self._check_not_internal("from")
     self.oriented_from.line = value
 
   @property
@@ -103,8 +106,18 @@ class ToGFA1:
     gfapy.ValueError
       If the edge is internal.
     """
-    self._check_not_internal("from_orient")
     return self.oriented_from.orient
+
+  @from_orient.setter
+  def from_orient(self, value):
+    """
+    Set the orientation of the field which will be returned by calling from
+
+    Parameters
+    ----------
+    value: one of ["+", "-"]
+    """
+    self.oriented_from.orient = value
 
   @property
   def to(self):
@@ -119,7 +132,6 @@ class ToGFA1:
     gfapy.ValueError
       If the edge is internal.
     """
-    self._check_not_internal("to")
     return self.oriented_to.line
 
   @to.setter
@@ -131,7 +143,6 @@ class ToGFA1:
     ----------
     value : str, gfapy.Line.Segment.GFA2
     """
-    self._check_not_internal("to")
     self.oriented_to.line = value
 
   @property
@@ -147,8 +158,18 @@ class ToGFA1:
     gfapy.ValueError
       If the edge is internal.
     """
-    self._check_not_internal("to_orient")
     return self.oriented_to.orient
+
+  @to_orient.setter
+  def to_orient(self, value):
+    """
+    Set the orientation of the field which will be returned by calling to
+
+    Parameters
+    ----------
+    value: one of ["+", "-"]
+    """
+    self.oriented_to.orient = value
 
   @property
   def pos(self):
@@ -170,9 +191,9 @@ class ToGFA1:
       raise gfapy.ValueError("Line: {}\n".format(str(self)) +
                              "Dovetail alignment, pos is not defined")
     elif self.alignment_type == "C":
-      if gfapy.LastPos.get_is_first(self.beg1):
-        return self.beg1 if (gfapy.LastPos.get_is_first(self.beg2) and
-                             gfapy.LastPos.get_is_last(self.end2)) else self.beg2
+      if gfapy.isfirstpos(self.beg1):
+        return self.beg1 if (gfapy.isfirstpos(self.beg2) and
+                             gfapy.islastpos(self.end2)) else self.beg2
       else:
         return self.beg1
 
@@ -181,3 +202,39 @@ class ToGFA1:
       raise gfapy.ValueError(
         "Line: {}\n".format(str(self))+
         "Internal alignment, {} is not defined".format(fn))
+
+  @staticmethod
+  def segment_role(begpos, endpos, orient):
+    if gfapy.isfirstpos(begpos):
+      if gfapy.islastpos(endpos):
+        return "contained"
+      elif orient == "+":
+        return "pfx"
+      else:
+        return "sfx"
+    else:
+      if gfapy.islastpos(endpos):
+        if orient == "+":
+          return "sfx"
+        else:
+          return "pfx"
+      else:
+        return "other"
+
+  def is_sid1_from(self):
+    sr1 = self.segment_role(self.beg1, self.end1, self.sid1.orient)
+    sr2 = self.segment_role(self.beg2, self.end2, self.sid2.orient)
+    if sr2 == "contained":
+      return True
+    elif sr1 == "contained":
+      return False
+    elif sr1 == "sfx" and sr2 == "pfx":
+      return True
+    elif sr2 == "sfx" and sr1 == "pfx":
+      return False
+    else:
+      raise gfapy.ValueError(
+        "Line: {}\n".format(str(self))+
+        "Internal overlap, 'from' is undefined\n"+
+        "Roles: segment1 is {} ({},{}), segment2 is {} ({},{})".format(sr1, self.beg1, self.end1, sr2, self.beg2, self.end2))
+

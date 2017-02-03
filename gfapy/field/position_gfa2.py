@@ -6,7 +6,7 @@ def unsafe_decode(string):
 
 def decode(string):
   position = unsafe_decode(string)
-  value = gfapy.LastPos.get_value(position)
+  value = gfapy.posvalue(position)
   if value < 0:
     raise gfapy.ValueError(
       "{} is not a positive integer".format(value))

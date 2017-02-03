@@ -38,7 +38,7 @@ class AlignmentType:
       else:
         return "I"
     else:
-      if (st1 == "pfx" or st2 == "sfx") and (st1 == st2):
+      if (st1 == "pfx" and st2 == "pfx") or (st1 == "sfx" and st2 == "sfx"):
         return "L"
       else:
         return "I"
@@ -59,38 +59,38 @@ class AlignmentType:
     Returns
     -------
     (substring_type : str, bool) list
-    	The first value is the substring type, which is 
+    	The first value is the substring type, which is
       one of: "pfx", "sfx", "whole", "internal".
-      Thereby, with "pfx" or "sfx" is meant a prefix or suffix 
-      which is not the complete string. 
+      Thereby, with "pfx" or "sfx" is meant a prefix or suffix
+      which is not the complete string.
       With "internal" is meant a substring which starts after the first position
-      and ends before the last position. 
-      The second value is a boolean, **True** if the substring is empty, 
-      **false** otherwise.
+      and ends before the last position.
+      The second value is a boolean, **True** if the substring is empty,
+      **False** otherwise.
     """
-    if gfapy.LastPos.get_value(begpos) > gfapy.LastPos.get_value(endpos):
+    if gfapy.posvalue(begpos) > gfapy.posvalue(endpos):
       raise gfapy.ValueError(
         "Line: {}\n".format(str(self))+
-        "begin > end: {}$ > {}".format(gfapy.LastPos.get_value(begpos), 
-                                       gfapy.LastPos.get_value(endpos)))
-    if gfapy.LastPos.get_is_first(begpos):
-      if gfapy.LastPos.get_is_first(endpos):
+        "begin > end: {}$ > {}".format(gfapy.posvalue(begpos),
+                                       gfapy.posvalue(endpos)))
+    if gfapy.isfirstpos(begpos):
+      if gfapy.isfirstpos(endpos):
         return ("pfx", True)
-      elif gfapy.LastPos.get_is_last(endpos):
+      elif gfapy.islastpos(endpos):
         return ("whole", False)
       else:
         return ("pfx", False)
-    elif gfapy.LastPos.get_is_last(begpos):
-      if not gfapy.LastPos.get_is_last(endpos):
+    elif gfapy.islastpos(begpos):
+      if not gfapy.islastpos(endpos):
         raise gfapy.FormatError(
           "Line: {}\n".format(str(self))+
           "Wrong use of $ marker\n"+
-          "{} >= {}$".format(gfapy.LastPos.get_value(endpos), 
-                             gfapy.LastPos.get_value(begpos)))
+          "{} >= {}$".format(gfapy.posvalue(endpos),
+                             gfapy.posvalue(begpos)))
       return ("sfx", True)
     else:
-      if gfapy.LastPos.get_is_last(endpos):
+      if gfapy.islastpos(endpos):
         return ("sfx", False)
       else:
-        return ("internal", 
-            gfapy.LastPos.get_value(begpos) == gfapy.LastPos.get_value(endpos))
+        return ("internal",
+            gfapy.posvalue(begpos) == gfapy.posvalue(endpos))
