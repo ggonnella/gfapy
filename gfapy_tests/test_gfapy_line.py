@@ -86,7 +86,7 @@ class TestLine(unittest.TestCase):
 
   def test_field_getters_existing_tags(self):
     l = gfapy.line.segment.Factory(["12", "*", "xx:i:13", "KC:i:10"])
-    self.assertEqual("xx", l.tagnames[0])
+    self.assertEqual("xx", sorted(l.tagnames)[1])
     self.assertEqual("13", l.field_to_s("xx"))
     self.assertEqual(13, l.xx)
     self.assertEqual(13, l.try_get_xx())
@@ -157,7 +157,12 @@ class TestLine(unittest.TestCase):
   def test_to_s(self):
     fields = ["xx:i:13", "VN:Z:HI"]
     l = gfapy.line.Header(fields[:])
-    self.assertEqual("\t".join(["H"]+fields), str(l))
+    lstr = str(l)
+    try:
+      self.assertEqual("\t".join(["H"]+fields), lstr)
+    except:
+      fields.reverse()
+      self.assertEqual("\t".join(["H"]+fields), lstr)
 
   def test_unknown_record_type(self):
     with self.assertRaises(gfapy.TypeError):
