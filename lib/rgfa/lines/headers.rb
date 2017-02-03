@@ -23,7 +23,7 @@ require_relative "../field_array"
 #   rgfa.header.ni[0] # 100
 #   rgfa.header.ni << 200 # “200” is also OK
 #   rgfa.header.ni.map!{|i|i-10}
-#   rgfa.header.ni = [100,200,300].to_rgfa_field_array
+#   rgfa.header.ni = RGFA::FieldArray.new(:i, [100,200,300])
 #
 # @example Adding instances of a tag (will go on different header lines)
 #   rgfa.header.add(:xx, 100) # => 100 # single i tag, if .xx did not exist yet
