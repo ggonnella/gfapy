@@ -68,6 +68,6 @@ end
 
 desc "Run python tests"
 task :pytest do
-    system("python3 setup.py test")
+    system("python3 -m unittest discover")
 end
 
