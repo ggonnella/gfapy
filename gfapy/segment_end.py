@@ -1,9 +1,13 @@
 import gfapy
 
-class SegmentEnd(list):
+class SegmentEnd:
   """
   A segment or segment name plus an end symbol (L or R)
   """
+
+  def __init__(self, segment, end_type):
+    self.__segment = segment
+    self.__end_type = str(end_type)
 
   def validate(self):
     """
@@ -12,16 +16,31 @@ class SegmentEnd(list):
     Raises
     ------
     gfapy.ValueError
-      if size is not 2
-    gfapy.ValueError
       if second element
       is not a valid info
     """
-    if size != 2:
-      raise gfapy.ValueError("Wrong n of elements, 2 expected ({})"
-                             .format(repr(self)))
-    if not self[1] in ["L", "R"]:
-      raise gfapy.ValueError("Invalid end type ({})".format(repr(self[1])))
+    self.__validate_segment()
+    self.__validate_end_type()
+    return None
+
+  def __validate_end_type(self):
+    if not self.__end_type in ["L", "R"]:
+      raise gfapy.ValueError(
+          "Invalid end type ({})".format(repr(self.__end_type)))
+
+  def __validate_segment(self):
+    if isinstance(self.line, gfapy.Line.Segment):
+      string = self.line.name
+    elif isinstance(self.line, str):
+      string = self.line
+    else:
+      raise gfapy.TypeError(
+        "Invalid class ({}) for segment reference ({})"
+        .format(self.line.__class__, self.line))
+    if not re.match(r"^[!-~]+$", string):
+      raise gfapy.FormatError(
+      "{} is not a valid segment identifier\n".format(repr(string))+
+      "(it contains spaces or non-printable characters)")
 
   @property
   def segment(self):
@@ -31,7 +50,7 @@ class SegmentEnd(list):
     gfapy.Symbol or gfapy.Line.SegmentGFA1 or gfapy.Line.SegmentGFA2
       the segment instance or name
     """
-    return self[0]
+    return self.__segment
 
   @segment.setter
   def segment(self, value):
@@ -42,7 +61,7 @@ class SegmentEnd(list):
     value : gfapy.Symbol or gfapy.Line.SegmentGFA1 or gfapy.Line.SegmentGFA2
       the segment instance or name
     """
-    self[0]=value
+    self.__segment=value
 
   @property
   def name(self):
@@ -52,7 +71,10 @@ class SegmentEnd(list):
     str
       the segment name
     """
-    return (self[0].name if isinstance(self[0], gfapy.Line) else str(self[0]))
+    if isinstance(self.__segment, gfapy.Line):
+      return self.__segment.name
+    else:
+      return str(self.__segment)
 
   @property
   def end_type(self):
@@ -62,7 +84,7 @@ class SegmentEnd(list):
     str
       the attribute
     """
-    return self[1]
+    return self.__end_type
 
   @end_type.setter
   def end_type(self, value):
@@ -74,10 +96,10 @@ class SegmentEnd(list):
     value : Symbol
       the attribute
     """
-    self[1]=(value)
+    self.__end_type = value
 
   def invert(self):
-    return SegmentEnd([ self[0], invert(self[1])])
+    return SegmentEnd(self.__line, gfapy.invert(self.end_type))
 
   def __str__(self):
     """
@@ -86,7 +108,7 @@ class SegmentEnd(list):
     str
       name of the segment and attribute
     """
-    return "{}{}".format(name, self.attribute)
+    return "{}{}".format(self.name, self.end_type)
 
   def __eq__(self, other):
     """
@@ -94,26 +116,44 @@ class SegmentEnd(list):
 
     Parameters
     ----------
-    other : gfapy.SegmentInfo
+    other : gfapy.SegmentEnd
       the other instance
 
     Returns
     -------
     bool
     """
-    return str(self) == str(other.to_segment_info(self.__class__))
-  
+    if isinstance(other, SegmentEnd):
+      pass
+    elif isinstance(other, list):
+      other = SegmentEnd.from_list(other)
+    elif isinstance(other, str):
+      other = SegmentEnd.from_string(other)
+    else:
+      return False
+    return (self.name == other.name) and (self.orient == other.orient)
+
+  def __getattr__(self, name):
+    return getattr(self.__line, name)
+
   @classmethod
-  def from_list(cls, l):
+  def from_string(cls, string):
     """
-    Create and validate a SegmentInfo from an list
+    Create and validate a SegmentEnd from an list
 
     Returns
     -------
-    gfapy.SegmentInfo
+    gfapy.SegmentEnd
     """
-    if isinstance(l, cls):
-      return l
-    se = cls([ str(e) for e in l])
-    se.validate()
-    return se
+    return SegmentEnd(string[0:-1], string[-1])
+
+  @classmethod
+  def from_list(cls, lst):
+    """
+    Create and validate a SegmentEnd from an list
+
+    Returns
+    -------
+    gfapy.SegmentEnd
+    """
+    return SegmentEnd(lst[0], str(lst[1]))
