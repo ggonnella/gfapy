@@ -100,35 +100,35 @@ class RGFA::NumericArray < Array
     def default_gfa_tag_datatype; :B; end
 
     module ClassMethods
-    # Computes the subtype for integers in a given range.
-    #
-    # If all elements are non-negative, an unsigned subtype is selected,
-    # otherwise a signed subtype.
-    #
-    # @param range [Range<Integer,Integer>] the integer range
-    #
-    # @raise [RGFA::ValueError] if the integer range is outside
-    #   all subtype ranges
-    #
-    # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
-    # @tested_in unit_numeric_array
-    def integer_type(range)
-      if range.min < 0
-        SIGNED_INT_SUBTYPE.each do |st|
-          st_range = RGFA::NumericArray::SUBTYPE_RANGE[st]
-          if st_range.include?(range.min) and st_range.include?(range.max)
-            return st
+      # Computes the subtype for integers in a given range.
+      #
+      # If all elements are non-negative, an unsigned subtype is selected,
+      # otherwise a signed subtype.
+      #
+      # @param range [Range<Integer,Integer>] the integer range
+      #
+      # @raise [RGFA::ValueError] if the integer range is outside
+      #   all subtype ranges
+      #
+      # @return [RGFA::NumericArray::INT_SUBTYPE] subtype code
+      # @tested_in unit_numeric_array
+      def integer_type(range)
+        if range.min < 0
+          SIGNED_INT_SUBTYPE.each do |st|
+            st_range = RGFA::NumericArray::SUBTYPE_RANGE[st]
+            if st_range.include?(range.min) and st_range.include?(range.max)
+              return st
+            end
+          end
+        else
+          UNSIGNED_INT_SUBTYPE.each do |st|
+            return st if range.max <= RGFA::NumericArray::SUBTYPE_RANGE[st].max
           end
         end
-      else
-        UNSIGNED_INT_SUBTYPE.each do |st|
-          return st if range.max < RGFA::NumericArray::SUBTYPE_RANGE[st].max
-        end
+        raise RGFA::ValueError,
+          "NumericArray: values are outside of all integer subtype ranges\n"+
+          "Content: #{inspect}"
       end
-      raise RGFA::ValueError,
-        "NumericArray: values are outside of all integer subtype ranges\n"+
-        "Content: #{inspect}"
-    end
     end
 
   end
@@ -181,10 +181,11 @@ class String
   def to_numeric_array(valid: false)
     unless valid
       if empty?
-        raise RGFA::FormatError, "Numeric arrays shall not be empty"
+        raise RGFA::FormatError, "Numeric array string shall not be empty"
       end
       if self[-1] == ","
-        raise RGFA::FormatError, "Numeric array ends with comma #{self}"
+        raise RGFA::FormatError, "Numeric array string ends with comma\n"+
+          "String: #{self}"
       end
     end
     elems = split(",")
