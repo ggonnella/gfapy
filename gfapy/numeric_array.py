@@ -45,6 +45,7 @@ class NumericArray(list):
   }
   """
   Range for integer subtypes
+  (Python-style, i.e. range[1] is not included)
   """
 
   def validate(self):
@@ -90,9 +91,10 @@ class NumericArray(list):
             "Content: {}".format(repr(self)))
         if (e_max == None or e > e_max): e_max = e
         if (e_min == None or e < e_min): e_min = e
-      return self.integer_type((e_min,e_max))
+      return gfapy.NumericArray.integer_type((e_min,e_max))
 
-  def integer_type(self, range):
+  @staticmethod
+  def integer_type(range):
     """
     Computes the subtype for integers in a given range.
 
@@ -126,22 +128,7 @@ class NumericArray(list):
           return st
     raise gfapy.ValueError(
       "NumericArray: values are outside of all integer subtype ranges\n"+
-      "Content: {}".format(repr(self)))
-
-  def to_numeric_array(self, valid = None):
-    """
-    Returns self
-
-    Parameters
-    ----------
-    valid : optional
-      Ignored, for compatibility
-
-    Returns
-    -------
-    gfapy.NumericArray
-    """
-    return self
+      "Range: {}".format(repr(range)))
 
   def __str__(self):
     """
@@ -160,7 +147,7 @@ class NumericArray(list):
     return "{},{}".format(subtype, ",".join([str(v) for v in self]))
 
   @staticmethod
-  def default_gfa_tag_datatype():
+  def _default_gfa_tag_datatype():
     """
     GFA tag datatype to use, if none is provided
 
@@ -226,24 +213,34 @@ class NumericArray(list):
     gfapy.NumericArray
       The numeric array
     """
+    if not valid:
+      if len(string) == 0:
+        raise gfapy.FormatError("Numeric array string shall not be empty")
+      if string[-1] == ",":
+        raise gfapy.FormatError("Numeric array string ends with comma\n"+
+          "String: {}".format(string))
     elems = string.split(",")
     subtype = elems[0]
-    integer = (subtype != "f")
-    if integer:
-      range = NumericArray.SUBTYPE_RANGE[subtype]
-    elif subtype not in NumericArray.SUBTYPE:
+    if subtype not in NumericArray.SUBTYPE:
       raise gfapy.TypeError("Subtype {} unknown".format(subtype))
+    if subtype != "f":
+      range = NumericArray.SUBTYPE_RANGE[subtype]
     def gen():
       for e in elems[1:]:
-        if integer:
-          e = int(e)
+        if subtype != "f":
+          try:
+            e = int(e)
+          except:
+            raise gfapy.ValueError("Value is not valid: {}\n".format(e)+
+                "Numeric array string: {}".format(string))
           if not valid and not (e >= range[0] and e < range[1]):
             raise gfapy.ValueError((
                     "NumericArray: "+
                     "value is outside of subtype {0} range\n"+
                     "Value: {1}\n"+
                     "Range: {2}\n"+
-                    "Content: {3}").format(subtype, e, repr(range), repr(array)))
+                    "Content: {3}").format(subtype, e,
+                      repr(range), repr(array)))
           yield e
         else:
           yield float(e)
