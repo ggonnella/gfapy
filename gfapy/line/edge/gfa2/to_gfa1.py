@@ -34,7 +34,7 @@ class ToGFA1:
     if self.alignment_type == "C":
       a.append(str(self.pos))
     a.append(str(self.overlap))
-    if not self.eid.is_placeholder():
+    if not gfapy.is_placeholder(self.eid):
       a.append(self.eid.to_gfa_tag("ID", datatype = "Z"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))

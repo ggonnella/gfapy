@@ -20,7 +20,7 @@ class LengthGFA1:
     """
     if self.LN:
       return self.LN
-    elif not self.sequence.is_placeholder() and isinstance(self.sequence, gfapy.Placeholder):
+    elif not gfapy.is_placeholder(self.sequence):
       return len(sequence)
     else:
       return None
@@ -48,7 +48,7 @@ class LengthGFA1:
     gfapy.InconsistencyError
       If sequence length and LN tag are not consistent.
     """
-    if not gfapy.Placeholder.is_placeholder(self.sequence) and "LN" in self.tagnames:
+    if not gfapy.is_placeholder(self.sequence) and "LN" in self.tagnames:
       if self.LN != len(self.sequence):
         raise gfapy.InconsistencyError(
           "Length in LN tag ({}) ".format(self.LN)+

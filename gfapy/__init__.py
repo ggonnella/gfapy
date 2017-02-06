@@ -15,5 +15,6 @@ from gfapy.segment_end import *
 from gfapy.symbol_invert import invert
 from gfapy.oriented_line import OrientedLine
 from gfapy.line import Line
+from gfapy.placeholder import is_placeholder
 import gfapy.sequence
 import gfapy.field

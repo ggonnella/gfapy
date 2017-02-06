@@ -36,7 +36,7 @@ class Placeholder:
     """
     return self
 
-  def empty(self):
+  def is_empty(self):
     """
     A placeholder is always empty.
 
@@ -62,7 +62,7 @@ class Placeholder:
     """
     return self
 
-  def length(self):
+  def __len__(self):
     """
     Length/size of a placeholder is always 0.
 
@@ -72,8 +72,6 @@ class Placeholder:
       Returns always 0
     """
     return 0
-
-  __len__ = length
 
   def __getitem__(self, key):
     """
@@ -106,14 +104,14 @@ class Placeholder:
     return self
 
   def __eq__(self, other):
-    return (other is Placeholder) or (other == "*")
+    return gfapy.is_placeholder(other)
 
-  def is_placeholder(object):
-    if object is Placeholder:
-      return True
-    elif object == "*":
-      return True
-    elif isinstance(object, list) and object.size == 0:
-      return True
-    else:
-      return False
+def is_placeholder(object):
+  if object is Placeholder:
+    return True
+  elif object == "*":
+    return True
+  elif isinstance(object, list) and len(object) == 0:
+    return True
+  else:
+    return False
