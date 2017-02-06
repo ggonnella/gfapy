@@ -24,14 +24,16 @@ class OrientedLine:
     if self.__editable:
       self.__line = line
     else:
-      raise "gfapy.OrientedLine instance cannot be edited ({})".format(self)
+      raise gfapy.RuntimeError(
+          "gfapy.OrientedLine instance cannot be edited ({})".format(self))
 
   @orient.setter
   def orient(self, orient):
     if self.__editable:
       self.__orient = orient
     else:
-      raise "gfapy.OrientedLine instance cannot be edited ({})".format(self)
+      raise gfapy.RuntimeError(
+          "gfapy.OrientedLine instance cannot be edited ({})".format(self))
 
   @property
   def name(self):
@@ -44,8 +46,11 @@ class OrientedLine:
     return str(self.__line)
 
   def validate(self):
-    self.validate_line()
-    self.validate_orient()
+    """
+    Validates the content of the instance
+    """
+    self.__validate_line()
+    self.__validate_orient()
     return None
 
   def invert(self):
@@ -55,7 +60,7 @@ class OrientedLine:
     gfapy.OrientedLine
       same line, inverted orientation
     """
-    return OrientedLine(self.line, self.orient.invert())
+    return OrientedLine(self.line, gfapy.invert(self.orient))
 
   def __str__(self):
     """
@@ -89,20 +94,21 @@ class OrientedLine:
       return False
     return (self.name == other.name) and (self.orient == other.orient)
 
-  def block(self):
-    self.editable = False
+  # Delegate methods to the line
+  def __getattr__(self, name):
+    return getattr(self.__line, name)
 
-  def unblock(self):
-    self.editable = True
+  def _block(self):
+    self.__editable = False
 
-  def to_oriented_line(self):
-    return self
+  def _unblock(self):
+    self.__editable = True
 
-  def validate_orient(self):
+  def __validate_orient(self):
     if not self.orient in ["+", "-"]:
       raise gfapy.ValueError("Invalid orientation ({})".format(self.orient))
 
-  def validate_line(self):
+  def __validate_line(self):
     if isinstance(self.line, gfapy.Line):
       string = self.line.name
     elif isinstance(self.line, str):

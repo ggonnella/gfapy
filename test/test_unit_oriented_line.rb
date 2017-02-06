@@ -11,6 +11,7 @@ class TestUnit::OrientedLine < Test::Unit::TestCase
   @@invalid_ref = []
   @@ol_s = RGFA::OrientedLine.new(@@sym, :+)
   @@ol_r = RGFA::OrientedLine.new(@@ref, :-)
+  @@ol_inv = RGFA::OrientedLine.new(@@ref, :x)
   @@ol_s_str = "a+"
   @@ol_r_str = "a-"
 
@@ -75,6 +76,7 @@ class TestUnit::OrientedLine < Test::Unit::TestCase
     inv_r = @@ol_r.invert
     assert_equal(@@ol_r.line, inv_r.line)
     assert_equal(:+, inv_r.orient)
+    assert_raise(RGFA::ValueError) { @@ol_inv.invert }
   end
 
   def test_to_s
@@ -116,6 +118,9 @@ class TestUnit::OrientedLine < Test::Unit::TestCase
   def test_delegate_methods
     assert_equal("*", @@ol_r.field_to_s(:sequence))
     assert_equal("1.0", @@ol_r.xx)
+    ol = RGFA::OrientedLine.new("S\ta\t*".to_rgfa_line, "+")
+    ol.set("xx", 1)
+    assert_equal("S\ta\t*\txx:i:1", ol.line.to_s)
   end
 
 end

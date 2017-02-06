@@ -96,7 +96,7 @@ class RGFA::OrientedLine
     when String, Symbol
       other = other.to_s.to_oriented_line
     else
-      false
+      return false
     end
     (self.name == other.name) and
       (self.orient == other.orient)
