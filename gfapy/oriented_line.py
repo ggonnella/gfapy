@@ -128,4 +128,4 @@ class OrientedLine:
 
   @staticmethod
   def from_list(lst):
-    return OrientedLine(str(lst[0]), str(lst[1]))
+    return OrientedLine(lst[0], str(lst[1]))

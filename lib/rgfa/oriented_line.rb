@@ -171,7 +171,7 @@ class Array
   # @return [RGFA::OrientedLine]
   # @tested_in unit_oriented_line
   def to_oriented_line
-    RGFA::OrientedLine.new(self[0].to_sym, self[1].to_sym)
+    RGFA::OrientedLine.new(self[0], self[1].to_sym)
   end
 end
 
