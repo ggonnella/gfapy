@@ -71,19 +71,11 @@ module RGFA::Line::Common::Init
   #
   # <b>Validation levels</b>
   #
-  # The default is 2, i.e. if a field content is changed, the user is
-  # responsible to call #validate_field, if necessary.
-  #
-  # - 0: no validation
-  # - 1: basic validations (number of positional fields,
-  #      duplicated tags, tag types); some field contents are validated
-  # - 2: basic validations; initialization or first-access validation
-  #      of all fields
-  # - 3: as 2, plus record-type specific cross-field validations
-  #      (e.g. compare GFA1 segment LN tag and sequence lenght)
-  # - 4: as 3, plus field validation on writing to string
-  # - 5: complete validation;
-  #      as 4, plus field validation on all access (get/set)
+  # - 0: no validation (validate manually if needed)
+  # - 1: (default) validation when parsing/accessing for the first time a field
+  # - 2: validation when parsing/accessing for the first time as well as
+  #      when converting a field to string
+  # - 3: validation on each field access
   #
   def initialize(data, vlevel: 1, virtual: false, version: nil)
     unless self.class.const_defined?(:"RECORD_TYPE")
