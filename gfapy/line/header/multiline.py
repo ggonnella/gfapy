@@ -32,7 +32,7 @@ class Multiline:
     elif not isinstance(prev, gfapy.FieldArray):
       prev = gfapy.FieldArray(self.get_datatype(fieldname), [prev])
       self.__set_existing_field(fieldname, prev)
-    if self.validate > 3:
+    if self.vlevel > 2:
       prev.vpush(value, datatype, fieldname)
     else:
       prev.append(value)
@@ -62,7 +62,7 @@ class Multiline:
     """
     prev = self.get(fieldname)
     if isinstance(prev, gfapy.FieldArray):
-      if self.validate >= 4:
+      if self.vlevel >= 3:
         prev.validate_gfa_field(None, fieldname)
       return prev.to_gfa_tag(fieldname) if tag else \
              prev.to_gfa_field(fieldname = fieldname)
@@ -82,7 +82,7 @@ class Multiline:
     """
     retval = []
     for tagname, datatype, value in self._tags():
-      h = gfapy.Line.Header([], validate = self.validate)
+      h = gfapy.Line.Header([], vlevel = self.vlevel)
       h.set_datatype(tagname, datatype)
       h.set(tagname, value)
       retval.append(h)

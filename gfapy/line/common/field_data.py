@@ -61,7 +61,7 @@ class FieldData:
       return self.set(self.__class__.FIELD_ALIAS[fieldname], value)
     elif self.is_virtual():
       raise gfapy.RuntimeError("Virtual lines do not have tags")
-    elif (self.validate == 0) or self.is_valid_custom_tagname(fieldname):
+    elif (self.vlevel == 0) or self.is_valid_custom_tagname(fieldname):
       self._define_field_methods(fieldname)
       if self.datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)
@@ -94,15 +94,15 @@ class FieldData:
       if t != "Z" and t != "seq":
         # value was not parsed or was set to a string by the user
         self.data[fieldname] = gfapy.field.parse_gfa_field(v, t,
-                                                    safe = (self.validate >= 2),
+                                                    safe = (self.vlevel >= 1),
                                                     fieldname = fieldname,
                                                     line = self.data)
         return self.data[fieldname]
       else:
-        if (self.validate >= 5):
+        if (self.vlevel >= 3):
           gfapy.field.validate_gfa_field(v, t, fieldname)
     elif v is not None:
-      if (self.validate >= 5):
+      if (self.vlevel >= 3):
         t = self._field_datatype(fieldname)
         gfapy.field.validate_gfa_field(v, t, fieldname)
     else:
@@ -166,7 +166,7 @@ class FieldData:
     if value is None:
       self.data.delete(fieldname)
     else:
-      if self.validate >= 5:
+      if self.vlevel >= 3:
         self._field_or_default_datatype(fieldname, value)
         gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname), fieldname)
       self.data[fieldname] = value

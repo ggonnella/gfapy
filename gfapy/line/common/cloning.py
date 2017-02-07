@@ -27,7 +27,7 @@ class Cloning:
         data_cpy[k] = deepcopy(v)
       else:
         data_cpy[k] = v
-    cpy = self.__class__(data_cpy, validate = self.validate,
+    cpy = self.__class__(data_cpy, vlevel = self.vlevel,
                          virtual = self.virtual, version = self.version)
     cpy.datatype = self.datatype.copy()
     # cpy.refs and cpy.gfa are not set, so that the cpy is disconnected

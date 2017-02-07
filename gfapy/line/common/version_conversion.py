@@ -56,7 +56,7 @@ for shall_version in ["gfa1", "gfa2"]:
     else:
       to_version_a = getattr(self, "to_" + shall_version + "_a")
       return to_version_a().to_gfa_line(version = v,
-                                        validate = self.validate)
+                                        vlevel = self.vlevel)
 
   setattr(VersionConversion, "to_" + shall_version,
           partialmethod(to_version, shall_version = shall_version))

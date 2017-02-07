@@ -44,7 +44,7 @@ class TestLineVersion(unittest.TestCase):
   def test_custom_record(self):
     self.assertEqual("gfa2", gfapy.Line.from_string("X\tVN:Z:1.0").version)
     self.assertEqual("gfa2", gfapy.Line.from_string("X\tVN:Z:1.0", version = "gfa2").version)
-    with self.assertRaises(gfapy.TypeError):
+    with self.assertRaises(gfapy.VersionError):
       gfapy.Line.from_string("X\tVN:Z:1.0", version = "gfa1")
     with self.assertRaises(gfapy.VersionError):
       gfapy.line.CustomRecord(["X","VN:Z:1.0"], version = "gfa1")

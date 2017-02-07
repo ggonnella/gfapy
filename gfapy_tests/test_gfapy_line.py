@@ -109,7 +109,7 @@ class TestLine(unittest.TestCase):
     self.assertEqual("14", l.name)
 
   def test_field_setters_existing_tags(self):
-    l = gfapy.line.Header(["xx:i:13", "VN:Z:HI"], validate = 5)
+    l = gfapy.line.Header(["xx:i:13", "VN:Z:HI"], vlevel = 3)
     self.assertEqual(13, l.xx)
     l.xx = 15
     self.assertEqual(15, l.xx)
@@ -165,7 +165,7 @@ class TestLine(unittest.TestCase):
       self.assertEqual("\t".join(["H"]+fields), lstr)
 
   def test_unknown_record_type(self):
-    with self.assertRaises(gfapy.TypeError):
+    with self.assertRaises(gfapy.VersionError):
       gfapy.Line.from_string("Z\txxx", version = "gfa1")
     gfapy.Line.from_string("Z\txxx", version = "gfa2")
     gfapy.Line.from_string("Z\txxx")

@@ -29,23 +29,23 @@ class TestLineLink(unittest.TestCase):
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[2]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[4]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[5]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[6]="RC:Z:1232"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[7]="NM:Z:1232"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
 
   #TODO
   #def test_coords

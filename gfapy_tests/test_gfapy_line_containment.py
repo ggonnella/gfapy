@@ -28,24 +28,24 @@ class TestLineContainment(unittest.TestCase):
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[2]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[4]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[5]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[6]="x"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[7]="MQ:Z:1232"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[8]="NM:Z:1232"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)

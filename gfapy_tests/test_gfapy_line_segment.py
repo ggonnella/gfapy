@@ -24,14 +24,14 @@ class TestLineSegment(unittest.TestCase):
     with self.assertRaises(gfapy.FormatError):
       f = fields[:]
       f[2]="!@#?"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[3]="RC:Z:1232"
       gfapy.Line.from_string("\t".join(f), version = "gfa1")
     f=["S","2","ACGTCACANNN","LN:i:3"]
     with self.assertRaises(gfapy.InconsistencyError):
-      gfapy.Line.from_string("\t".join(f), version = "gfa1", validate = 3)
+      gfapy.Line.from_string("\t".join(f), version = "gfa1", vlevel = 2)
     f=["S","2","ACGTCACANNN","LN:i:11"]
     gfapy.Line.from_string("\t".join(f))
     f=["S","2","*","LN:i:3"]
@@ -42,9 +42,9 @@ class TestLineSegment(unittest.TestCase):
     gfapy.Line.from_string("S\tA-B\t*")
     gfapy.Line.from_string("S\tA,B\t*")
     with self.assertRaises(gfapy.FormatError):
-      gfapy.Line.from_string("S\tA+,B\t*", validate = 3)
+      gfapy.Line.from_string("S\tA+,B\t*", vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
-      gfapy.Line.from_string("S\tA-,B\t*", validate = 3)
+      gfapy.Line.from_string("S\tA-,B\t*", vlevel = 2)
 
   def test_coverage(self):
     l = gfapy.Line.from_string("S\t0\t*\tRC:i:600\tLN:i:100")

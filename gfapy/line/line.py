@@ -35,9 +35,6 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
   SEPARATOR = "\t"
   """Separator in the string representation of GFA lines"""
 
-  RECORD_TYPES = [ "H", "S", "L", "C", "P", "#", "G", "F", "E", "O", "U", None ]
-  """List of allowed record_type values"""
-
   DIRECTION = ["from", "to"]
   """Direction of a segment for links/containments"""
 
@@ -63,22 +60,6 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
       Record type code.
     """
     return self.__class__.RECORD_TYPE
-
-  def to_gfa_line(self, validate = None, version = None):
-    """
-    Parameters
-    ----------
-    validate : bool
-      ignored (compatibility reasons)
-    version : bool
-      ignored (compatibility reasons)
-
-    Returns
-    -------
-    gfapy.Line
-      self
-    """
-    return self
 
   @classmethod
   def __define_field_methods(cls):

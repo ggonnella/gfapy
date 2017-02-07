@@ -28,30 +28,30 @@ class TestLinePath(unittest.TestCase):
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[2]="1,2,3"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.InconsistencyError):
       f=fields[:]
       f[2]="1+,2+"
       f[3]="9M,12M,3M"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
 
     f=fields[:]
     f[3]="*,*"
-    gfapy.Line.from_string("\t".join(f), validate = 3)
+    gfapy.Line.from_string("\t".join(f), vlevel = 2)
 
     f=fields[:]
     f[3]="9M2I3D1M,12M,12M"
-    gfapy.Line.from_string("\t".join(f), validate = 3)
+    gfapy.Line.from_string("\t".join(f), vlevel = 2)
 
     f=fields[:]
     f[3]="*"
-    gfapy.Line.from_string("\t".join(f), validate = 3)
+    gfapy.Line.from_string("\t".join(f), vlevel = 2)
 
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[3]="12,12"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[3]="12M|12M"
-      gfapy.Line.from_string("\t".join(f), validate = 3)
+      gfapy.Line.from_string("\t".join(f), vlevel = 2)
