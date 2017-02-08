@@ -2,33 +2,33 @@ import gfapy
 
 class Gfa:
   def __init__(self, vlevel = 1, version = None):
-    self.vlevel = vlevel
-    self.records = {}
-    self.records["H"] = gfapy.Line.Header([], vlevel = vlevel)
-    self.records["S"] = {}
-    self.records["P"] = {}
-    self.records["F"] = {}
-    self.records[None] = {}
-    self.records["E"] = {None: []}
-    self.records["U"] = {None: []}
-    self.records["G"] = {None: []}
-    self.records["O"] = {None: []}
-    self.records["C"] = []
-    self.records["L"] = []
-    self.records["#"] = []
-    self.segments_first_order = False
-    self.progress = False
-    self.default = {"count_tag": "RC", "unit_length": 1}
-    self.extensions_enabled = False
-    self.line_queue = []
+    self._vlevel = vlevel
+    self._records = {}
+    self._records["H"] = gfapy.Line.Header([], vlevel = vlevel)
+    self._records["S"] = {}
+    self._records["P"] = {}
+    self._records["F"] = {}
+    self._records[None] = {}
+    self._records["E"] = {None: []}
+    self._records["U"] = {None: []}
+    self._records["G"] = {None: []}
+    self._records["O"] = {None: []}
+    self._records["C"] = []
+    self._records["L"] = []
+    self._records["#"] = []
+    self._segments_first_order = False
+    self._progress = False
+    self._default = {"count_tag": "RC", "unit_length": 1}
+    self._extensions_enabled = False
+    self._line_queue = []
     if version == None:
-      self.version = None
-      self.version_explanation = None
-      self.version_guess = "gfa2"
+      self._version = None
+      self._version_explanation = None
+      self._version_guess = "gfa2"
     else:
-      self.version = version
-      self.version_explanation = "set during initialization"
-      self.version_guess = version
+      self._version = version
+      self._version_explanation = "set during initialization"
+      self._version_guess = version
       self.__validate_version()
 
   def validate(self):
@@ -38,7 +38,7 @@ class Gfa:
 
   def __str__(self):
     s = ""
-    for line in self.lines():
+    for line in self.lines:
       s = s + line + "\n"
     return s
 
@@ -54,24 +54,24 @@ class Gfa:
     pass
 
   def __eq__(self, other):
-    self.lines() == other.lines()
+    self.lines == other.lines
 
   def __lenstats(self):
-    sln = [ s.try_length for s in self.segments() ]
+    sln = [ s.try_length for s in self.segments ]
     sln = sorted(sln)
     n = len(sln)
     tlen = 0
     for l in sln:
-      tlen = tlen + l
-    n50_target = tlen / 2
+      tlen += l
+    n50_target = tlen//2
     n50 = None
     curr_sum = 0
     for l in reversed(sln):
-      curr_sum = curr_sum + l
+      curr_sum += l
       if curr_sum >= n50_target:
         n50 = l
         break
-    q = [sln[0], sln[(n/4)-2], sln[(n/2)-1], sln[((n*3)/4)-1], sln[-1]]
+    q = (sln[0], sln[(n//4)-2], sln[(n//2)-1], sln[((n*3)//4)-1], sln[-1])
     return (q, n50, tlen)
 
   def __validate_segment_references(self):
@@ -84,8 +84,8 @@ class Gfa:
     return None
 
   def __validate_path_links(self):
-    for pt in self.paths():
-      for ol in pt.links():
+    for pt in self.paths:
+      for ol in pt.links:
         l = ol.line
         if l.is_virtual():
           raise gfapy.NotFoundError("Link {}".format(str(l))+
@@ -94,9 +94,9 @@ class Gfa:
     return None
 
   def __validate_version(self):
-    if (self.version != None) and (self.version not in gfapy.Gfa.VERSIONS):
+    if (self._version != None) and (self._version not in gfapy.Gfa.VERSIONS):
       raise gfapy.VersionError("GFA specification version {} not supported".
-              format(self.version))
+              format(self._version))
 
   @classmethod
   def from_string(cls, vlevel = 1, version = None):
