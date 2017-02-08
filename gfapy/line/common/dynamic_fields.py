@@ -45,7 +45,7 @@ class DynamicFields:
     if name in self.data:
       return (lambda : self.try_get(name)) if try_get else self.get(name)
     if (name in self.__class__.PREDEFINED_TAGS or
-        self.is_valid_custom_tagname(name)):
+        self._is_valid_custom_tagname(name)):
       if not try_get:
         return None
       else:
@@ -63,7 +63,7 @@ class DynamicFields:
       if name in data:
         self._set_existing_field(name, value)
       if (name in self.__class__.PREDEFINED_TAGS or
-            self.is_valid_custom_tagname(name)):
+            self._is_valid_custom_tagname(name)):
         self.set(name, value)
       else:
         super().__setattr__(name, value)
@@ -80,3 +80,5 @@ class DynamicFields:
       self._set_existing_field(fieldname, value)
     super().__setattr__(fieldname, DynamicField(getter, setter))
     super().__setattr__("try_get_" + fieldname, MethodType(try_get, self))
+
+# XXX: class methods are missing

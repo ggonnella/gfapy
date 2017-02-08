@@ -22,7 +22,7 @@ class Writer:
         [ self.field_to_s(fn, tag = False) for fn in self.positional_fieldnames ] + \
         [ self.field_to_s(fn, tag = True) for fn in self.tagnames ]
     if self.is_virtual():
-      a.append("co:Z:GFAPY_virtual_line") #TODO: use RGFA virtual line for compatibility?
+      a.append("co:Z:GFAPY_virtual_line")
     return a
 
   def field_to_s(self, fieldname, tag = False):

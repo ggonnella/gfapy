@@ -55,13 +55,13 @@ class FieldData:
     object
       **value**
     """
-    if fieldname in self.data or self._predefined_tag(fieldname):
+    if fieldname in self.data or self._is_predefined_tag(fieldname):
       return self._set_existing_field(fieldname, value)
     elif fieldname in self.__class__.FIELD_ALIAS:
       return self.set(self.__class__.FIELD_ALIAS[fieldname], value)
     elif self.is_virtual():
       raise gfapy.RuntimeError("Virtual lines do not have tags")
-    elif (self.vlevel == 0) or self.is_valid_custom_tagname(fieldname):
+    elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname):
       self._define_field_methods(fieldname)
       if self.datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)
@@ -157,12 +157,19 @@ class FieldData:
       return None
 
   def _set_existing_field(self, fieldname, value, set_reference = False):
-    if not set_reference and self.gfa and \
-        (fieldname in self.__class__.REFERENCE_FIELDS or
+    renaming_connected = False
+    if self.gfa:
+      if not set_reference and \
+        (fieldname in self.__class__.REFERENCE_FIELDS or \
          fieldname in self.__class__.REFERENCE_RELATED_FIELDS):
-      raise gfapy.RuntimeError(
-        "The value of field '{}' cannot be changed".format(fieldname)+
-        "as the line belongs to a GFA instance")
+        raise gfapy.RuntimeError(
+          "The value of field '{}' cannot be changed".format(fieldname)+
+          "as the line belongs to a GFA instance")
+      if (fieldname == self.__class__.STORAGE_KEY) or \
+        (self.__class__.STORAGE_KEY == "name" and \
+        fieldname == self.__class__.NAME_FIELD):
+         renaming_connected = True
+         self.gfa.unregister_line(self)
     if value is None:
       self.data.delete(fieldname)
     else:
@@ -170,3 +177,5 @@ class FieldData:
         self._field_or_default_datatype(fieldname, value)
         gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname), fieldname)
       self.data[fieldname] = value
+    if renaming_connected:
+      self.gfa.register_line(self)

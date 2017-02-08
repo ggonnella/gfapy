@@ -146,20 +146,21 @@ class Init:
     if rt in Init.RECORD_TYPE_VERSIONS["different"]:
       raise gfapy.RuntimeError(
         "GFA version not specified\n"+
-        "Records of type {} have different syntax according to the version".format(rt))
+        "Records of type {} ".format(rt)+
+        "have different syntax according to the version")
 
   def _validate_version(self):
     rt = self.__class__.RECORD_TYPE
-    if self.version not in gfapy.VERSIONS:
+    if self._version not in gfapy.VERSIONS:
       raise gfapy.VersionError(
-            "GFA specification version unknown ({})".format(self.version))
+            "GFA specification version unknown ({})".format(self._version))
     else:
       for k, v in Init.RECORD_TYPE_VERSIONS["specific"].items():
         if rt in v:
-          if self.version != k:
+          if self._version != k:
             raise gfapy.VersionError(
               "Records of type {} are incompatible ".format(self.record_type)+
-              "with version {}".format(self.version))
+              "with version {}".format(self._version))
           return
 
   @property
@@ -199,15 +200,10 @@ class Init:
       if n in self.data:
         raise gfapy.NotUniqueError(
           "Tag {} found multiple times".format(n))
-      elif self._predefined_tag(n):
-        if t != self.__class__.DATATYPE[n]:
-          raise gfapy.TypeError(
-            "Tag {} must be of type ".format(n) +
-            "{}, {} found".format(self.__class__.DATATYPE[n], t))
-      elif (not self.is_valid_custom_tagname(n)):
-        raise gfapy.FormatError(
-          "Custom tags must be lower case; found: {}".format(n))
+      elif self._is_predefined_tag(n):
+        self._validate_predefined_tag_type(n, t)
       else:
+        self._validate_custom_tagname(n)
         self.datatype[n] = t
     else:
       if not self.field_datatype(t):

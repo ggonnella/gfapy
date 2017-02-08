@@ -39,8 +39,8 @@ class References:
     if isinstance(item, str):
       item = self.gfa.search_by_name(item)
     self._check_item_included(item)
-    line.delete_reference(self, "sets")
-    self.delete_reference(line, "items")
+    line._delete_reference(self, "sets")
+    self._delete_reference(line, "items")
     return None
 
   def _check_item_included(self, item):

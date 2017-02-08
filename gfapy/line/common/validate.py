@@ -32,16 +32,39 @@ class Validate:
     gfapy.FormatError
       If any field content is not valid.
     """
-    fieldnames = positional_fieldnames + tagnames
+    fieldnames = self.positional_fieldnames + self.tagnames
+    if self.vlevel == 0:
+      self._validate_tagnames_and_types()
     for fieldname in fieldnames:
       self.validate_field(fieldname)
     self._validate_record_type_specific_info()
 
-  def is_valid_custom_tagname(self, fieldname):
-    return (re.match(r"^[a-z][a-z0-9]$", fieldname))
+  def _validate_tagnames_and_types(self):
+    for n in self.tagnames:
+      if self._is_predefined_tag(n):
+        self._validate_predefined_tag_type(n, self.field_datatype(n))
+      elif not _is_valid_custom_tagname(n):
+        raise gfapy.FormatError("Custom tags must be lower case\n"+
+            "Found: {}".format(tagname))
+
+  def _validate_predefined_tag_type(self, tagname, datatype):
+    if datatype != self.__class__.DATATYPE[tagname]:
+      raise gfapy.TypeError(
+        "Tag {} must be of type ".format(tagname) +
+        "{}, {} found".format(self.__class__.DATATYPE[tagname], datatype))
+
+  def _validate_custom_tagname(self, tagname):
+    if not self._is_valid_custom_tagname(tagname):
+      raise gfapy.FormatError("Custom tags must be lower case\n"+
+          "Found: {}".format(tagname))
+
+  @staticmethod
+  def _is_valid_custom_tagname(tagname):
+    return (re.match(r"^[a-z][a-z0-9]$", tagname))
 
   def _validate_record_type_specific_info(self):
     pass
 
-  def _predefined_tag(self, fieldname):
+  def _is_predefined_tag(self, fieldname):
     return fieldname in self.__class__.PREDEFINED_TAGS
+

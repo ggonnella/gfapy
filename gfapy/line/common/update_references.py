@@ -5,8 +5,7 @@ import gfapy
 
 class UpdateReferences:
 
-
-  def update_references(self, oldref, newref, key_in_ref):
+  def _update_references(self, oldref, newref, key_in_ref):
     """
     This is called on lines which were referenced by virtual lines,
     when a real line is found which substitutes the virtual line.
@@ -23,23 +22,23 @@ class UpdateReferences:
     newref : gfapy.Line
     key_in_ref : str list
     """
-    keys = self._backreference_keys(oldref, key_in_ref)
-    self._update_field_references(oldref, newref,
+    keys = self.__backreference_keys(oldref, key_in_ref)
+    self.__update_field_references(oldref, newref,
                                   list(set(self.__class__.REFERENCE_FIELDS))
                                        .intersection(keys))
     if hasattr(self, "refs"):
       # note: keeping the two types of nonfield references separate helps
       #       in subclasses where only one must be redefined
-      self._update_dependent_line_references(oldref, newref,
+      self.__update_dependent_line_references(oldref, newref,
                                              set(self.__class__.DEPENDENT_LINES)
                                              .intersection(self.refs.keys)
                                              .intersection(keys))
-      self._update_other_references(oldref, newref,
+      self.__update_other_references(oldref, newref,
                                     set(self.__class__.OTHER_REFERENCES)
                                     .intersection(self.refs.keys)
                                     .intersection(keys))
 
-  def _backreference_keys(self, ref, key_in_ref):
+  def __backreference_keys(self, ref, key_in_ref):
     """
     Return a list of fields and/or @ref keys, which indicates
     where a reference "ref" _may_ be stored (in order to be able
@@ -63,7 +62,7 @@ class UpdateReferences:
             self.__class__.DEPENDENT_LINES +
             self.__class__.OTHER_REFERENCES)
 
-  def _update_reference_in_field(self, field, oldref, newref):
+  def __update_reference_in_field(self, field, oldref, newref):
     """
     .. note::
       This methods supports fields which contain references,
@@ -80,37 +79,38 @@ class UpdateReferences:
       if value.line == oldref:
         value.line = newref
     elif isinstance(value, Array):
-      self._update_reference_in_array(value, oldref, newref)
+      self.__update_reference_in_list(value, oldref, newref)
 
-  def _update_reference_in_array(self, array, oldref, newref):
-    for elem in array:
+  def __update_reference_in_list(self, lst, oldref, newref):
+    for elem in lst:
       if isinstance(elem, gfapy.Line):
         if elem == oldref:
-          elem = newref 
+          elem = newref
       elif isinstance(elem, gfapy.OrientedLine):
         if elem.line == oldref:
           if hasattr(oldref, "complement") and callable(oldref, "complement"):
             if oldref.complement(newref):
-              elem.orient = elem.orient.invert() 
+              elem.orient = elem.orient.invert()
           elem.line = newref
       elem
     end.compact()
 
-  def _update_field_references(self, oldref, newref, possible_fieldnames):
+  def __update_field_references(self, oldref, newref, possible_fieldnames):
     for fn in possible_fieldnames:
-      self._update_reference_in_field(fn, oldref, newref if newref else str(oldref))
+      self.__update_reference_in_field(fn, oldref,
+          newref if newref else str(oldref))
 
-  def _update_nonfield_references(self, oldref, newref, possible_keys):
+  def __update_nonfield_references(self, oldref, newref, possible_keys):
     for ley in possible_keys:
-      array = self.refs[key]
-      if array is not None:
-        self._update_reference_in_array(array, oldref, newref)
+      lst = self.refs[key]
+      if lst is not None:
+        self.__update_reference_in_list(lst, oldref, newref)
 
-  def _update_dependent_line_references(self ,oldref, newref, possible_keys):
-    self._update_nonfield_references(oldref, newref, possible_keys)
+  def __update_dependent_line_references(self ,oldref, newref, possible_keys):
+    self.__update_nonfield_references(oldref, newref, possible_keys)
 
-  def _update_other_references(self, oldref, newref, possible_keys):
+  def __update_other_references(self, oldref, newref, possible_keys):
     """
     .. note:: SUBCLASSES may redefine this method
     """
-    self._update_nonfield_references(oldref, newref, possible_keys)
+    self.__update_nonfield_references(oldref, newref, possible_keys)

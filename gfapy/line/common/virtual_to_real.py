@@ -47,9 +47,9 @@ class VirtualToReal:
 
   def _update_backreference_in(self, ref, previous, k):
     if isinstance(ref, gfapy.Line):
-      ref.update_references(previous, self, k)
+      ref._update_references(previous, self, k)
     elif isinstance(ref, gfapy.OrientedLine):
-      ref.line.update_references(previous, self, k)
+      ref.line._update_references(previous, self, k)
     elif isinstance(ref, list):
       for item in ref:
         self._update_backreference_in(item, previous, k)

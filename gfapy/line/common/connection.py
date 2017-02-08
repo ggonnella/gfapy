@@ -43,14 +43,14 @@ class Connection:
       if previous.virtual():
         return self._substitute_virtual_line(previous)
       else:
-        return self._process_not_unique(previous)
+        return self.__process_not_unique(previous)
     else:
       self.gfa = gfa
-      self._initialize_references()
+      self.__initialize_references()
       self.gfa.register_line(self)
       return None
 
-  def add_reference(self, line, key, append = True):
+  def _add_reference(self, line, key, append = True):
     if not self.refs: self.refs = {}
     if not self.refs[key]: self.refs[key] = []
     if append:
@@ -61,7 +61,7 @@ class Connection:
   def _refs(self):
     if not self.refs: self.refs = {}
 
-  def _initialize_references(self):
+  def __initialize_references(self):
     """
     .. note::
       SUBCLASSES with reference fields shall
@@ -70,7 +70,7 @@ class Connection:
     """
     pass
 
-  def _process_not_unique(self, previous):
+  def __process_not_unique(self, previous):
     """
     .. note::
       SUBCLASSES may overwrite this method

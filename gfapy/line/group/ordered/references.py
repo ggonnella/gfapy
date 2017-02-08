@@ -43,7 +43,7 @@ class References:
       self.items = self.items[1:-1]
     else:
       self.items[0].update_reference(self, "paths")
-      self.delete_reference(items[0], "items")
+      self._delete_reference(items[0], "items")
       self.compute_induced_set() # check contiguity
 
   def rm_last_item(self):
@@ -59,7 +59,7 @@ class References:
       self.items = self.items[0:-2]
     else:
       self.items[-1].update_reference(self, "paths")
-      self.delete_reference(self.items[-1], "items")
+      self._delete_reference(self.items[-1], "items")
       self.compute_induced_set() # check contiguity
 
   def _add_item_to_unconnected_group(self, item, append = True):
