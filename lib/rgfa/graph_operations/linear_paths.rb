@@ -251,7 +251,7 @@ module RGFA::GraphOperations::LinearPaths
     first_reversed = (a.end_type == :L)
     last_reversed = nil
     if options[:merged_name] == :short
-      forbidden = (segment_names + path_names)
+      forbidden = (segment_names + path_names) #TODO: update to GFA2
       options[:merged_name] = "merged1"
       while forbidden.include?(options[:merged_name])
         options[:merged_name] = options[:merged_name].next
@@ -287,11 +287,10 @@ module RGFA::GraphOperations::LinearPaths
         progress_log(:merge_linear_paths, 0.95)
       end
     end
-    if !merged.sequence.placeholder?
+    if !merged.sequence.placeholder? and @version == :gfa1
       if merged.LN.nil?
         merged.LN = merged.sequence.length
       elsif @vlevel >= 1 and merged.LN != merged.sequence.length
-        # XXX
         raise RGFA::InconsistencyError,
               "Computed sequence length #{merged.sequence.length} "+
               "and computed LN #{merged.LN} differ"
