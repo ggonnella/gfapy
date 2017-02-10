@@ -47,11 +47,39 @@ class Gfa:
   # TODO: implement clone (see how clone for lines was implemented)
 
   def read_file(self, filename):
-    pass
+    # TODO: better implementation of linecount
+    if self._progress:
+      linecount = 0
+      with open(fname) as f:
+        for line in f:
+          linecount += 1
+      self._progress_log_unit("read_file", "lines", linecount,
+                        "Parsing file {}".format(filename)+
+                        " containing {} lines".format(linecount))
+    with open(fname) as f:
+      for line in f:
+        self.add_line(line.rstrip('\r\n'))
+        if self._progress:
+          self._progress_log("read_file")
+    if self._line_queue:
+      self._version = self._version_guess
+      self.process_line_queue()
+    if self._progress:
+      self._progress_log_end("read_file")
+    if self._vlevel >= 1:
+      self.validate()
+    return self
 
   @classmethod
-  def from_file(cls, filename):
-    pass
+  def from_file(cls, filename, vlevel = 1, version = None):
+    gfa = cls(vlevel = vlevel, version = version)
+    gfa.read_file(filename)
+    return gfa
+
+  def to_file(self, filename):
+    with open(filename, "w") as f:
+      for line in self.lines:
+        f.write(l+"\n")
 
   def __eq__(self, other):
     self.lines == other.lines
@@ -99,9 +127,16 @@ class Gfa:
               format(self._version))
 
   @classmethod
-  def from_string(cls, vlevel = 1, version = None):
-    pass
+  def from_string(cls, string, vlevel=1, version=None):
+    return cls.from_list(string.split("\n"), vlevel=vlevel, version=version)
 
   @classmethod
-  def from_list(cls, vlevel = 1, version = None):
-    pass
+  def from_list(cls, lines_array, vlevel=1, version=None):
+    gfa = cls(vlevel=vlevel, version=version)
+    for line in lines_array:
+      gfa.add_line(line)
+    gfa.process_line_queue()
+    if vlevel >= 1:
+      a.validate()
+    return gfa
+
