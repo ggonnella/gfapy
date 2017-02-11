@@ -15,12 +15,11 @@ class Unordered(UnorderedReferences, InducedSet, References, SameID, Group):
     "pid" : "optional_identifier_gfa2",
     "items" : "identifier_list_gfa2",
   }
+  NAME_FIELD = "pid"
+  STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["items"]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["sets"]
   OTHER_REFERENCES = []
-
-  def __str__(self):
-    return self.pid
 
 Unordered._Line__define_field_methods()

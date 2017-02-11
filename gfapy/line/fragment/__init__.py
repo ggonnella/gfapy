@@ -10,6 +10,8 @@ class Fragment(References, Line):
   POSFIELDS = ["sid", "external", "s_beg", "s_end", "f_beg", "f_end", "alignment"]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
+  NAME_FIELD = None
+  STORAGE_KEY = "external"
   DATATYPE = {
     "sid" : "identifier_gfa2",
     "external" : "oriented_identifier_gfa2",

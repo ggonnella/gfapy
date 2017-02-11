@@ -20,25 +20,25 @@ class Disconnection:
     self.__disconnect_dependent_lines()
     self.__remove_nonfield_backreferences()
     self.__remove_nonfield_references()
-    self.gfa.unregister_line(self)
+    self.gfa._unregister_line(self)
     self.gfa = None
 
   def _delete_reference(self, line, key):
-    if not self.refs or not self.refs[key]:
+    if not self._refs or not self._refs[key]:
       return
-    idx = next((i for i,x in enumerate(self.refs[key]) if x == line), None)
+    idx = next((i for i,x in enumerate(self._refs[key]) if x == line), None)
     if not idx: return
-    self.refs = (([] if idx == 0 else self.refs[0:idx]) + self.refs[idx+1:])
+    self._refs = (([] if idx == 0 else self._refs[0:idx]) + self._refs[idx+1:])
 
   def _delete_first_reference(self, key):
-    if not self.refs or not self.refs[key]:
+    if not self._refs or not self._refs[key]:
       return
-    self.refs[key].pop(0)
+    self._refs[key].pop(0)
 
   def _delete_last_reference(self, key):
-    if not self.refs or not self.refs[key]:
+    if not self._refs or not self._refs[key]:
       return
-    self.refs[key].pop()
+    self._refs[key].pop()
 
   def __remove_field_references(self):
     """
@@ -105,13 +105,13 @@ class Disconnection:
 
   def _disconnect_dependent_lines(self):
     for k in self.__class__.DEPENDENT_LINES:
-      for ref in refs.get(k, []):
+      for ref in self._refs.get(k, []):
         self.__disconnect_dependent_line(ref)
 
   def _remove_nonfield_backreferences(self):
     for k in self.__class__.OTHER_REFERENCES:
-      for ref in refs.get(k, []):
+      for ref in self._refs.get(k, []):
         self.__remove_backreference(ref, k)
 
   def _remove_nonfield_references(self):
-    self.refs = {}
+    self._refs = {}

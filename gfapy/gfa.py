@@ -1,10 +1,11 @@
 import gfapy
+from .lines import Lines
 
-class Gfa:
+class Gfa(Lines):
   def __init__(self, vlevel = 1, version = None):
     self._vlevel = vlevel
     self._records = {}
-    self._records["H"] = gfapy.Line.Header([], vlevel = vlevel)
+    self._records["H"] = gfapy.line.Header([], vlevel = vlevel)
     self._records["S"] = {}
     self._records["P"] = {}
     self._records["F"] = {}
@@ -122,7 +123,7 @@ class Gfa:
     return None
 
   def __validate_version(self):
-    if (self._version != None) and (self._version not in gfapy.Gfa.VERSIONS):
+    if (self._version != None) and (self._version not in gfapy.VERSIONS):
       raise gfapy.VersionError("GFA specification version {} not supported".
               format(self._version))
 

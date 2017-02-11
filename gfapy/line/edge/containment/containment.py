@@ -31,6 +31,8 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other, GFA1_AlignmentType,
      "MQ" : "i",
      "NM" : "i",
   }
+  NAME_FIELD = None
+  STORAGE_KEY = None
   REFERENCE_FIELDS = ["from", "to"]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []

@@ -20,6 +20,8 @@ class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Line):
     "SH" : "H",
     "UR" : "Z",
   }
+  NAME_FIELD = "sid"
+  STORAGE_KEY = "name"
   FIELD_ALIAS = { "name" : "sid", "length" : "slen", "LN" : "slen" }
   REFERENCE_FIELDS = []
   REFERENCE_RELATED_FIELDS = []
@@ -27,8 +29,5 @@ class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Line):
                      "edges_to_contained", "edges_to_containers",
                      "fragments", "internals", "paths", "sets"]
   OTHER_REFERENCES = []
-
-  def __str__(self):
-    return self.sid
 
 GFA2._Line__define_field_methods()

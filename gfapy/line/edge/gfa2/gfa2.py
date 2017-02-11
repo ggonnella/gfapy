@@ -22,13 +22,12 @@ class GFA2(Other, References, GFA2_AlignmentType, ToGFA1, AlignmentType, FromTo,
     "end2" : "position_gfa2",
     "alignment" : "alignment_gfa2",
   }
+  NAME_FIELD = "eid"
+  STORAGE_KEY = "name"
   FIELD_ALIAS = { "name" : "eid" }
   REFERENCE_FIELDS = ["sid1", "sid2"]
   REFERENCE_RELATED_FIELDS = ["beg1", "end1", "beg2", "end2"]
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
-
-  def _str__(self):
-    return self.eid
 
 GFA2._Line__define_field_methods()

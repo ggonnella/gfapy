@@ -75,19 +75,19 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
         return self._set_existing_field(fieldname, value)
       setattr(cls, fieldname, DynamicField(partial(get_method, fieldname = fieldname), 
                                            partial(set_method, fieldname = fieldname)))
-      setattr(cls, "try_get_" + fieldname, 
+      setattr(cls, "try_get_" + fieldname,
               partialmethod(try_get_method, fieldname = fieldname))
     for k,v in cls.FIELD_ALIAS.items():
       setattr(cls, k, getattr(cls, v))
       setattr(cls, "try_get_" + k, getattr(cls, "try_get_" + v))
     for k in cls.DEPENDENT_LINES + cls.OTHER_REFERENCES:
       def method(self, k):
-        if not self.refs:
-          self.refs = {}
-        return self.refs.get(k , [])
+        if not self._refs:
+          self._refs = {}
+        return self._refs.get(k , [])
       setattr(cls, k, partialmethod(method, k = k))
     def all_references(self):
-      return [ item for item in values for values in self.refs ]
+      return [ item for item in values for values in self._refs ]
 
 # Moved to __init__.py
 ##

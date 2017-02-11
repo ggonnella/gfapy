@@ -43,7 +43,7 @@ class References:
     self._initialize_segments()
 
   def _initialize_links(self):
-    self.refs["links"] = []
+    self._refs["links"] = []
     for frm, to, cigar in self._compute_required_links():
       l = None
       orient = "+"
@@ -64,7 +64,7 @@ class References:
                                  virtual = True,
                                  version = "gfa1")
         l.connect(self.gfa)
-      self.refs["links"].append(gfapy.OrientedLine(l,orient))
+      self._refs["links"].append(gfapy.OrientedLine(l,orient))
       l.add_reference(self, "paths")
 
   def _initialize_segments(self):

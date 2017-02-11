@@ -47,19 +47,19 @@ class Connection:
     else:
       self.gfa = gfa
       self.__initialize_references()
-      self.gfa.register_line(self)
+      self.gfa._register_line(self)
       return None
 
   def _add_reference(self, line, key, append = True):
-    if not self.refs: self.refs = {}
-    if not self.refs[key]: self.refs[key] = []
+    if not self._refs: self._refs = {}
+    if not self._refs[key]: self._refs[key] = []
     if append:
-      self.refs[key].append(line)
+      self._refs[key].append(line)
     else:
-      self.refs[key].insert(0, line)
+      self._refs[key].insert(0, line)
 
   def _refs(self):
-    if not self.refs: self.refs = {}
+    if not self._refs: self._refs = {}
 
   def __initialize_references(self):
     """

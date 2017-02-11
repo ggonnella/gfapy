@@ -20,14 +20,14 @@ class Creators:
     self._line_queue = []
 
   def _register_line(self, gfa_line):
-    self.__api_private_check_gfa_line(gfa_line, "_register_line")
+    self._api_private_check_gfa_line(gfa_line, "_register_line")
     storage_key = gfa_line.__class__.STORAGE_KEY
     if storage_key == "merge":
       self._records[gfa_line.record_type].merge(gfa_line)
     elif storage_key == "name":
       if gfa_line.record_type not in self._records:
         self._records[gfa_line.record_type] = {}
-      if is_placeholder(gfa_line.name):
+      if gfapy.is_placeholder(gfa_line.name):
         if None not in self._records[gfa_line.record_type]:
           self._records[gfa_line.record_type][None] = []
         self._records[gfa_line.record_type][None].append(gfa_line)

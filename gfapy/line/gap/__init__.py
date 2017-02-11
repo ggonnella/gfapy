@@ -11,6 +11,8 @@ class Gap(References, Line):
   POSFIELDS = ["gid", "sid1", "sid2", "disp", "var"]
   FIELD_ALIAS = { "name" : "gid" }
   PREDEFINED_TAGS = []
+  NAME_FIELD = "gid"
+  STORAGE_KEY = "name"
   DATATYPE = {
     "gid" : "optional_identifier_gfa2",
     "sid1" : "oriented_identifier_gfa2",
@@ -23,7 +25,4 @@ class Gap(References, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-  def __str__(self):
-    return self.gid
-  
 Gap._Line__define_field_methods()

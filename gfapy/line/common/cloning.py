@@ -30,5 +30,5 @@ class Cloning:
     cpy = self.__class__(data_cpy, vlevel = self.vlevel,
                          virtual = self.virtual, version = self.version)
     cpy.datatype = self.datatype.copy()
-    # cpy.refs and cpy.gfa are not set, so that the cpy is disconnected
+    # cpy._refs and cpy._gfa are not set, so that the cpy is disconnected
     return cpy

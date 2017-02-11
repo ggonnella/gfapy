@@ -1,4 +1,5 @@
 import gfapy
+import re
 
 class SegmentEnd:
   """
@@ -29,14 +30,14 @@ class SegmentEnd:
           "Invalid end type ({})".format(repr(self.__end_type)))
 
   def __validate_segment(self):
-    if isinstance(self.line, gfapy.Line.Segment):
-      string = self.line.name
-    elif isinstance(self.line, str):
-      string = self.line
+    if isinstance(self.segment, gfapy.line.Segment):
+      string = self.segment.name
+    elif isinstance(self.segment, str):
+      string = self.segment
     else:
       raise gfapy.TypeError(
         "Invalid class ({}) for segment reference ({})"
-        .format(self.line.__class__, self.line))
+        .format(self.segment.__class__, self.segment))
     if not re.match(r"^[!-~]+$", string):
       raise gfapy.FormatError(
       "{} is not a valid segment identifier\n".format(repr(string))+
@@ -99,7 +100,7 @@ class SegmentEnd:
     self.__end_type = value
 
   def invert(self):
-    return SegmentEnd(self.__line, gfapy.invert(self.end_type))
+    return SegmentEnd(self.__segment, gfapy.invert(self.end_type))
 
   def __str__(self):
     """
@@ -123,18 +124,16 @@ class SegmentEnd:
     -------
     bool
     """
-    if isinstance(other, SegmentEnd):
-      pass
-    elif isinstance(other, list):
+    if isinstance(other, list):
       other = SegmentEnd.from_list(other)
     elif isinstance(other, str):
       other = SegmentEnd.from_string(other)
-    else:
+    elif not isinstance(other, gfapy.SegmentEnd):
       return False
-    return (self.name == other.name) and (self.orient == other.orient)
+    return (self.name == other.name) and (self.end_type == other.end_type)
 
   def __getattr__(self, name):
-    return getattr(self.__line, name)
+    return getattr(self.__segment, name)
 
   @classmethod
   def from_string(cls, string):
@@ -156,4 +155,9 @@ class SegmentEnd:
     -------
     gfapy.SegmentEnd
     """
-    return SegmentEnd(lst[0], str(lst[1]))
+    if len(lst) != 2:
+      raise gfapy.ArgumentError("SegmentEnd.from_list requires a list of"+
+          " two elements as argument, {} found".format(repr(lst)))
+    se = SegmentEnd(lst[0], str(lst[1]))
+    se.validate()
+    return se

@@ -30,6 +30,8 @@ class Link(Link_ToGFA2, Link_References, Equivalence, Complement, Canonical, Oth
     "FC" : "i",
     "KC" : "i",
   }
+  NAME_FIELD = None
+  STORAGE_KEY = None
   REFERENCE_FIELDS = ["from", "to"]
   REFERENCE_RELATED_FIELDS = ["to_orient", "from_orient", "overlap"]
   DEPENDENT_LINES = ["paths"]

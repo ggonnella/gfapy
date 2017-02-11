@@ -18,12 +18,12 @@ class Finders:
   RECORDS_WITH_NAME = ["E", "S", "P", "U", "G", "O", None]
 
   def line(self, l):
-    if is_placeholder(l):
+    if gfapy.is_placeholder(l):
       return None
     elif isinstance(l, gfapy.Line):
       return l
     elif isinstance(l, str):
-      return self.line_by_name(l)
+      return self.__line_by_name(l)
     else:
       return None
 
@@ -44,7 +44,7 @@ class Finders:
     is_dict = isinstance(dict_or_line, dict)
     name = dict_or_line["name"] if is_dict else hash_or_line.get("name")
     if name is not None and not is_placeholder(name):
-      collection = [self.line_by_name(name)]
+      collection = [self.__line_by_name(name)]
     else:
       if is_dict:
         record_type = dict_or_line["record_type"]
@@ -75,9 +75,9 @@ class Finders:
 
   def __line_by_name(self, name):
     for rt in self.RECORDS_WITH_NAME:
-      if not self._records[rt]:
+      if rt not in self._records:
         next
-      found = self._records[rt][name]
+      found = self._records[rt].get(name, None)
       if found is not None:
         return found
     return None

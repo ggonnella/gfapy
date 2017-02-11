@@ -58,24 +58,25 @@ class Writer:
       field.validate_gfa_field(t, fieldname)
     return gfapy.field.to_gfa_tag(field, fieldname, datatype = t) if tag else field
 
-  def __repr__(self):
-    local_refs = None
-    local_gfa = None
-    if hasattr(self, "refs") and getattr(self, "refs") is not None:
-      local_refs = self.refs
-      self.refs = {}
-      for k, v in local_refs.items():
-        if not self.refs.get(k, None):
-          self.refs[k] = []
-        for l in v:
-          self.refs[k].append(str(l).replace("\t", " "))
-    if self.gfa is not None:
-      local_gfa = self.gfa
-      self.gfa = "<GFAPY:{}>".format(local_gfa.object_id)
-    retval = super().__repr__()
-    if local_refs: self.refs = local_refs
-    if local_gfa: self.gfa = local_gfa
-    return retval
+  # the following is not needed unless it becomes too long
+  #def __repr__(self):
+  #  local_refs = None
+  #  local_gfa = None
+  #  if hasattr(self, "refs") and getattr(self, "refs") is not None:
+  #    local_refs = self._refs
+  #    self._refs = {}
+  #    for k, v in local_refs.items():
+  #      if not self._refs.get(k, None):
+  #        self._refs[k] = []
+  #      for l in v:
+  #        self._refs[k].append(str(l).replace("\t", " "))
+  #  if self._gfa is not None:
+  #    local_gfa = self._gfa
+  #    self._gfa = "<GFAPY:{}>".format(id(local_gfa))
+  #  retval = super().__repr__()
+  #  if local_refs: self._refs = local_refs
+  #  if local_gfa: self._gfa = local_gfa
+  #  return retval
 
   @property
   def _tags(self):

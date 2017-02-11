@@ -22,8 +22,8 @@ class VirtualToReal:
   def _substitute_virtual_line(self, previous):
     self.gfa = previous.gfa
     self._import_references(previous)
-    self.gfa.unregister_line(previous)
-    self.gfa.register_line(self)
+    self.gfa._unregister_line(previous)
+    self.gfa._register_line(self)
     return None
 
   def _import_references(self, previous):
@@ -68,9 +68,9 @@ class VirtualToReal:
       self._update_backreference_in(ref, previous, k)
 
   def _import_nonfield_references(self, previous):
-    self.refs = previous.refs
+    self._refs = previous._refs
 
   def _update_nonfield_backreferences(self, previous):
-    for k, v in self.refs.items():
+    for k, v in self._refs.items():
       for ref in v:
         self._update_backreference_in(ref, previous, k)

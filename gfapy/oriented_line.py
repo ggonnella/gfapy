@@ -43,7 +43,10 @@ class OrientedLine:
     str
       the line name
     """
-    return str(self.__line)
+    if isinstance(self.__line, str):
+      return self.__line
+    else:
+      return self.__line.name
 
   def validate(self):
     """

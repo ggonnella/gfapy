@@ -26,16 +26,16 @@ class UpdateReferences:
     self.__update_field_references(oldref, newref,
                                   list(set(self.__class__.REFERENCE_FIELDS))
                                        .intersection(keys))
-    if hasattr(self, "refs"):
+    if hasattr(self, "_refs"):
       # note: keeping the two types of nonfield references separate helps
       #       in subclasses where only one must be redefined
       self.__update_dependent_line_references(oldref, newref,
                                              set(self.__class__.DEPENDENT_LINES)
-                                             .intersection(self.refs.keys)
+                                             .intersection(self._refs.keys)
                                              .intersection(keys))
       self.__update_other_references(oldref, newref,
                                     set(self.__class__.OTHER_REFERENCES)
-                                    .intersection(self.refs.keys)
+                                    .intersection(self._refs.keys)
                                     .intersection(keys))
 
   def __backreference_keys(self, ref, key_in_ref):
@@ -56,7 +56,7 @@ class UpdateReferences:
     Returns
     -------
     str list
-      Fieldnames and/or @refs keys.
+      Fieldnames and/or _refs keys.
     """
     return (self.__class__.REFERENCE_FIELDS +
             self.__class__.DEPENDENT_LINES +
@@ -102,7 +102,7 @@ class UpdateReferences:
 
   def __update_nonfield_references(self, oldref, newref, possible_keys):
     for ley in possible_keys:
-      lst = self.refs[key]
+      lst = self._refs[key]
       if lst is not None:
         self.__update_reference_in_list(lst, oldref, newref)
 

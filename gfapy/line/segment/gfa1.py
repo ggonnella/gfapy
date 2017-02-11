@@ -24,6 +24,8 @@ class GFA1(WriterWoSequence, References, Coverage,
     "SH" : "H",
     "UR" : "Z",
   }
+  NAME_FIELD = "name"
+  STORAGE_KEY = "name"
   FIELD_ALIAS = { "sid" : "name" }
   REFERENCE_FIELDS = []
   REFERENCE_RELATED_FIELDS = []
@@ -31,8 +33,5 @@ class GFA1(WriterWoSequence, References, Coverage,
                      "edges_to_contained", "edges_to_containers"]
   gfa2_compatibility = ["gaps_L", "gaps_R", "fragments", "internals", "sets"]
   OTHER_REFERENCES = ["paths"] + gfa2_compatibility
-
-  def __str__(self):
-    return self.name
 
 GFA1._Line__define_field_methods()

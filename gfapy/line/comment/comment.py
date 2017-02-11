@@ -26,6 +26,8 @@ class Comment(Writer, Tags, Init, Line):
     "content" : "comment",
     "spacer" : "comment",
   }
+  NAME_FIELD = None
+  STORAGE_KEY = None
   FIELD_ALIAS = {}
   REFERENCE_FIELDS = []
   REFERENCE_RELATED_FIELDS = []

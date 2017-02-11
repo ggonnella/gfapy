@@ -16,12 +16,15 @@ class Header(VersionConversion, Multiline, Connection, Line):
 
   RECORD_TYPE = "H"
   POSFIELDS = []
-  PREDEFINED_TAGS = ["VN"]
+  PREDEFINED_TAGS = ["VN", "TS"]
   FIELD_ALIAS = {}
   DATATYPE = {
-    "VN" : "Z"
+    "VN" : "Z",
+    "TS" : "i"
   }
   REFERENCE_FIELDS = []
+  NAME_FIELD = None
+  STORAGE_KEY = "merge"
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []

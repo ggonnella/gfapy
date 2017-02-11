@@ -17,12 +17,11 @@ class Ordered(Ordered_References, CapturedPath, GFA2_References, SameID, Group):
     "pid" : "optional_identifier_gfa2",
     "items" : "oriented_identifier_list_gfa2",
   }
+  NAME_FIELD = "pid"
+  STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["items"]
   REFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
-
-  def __str__(self):
-    return self.pid
 
 Ordered._Line__define_field_methods()

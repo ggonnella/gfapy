@@ -169,7 +169,7 @@ class FieldData:
         (self.__class__.STORAGE_KEY == "name" and \
         fieldname == self.__class__.NAME_FIELD):
          renaming_connected = True
-         self.gfa.unregister_line(self)
+         self.gfa._unregister_line(self)
     if value is None:
       self.data.delete(fieldname)
     else:
@@ -178,4 +178,4 @@ class FieldData:
         gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname), fieldname)
       self.data[fieldname] = value
     if renaming_connected:
-      self.gfa.register_line(self)
+      self.gfa._register_line(self)

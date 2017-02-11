@@ -19,6 +19,8 @@ class CustomRecord(Init, Line):
   POSFIELDS = ["record_type"]
   FIELD_ALIAS = {}
   PREDEFINED_TAGS = []
+  NAME_FIELD = None
+  STORAGE_KEY = None
   DATATYPE = {
     "record_type" : "custom_record_type"
   }

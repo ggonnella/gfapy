@@ -11,5 +11,5 @@ class SegmentEndsPath(list):
     -------
     gfapy.SegmentEndsPath
     """
-    return SegmentEndsPath([segment_end.to_segment_end.invert_end_type 
-                            for segment_end in self])
+    return SegmentEndsPath(reversed([segment_end.invert()
+                            for segment_end in self]))
