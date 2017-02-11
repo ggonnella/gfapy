@@ -5,7 +5,8 @@ class Topology:
   def is_cut_link(self, link):
     if link.is_circular:
       return False
-    if not link.from.dovetails(link.from_end.end_type.invert()):
+    if not link.get("from").dovetails(\
+             link.from_end.end_type.invert()):
       return True
     if not link.to.dovetails(link.to_end.end_type.invert()):
       return True
@@ -13,7 +14,7 @@ class Topology:
     for et in ["from", "to"]:
       c[et] = set()
       visited = set()
-      segend = link.from if et == "from" else link.to
+      segend = link.get("from") if et == "from" else link.to
       visited.append(segend.name)
       visited.append(link.other_end(segend).name)
       self.__traverse_component(segend, c[et], visited)

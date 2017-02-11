@@ -154,7 +154,7 @@ class LinearPaths:
 
   @staticmethod
   def __add_segment_to_merged(merged, segment, is_reversed, cut, init,
-                              options)
+                              options):
     if is_reversed:
       s = segment.sequence.rc[cut:]
     else:
@@ -188,10 +188,10 @@ class LinearPaths:
     a = segpath[0]
     first_reversed = (a.end_type == "L")
     last_reversed = None
-    if options["merged_name"] == "short"
+    if options["merged_name"] == "short":
       forbidden = (segment_names + path_names) # TODO: GFA2
       options["merged_name"] = "merged1"
-      while options["merged_name"] in forbidden
+      while options["merged_name"] in forbidden:
         options["merged_name"] = options["merged_name"].next()
         # XXX String.next() in python?
     __add_segment_to_merged(merged, self.segment(a.segment), first_reversed, 0,
@@ -227,8 +227,8 @@ class LinearPaths:
         elif self._vlevel > 0 and merged.LN != len(merged.sequence):
           raise gfapy.InconsistencyError(
               "Computed sequence length {} ".format(merged.sequence.length)+
-              "and computed LN {} differ".format(merged.LN)
-    if merged.length is None:
+              "and computed LN {} differ".format(merged.LN))
+    if merged.length is not None:
       for count_tag in ["KC", "RC", "FC"]:
         merged.set(count_tag, None)
     else:
@@ -247,7 +247,7 @@ class LinearPaths:
           if is_reversed:
             l2.to_orient = l2.to_orient.invert()
         else:
-          l2.from = merged_name
+          l2.set("from", merged_name)
           if is_reversed:
             l2.from_orient = l2.from_orient.invert()
         self.add_line(l2)

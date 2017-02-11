@@ -26,11 +26,11 @@ class RedundantLinearPaths:
     seglast = segment(segpath[-1].segment)
     seglast_d = seglast.dovetails(segpath[-1].end_type)
     redundant_last = (len(seglast_d) > 0)
-    if len(seglast_d) == 1
+    if len(seglast_d) == 1:
       segpath.append(seglast_d[0].other_end(segpath[-1].invert()))
     segpath.append(redundant_last)
 
-  def __link_duplicated_first(self, merged, first, is_reversed, jntag)
+  def __link_duplicated_first(self, merged, first, is_reversed, jntag):
     # annotate junction
     if jntag is None:
       jntag = "jn"
@@ -43,8 +43,9 @@ class RedundantLinearPaths:
     # create temporary link
     ln = len(first.sequence)
     if self._version == "gfa1":
-      tmp_link = gfapy.Line.Edge.Link([first.name, "-" if is_reversed else "+", \
-          merged.name, "+", "{}M".format(ln), "co:Z:temporary"])
+      tmp_link = gfapy.Line.Edge.Link([first.name, \
+        "-" if is_reversed else "+", merged.name, "+", \
+        "{}M".format(ln), "co:Z:temporary"])
       self.add_line(tmp_link)
     elif self._version == "gfa2":
       tmp_link = gfapy.Line.Edge.GFA2(["*",first.name + \
@@ -56,13 +57,13 @@ class RedundantLinearPaths:
     else:
       raise gfapy.AssertionError()
 
-  def __link_duplicated_last(self, merged, last, is_reversed, jntag)
+  def __link_duplicated_last(self, merged, last, is_reversed, jntag):
     # annotate junction
     if jntag is None:
       jntag = "jn"
     if not last.get(jntag):
       last.set(jntag, {"L":[],"R":[]})
-    +if is_reversed:
+    if is_reversed:
       last.get(jntag)["R"].append([merged.name, "-"])
     else:
       last.get(jntag)["L"].append([merged.name, "+"])
@@ -109,7 +110,7 @@ class RedundantLinearPaths:
                  str(ln) if r1 else str(m2ln)+"$",
                  str(ln)+"M"])
               self.add_line(l)
-            else
+            else:
               raise gfapy.AssertionError()
         s.disconnect()
 

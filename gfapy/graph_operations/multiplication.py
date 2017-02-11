@@ -8,9 +8,9 @@ class Multiplication:
       raise gfapy.ArgumentError("Mulitiplication factor must be >= 0"+
           " ({} found)".format(factor))
     elif factor == 0:
-      if conserve_components and factor == 1 and cut_segment?(segment):
+      if conserve_components and factor == 1 and is_cut_segment(segment):
         return self
-      else
+      else:
         return self.rm(segment)
     elif factor == 1:
       return self
@@ -56,8 +56,8 @@ class Multiplication:
     cpy.connect(self)
     for l in segment.dovetails + segment.containments:
       lc = l.clone
-      if lc.from == segment.name:
-        lc.from = clone_name
+      if lc.get("from") == segment.name:
+        lc.set("from", clone_name)
       if lc.to == segment.name:
         lc.to = clone_name
       lc.connect(self)
