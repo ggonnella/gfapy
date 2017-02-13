@@ -6,7 +6,8 @@ import gfapy
 
 class VirtualToReal:
 
-  def is_virtual(self):
+  @property
+  def virtual(self):
     """
     Is the line virtual?
 
@@ -17,7 +18,7 @@ class VirtualToReal:
     -------
     bool
     """
-    return self.virtual
+    return self._virtual
 
   def _substitute_virtual_line(self, previous):
     self._gfa = previous.gfa

@@ -28,6 +28,8 @@ class LastPos:
     return self.value
 
   def __eq__(self, other):
+    if not isinstance(other, LastPos):
+      return False
     return self.value == other.value
 
   def __sub__(self,other):

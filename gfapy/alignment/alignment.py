@@ -6,9 +6,12 @@ import gfapy
 class Alignment:
 
   def __new__(cls, *args, **kargs):
+    if args[0] is None or \
+        isinstance(args[0], gfapy.Placeholder):
+      return gfapy.AlignmentPlaceholder()
     if isinstance(args[0], gfapy.CIGAR) or \
         isinstance(args[0], gfapy.Trace) or \
-          isinstance(args[0], gfapy.Placeholder):
+          isinstance(args[0], gfapy.AlignmentPlaceholder):
       return args[0]
     if isinstance(args[0], str):
       return Alignment.from_string(*args, **kargs)

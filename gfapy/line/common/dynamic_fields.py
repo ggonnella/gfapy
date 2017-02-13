@@ -35,14 +35,14 @@ class DynamicFields:
       return self._set_dynamic_field(name, value)
 
   def _get_dynamic_field(self, name, err):
-    if self.is_virtual():
+    if self.virtual:
       raise err
     if name.startswith("try_get_"):
       name = name[8:]
       try_get = True
     else:
       try_get = False
-    if name in self.data:
+    if name in self._data:
       return (lambda : self.try_get(name)) if try_get else self.get(name)
     if (name in self.__class__.PREDEFINED_TAGS or
         self._is_valid_custom_tagname(name)):
@@ -56,8 +56,8 @@ class DynamicFields:
 
   def _set_dynamic_field(self, name, value):
     try:
-      virtual = super().__getattribute__("virtual")
-      data = super().__getattribute__("data")
+      virtual = super().__getattribute__("_virtual")
+      data = super().__getattribute__("_data")
       if virtual:
         super().__setattr__(name, value)
       if name in data:

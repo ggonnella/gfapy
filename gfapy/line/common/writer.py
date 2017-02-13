@@ -21,7 +21,7 @@ class Writer:
     a = [ self.record_type ] + \
         [ self.field_to_s(fn, tag = False) for fn in self.positional_fieldnames ] + \
         [ self.field_to_s(fn, tag = True) for fn in self.tagnames ]
-    if self.is_virtual():
+    if self.virtual:
       a.append("co:Z:GFAPY_virtual_line")
     return a
 
@@ -48,7 +48,7 @@ class Writer:
       The string representation
     """
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
-    field = self.data.get(fieldname, None)
+    field = self._data.get(fieldname, None)
     if field is None:
       raise gfapy.NotFoundError("No value defined for tag {}".format(fieldname))
     t = self._field_or_default_datatype(fieldname, field)

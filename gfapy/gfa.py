@@ -102,7 +102,7 @@ class Gfa(Lines):
 
   def __validate_segment_references(self):
     for s in self.segments:
-      if s.is_virtual():
+      if s.virtual:
         raise gfapy.NotFoundError("Segment {}".format(s.name)+
             "does not exist\nReferences to {}".format(s.name)+
             "were found in some lines")
@@ -113,7 +113,7 @@ class Gfa(Lines):
     for pt in self.gfa1_paths:
       for ol in pt.links:
         l = ol.line
-        if l.is_virtual():
+        if l.virtual:
           raise gfapy.NotFoundError("Link {}".format(str(l))+
             "does not exist, but is required by some paths")
           # TODO: output list of lines where references were found

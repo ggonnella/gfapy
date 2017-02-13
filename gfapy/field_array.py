@@ -10,13 +10,15 @@ class FieldArray(list):
   def datatype(self):
     return self._datatype
 
-  def __init__(self, datatype, data = []):
+  def __init__(self, datatype, data = None):
     """
     Parameters
     ----------
     datatype : gfapy.field.TAG_DATATYPE
     	The datatype to use.
     """
+    if data is None:
+      data = []
     self._datatype = datatype
     super().__init__(data)
 

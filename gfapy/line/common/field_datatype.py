@@ -18,7 +18,7 @@ class FieldDatatype:
       (One of gfapy.Field.FIELD_DATATYPE)
     """
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
-    return self._field_or_default_datatype(fieldname, self.data[fieldname])
+    return self._field_or_default_datatype(fieldname, self._data[fieldname])
 
   def set_datatype(self, fieldname, datatype):
     """
@@ -54,11 +54,11 @@ class FieldDatatype:
         "{} is not a valid custom tag name".format(fieldname))
     if datatype not in gfapy.field.TAG_DATATYPE:
       raise gfapy.ArgumentError("Unknown datatype: {}".format(datatype))
-    self.datatype[fieldname] = datatype
+    self._datatype[fieldname] = datatype
     return datatype
 
   def _field_datatype(self, fieldname):
-    return self.datatype.get(fieldname,
+    return self._datatype.get(fieldname,
         self.__class__.DATATYPE.get(fieldname, None))
 
   def _field_or_default_datatype(self, fieldname, value):
@@ -67,5 +67,5 @@ class FieldDatatype:
       if value is None:
         return None
       t = gfapy.field.get_default_gfa_tag_datatype(value)
-      self.datatype[fieldname] = t
+      self._datatype[fieldname] = t
     return t

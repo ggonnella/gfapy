@@ -94,14 +94,14 @@ class Init:
     if not hasattr(self.__class__, "RECORD_TYPE"):
       raise gfapy.RuntimeError("This class shall not be directly instantiated")
     self.vlevel = vlevel
-    self.virtual = virtual
-    self.datatype = {}
-    self.data = {}
+    self._virtual = virtual
+    self._datatype = {}
+    self._data = {}
     self._gfa = None
     self._version = version
     self._refs = {}
     if isinstance(data, dict):
-      self.data.update(data)
+      self._data.update(data)
     else:
       # normal initialization, data is an array of strings
       if self.version is None:
@@ -175,7 +175,7 @@ class Init:
     elif t not in self.DELAYED_PARSING_DATATYPES:
       s = gfapy.field.parse_gfa_field(s, t, safe = (self.vlevel >= 1),
             fieldname = n, line = errmsginfo)
-    self.data[n] = s
+    self._data[n] = s
 
   def _initialize_positional_fields(self, strings):
     if self.version is None:
@@ -198,17 +198,17 @@ class Init:
 
   def _initialize_tag(self, n, t, s, errmsginfo = None):
     if (self.vlevel > 0):
-      if n in self.data:
+      if n in self._data:
         raise gfapy.NotUniqueError(
           "Tag {} found multiple times".format(n))
       elif self._is_predefined_tag(n):
         self._validate_predefined_tag_type(n, t)
       else:
         self._validate_custom_tagname(n)
-        self.datatype[n] = t
+        self._datatype[n] = t
     else:
       if not self.field_datatype(t):
-        self.datatype[n] = t
+        self._datatype[n] = t
     self._init_field_value(n, t, s, errmsginfo = errmsginfo)
 
   @classmethod

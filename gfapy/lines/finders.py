@@ -51,7 +51,7 @@ class Finders:
       else:
         record_type = dict_or_line.record_type
       collection = self.__collection_for_select(record_type)
-    method = "has_field_values" if dict_or_line else "has_eql_fields"
+    method = "_has_field_values" if dict_or_line else "_has_eql_fields"
     return [line for line in collection \
         if line.get_attr(method)(dict_or_line, ["record_type","name"])]
 

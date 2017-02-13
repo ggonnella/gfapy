@@ -40,7 +40,7 @@ class Connection:
         "Line {} is already connected to a GFA instance".format(self))
     previous = gfa._search_duplicate(self)
     if previous:
-      if previous.virtual():
+      if previous.virtual:
         return self._substitute_virtual_line(previous)
       else:
         return self.__process_not_unique(previous)

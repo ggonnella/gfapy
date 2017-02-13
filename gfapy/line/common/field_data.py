@@ -28,7 +28,8 @@ class FieldData:
     str list
       Name of the defined tags.
     """
-    return [ x for x in self.data.keys() if x not in self.positional_fieldnames ]
+    return [ x for x in self._data.keys() \
+        if x not in self.positional_fieldnames ]
 
   def set(self, fieldname, value):
     """
@@ -55,20 +56,20 @@ class FieldData:
     object
       **value**
     """
-    if fieldname in self.data or self._is_predefined_tag(fieldname):
+    if fieldname in self._data or self._is_predefined_tag(fieldname):
       return self._set_existing_field(fieldname, value)
     elif fieldname in self.__class__.FIELD_ALIAS:
       return self.set(self.__class__.FIELD_ALIAS[fieldname], value)
-    elif self.is_virtual():
+    elif self.virtual:
       raise gfapy.RuntimeError("Virtual lines do not have tags")
     elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname):
       self._define_field_methods(fieldname)
-      if self.datatype.get(fieldname, None) is not None:
+      if self._datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)
       elif value is not None:
-        self.datatype[fieldname] = gfapy.field.get_default_gfa_tag_datatype(value)
-        self.data[fieldname] = value
-        return self.data[fieldname]
+        self._datatype[fieldname] = gfapy.field.get_default_gfa_tag_datatype(value)
+        self._data[fieldname] = value
+        return self._data[fieldname]
     else:
       raise gfapy.FormatError(
         "{} is not an existing or predefined field or a ".format(field_name)+
@@ -88,16 +89,16 @@ class FieldData:
     object or None
       Value of the field or **None** if field is not defined.
     """
-    v = self.data.get(fieldname, None)
+    v = self._data.get(fieldname, None)
     if isinstance(v, str):
       t = self._field_datatype(fieldname)
       if t != "Z" and t != "seq":
         # value was not parsed or was set to a string by the user
-        self.data[fieldname] = gfapy.field.parse_gfa_field(v, t,
+        self._data[fieldname] = gfapy.field.parse_gfa_field(v, t,
                                                     safe = (self.vlevel >= 1),
                                                     fieldname = fieldname,
-                                                    line = self.data)
-        return self.data[fieldname]
+                                                    line = self)
+        return self._data[fieldname]
       else:
         if (self.vlevel >= 3):
           gfapy.field.validate_gfa_field(v, t, fieldname)
@@ -150,9 +151,9 @@ class FieldData:
     object or None
       The deleted value or None, if the field was not defined.
     """
-    if tagname in tagnames:
-      self.datatype.delete(tagname)
-      return self.data.delete(tagname)
+    if tagname in self.tagnames:
+      self._datatype.pop(tagname)
+      return self._data.pop(tagname)
     else:
       return None
 
@@ -171,11 +172,12 @@ class FieldData:
          renaming_connected = True
          self._gfa._unregister_line(self)
     if value is None:
-      self.data.delete(fieldname)
+      self._data.delete(fieldname)
     else:
       if self.vlevel >= 3:
         self._field_or_default_datatype(fieldname, value)
-        gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname), fieldname)
-      self.data[fieldname] = value
+        gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname),
+            fieldname)
+      self._data[fieldname] = value
     if renaming_connected:
       self._gfa._register_line(self)

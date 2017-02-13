@@ -22,4 +22,4 @@ class TestUnitUnknown(unittest.TestCase):
         TestUnitUnknown.u.set,"xx",1)
 
   def test_virtual(self):
-    assert(TestUnitUnknown.u.is_virtual())
+    assert(TestUnitUnknown.u.virtual)

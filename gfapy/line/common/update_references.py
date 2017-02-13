@@ -31,11 +31,11 @@ class UpdateReferences:
       #       in subclasses where only one must be redefined
       self.__update_dependent_line_references(oldref, newref,
                                              set(self.__class__.DEPENDENT_LINES)
-                                             .intersection(self._refs.keys)
+                                             .intersection(self._refs.keys())
                                              .intersection(keys))
       self.__update_other_references(oldref, newref,
                                     set(self.__class__.OTHER_REFERENCES)
-                                    .intersection(self._refs.keys)
+                                    .intersection(self._refs.keys())
                                     .intersection(keys))
 
   def __backreference_keys(self, ref, key_in_ref):

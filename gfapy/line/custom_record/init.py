@@ -8,8 +8,9 @@ class Init:
 
   @property
   def tagnames(self):
-    return[x for x in self.data.keys if (not x in self.positional_fieldnames)
-                                     and(not x in ["record_type"])]
+    return[x for x in self._data.keys() \
+             if (not x in self.positional_fieldnames) \
+                 and(not x in ["record_type"])]
 
   def _initialize_positional_fields(self, strings):
     """delayed, see #delayed_inizialize_positional_fields"""
@@ -33,4 +34,4 @@ class Init:
       n = "field{}".format(i)
       self._init_field_value(n, "generic", strings[i], errmsginfo = strings)
       self.positional_fieldnames.append(n)
-      self.datatype[n] = "generic"
+      self._datatype[n] = "generic"

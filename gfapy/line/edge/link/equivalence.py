@@ -150,7 +150,7 @@ class Equivalence:
      self.overlap == other.overlap.complement())
 
   def is_compatible(self, other_oriented_from, other_oriented_to,
-                    other_overlap = [], allow_complement = True):
+                    other_overlap = None, allow_complement = True):
     """
     Compares a link and optionally the complement link,
     with two oriented_segments and optionally an overlap.
@@ -172,7 +172,7 @@ class Equivalence:
       provided one (if not empty)?
     """
     other_overlap = gfapy.Alignment(other_overlap, version = "gfa1",
-      valid = True)
+        valid = True)
     if self.is_compatible_direct(other_oriented_from, other_oriented_to,
         other_overlap):
       return True
@@ -184,7 +184,7 @@ class Equivalence:
       return False
 
   def is_compatible_direct(self, other_oriented_from, other_oriented_to,
-                           other_overlap = []):
+                           other_overlap = None):
     """
     Compares a link with two oriented segments and optionally an overlap.
 
@@ -206,7 +206,7 @@ class Equivalence:
      (not self.overlap or not other_overlap or (self.overlap == other_overlap)))
 
   def is_compatible_complement(self, other_oriented_from, other_oriented_to,
-                               other_overlap = []):
+                               other_overlap = None):
     """
     Compares the complement link with two oriented segments and optionally an
     overlap.
