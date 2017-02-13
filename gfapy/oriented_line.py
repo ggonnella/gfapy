@@ -6,9 +6,30 @@ class OrientedLine:
   A line or line identifier plus an orientation.
   """
 
-  def __init__(self, line, orient):
-    self.__line = line
-    self.__orient = str(orient)
+  def __new__(cls, *args):
+    new_instance = object.__new__(cls)
+    if isinstance(args[0], OrientedLine):
+      return args[0]
+    return new_instance
+
+  def __init__(self, *args):
+    if len(args) == 1:
+      if isinstance(args[0], OrientedLine):
+        return
+      elif isinstance(args[0], str):
+        self.__line = args[0][0:-1]
+        self.__orient = args[0][-1]
+      elif isinstance(args[0], list):
+        self.__line = args[0][0]
+        self.__orient = args[0][1]
+      else:
+        raise gfapy.ArgumentError("Cannot create an OrientedLine"+
+            " instance from an object of type {}".format(type(args[0])))
+    elif len(args) == 2:
+      self.__line = args[0]
+      self.__orient = args[1]
+    else:
+      raise gfapy.ArgumentError("Wrong number of arguments for OrientedLine()")
     self.__editable = True
 
   @property

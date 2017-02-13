@@ -2,7 +2,7 @@ import gfapy
 import re
 
 def unsafe_decode(string):
-  return [ gfapy.OrientedLine(str(l[0:-2]), str(l[-1]))
+  return [ gfapy.OrientedLine(str(l[0:-1]), str(l[-1]))
            for l in string.split(" ")]
 
 def decode(string):
@@ -31,7 +31,7 @@ def unsafe_encode(obj):
   if isinstance(obj, str):
     return obj
   elif isinstance(obj, list):
-    return " ".join([str(gfapy.OrientedLine(os)) for os in object])
+    return " ".join([str(gfapy.OrientedLine(os)) for os in obj])
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"

@@ -6,7 +6,7 @@ def unsafe_decode(string):
 
 def decode(string):
   validate_encoded(string)
-  return string
+  return unsafe_decode(string)
 
 def validate_encoded(string):
   if not re.match("^[ !-~]+$", string):

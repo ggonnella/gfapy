@@ -8,9 +8,11 @@ class LastPos:
 
   def validate(self):
     if not isinstance(self.value, int):
-      raise gfapy.TypeError
+      raise gfapy.TypeError("LastPos value shall be an integer,"+
+          " {} found".format(type(self.value)))
     elif self.value < 0:
-      raise gfapy.ValueError
+      raise gfapy.ValueError("LastPos value shall be >= 0,"+
+          " {} found".format(self.value))
 
   @staticmethod
   def from_string(string):
@@ -26,15 +28,17 @@ class LastPos:
     return self.value
 
   def __eq__(self, other):
-    if isinstance(other, Position):
-      other = other.value
-    return __eq__(self, other)
+    return self.value == other.value
 
   def __sub__(self,other):
-    if int(other) == 0:
+    o = int(other)
+    if o == 0:
       return copy.copy(self)
     else:
-      return self.value - int(other)
+      return self.value - o
+
+  def __int__(self):
+    return self.value
 
 def posvalue(obj):
   if isinstance(obj, LastPos):

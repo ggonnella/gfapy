@@ -16,7 +16,7 @@ class Connection:
     bool
       Is the line connected to other lines of a GFA instance?
     """
-    return (self.gfa is not None)
+    return (self._gfa is not None)
 
   @property
   def gfa(self):
@@ -35,33 +35,32 @@ class Connection:
     -------
     None
     """
-    if self.connected():
+    if self.is_connected():
       raise gfapy.RuntimeError(
         "Line {} is already connected to a GFA instance".format(self))
-    previous = gfa.search_duplicate(self)
+    previous = gfa._search_duplicate(self)
     if previous:
       if previous.virtual():
         return self._substitute_virtual_line(previous)
       else:
         return self.__process_not_unique(previous)
     else:
-      self.gfa = gfa
-      self.__initialize_references()
-      self.gfa._register_line(self)
+      self._gfa = gfa
+      self._initialize_references()
+      self._gfa._register_line(self)
       return None
 
   def _add_reference(self, line, key, append = True):
-    if not self._refs: self._refs = {}
-    if not self._refs[key]: self._refs[key] = []
+    if not self._refs:
+      self._refs = {}
+    if key not in self._refs:
+      self._refs[key] = []
     if append:
       self._refs[key].append(line)
     else:
       self._refs[key].insert(0, line)
 
-  def _refs(self):
-    if not self._refs: self._refs = {}
-
-  def __initialize_references(self):
+  def _initialize_references(self):
     """
     .. note::
       SUBCLASSES with reference fields shall

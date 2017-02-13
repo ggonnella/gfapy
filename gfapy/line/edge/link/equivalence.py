@@ -1,3 +1,5 @@
+import gfapy
+
 class Equivalence:
 
   @property
@@ -14,7 +16,7 @@ class Equivalence:
     hash(str(self.from_end)) + \
     hash(str(to_end)) + \
     hash(str(overlap)) + \
-    hash(str(overlap.complement))
+    hash(str(overlap.complement()))
 
   def is_eql(self, other):
     """
@@ -28,7 +30,7 @@ class Equivalence:
 
     Parameters
     ----------
-    other : gfapy.Line.Edge.Link
+    other : gfapy.line.edge.Link
       A link.
 
     Returns
@@ -55,7 +57,7 @@ class Equivalence:
 
     Parameters
     ----------
-    other : gfapy.Line.Edge.Link
+    other : gfapy.line.edge.Link
       A link.
 
     Returns
@@ -81,7 +83,7 @@ class Equivalence:
 #
 #    Parameters
 #    ----------
-#    other : gfapy.Line.Edge.Link
+#    other : gfapy.line.edge.Link
 #      A link.
 #
 #    Returns
@@ -103,7 +105,7 @@ class Equivalence:
 
     Parameters
     ----------
-    other : gfapy.Line.Edge.Link
+    other : gfapy.line.edge.Link
       A link.
 
     Returns
@@ -129,7 +131,7 @@ class Equivalence:
 
     Parameters
     ----------
-    other : gfapy.Line.Edge.Link
+    other : gfapy.line.edge.Link
       The other link.
 
     Returns
@@ -145,10 +147,10 @@ class Equivalence:
     """
     (self.from_end == other.to_end and
      self.to_end == other.from_end and
-     self.overlap == other.overlap.complement)
+     self.overlap == other.overlap.complement())
 
-  def is_compatible(self, other_oriented_from, other_oriented_to, other_overlap = [],
-                    allow_complement = True):
+  def is_compatible(self, other_oriented_from, other_oriented_to,
+                    other_overlap = [], allow_complement = True):
     """
     Compares a link and optionally the complement link,
     with two oriented_segments and optionally an overlap.
@@ -165,12 +167,14 @@ class Equivalence:
     Returns
     -------
     bool
-      Does the link or, if **allow_complement**, the complement link go from the first,
-      oriented segment to the second with an overlap equal to the provided one.
-      (if not empty)?
+      Does the link or, if **allow_complement**, the complement link go from
+      the first, oriented segment to the second with an overlap equal to the
+      provided one (if not empty)?
     """
-    other_overlap = other_overlap.to_alignment(version = "gfa1", valid = True)
-    if self.is_compatible_direct(other_oriented_from, other_oriented_to, other_overlap):
+    other_overlap = gfapy.Alignment(other_overlap, version = "gfa1",
+      valid = True)
+    if self.is_compatible_direct(other_oriented_from, other_oriented_to,
+        other_overlap):
       return True
     elif allow_complement:
       return self.is_compatible_complement(other_oriented_from,
@@ -223,7 +227,7 @@ class Equivalence:
     return ((self.oriented_to == other_oriented_from.invert() and
             (self.oriented_from == other_oriented_to.invert()) and
             (not self.overlap or not other_overlap or
-            (self.overlap == other_overlap.complement))))
+            (self.overlap == other_overlap.complement()))))
 
   def _complement_ends(self, other):
     return (self.from_end == other.to_end and self.to_end == other.from_end)

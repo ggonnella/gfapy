@@ -10,7 +10,7 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
   see **safe**, but not encoded) or an object of a class compatible
   with the specified datatype, if a datatype is specified (see **datatype**),
   e.g. Integer # for i fields.
-  
+
   Parameters
   ----------
   obj : object
@@ -27,7 +27,7 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
     resulting data is valid; if **False**, the unsafe version is used,
     which, for some datatypes, skips validations in order to be faster
     than the safe version
-  
+
   Raises
   ------
   gfapy.TypeError

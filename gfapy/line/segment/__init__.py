@@ -3,8 +3,8 @@ from ..line import Line
 class Segment(Line):
   """
   Parent class for classes representing S lines
-  gfapy.Line.Segment.GFA1 and
-  gfapy.Line.Segment.GFA2
+  gfapy.line.segment.GFA1 and
+  gfapy.line.segment.GFA2
   """
 
 from .gfa1 import GFA1

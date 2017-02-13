@@ -48,7 +48,7 @@ class SegmentEnd:
     """
     Returns
     -------
-    gfapy.Symbol or gfapy.Line.SegmentGFA1 or gfapy.Line.SegmentGFA2
+    gfapy.Symbol or gfapy.line.segment.GFA1 or gfapy.line.segment.GFA2
       the segment instance or name
     """
     return self.__segment
@@ -59,7 +59,7 @@ class SegmentEnd:
     Set the segment
     Parameters
     ----------
-    value : gfapy.Symbol or gfapy.Line.SegmentGFA1 or gfapy.Line.SegmentGFA2
+    value : gfapy.Symbol or gfapy.line.segment.GFA1 or gfapy.line.segment.GFA2
       the segment instance or name
     """
     self.__segment=value

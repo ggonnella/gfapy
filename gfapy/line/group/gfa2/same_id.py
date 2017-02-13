@@ -1,11 +1,11 @@
 class SameID:
 
   def _process_not_unique(self, previous):
-    self.gfa = previous.gfa
-    self.initialize_references()
+    self._gfa = previous.gfa
+    self._initialize_references()
     cur_items = self.get("items")
-    self.substitute_virtual_line(previous)
-    self.set_existing_field("items", self.get("items") + cur_items, 
+    self._substitute_virtual_line(previous)
+    self._set_existing_field("items", self.get("items") + cur_items, 
                             set_reference = True)
     self._import_tags_of_previous_group_definition(previous)
     return None

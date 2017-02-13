@@ -9,23 +9,23 @@ from .finders import Finders
 
 class Lines(Collections, Creators, Destructors, Finders, Headers):
 
-  #GFA1Specific = [
-  #                 gfapy.Line.Edge.Link,
-  #                 gfapy.Line.Edge.Containment,
-  #                 gfapy.Line.Group.Path,
-  #                 gfapy.Line.Segment.GFA1
-  #               ]
+  GFA1Specific = [
+                   gfapy.line.edge.Link,
+                   gfapy.line.edge.Containment,
+                   gfapy.line.group.Path,
+                   gfapy.line.segment.GFA1
+                 ]
 
-  #GFA2Specific = [
-  #                 gfapy.Line.CustomRecord,
-  #                 gfapy.Line.Fragment,
-  #                 gfapy.Line.Gap,
-  #                 gfapy.Line.Edge.GFA2,
-  #                 gfapy.Line.Segment.GFA2,
-  #                 gfapy.Line.Group.Unordered,
-  #                 gfapy.Line.Group.Ordered,
-  #                 gfapy.Line.Unknown
-  #               ]
+  GFA2Specific = [
+                   gfapy.line.CustomRecord,
+                   gfapy.line.Fragment,
+                   gfapy.line.Gap,
+                   gfapy.line.edge.GFA2,
+                   gfapy.line.segment.GFA2,
+                   gfapy.line.group.Unordered,
+                   gfapy.line.group.Ordered,
+                   gfapy.line.Unknown
+                 ]
 
   def _api_private_check_gfa_line(self, gfa_line, callermeth):
     if not isinstance(gfa_line, gfapy.Line):

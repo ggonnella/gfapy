@@ -47,7 +47,7 @@ from . import string                        as field_string
 #           - the returned object is guaranteed to be valid
 #
 # validate_encoded => validates a string representation
-#                     - raises RGFA::FormatError if invalid
+#                     - raises FormatError if invalid
 #
 # validate_decoded => validates a non-string field content
 #                     - raises exception if its state is invalid
@@ -62,12 +62,12 @@ from . import string                        as field_string
 #           - raises an exception if the field content is invalid
 #           - the string representation is guaranteed to be valid;
 #
-# Everything in the RGFA::Field module is API private. The user will not call
-# these methods directly, and use instead methods of RGFA::Line.
+# Everything in the Field module is API private. The user will not call
+# these methods directly, and use instead methods of Line.
 # Also: code in line.rb should not call the functions of the submodules
 # defined in the field/* files directly, but rather call the functions of
-# the submodules defined in this file, ie RGFA::Field::Parser,
-# RGFA::Field::Validator, RGFA::Field::Writer.
+# the submodules defined in this file, ie Field Parser,
+# Field Validator, Field Writer.
 #
 
 # Symbol representing a GFA1-specific datatype for positional fields

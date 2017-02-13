@@ -38,10 +38,7 @@ class Gfa(Lines):
     return None
 
   def __str__(self):
-    s = ""
-    for line in self.lines:
-      s = s + line + "\n"
-    return s
+    return "\n".join([str(line) for line in self.lines])
 
   # TODO: implement equivalent of to_gfa1_s, to_gfa2_s, to_gfa1, to_gfa2
 
@@ -104,7 +101,7 @@ class Gfa(Lines):
     return (q, n50, tlen)
 
   def __validate_segment_references(self):
-    for s in self.segments():
+    for s in self.segments:
       if s.is_virtual():
         raise gfapy.NotFoundError("Segment {}".format(s.name)+
             "does not exist\nReferences to {}".format(s.name)+
@@ -113,7 +110,7 @@ class Gfa(Lines):
     return None
 
   def __validate_path_links(self):
-    for pt in self.paths:
+    for pt in self.gfa1_paths:
       for ol in pt.links:
         l = ol.line
         if l.is_virtual():
@@ -138,6 +135,6 @@ class Gfa(Lines):
       gfa.add_line(line)
     gfa.process_line_queue()
     if vlevel >= 1:
-      a.validate()
+      gfa.validate()
     return gfa
 

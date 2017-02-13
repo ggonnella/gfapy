@@ -12,10 +12,12 @@ class Creators:
       raise gfapy.AssertionError("This point should never be reached")
     return self
 
+  append = add_line
+
   def process_line_queue(self):
     if self._version == None:
       self._version = self._version_guess
-    for i in (0,len(self._line_queue)):
+    for i in range(0,len(self._line_queue)):
       self.add_line(self._line_queue[i])
     self._line_queue = []
 
@@ -52,9 +54,12 @@ class Creators:
       raise gfapy.ArgumentError(\
           "Only strings and gfapy.Line instances can be added")
     if rt == "#":
-      gfa_line.to_rgfa_line(vlevel=self._vlevel).connect(self)
+      if isinstance(gfa_line, str):
+        gfa_line = gfapy.Line.from_string(gfa_line)
+      gfa_line.connect(self)
     elif rt == "H":
-      gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel)
+      if isinstance(gfa_line, str):
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
       self.header.merge(gfa_line)
       if gfa_line.VN:
         if gfa_line.VN == "1.0":
@@ -68,7 +73,8 @@ class Creators:
           self.__validate_version()
         self.process_line_queue()
     elif rt == "S":
-      gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel)
+      if isinstance(gfa_line, str):
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
       self._version = gfa_line.version
       self._version_explatation = \
           "implied by: syntax of S {} line".format(gfa_line.name)
@@ -77,8 +83,9 @@ class Creators:
     elif rt in ["E", "F", "G", "U", "O"]:
       self._version = "gfa2"
       self._version_explatation = "implied by: presence of a {} line".format(rt)
-      gfa_line = \
-          gfa_line.to_rgfa_line(vlevel=self._vlevel, version=self._version)
+      if isinstance(gfa_line, str):
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+            version=self._version)
       self.process_line_queue()
       gfa_line.connect(self)
     elif rt in ["L", "C", "P"]:
@@ -90,9 +97,10 @@ class Creators:
   def __add_line_GFA1(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel)
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
       else:
-        gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel, version="gfa1")
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+                                        version="gfa1")
     elif gfa_line.__class__ in gfapy.Lines.GFA2Specific:
       raise gfapy.VersionError(
         "Version: 1.0 ({})\n".format(self._version_explanation)+
@@ -120,9 +128,10 @@ class Creators:
   def __add_line_GFA2(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel)
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
       else:
-        gfa_line = gfa_line.to_rgfa_line(vlevel=self._vlevel, version="gfa2")
+        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+                                        version="gfa2")
     elif gfa_line.__class__ in gfapy.Lines.GFA1Specific:
       raise gfapy.VersionError(
         "Version: 2.0 ({})\n".format(self._version_explanation)+

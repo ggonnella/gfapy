@@ -34,7 +34,7 @@ def unsafe_encode(obj):
 
 def encode(obj):
   if isinstance(obj, gfapy.Placeholder):
-    return obj.to_s
+    return str(obj)
   elif isinstance(obj, str):
     validate_encoded(obj)
     return obj

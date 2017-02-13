@@ -10,20 +10,10 @@ class Placeholder:
   def __str__(self):
     return "*"
 
-  def to_alignment(self, allow_traces = True):
-    """
-    For compatibility with the to_alignment method of other classes
-    (CIGAR, Trace).
+  def __bool__(self):
+    return False
 
-    Parameters
-    ----------
-    allow_traces : bool, optional
-      Ignored
-
-    Returns
-    -------
-    self : Placeholder
-    """
+  def complement(self):
     return self
 
   def to_cigar(self):

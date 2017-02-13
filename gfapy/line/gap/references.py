@@ -6,21 +6,22 @@ class References:
       sid = "sid{}".format(snum)
       orient = self.get(sid).orient
       linesymbol = self.get(sid).line
-      s = self.gfa.segment(linesymbol)
+      s = self._gfa.segment(linesymbol)
       if s is None:
-        if gfapy.segments_first_order():
+        if self._gfa._segments_first_order:
           raise gfapy.NotFoundError()
-        s = gfapy.Line.Segment.GFA2({"sid" : linesymbol,
+        s = gfapy.line.segment.GFA2({"sid" : linesymbol,
                                      "slen" : 1,
                                      "sequence" : "*"},
                                     version = "gfa2",
                                     virtual = True)
-        s.connect(self.gfa)
-      self._set_existing_field(sid, gfapy.OrientedLine(s,orient), set_reference = True)
-      s.add_reference(self, self.__refkey_for_s(snum))
+        s.connect(self._gfa)
+      self._set_existing_field(sid, gfapy.OrientedLine(s,orient),
+          set_reference = True)
+      s._add_reference(self, self._refkey_for_s(snum))
 
   def _refkey_for_s(self, snum):
-    a = [sid1.orient, sid2.orient]
+    a = [self.sid1.orient, self.sid2.orient]
     if a == ["+", "+"]:
       return "gaps_R" if (snum == 1) else "gaps_L"
     elif a == ["+", "-"]:
@@ -37,5 +38,6 @@ class References:
     for sid in ["sid1", "sid2"]:
       orient = self.get(sid).orient
       linesymbol = self.get(sid).line
-      self._set_existing_field(sid, gfapy.OrientedLine(self.gfa.segment(linesymbol),orient),
-                                set_reference = True)
+      self._set_existing_field(sid,
+          gfapy.OrientedLine(self._gfa.segment(linesymbol),orient),
+          set_reference = True)

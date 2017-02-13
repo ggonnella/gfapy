@@ -34,7 +34,7 @@ class Other:
     
     Parameters
     ----------
-    segment : gfapy.Line.Segment.GFA1 or str
+    segment : gfapy.line.segment.GFA1 or str
       Segment name or instance.
     
     Raises

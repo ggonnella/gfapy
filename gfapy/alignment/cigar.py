@@ -1,5 +1,6 @@
 import re
 import gfapy
+from .alignment import Alignment
 
 class CIGAR(list):
   """
@@ -115,19 +116,6 @@ class CIGAR(list):
     Parameters
     ----------
     valid
-      Ignored, for compatibility only
-
-    Returns
-    -------
-    self : gfapy.CIGAR
-    """
-    return self
-
-  def to_alignment(self, allow_traces = True):
-    """
-    Parameters
-    ----------
-    allow_traces : bool
       Ignored, for compatibility only
 
     Returns

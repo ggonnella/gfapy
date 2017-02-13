@@ -37,7 +37,7 @@ class References:
 
   def _rm_item_from_connected_group(self, item):
     if isinstance(item, str):
-      item = self.gfa.search_by_name(item)
+      item = self._gfa.line(item)
     self._check_item_included(item)
     line._delete_reference(self, "sets")
     self._delete_reference(line, "items")
@@ -60,10 +60,10 @@ class References:
     return None
 
   def _add_item_to_connected_group(self, item, append = True):
-    self.add_reference(self.prepare_and_check_ref(item),
+    self._add_reference(self.prepare_and_check_ref(item),
                        "items", append = append)
     return None
 
   def _initialize_references(self):
     for i in range(len(self.items)):
-      self.items[i] = self.line_for_ref_symbol(self.items[i])
+      self.items[i] = self._line_for_ref_symbol(self.items[i])

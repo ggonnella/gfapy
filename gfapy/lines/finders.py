@@ -2,7 +2,7 @@ import gfapy
 
 class Finders:
   def segment(self, s):
-    if isinstance(s, gfa.Line):
+    if isinstance(s, gfapy.Line):
       return s
     else:
       return self._records["S"][s]
@@ -69,7 +69,8 @@ class Finders:
     if s is None:
       return None
     for l in s.dovetails():
-      if isinstance(l, gfapy.Line.Edge.Link) and l.is_compatible(orseg1, orseg2, cigar, True):
+      if isinstance(l, gfapy.line.edge.Link) and \
+          l.is_compatible(orseg1, orseg2, cigar, True):
         return l
     return None
 

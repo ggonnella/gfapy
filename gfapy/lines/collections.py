@@ -137,11 +137,11 @@ class Collections:
 
   @property
   def custom_record_keys(self):
-    if version == "gfa1":
+    if self._version == "gfa1":
       return []
     else:
       keys = [k for k,v in self._records.items() if v]
-      if version == "gfa2":
+      if self._version == "gfa2":
         return [k for k in keys if k not in NONCUSTOM_GFA2_KEYS]
       else:
         return [k for k in keys \

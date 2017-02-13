@@ -59,7 +59,7 @@ class DynamicFields:
       virtual = super().__getattribute__("virtual")
       data = super().__getattribute__("data")
       if virtual:
-        super().__setattr__(name, vlaue)
+        super().__setattr__(name, value)
       if name in data:
         self._set_existing_field(name, value)
       if (name in self.__class__.PREDEFINED_TAGS or

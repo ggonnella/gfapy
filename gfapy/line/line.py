@@ -66,26 +66,42 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
     """
     This avoids calls for fields which are already defined
     """
+    cls.__define_field_accessors()
+    cls.__define_field_aliases()
+    cls.__define_reference_getters()
+
+  @classmethod
+  def __define_field_accessors(cls):
     for fieldname in cls.POSFIELDS + cls.PREDEFINED_TAGS:
       def get_method(self, fieldname):
         return self.get(fieldname)
-      def try_get_method(self, fieldname):
-        return self.try_get(fieldname)
       def set_method(self, value, fieldname):
         return self._set_existing_field(fieldname, value)
-      setattr(cls, fieldname, DynamicField(partial(get_method, fieldname = fieldname), 
-                                           partial(set_method, fieldname = fieldname)))
+      setattr(cls, fieldname,
+          DynamicField(partial(get_method, fieldname = fieldname),
+                       partial(set_method, fieldname = fieldname)))
+      def try_get_method(self, fieldname):
+        return self.try_get(fieldname)
       setattr(cls, "try_get_" + fieldname,
               partialmethod(try_get_method, fieldname = fieldname))
+
+  @classmethod
+  def __define_field_aliases(cls):
     for k,v in cls.FIELD_ALIAS.items():
       setattr(cls, k, getattr(cls, v))
       setattr(cls, "try_get_" + k, getattr(cls, "try_get_" + v))
+
+  @classmethod
+  def __define_reference_getters(cls):
     for k in cls.DEPENDENT_LINES + cls.OTHER_REFERENCES:
-      def method(self, k):
-        if not self._refs:
-          self._refs = {}
+      def get_method(self, k):
         return self._refs.get(k , [])
-      setattr(cls, k, partialmethod(method, k = k))
+      def set_method(self, value, k):
+        raise gfapy.AttributeError(
+            "References collections cannot be set directly")
+      setattr(cls, k,
+          DynamicField(partial(get_method, k = k),
+                       partial(set_method, k = k)))
     def all_references(self):
       return [ item for item in values for values in self._refs ]
 

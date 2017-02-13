@@ -12,7 +12,7 @@ class References:
 
     Returns
     -------
-    gfapy.Line.Edge list
+    gfapy.line.Edge list
       A list of lines.
       The lines themselves can be modified, but the list is immutable.
 
@@ -26,7 +26,7 @@ class References:
       dovetails = getattr(self, "dovetails_{}".format(extremity))
       return dovetails()
     else:
-      return self.dovetails_L() + self.dovetails_R()
+      return self.dovetails_L + self.dovetails_R
 
   def gaps(self, extremity = None):
     """
@@ -41,7 +41,7 @@ class References:
       gaps = getattr(self, "gaps_{}".format(extremity))
       return gaps()
     else:
-      return self.gaps_L() + self.gaps_R()
+      return self.gaps_L + self.gaps_R
 
   @property
   def containments(self):
@@ -49,7 +49,7 @@ class References:
     References to graph edges (C lines for GFA1, E for GFA2) which involve the
     segment in a containment relationship.
     """
-    return self.edges_to_contained() + self.edges_to_containers()
+    return self.edges_to_contained + self.edges_to_containers
 
   @property
   def connectivity(self):
@@ -60,14 +60,14 @@ class References:
     Returns
     -------
     (conn_symbol,conn_symbol) list
-    	
+
     conn. symbols respectively of the :L and :R ends of +segment+.
 
     <b>Connectivity symbol:</b> (+conn_symbol+)
     - Let _n_ be the number of links to an end (+:L+ or +:R+) of a segment.
     Then the connectivity symbol is +:M+ if <i>n > 1</i>, otherwise _n_.
     """
-    if not self.connected():
+    if not self.is_connected():
       raise gfapy.ArgumentError(
         "Cannot compute the connectivity of {}\n".format(self)+
         "Segment is not connected to a GFA instance")
@@ -79,7 +79,7 @@ class References:
 
     Returns
     -------
-    gfapy.Line.Segment list
+    gfapy.line.Segment list
     	Segments connected to the current segment by dovetail overlap
       relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
     """
@@ -92,7 +92,7 @@ class References:
 
     Returns
     -------
-    gfapy.Line.Segment list
+    gfapy.line.Segment list
     	Segments connected to the current segment by containment relationships
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the contained segment.
@@ -106,7 +106,7 @@ class References:
 
     Returns
     -------
-    gfapy.Line.Segment list
+    gfapy.line.Segment list
     	Segments connected to the current segment by containment relationships
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the container segment.
@@ -120,7 +120,7 @@ class References:
     	
     Returns
     -------
-    gfapy.Line.Edge list
+    gfapy.line.Edge list
     """
     return self.dovetails() + self.containments() + self.internals()
 

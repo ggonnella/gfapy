@@ -1,23 +1,26 @@
+import gfapy
+
 class References:
 
   def _initialize_references(self):
-    st1 = self.substring_type(self.beg1, self.end1)[0]
-    st2 = self.substring_type(self.beg2, self.end2)[0]
+    st1 = self._substring_type(self.beg1, self.end1)[0]
+    st2 = self._substring_type(self.beg2, self.end2)[0]
     for snum in [1, 2]:
       sid = "sid{}".format(snum)
       orient = self.get(sid).orient
-      s = self.gfa.segment(self.get(sid).line)
+      s = self._gfa.segment(self.get(sid).line)
       if s is None:
-        if self.gfa.segments_first_order:
+        if self._gfa.segments_first_order:
           raise gfapy.NotFoundError()
-        s = gfapy.Line.Segment.GFA2({"sid" : self.get(sid).line,
+        s = gfapy.line.segment.GFA2({"sid" : self.get(sid).line,
                                      "slen" : 1,
                                      "sequence" : "*"},
                                     version = "gfa2",
                                     virtual = True)
-        s.connect(self.gfa)
-      self._set_existing_field(sid, gfapy.OrientedLine(s, orient), set_reference = True)
-      s.add_reference(self, self._refkey_for_s(snum, st1, st2))
+        s.connect(self._gfa)
+      self._set_existing_field(sid, gfapy.OrientedLine(s, orient),
+          set_reference = True)
+      s._add_reference(self, self._refkey_for_s(snum, st1, st2))
 
   def _refkey_for_s(self, snum, st1, st2):
     if st1 == "whole":
@@ -44,9 +47,10 @@ class References:
 
   def _import_field_references(self, previous):
     for sid in ["sid1", "sid2"]:
-      self._set_existing_field(sid, gfapy.OrientedLine(self.gfa.segment(self.get(sid).line), 
-                                                       self.get(sid).orient),
-                               set_reference = True)
+      self._set_existing_field(sid,
+          gfapy.OrientedLine(self._gfa.segment(self.get(sid).line),
+            self.get(sid).orient),
+          set_reference = True)
 
   def _backreference_keys(self, ref, key_in_ref):
     if ref.record_type == "U":

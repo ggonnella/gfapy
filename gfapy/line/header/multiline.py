@@ -31,7 +31,7 @@ class Multiline:
       return self
     elif not isinstance(prev, gfapy.FieldArray):
       prev = gfapy.FieldArray(self.get_datatype(fieldname), [prev])
-      self.__set_existing_field(fieldname, prev)
+      self._set_existing_field(fieldname, prev)
     if self.vlevel > 2:
       prev.vpush(value, datatype, fieldname)
     else:
@@ -78,11 +78,11 @@ class Multiline:
 
     Returns
     -------
-    gfapy.Line.Header list
+    gfapy.line.Header list
     """
     retval = []
     for tagname, datatype, value in self._tags():
-      h = gfapy.Line.Header([], vlevel = self.vlevel)
+      h = gfapy.line.Header([], vlevel = self.vlevel)
       h.set_datatype(tagname, datatype)
       h.set(tagname, value)
       retval.append(h)
@@ -90,11 +90,11 @@ class Multiline:
 
   def merge(self, gfa_line):
     """
-    Merge an additional **gfa.Line.Header** line into this header line.
+    Merge an additional **gfa.line.Header** line into this header line.
 
     Parameters
     ----------
-    gfa_line : gfapy.Line.Header
+    gfa_line : gfapy.line.Header
       The header line to merge.
 
     Returns
@@ -118,7 +118,7 @@ class Multiline:
     (str, str, object) list
     """
     retval = []
-    for of in tagnames:
+    for of in self.tagnames:
       value = self.get(of)
       if isinstance(value, gfapy.FieldArray):
         for elem in value:

@@ -20,8 +20,8 @@ class Disconnection:
     self.__disconnect_dependent_lines()
     self.__remove_nonfield_backreferences()
     self.__remove_nonfield_references()
-    self.gfa._unregister_line(self)
-    self.gfa = None
+    self._gfa._unregister_line(self)
+    self._gfa = None
 
   def _delete_reference(self, line, key):
     if not self._refs or not self._refs[key]:
@@ -61,17 +61,6 @@ class Disconnection:
             ref[i] = str(elem)
           elif isinstance(elem, gfapy.OrientedLine):
             ref[i].line = elem.name
-
-  #def each_reference_in(field, &block)
-  #  case field
-  #  when RGFA::Line
-  #    yield field
-  #  when RGFA::OrientedLine
-  #    yield field.line
-  #  when Array
-  #    field.each {|elem| each_reference_in(elem, &block)}
-  #  end
-  #end
 
   def __remove_backreference(self, ref, k):
     if isinstance(ref, gfapy.Line):

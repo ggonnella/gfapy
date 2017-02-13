@@ -40,7 +40,7 @@ class References:
     	GFA2 edge, segment, gap or group line to remove.
     """
     if not self.is_connected():
-      self.items = self.items[1:-1]
+      self.items = self.items[1:]
     else:
       self.items[0].update_reference(self, "paths")
       self._delete_reference(items[0], "items")
@@ -56,7 +56,7 @@ class References:
     	GFA2 edge, segment, gap or group line to remove.
     """
     if not self.is_connected():
-      self.items = self.items[0:-2]
+      self.items = self.items[0:-1]
     else:
       self.items[-1].update_reference(self, "paths")
       self._delete_reference(self.items[-1], "items")
@@ -64,7 +64,7 @@ class References:
 
   def _add_item_to_unconnected_group(self, item, append = True):
     if isinstance(item.line, gfapy.Line):
-      item.line = item.name 
+      item.line = item.name
     if append:
       items.append(item)
     else:
@@ -72,8 +72,8 @@ class References:
 
   def _add_item_to_connected_group(self, item, append = True):
     item.line = self.prepare_and_check_ref(item.line)
-    self.add_reference(item, "items", append = append)
+    self._add_reference(item, "items", append = append)
 
   def _initialize_references(self):
     for i in range(len(self.items)):
-      self.items[i].line = self.line_for_ref_symbol(self.items[i].line)
+      self.items[i].line = self._line_for_ref_symbol(self.items[i].line)

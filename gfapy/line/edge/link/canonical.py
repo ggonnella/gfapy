@@ -47,8 +47,8 @@ class Canonical:
 
     Returns
     -------
-    gfapy.Line.Edge.Link
+    gfapy.line.edge.Link
     	self
     """
     if not self.is_canonical():
-      return self.complement 
+      return self.complement()

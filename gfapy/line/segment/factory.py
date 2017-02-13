@@ -4,8 +4,8 @@ import gfapy
 class Factory(Segment):
   """
   Factory of instances of the classes
-  gfapy.Line.Segment.GFA1 and
-  gfapy.Line.Segment.GFA2
+  gfapy.line.segment.GFA1 and
+  gfapy.line.segment.GFA2
   """
 
   def __new__(cls, data, vlevel = 1, virtual = False, version = None):

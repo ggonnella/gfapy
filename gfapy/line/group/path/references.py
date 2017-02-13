@@ -36,7 +36,7 @@ class References:
     -------
     bool
     """
-    self.overlaps.size == 1 and not self.overlaps[0]
+    len(self.overlaps) == 1 and not self.overlaps[0]
 
   def _initialize_references(self):
     self._initialize_links()
@@ -47,12 +47,12 @@ class References:
     for frm, to, cigar in self._compute_required_links():
       l = None
       orient = "+"
-      if self.gfa.segment(frm.line) and self.gfa.segment(to.line):
-        l = self.gfa.search_link(frm, to, cigar)
-        if l is not None and l.compatible_complement(frm, to, cigar):
+      if self._gfa.segment(frm.line) and self._gfa.segment(to.line):
+        l = self._gfa._search_link(frm, to, cigar)
+        if l is not None and l.is_compatible_complement(frm, to, cigar):
           orient = "-"
       if l is None:
-        if self.gfa.segments_first_order:
+        if self._gfa._segments_first_order:
           raise gfapy.NotFoundError("Path: {}\n".format(self)+
           "requires a non-existing link:\n"+
           "from={} to={} cigar={}".format(frm, to, cigar))
@@ -63,15 +63,15 @@ class References:
                                   "overlap" : cigar},
                                  virtual = True,
                                  version = "gfa1")
-        l.connect(self.gfa)
+        l.connect(self._gfa)
       self._refs["links"].append(gfapy.OrientedLine(l,orient))
-      l.add_reference(self, "paths")
+      l._add_reference(self, "paths")
 
   def _initialize_segments(self):
     for sn_with_o in self.segment_names:
-      s = self.gfa.segment(sn_with_o.line)
+      s = self._gfa.segment(sn_with_o.line)
       sn_with_o.line = s
-      s.add_reference(self, "paths")
+      s._add_reference(self, "paths")
 
   def _backreference_keys(self, ref, key_in_ref):
     if ref.record_type == "L":

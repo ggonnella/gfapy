@@ -1,6 +1,7 @@
+import gfapy
+
 class Complement:
 
-  @property
   def complement(self):
     """
     Creates the equivalent link with from/to inverted.
@@ -10,22 +11,22 @@ class Complement:
 
     .. note:: The path references are not copied to the complement link.
 
-    .. note:: 
+    .. note::
       This method shall be overridden if custom tags
       are defined, which have a ``complementation'' operation which determines
       their value in the equivalent complement link.
 
     Returns
     -------
-    gfapy.Line.Edge.Link
+    gfapy.line.edge.Link
     	The inverted link.
     """
     l = self.clone()
     l.frm = self.to
-    l.from_orient = self.to_orient.invert()
+    l.from_orient = gfapy.invert(self.to_orient)
     l.to = self.frm
-    l.to_orient = self.from_orient.invert()
-    l.overlap = self.overlap.complement
+    l.to_orient = gfapy.invert(self.from_orient)
+    l.overlap = self.overlap.complement()
     return l
 
   def make_complement(self):
@@ -33,7 +34,7 @@ class Complement:
     Complements the link inplace.
     The tags are left unchanged.
 
-    .. note:: 
+    .. note::
       The path references are not complemented by this method; therefore
       the method shall be used before the link is embedded in a graph.
 
@@ -44,7 +45,7 @@ class Complement:
 
     Returns
     -------
-    gfapy.Line.Edge.Link
+    gfapy.line.edge.Link
       self
     """
     tmp = self.frm
@@ -53,5 +54,5 @@ class Complement:
     tmp = self.from_orient
     self.from_orient = self.to_orient.invert()
     self.to_orient = tmp.invert()
-    self.overlap = self.overlap.complement
+    self.overlap = self.overlap.complement()
     return self

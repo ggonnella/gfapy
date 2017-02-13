@@ -20,10 +20,10 @@ class VirtualToReal:
     return self.virtual
 
   def _substitute_virtual_line(self, previous):
-    self.gfa = previous.gfa
+    self._gfa = previous.gfa
     self._import_references(previous)
-    self.gfa._unregister_line(previous)
-    self.gfa._register_line(self)
+    self._gfa._unregister_line(previous)
+    self._gfa._register_line(self)
     return None
 
   def _import_references(self, previous):
@@ -31,11 +31,11 @@ class VirtualToReal:
     This is called when a virtual line (previous) is
     substituted by a real line
     """
-    if not isinstance(previous, gfapy.Line.Unknown):
+    if not isinstance(previous, gfapy.line.Unknown):
       self._import_field_references(previous)
       self._update_field_backreferences(previous)
     else:
-      self.initialize_references()
+      self._initialize_references()
     self._import_nonfield_references(previous)
     self._update_nonfield_backreferences(previous)
 
@@ -43,7 +43,7 @@ class VirtualToReal:
     for k in (self.__class__.REFERENCE_FIELDS +
               self.__class__.REFERENCE_RELATED_FIELDS):
       ref = previous.get(k)
-      self.set_existing_field(k, ref, set_reference = true)
+      self._set_existing_field(k, ref, set_reference = true)
 
   def _update_backreference_in(self, ref, previous, k):
     if isinstance(ref, gfapy.Line):

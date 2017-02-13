@@ -1,9 +1,11 @@
+import gfapy
+
 class Equivalence:
 
   def __eq__(self, o):
     """
     Equivalence check
-    
+
     Returns
     -------
     bool
@@ -13,11 +15,18 @@ class Equivalence:
 
     See Also
     --------
-    gfapy.Line.Edge.Link.__eq__
+    gfapy.line.edge.Link.__eq__
     """
-    if isinstance(o, str): return str(self) == str(o)
-    if (o.record_type != self.record_type): return False
-    if sorted(o.data.keys()) != sorted(self.data.keys()): return False
+    if o is self:
+      return True
+    if isinstance(o, str):
+      return self.name == str(o)
+    if not isinstance(o, gfapy.Line):
+      return False
+    if (o.record_type != self.record_type):
+      return False
+    if sorted(o.data.keys()) != sorted(self.data.keys()):
+      return False
     for k,v in o.data.items():
       if self.data[k] != v:
         if self.field_to_s(k) != o.field_to_s(k):

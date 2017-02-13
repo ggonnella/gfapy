@@ -71,7 +71,7 @@ class ToGFA1:
     """
     Returns
     -------
-    str, gfapy.Line.Segment.GFA2
+    str, gfapy.line.segment.GFA2
       Value of the GFA1 **from** field, if the edge is a link or containment.
 
     Raises
@@ -88,7 +88,7 @@ class ToGFA1:
 
     Parameters
     ----------
-    str, gfapy.Line.Segment.GFA2
+    str, gfapy.line.segment.GFA2
     """
     self.oriented_from.line = value
 
@@ -124,7 +124,7 @@ class ToGFA1:
     """
     Returns
     -------
-    str, gfapy.Line.Segment.GFA2
+    str, gfapy.line.segment.GFA2
       Value of the GFA1 **to** field, if the edge is a link or containment.
 
     Raises
@@ -141,7 +141,7 @@ class ToGFA1:
 
     Parameters
     ----------
-    value : str, gfapy.Line.Segment.GFA2
+    value : str, gfapy.line.segment.GFA2
     """
     self.oriented_to.line = value
 

@@ -63,7 +63,7 @@ class FromTo:
   def from_name(self):
     """
     The from segment name, in both cases where from is a segment name (String)
-    or a segment (gfapy.Line.Segment.GFA1)
+    or a segment (gfapy.line.segment.GFA1)
 
     Returns
     -------
@@ -75,7 +75,7 @@ class FromTo:
   def to_name(self):
     """
     The to segment name, in both cases where to is a segment name (String)
-    or a segment (gfapy.Line.Segment.GFA1).
+    or a segment (gfapy.line.segment.GFA1).
       
     Returns
     -------

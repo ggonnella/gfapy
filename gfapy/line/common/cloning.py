@@ -20,7 +20,7 @@ class Cloning:
     data_cpy = {}
     for k,v in self.data.items():
       if k in self.__class__.REFERENCE_FIELDS:
-        data_cpy[k] = self.field_to_s(k).clone()
+        data_cpy[k] = self.field_to_s(k)
       elif self._field_datatype(k) == "J":
         data_cpy[k] = JSON.parse(v.to_json())
       elif isinstance(v, list) or isinstance(v, str):

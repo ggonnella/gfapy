@@ -9,7 +9,7 @@ class TestUnitUnknown(unittest.TestCase):
     assert(isinstance(TestUnitUnknown.u, gfapy.line.Unknown))
 
   def test_str(self):
-    self.assertEqual("?record_type?\ta\tco:Z:line_created_by_RGFA",
+    self.assertEqual("?record_type?\ta\tco:Z:line_created_by_gfapy",
         str(TestUnitUnknown.u))
 
   def test_tags(self):

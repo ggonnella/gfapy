@@ -32,7 +32,7 @@ def unsafe_encode(obj):
   if isinstance(obj, str):
     return obj
   elif isinstance(obj, list):
-    return ",".join([str(gfapy.OrientedLine(os)) for os in object])
+    return ",".join([str(gfapy.OrientedLine(os)) for os in obj])
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"
@@ -45,7 +45,7 @@ def encode(obj):
     return obj
   elif isinstance(obj, list):
     validate_decoded(obj)
-    return ",".join([str(gfapy.OrientedLine(os)) for os in object])
+    return ",".join([str(gfapy.OrientedLine(os)) for os in obj])
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"

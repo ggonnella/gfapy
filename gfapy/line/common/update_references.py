@@ -74,7 +74,7 @@ class UpdateReferences:
     value = get(field)
     if isinstance(value, gfapy.Line):
       if value == oldref:
-        self.set_existing_field(field, newref, set_reference = True)
+        self._set_existing_field(field, newref, set_reference = True)
     elif isinstance(value, gfapy.OrientedLine):
       if value.line == oldref:
         value.line = newref

@@ -21,7 +21,7 @@ class Unknown(Line):
   OTHER_REFERENCES = []
 
   def __str__(self):
-    return "?record_type?\t{}\tco:Z:line_created_by_RGFA".format(self.name)
+    return "?record_type?\t{}\tco:Z:line_created_by_gfapy".format(self.name)
 
   def is_virtual(self):
     return True

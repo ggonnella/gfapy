@@ -43,12 +43,12 @@ class RedundantLinearPaths:
     # create temporary link
     ln = len(first.sequence)
     if self._version == "gfa1":
-      tmp_link = gfapy.Line.Edge.Link([first.name, \
+      tmp_link = gfapy.line.edge.Link([first.name, \
         "-" if is_reversed else "+", merged.name, "+", \
         "{}M".format(ln), "co:Z:temporary"])
       self.add_line(tmp_link)
     elif self._version == "gfa2":
-      tmp_link = gfapy.Line.Edge.GFA2(["*",first.name + \
+      tmp_link = gfapy.line.edge.GFA2(["*",first.name + \
         ("-" if is_reversed else "+"), merged.name+"+",
         "0" if is_reversed else str(ln-1), # on purpose fake
         "1" if is_reversed else "{}$".format(ln), # on purpose fake
@@ -70,13 +70,13 @@ class RedundantLinearPaths:
     # create temporary link
     ln = len(last.sequence)
     if self._version == "gfa1":
-      tmp_link = gfapy.Line.Edge.Link([merged.name, "+",
+      tmp_link = gfapy.line.edge.Link([merged.name, "+",
           last.name, "-" if is_reversed else "+",
           "{}M".format(ln), "co:Z:temporary"])
       self.add_line(tmp_link)
     elif self._version == "gfa2":
       mln = len(merged.sequence)
-      tmp_link = gfapy.Line.Edge.GFA2(["*",merged.name+"+", \
+      tmp_link = gfapy.line.edge.GFA2(["*",merged.name+"+", \
         last_name+("-" if is_reversed else "+"),
         str(mln - ln), "{}$".format(mln),
         str(ln-1) if is_reversed else "0", # on purpose fake
@@ -96,14 +96,14 @@ class RedundantLinearPaths:
         for m1, dir1 in jndata["L"].items():
           for m2, dir2 in jndata["R"].items():
             if self._version == "gfa1":
-              l = gfapy.Line.Edge.Link([m1,dir1,m2,dir2,"{}M".format(ln)])
+              l = gfapy.line.edge.Link([m1,dir1,m2,dir2,"{}M".format(ln)])
               self.add_line(l)
             elif self._version == "gfa2":
               m1ln = len(self.segment(m1).sequence)
               m2ln = len(self.segment(m2).sequence)
               r1 = (dir1 == "-")
               r2 = (dir2 == "-")
-              l = gfapy.Line.Edge.GFA2(["*", m1+dir1, m2+dir2,
+              l = gfapy.line.edge.GFA2(["*", m1+dir1, m2+dir2,
                  "0" if r1 else str(m1ln-ln),
                  str(ln) if r1 else str(m1ln)+"$",
                  "0" if r2 else str(m2ln-ln),

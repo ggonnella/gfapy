@@ -4,6 +4,20 @@ Methods to parse and handle alignment field contents
 import gfapy
 
 class Alignment:
+
+  def __new__(cls, *args, **kargs):
+    if isinstance(args[0], gfapy.CIGAR) or \
+        isinstance(args[0], gfapy.Trace) or \
+          isinstance(args[0], gfapy.Placeholder):
+      return args[0]
+    if isinstance(args[0], str):
+      return Alignment.from_string(*args, **kargs)
+    elif isinstance(args[0], list):
+      return Alignment.from_list(*args, **kargs)
+    else:
+      raise gfapy.ArgumentError("Cannot create an alignment "+
+          "from an instance of the class {}".format(type(args[0])))
+
   @staticmethod
   def from_string(string, version = "gfa2", valid = False):
     """

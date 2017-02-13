@@ -15,7 +15,7 @@ def decode(string):
     return string
 
 def validate_encoded(string):
-  if not re.match("^[!-~]+$"):
+  if not re.match("^[!-~]+$", string):
     raise gfapy.FormatError(
       "{} is not a valid GFA2 optional identifier\n".format(repr(string))+
       "(it contains spaces or non-printable characters)")

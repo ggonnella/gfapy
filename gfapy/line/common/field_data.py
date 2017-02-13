@@ -158,7 +158,7 @@ class FieldData:
 
   def _set_existing_field(self, fieldname, value, set_reference = False):
     renaming_connected = False
-    if self.gfa:
+    if self._gfa:
       if not set_reference and \
         (fieldname in self.__class__.REFERENCE_FIELDS or \
          fieldname in self.__class__.REFERENCE_RELATED_FIELDS):
@@ -169,7 +169,7 @@ class FieldData:
         (self.__class__.STORAGE_KEY == "name" and \
         fieldname == self.__class__.NAME_FIELD):
          renaming_connected = True
-         self.gfa._unregister_line(self)
+         self._gfa._unregister_line(self)
     if value is None:
       self.data.delete(fieldname)
     else:
@@ -178,4 +178,4 @@ class FieldData:
         gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname), fieldname)
       self.data[fieldname] = value
     if renaming_connected:
-      self.gfa._register_line(self)
+      self._gfa._register_line(self)

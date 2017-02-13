@@ -99,6 +99,7 @@ class Init:
     self.data = {}
     self._gfa = None
     self._version = version
+    self._refs = {}
     if isinstance(data, dict):
       self.data.update(data)
     else:
