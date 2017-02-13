@@ -17,11 +17,9 @@ def validate_encoded(string):
 def validate_decoded(obj):
   if isinstance(obj, list):
     for elem in obj:
-      if isinstance(obj, str):
-        pass
-      elif isinstance(obj, gfapy.Line):
-        elem = str(elem.id)
-      else:
+      if isinstance(elem, gfapy.Line):
+        elem = str(elem.name)
+      elif not isinstance(elem, str):
         raise gfapy.TypeError(
           "the list contains an obj of class {}\n"
           .format(elem.__class__.__name__)+
@@ -40,10 +38,10 @@ def validate_decoded(obj):
 def unsafe_encode(obj):
   if isinstance(obj, list):
     def func(elem):
-      if isinstance(obj, str):
-        elem
-      elif isinstance(obj, gfapy.Line):
-        str(elem.id)
+      if isinstance(elem, str):
+        return elem
+      elif isinstance(elem, gfapy.Line):
+        return str(elem.name)
       else:
         raise gfapy.TypeError(
           "the list contains an obj of class {}\n"
@@ -56,7 +54,7 @@ def unsafe_encode(obj):
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"
       .format(obj.__class__.__name__)+
-      "(accepted classes: Array, String)")
+      "(accepted classes: list, str)")
 
 def encode(obj):
   validate_decoded(obj)

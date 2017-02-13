@@ -1,4 +1,5 @@
 import gfapy
+import json
 from copy import deepcopy
 
 class Cloning:
@@ -22,7 +23,7 @@ class Cloning:
       if k in self.__class__.REFERENCE_FIELDS:
         data_cpy[k] = self.field_to_s(k)
       elif self._field_datatype(k) == "J":
-        data_cpy[k] = JSON.parse(v.to_json())
+        data_cpy[k] = json.loads(json.dumps(v))
       elif isinstance(v, list) or isinstance(v, str):
         data_cpy[k] = deepcopy(v)
       else:

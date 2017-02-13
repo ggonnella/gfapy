@@ -17,9 +17,9 @@ def validate_encoded(string):
   try:
     json.loads(string)
   except Exception as err:
-    raise Exception( 
+    raise Exception(
     "{} is not a valid JSON string\n".format(repr(string))+
-    "JSON.parse raised a {} exception\n".format(err.__class__.__name__)+
+    "json.loads raised a {} exception\n".format(err.__class__.__name__)+
     "error message: {}").format(str(err)) from err
 
 def validate_decoded(obj):
