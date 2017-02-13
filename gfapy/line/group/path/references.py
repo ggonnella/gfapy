@@ -23,7 +23,10 @@ class References:
           j = 0
         else:
           break
-      cigar = gfapy.AlignmentPlaceholder if has_undef_overlaps else self.overlaps[i]
+      if has_undef_overlaps:
+        cigar = gfapy.AlignmentPlaceholder()
+      else:
+        cigar = self.overlaps[i]
       retval.append([self.segment_names[i], self.segment_names[j], cigar])
     return retval
 
@@ -36,7 +39,7 @@ class References:
     -------
     bool
     """
-    len(self.overlaps) == 1 and not self.overlaps[0]
+    return len(self.overlaps) == 1 and gfapy.is_placeholder(self.overlaps[0])
 
   def _initialize_references(self):
     self._initialize_links()

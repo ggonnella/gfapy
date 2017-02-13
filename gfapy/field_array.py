@@ -78,7 +78,7 @@ class FieldArray(list):
     str
     	Tab-separated string representations of the elements.
     """
-    if datatype == None: datatype = self.datatype
+    if datatype is None: datatype = self.datatype
     return "\t".join(
         [ gfapy.field.to_gfa_field(x, datatype, fieldname = fieldname) for x in self])
 
@@ -98,7 +98,7 @@ class FieldArray(list):
     str
     	Tab-separated GFA tag representations of the elements.
     """
-    if datatype == None: datatype = self.datatype
+    if datatype is None: datatype = self.datatype
     return "\t".join(
         [ gfapy.field.to_gfa_tag(x, fieldname, datatype) for x in self])
 

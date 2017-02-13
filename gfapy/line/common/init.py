@@ -237,7 +237,7 @@ class Init:
       return cls.subclass_GFA1(record_type)
     elif version == "gfa2":
       return cls.subclass_GFA2(record_type)
-    elif version == None:
+    elif version is None:
       return cls.subclass_unknown_version(record_type)
     else:
       raise gfapy.VersionError(

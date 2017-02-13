@@ -50,7 +50,8 @@ class Writer:
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
     field = self._data.get(fieldname, None)
     if field is None:
-      raise gfapy.NotFoundError("No value defined for tag {}".format(fieldname))
+      return ""
+      #raise gfapy.NotFoundError("No value defined for tag {}".format(fieldname))
     t = self._field_or_default_datatype(fieldname, field)
     if not isinstance(field, str):
       field = gfapy.field.to_gfa_field(field, datatype = t, fieldname = fieldname)

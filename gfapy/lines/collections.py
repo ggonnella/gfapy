@@ -142,10 +142,10 @@ class Collections:
     else:
       keys = [k for k,v in self._records.items() if v]
       if self._version == "gfa2":
-        return [k for k in keys if k not in NONCUSTOM_GFA2_KEYS]
+        return [k for k in keys if k not in self.NONCUSTOM_GFA2_KEYS]
       else:
         return [k for k in keys \
-          if k not in NONCUSTOM_GFA2_KEYS and k not in GFA1_ONLY_KEYS]
+          if k not in self.NONCUSTOM_GFA2_KEYS and k not in self.GFA1_ONLY_KEYS]
 
   @property
   def custom_records(self):

@@ -3,7 +3,7 @@ import gfapy
 class LinearPaths:
 
   def linear_path(self, segment, exclude = None):
-    if exclude == None:
+    if exclude is None:
       exclude = set()
     s = segment.name
     segpath = gfapy.SegmentEndsPath()
@@ -183,7 +183,7 @@ class LinearPaths:
   def __create_merged_segment(self,segpath, options):
     merged = self.try_get_segment(segpath.first.segment).clone()
     jntag = options["jntag"] if options["jntag"] else "jn"
-    merged.set(jntag, nil)
+    merged.set(jntag, None)
     total_cut = 0
     a = segpath[0]
     first_reversed = (a.end_type == "L")

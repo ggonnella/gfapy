@@ -1,9 +1,11 @@
+import gfapy
+
 class References:
   def _initialize_references(self):
     for d in ["from", "to"]:
       s = self._gfa.segment(self.get(d))
       if s is None:
-        if self._gfa.segments_first_order:
+        if self._gfa._segments_first_order:
           raise gfapy.NotFoundError()
         s = gfapy.line.segment.GFA1({"name" : self.get(d),
                                      "sequence" : "*"},

@@ -24,8 +24,8 @@ class UpdateReferences:
     """
     keys = self.__backreference_keys(oldref, key_in_ref)
     self.__update_field_references(oldref, newref,
-                                  list(set(self.__class__.REFERENCE_FIELDS))
-                                       .intersection(keys))
+                                  list(set(self.__class__.REFERENCE_FIELDS)
+                                       .intersection(keys)))
     if hasattr(self, "_refs"):
       # note: keeping the two types of nonfield references separate helps
       #       in subclasses where only one must be redefined
@@ -34,9 +34,9 @@ class UpdateReferences:
                                              .intersection(self._refs.keys())
                                              .intersection(keys))
       self.__update_other_references(oldref, newref,
-                                    set(self.__class__.OTHER_REFERENCES)
+                                    list(set(self.__class__.OTHER_REFERENCES)
                                     .intersection(self._refs.keys())
-                                    .intersection(keys))
+                                    .intersection(keys)))
 
   def __backreference_keys(self, ref, key_in_ref):
     """
@@ -71,29 +71,34 @@ class UpdateReferences:
       different fashion, the method must be updated or overwritten
       by the subclass
     """
-    value = get(field)
+    value = self.get(field)
     if isinstance(value, gfapy.Line):
-      if value == oldref:
+      if value is oldref:
         self._set_existing_field(field, newref, set_reference = True)
     elif isinstance(value, gfapy.OrientedLine):
-      if value.line == oldref:
+      if value.line is oldref:
         value.line = newref
-    elif isinstance(value, Array):
+    elif isinstance(value, list):
       self.__update_reference_in_list(value, oldref, newref)
 
   def __update_reference_in_list(self, lst, oldref, newref):
-    for elem in lst:
+    found = False
+    for idx, elem in enumerate(lst):
       if isinstance(elem, gfapy.Line):
-        if elem == oldref:
-          elem = newref
+        if elem is oldref:
+          lst[idx] = newref
+          found = True
       elif isinstance(elem, gfapy.OrientedLine):
-        if elem.line == oldref:
-          if hasattr(oldref, "complement") and callable(oldref, "complement"):
-            if oldref.complement(newref):
-              elem.orient = elem.orient.invert()
+        if elem.line is oldref:
           elem.line = newref
-      elem
-    end.compact()
+          found = True
+        elif hasattr(oldref, "is_complement") and oldref.is_complement(newref):
+          elem.orient = elem.orient.invert()
+          elem.line = newref
+          found = True
+    if newref is None and found:
+      lst[:] = [e for e in lst if e is not None]
+
 
   def __update_field_references(self, oldref, newref, possible_fieldnames):
     for fn in possible_fieldnames:
@@ -101,10 +106,9 @@ class UpdateReferences:
           newref if newref else str(oldref))
 
   def __update_nonfield_references(self, oldref, newref, possible_keys):
-    for ley in possible_keys:
-      lst = self._refs[key]
-      if lst is not None:
-        self.__update_reference_in_list(lst, oldref, newref)
+    for key in possible_keys:
+      if key in self._refs:
+        self.__update_reference_in_list(self._refs[key], oldref, newref)
 
   def __update_dependent_line_references(self ,oldref, newref, possible_keys):
     self.__update_nonfield_references(oldref, newref, possible_keys)

@@ -89,8 +89,8 @@ class NumericArray(list):
           raise gfapy.ValueError(
             "NumericArray does not contain homogenous numeric values\n"+
             "Content: {}".format(repr(self)))
-        if (e_max == None or e > e_max): e_max = e
-        if (e_min == None or e < e_min): e_min = e
+        if (e_max is None or e > e_max): e_max = e
+        if (e_min is None or e < e_min): e_min = e
       return gfapy.NumericArray.integer_type((e_min,e_max))
 
   @staticmethod

@@ -208,7 +208,7 @@ class Logger:
 #  # @!macro progress_init
 #  # @return [RGFA] self
 #  # @api private
-#  def progress_log_init(symbol, units, total, initmsg = nil)
+#  def progress_log_init(symbol, units, total, initmsg = None)
 #    @progress.progress_init(symbol, units, total, initmsg) if @progress
 #    return self
 #  end

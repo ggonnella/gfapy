@@ -5,11 +5,11 @@ class Finders:
     if isinstance(s, gfapy.Line):
       return s
     else:
-      return self._records["S"][s]
+      return self._records["S"].get(s, None)
 
   def try_get_segment(self, s):
     seg = self.segment(s)
-    if seg == None:
+    if seg is None:
       raise gfapy.NotFoundError("No segment has name {}".format(s))
       # TODO: output segment names list (shortened to 10 elements)
     else:
@@ -29,7 +29,7 @@ class Finders:
 
   def try_get_line(self, l):
     gfa_line = self.line(l)
-    if gfa_line == None:
+    if gfa_line is None:
       if is_placeholder(l):
         raise gfapy.ValueError(
           "'*' is a placeholder and not a valid name for a line")

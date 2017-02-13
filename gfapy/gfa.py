@@ -22,7 +22,7 @@ class Gfa(Lines):
     self._default = {"count_tag": "RC", "unit_length": 1}
     self._extensions_enabled = False
     self._line_queue = []
-    if version == None:
+    if version is None:
       self._version = None
       self._version_explanation = None
       self._version_guess = "gfa2"

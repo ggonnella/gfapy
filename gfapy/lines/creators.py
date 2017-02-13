@@ -6,7 +6,7 @@ class Creators:
       self.__add_line_GFA1(gfa_line)
     elif self._version == "gfa2":
       self.__add_line_GFA2(gfa_line)
-    elif self._version == None:
+    elif self._version is None:
       self.__add_line_unknown_version(gfa_line)
     else:
       raise gfapy.AssertionError("This point should never be reached")
@@ -15,7 +15,7 @@ class Creators:
   append = add_line
 
   def process_line_queue(self):
-    if self._version == None:
+    if self._version is None:
       self._version = self._version_guess
     for i in range(0,len(self._line_queue)):
       self.add_line(self._line_queue[i])
@@ -40,7 +40,7 @@ class Creators:
         self._records[gfa_line.record_type][gfa_line.external.line] = []
       self._records[gfa_line.record_type][gfa_line.external.line].append(\
           gfa_line)
-    elif storage_key == None:
+    elif storage_key is None:
       if gfa_line.record_type not in self._records:
         self._records[gfa_line.record_type] = []
       self._records[gfa_line.record_type].append(gfa_line)

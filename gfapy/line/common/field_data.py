@@ -16,8 +16,6 @@ class FieldData:
       as these may be implemented as aliases to cope with
       different names for the same content in GFA1 vs GFA2.
     """
-    if not self.version:
-      raise gfapy.VersionError("Version is not set")
     return self.__class__.POSFIELDS
 
   @property
