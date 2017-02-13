@@ -2,7 +2,7 @@ import gfapy
 
 # GG: the class contains a number of api private methods, maybe we should add a _ before their name
 
-class FieldArray(list):
+class FieldArray:
   """
   Array representing multiple values of the same tag in different header lines.
   """
@@ -18,9 +18,10 @@ class FieldArray(list):
     	The datatype to use.
     """
     if data is None:
-      data = []
+      self._data = []
+    else:
+      self._data = data
     self._datatype = datatype
-    super().__init__(data)
 
   def validate(self, fieldname = None):
     """
@@ -32,8 +33,6 @@ class FieldArray(list):
     	Fieldname to use for error messages.
     """
     self._validate_gfa_field(None, fieldname)
-
-  # -- API PRIVATE --
 
   def _validate_gfa_field(self, datatype, fieldname=None):
     """
@@ -48,8 +47,9 @@ class FieldArray(list):
     fieldname : str
     	Fieldname to use for error messages.
     """
-    if not datatype: datatype = self.datatype
-    for elem in self:
+    if not datatype:
+      datatype = self.datatype
+    for elem in self._data:
       gfapy.field.validate_gfa_field(elem, datatype, fieldname)
 
   def _default_gfa_tag_datatype(self):
@@ -78,9 +78,11 @@ class FieldArray(list):
     str
     	Tab-separated string representations of the elements.
     """
-    if datatype is None: datatype = self.datatype
+    if datatype is None:
+      datatype = self.datatype
     return "\t".join(
-        [ gfapy.field.to_gfa_field(x, datatype, fieldname = fieldname) for x in self])
+        [ gfapy.field.to_gfa_field(x, datatype, fieldname = fieldname) \
+            for x in self._data ])
 
   def _to_gfa_tag(self, fieldname, datatype = None):
     """
@@ -98,9 +100,11 @@ class FieldArray(list):
     str
     	Tab-separated GFA tag representations of the elements.
     """
-    if datatype is None: datatype = self.datatype
+    if datatype is None:
+      datatype = self.datatype
     return "\t".join(
-        [ gfapy.field.to_gfa_tag(x, fieldname, datatype) for x in self])
+        [ gfapy.field.to_gfa_tag(x, fieldname, datatype) \
+            for x in self._data ])
 
   def _vpush(self, value, datatype=None, fieldname=None):
     """
@@ -133,5 +137,26 @@ class FieldArray(list):
         "value: {}\n".format(value)+
         "existing datatype: {};\n".format(self.datatype)+
         "new datatype: {}".format(datatype))
-    self.append(value)
+    self._data.append(value)
+
+  def __eq__(self, other):
+    if isinstance(other, list):
+      return other == self._data
+    elif isinstance(other, gfapy.FieldArray):
+      return other.datatype == self._datatype and \
+          other.data == self._data
+    else:
+      return False
+
+  def __add__(self, other):
+    if isinstance(other, list):
+      self._data += other
+    elif isinstance(other, gfapy.FieldArray):
+      self._data += other._data
+
+  def __iter__(self):
+    return self._data.__iter__()
+
+  def __getattr__(self, name):
+    return getattr(self._data, name)
 

@@ -1,9 +1,10 @@
 from .connection import Connection
 from .multiline import Multiline
+from .field_data import FieldData
 from .version_conversion import VersionConversion
 from ..line import Line
 
-class Header(VersionConversion, Multiline, Connection, Line):
+class Header(VersionConversion, Multiline, Connection, FieldData, Line):
   """
   A header line of a GFA file.
 

@@ -25,7 +25,7 @@ class Creators:
     self._api_private_check_gfa_line(gfa_line, "_register_line")
     storage_key = gfa_line.__class__.STORAGE_KEY
     if storage_key == "merge":
-      self._records[gfa_line.record_type].merge(gfa_line)
+      self._records[gfa_line.record_type]._merge(gfa_line)
     elif storage_key == "name":
       if gfa_line.record_type not in self._records:
         self._records[gfa_line.record_type] = {}
@@ -60,7 +60,7 @@ class Creators:
     elif rt == "H":
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
-      self.header.merge(gfa_line)
+      self.header._merge(gfa_line)
       if gfa_line.VN:
         if gfa_line.VN == "1.0":
           self._version = "gfa1"
@@ -70,7 +70,7 @@ class Creators:
           self._version = gfa_line.VN
         self._version_explanation = "specified in header VN tag"
         if self._vlevel > 0:
-          self.__validate_version()
+          self._validate_version()
         self.process_line_queue()
     elif rt == "S":
       if isinstance(gfa_line, str):
@@ -112,7 +112,7 @@ class Creators:
           "Header line specified wrong version ({})\n".format(gfa_line.VN)+
           "Line: {}\n".format(gfa_line)+
           "File version: 1.0 ({})".format(self._version_explanation))
-      self.header.merge(gfa_line)
+      self.header._merge(gfa_line)
     elif gfa_line.record_type == "S":
       if gfa_line.version == "gfa2":
         raise gfapy.VersionError(
@@ -143,7 +143,7 @@ class Creators:
           "Header line specified wrong version ({})\n".format(gfa_line.VN)+
           "Line: {}\n".format(gfa_line)+
           "File version: 2.0 ({})".format(self._version_explanation))
-      self.header.merge(gfa_line)
+      self.header._merge(gfa_line)
     elif gfa_line.record_type == "S":
       if gfa_line.version == "gfa1":
         raise gfapy.VersionError(

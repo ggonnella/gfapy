@@ -7,4 +7,4 @@ class Headers:
 
   @property
   def headers(self):
-    return self._records["H"].split()
+    return self._records["H"]._split()

@@ -5,7 +5,10 @@ times in different lines).
 """
 import gfapy
 class Multiline:
-  def add(self, fieldname, value, datatype = None):
+
+  SINGLE_DEFINITION_TAGS = ["VN", "TS"]
+
+  def add(self, tagname, value, datatype = None):
     """
     Set a header value (multi-value compatible).
 
@@ -16,24 +19,33 @@ class Multiline:
 
     Parameters
     ----------
-    fieldname : str
+    tagname : str
     value : object
     datatype : gfapy.Field.TAG_DATATYPE, optional
       The datatype to use.
       The default is to determine the datatype according to the value or the
       previous values present in the field.
     """
-    prev = self.get(fieldname)
+    prev = self.get(tagname)
     if prev is None:
       if datatype is not None:
-        self.set_datatype(fieldname, datatype)
-      self.set(fieldname, value)
+        self.set_datatype(tagname, datatype)
+      self.set(tagname, value)
       return self
     elif not isinstance(prev, gfapy.FieldArray):
-      prev = gfapy.FieldArray(self.get_datatype(fieldname), [prev])
-      self._set_existing_field(fieldname, prev)
-    if self.vlevel > 2:
-      prev.vpush(value, datatype, fieldname)
+      if tagname in self.SINGLE_DEFINITION_TAGS:
+        if self.field_to_s(tagname) == \
+            gfapy.field.to_gfa_field(value, fieldname=tagname):
+          return self
+        else:
+          raise gfapy.InconsistencyError(
+            "Inconsistent values for header tag {} found\n".format(tagname)+
+            "Previous definition: {}\n".format(prev)+
+            "Current definition: {}".format(value))
+      prev = gfapy.FieldArray(self.get_datatype(tagname), [prev])
+      self._set_existing_field(tagname, prev)
+    if self.vlevel > 1:
+      prev.vpush(value, datatype, tagname)
     else:
       prev.append(value)
     return self
@@ -62,14 +74,21 @@ class Multiline:
     """
     prev = self.get(fieldname)
     if isinstance(prev, gfapy.FieldArray):
-      if self.vlevel >= 3:
-        prev.validate_gfa_field(None, fieldname)
-      return prev.to_gfa_tag(fieldname) if tag else \
-             prev.to_gfa_field(fieldname = fieldname)
+      if self.vlevel >= 2:
+        prev._validate_gfa_field(None, fieldname)
+      return prev._to_gfa_tag(fieldname=fieldname) if tag else \
+             prev._to_gfa_field(fieldname=fieldname)
     else:
       return super(gfapy.line.header.Line, self).field_to_s(fieldname, tag)
 
-  def split(self):
+  def _n_duptags(self):
+    n = 0
+    for tn in self.tagnames:
+      if isinstance(self.get(tn),gfapy.FieldArray):
+        n+=1
+    return n
+
+  def _split(self):
     """
     Split the header line into single-tag lines.
 
@@ -88,7 +107,7 @@ class Multiline:
       retval.append(h)
     return retval
 
-  def merge(self, gfa_line):
+  def _merge(self, gfa_line):
     """
     Merge an additional **gfa.line.Header** line into this header line.
 
@@ -122,7 +141,7 @@ class Multiline:
       value = self.get(of)
       if isinstance(value, gfapy.FieldArray):
         for elem in value:
-          retval.append([of, value.datatype, elem])
+          retval.append((of, value.datatype, elem))
       else:
-        retval.append([of, get_datatype(of), value])
+        retval.append((of, self.get_datatype(of), value))
     return retval

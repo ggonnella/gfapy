@@ -11,9 +11,10 @@ class VersionConversion:
     	Array of strings representing the tags.
     """
     a = ["H"]
-    if self.VN: (a.append("VN:Z:2.0"))
+    if self.VN:
+      a.append("VN:Z:2.0")
     for fn in self.tagnames:
-      if fn not in self.VN:
+      if fn != "VN":
         a.append(self.field_to_s(fn, tag = True))
     return a
 
@@ -28,8 +29,9 @@ class VersionConversion:
     	Array of strings representing the tags.
     """
     a = ["H"]
-    if self.VN: (a.append("VN:Z:1.0"))
+    if self.VN:
+      a.append("VN:Z:1.0")
     for fn in self.tagnames:
-      if fn not in self.VN:
+      if fn != "VN":
         a.append(self.field_to_s(fn, tag = True))
     return a

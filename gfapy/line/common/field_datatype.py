@@ -18,7 +18,8 @@ class FieldDatatype:
       (One of gfapy.Field.FIELD_DATATYPE)
     """
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
-    return self._field_or_default_datatype(fieldname, self._data[fieldname])
+    return self._field_or_default_datatype(fieldname,
+        self._data.get(fieldname,None))
 
   def set_datatype(self, fieldname, datatype):
     """
@@ -45,7 +46,7 @@ class FieldDatatype:
       The datatype.
     """
     if self._is_predefined_tag(fieldname):
-      if get_datatype(fieldname) != datatype:
+      if self.get_datatype(fieldname) != datatype:
         raise gfapy.RuntimeError(
           "Cannot set the datatype of {} to {}\n".format(fieldname, datatype)+
           "The datatype of a predefined tag cannot be changed")

@@ -6,6 +6,7 @@ class Gfa(Lines):
     self._vlevel = vlevel
     self._records = {}
     self._records["H"] = gfapy.line.Header([], vlevel = vlevel)
+    self._records["H"].connect(self)
     self._records["S"] = {}
     self._records["P"] = {}
     self._records["F"] = {}
@@ -30,7 +31,7 @@ class Gfa(Lines):
       self._version = version
       self._version_explanation = "set during initialization"
       self._version_guess = version
-      self.__validate_version()
+      self._validate_version()
 
   def validate(self):
     self.__validate_segment_references()
@@ -119,7 +120,7 @@ class Gfa(Lines):
           # TODO: output list of lines where references were found
     return None
 
-  def __validate_version(self):
+  def _validate_version(self):
     if (self._version != None) and (self._version not in gfapy.VERSIONS):
       raise gfapy.VersionError("GFA specification version {} not supported".
               format(self._version))
