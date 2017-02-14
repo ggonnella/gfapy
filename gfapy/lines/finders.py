@@ -69,7 +69,7 @@ class Finders:
     s = self.segment(orseg1.line)
     if s is None:
       return None
-    for l in s.dovetails():
+    for l in s.dovetails:
       if isinstance(l, gfapy.line.edge.Link) and \
           l.is_compatible(orseg1, orseg2, cigar, True):
         return l

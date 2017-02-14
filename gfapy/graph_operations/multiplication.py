@@ -43,7 +43,7 @@ class Multiplication:
     self.__divide_counts(segment, factor)
     processed_circulars = set()
     for l in segment.dovetails + segment.containments:
-      if l.is_circular:
+      if l.is_circular():
         if l not in processed_circular:
           self.__divide_counts(l, factor)
           processed_circular.append(l)

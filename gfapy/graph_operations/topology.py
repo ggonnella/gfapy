@@ -3,12 +3,12 @@ import gfapy
 class Topology:
 
   def is_cut_link(self, link):
-    if link.is_circular:
+    if link.is_circular():
       return False
-    if not link.get("from").dovetails(\
+    if not link.get("from").dovetails_of_end(\
              link.from_end.end_type.invert()):
       return True
-    if not link.to.dovetails(link.to_end.end_type.invert()):
+    if not link.to.dovetails_of_end(link.to_end.end_type.invert()):
       return True
     c = {}
     for et in ["from", "to"]:
@@ -27,7 +27,7 @@ class Topology:
       return False
     start_points = set()
     for et in ["L", "R"]:
-      for l in segment.dovetails(et):
+      for l in segment.dovetails_of_end(et):
         start_points.append(l.other_end(\
             gfapy.SegmentEnd(segment_name, et)).invert())
     cc = []
@@ -103,7 +103,7 @@ class Topology:
 
   def __traverse_component(self, segment_end, c, visited):
     s = segment_end.segment
-    for l in s.dovetails(segment_end.end_type):
+    for l in s.dovetails_of_end(segment_end.end_type):
       oe = l.other_end(segment_end)
       sn = oe.name
       if sn in visited:

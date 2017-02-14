@@ -52,9 +52,9 @@ class TestUnitLineConnection(unittest.TestCase):
     g = gfapy.Gfa()
     g.append(s1)
     g.append(l)
-    self.assertEqual([l], s1.dovetails())
+    self.assertEqual([l], s1.dovetails)
     l.disconnect()
-    self.assertEqual([], s1.dovetails())
+    self.assertEqual([], s1.dovetails)
 
   def test_disconnect_removes_field_references(self):
     s1 = gfapy.Line.from_string("S\t1\tACCAT")

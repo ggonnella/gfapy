@@ -6,25 +6,25 @@ class RedundantLinearPaths:
     retval = []
     exclude.append(sn)
     s = self.segment(sn)
-    for dL in s.dovetails("L"):
+    for dL in s.dovetails_L:
       eL = dL.other_end(gfapy.SegmentEnd(s, "L"))
-      if (eL.name in exclude) or (len(eL.segment.dovetails(eL.end_type)) == 1):
+      if (eL.name in exclude) or (len(eL.segment.dovetails_of_end(eL.end_type)) == 1):
         retval.append([True, eL, gfapy.SegmentEnd(s, "R"), True])
-    for dR in s.dovetails("R"):
+    for dR in s.dovetails_R:
       eR = dR.other_end(gfapy.SegmentEnd(s, "R"))
-      if (eR.name in exclude) or (len(eR.segment.dovetails(eR.end_type)) == 1):
+      if (eR.name in exclude) or (len(eR.segment.dovetails_of_end(eR.end_type)) == 1):
         retval.append([True, gfapy.SegmentEnd(s, "R"), eR.invert(), True])
     return retval
 
   def __extend_linear_path_to_junctions(self, segpath):
     segfirst = self.segment(segpath[0].segment)
-    segfirst_d = segfirst.dovetails(segpath[0].end_type.invert())
+    segfirst_d = segfirst.dovetails_of_end(segpath[0].end_type.invert())
     redundant_first = (len(segfirst_d) > 0)
     if len(segfirst_d) == 1:
       segpath.insert(0, segfirst_d[0].other_end(segpath[0].invert()))
     segpath.insert(0, redundant_first)
     seglast = segment(segpath[-1].segment)
-    seglast_d = seglast.dovetails(segpath[-1].end_type)
+    seglast_d = seglast.dovetails_of_end(segpath[-1].end_type)
     redundant_last = (len(seglast_d) > 0)
     if len(seglast_d) == 1:
       segpath.append(seglast_d[0].other_end(segpath[-1].invert()))

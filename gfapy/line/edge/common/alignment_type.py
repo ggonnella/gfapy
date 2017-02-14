@@ -23,7 +23,7 @@ class AlignmentType:
     """
     return self.alignment_type == "C"
 
-  def link(self):
+  def is_dovetail(self):
     """
     @return [Boolean] does the line represent a dovetail overlap?
     (GFA1 link or GFA2 edge equivalent to a GFA1 link)?

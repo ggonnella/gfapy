@@ -1,47 +1,44 @@
+import gfapy
+
 class References:
 
-  def dovetails(self, extremity = None):
+  @property
+  def dovetails(self):
     """
     References to the graph lines which involve the segment as dovetail overlap.
-
-    Parameters
-    ----------
-    extremity : "L" or "R" or None, optional
-    	Left or right extremity of the segment.
-      (default: both)
 
     Returns
     -------
     gfapy.line.Edge list
       A list of lines.
       The lines themselves can be modified, but the list is immutable.
-
-    .. note::
-      To add a dovetail overlap, create a L (GFA1) or E (GFA2) line and
-      connect it to the graph.
-      To remove a dovetail overlap, call gfapy.Line.disconnect
-      on the corresponding L or E line
     """
-    if extremity is not None:
-      dovetails = getattr(self, "dovetails_{}".format(extremity))
-      return dovetails()
-    else:
-      return self.dovetails_L + self.dovetails_R
+    return self.dovetails_L + self.dovetails_R
 
-  def gaps(self, extremity = None):
+  def dovetails_of_end(self, extremity):
     """
     References to the graph lines which involve the segment as dovetail overlap.
-    Parameters
-    ----------
-    extremity : "L" or "R" or None, optional
-    	Left or right extremity of the segment.
-      (default: both)
+
+    Returns
+    -------
+    gfapy.line.Edge list
+      A list of lines.
+      The lines themselves can be modified, but the list is immutable.
     """
-    if extremity is not None:
-      gaps = getattr(self, "gaps_{}".format(extremity))
-      return gaps()
-    else:
-      return self.gaps_L + self.gaps_R
+    return getattr(self, "dovetails_{}".format(extremity))
+
+  @property
+  def gaps(self):
+    """
+    References to the gap lines which involve the segment.
+    """
+    return self.gaps_L + self.gaps_R
+
+  def gaps_of_end(self, extremity):
+    """
+    References to the gap lines which involve the segment.
+    """
+    return getattr(self, "gaps_{}".format(extremity))
 
   @property
   def containments(self):
@@ -53,7 +50,6 @@ class References:
 
   @property
   def connectivity(self):
-    #TODO: improve docstring
     """
     Computes the connectivity of a segment from its number of dovetail overlaps.
 
@@ -73,7 +69,8 @@ class References:
         "Segment is not connected to a GFA instance")
     return self.__connectivity_symbols(len(dovetails_L), len(dovetails_R))
 
-  def neighbours(self, extremity = None):
+  @property
+  def neighbours(self):
     """
     List of dovetail-neighbours of a segment.
 
@@ -83,7 +80,33 @@ class References:
     	Segments connected to the current segment by dovetail overlap
       relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
     """
-    return list(set([ l.other(self) for l in self.dovetails(extremity) ]))
+    return list(set([ l.other(self) for l in self.dovetails ]))
+
+  @property
+  def neighbours_L(self):
+    """
+    List of dovetail-neighbours of a segment.
+
+    Returns
+    -------
+    gfapy.line.Segment list
+    	Segments connected to the current segment by dovetail overlap
+      relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
+    """
+    return list(set([ l.other(self) for l in self.dovetails_L ]))
+
+  @property
+  def neighbours_R(self):
+    """
+    List of dovetail-neighbours of a segment.
+
+    Returns
+    -------
+    gfapy.line.Segment list
+    	Segments connected to the current segment by dovetail overlap
+      relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
+    """
+    return list(set([ l.other(self) for l in self.dovetails_R ]))
 
   @property
   def containers(self):
@@ -97,7 +120,7 @@ class References:
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the contained segment.
     """
-    return list(set([ elem.frm for elem in self.edges_to_contained() ]))
+    return list(set([ elem.frm for elem in self.edges_to_contained ]))
 
   @property
   def contained(self):
@@ -111,18 +134,36 @@ class References:
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the container segment.
     """
-    return list(set([ elem.to for elem in self.edges_to_contained() ]))
+    return list(set([ elem.to for elem in self.edges_to_contained ]))
 
   @property
   def edges(self):
     """
     List of edges which refer to the segment
-    	
+
     Returns
     -------
     gfapy.line.Edge list
     """
-    return self.dovetails() + self.containments() + self.internals()
+    return self.dovetails + self.containments + self.internals
+
+  def relations_to(self, segment, collection="edges"):
+    if isinstance(segment, gfapy.Line):
+      return [e for e in getattr(self, collection) \
+          if (e.other(self) is segment)]
+    else:
+      return [e for e in getattr(self, collection) \
+          if (e.other(self).name == segment)]
+
+  def oriented_relations(self, orientation, oriented_segment, collection="edges"):
+    return [e for e in getattr(self, collection) if \
+      (e.other_oriented_segment(gfapy.OrientedLine(self, orientation), tolerant=True) == \
+        oriented_segment)]
+
+  def end_relations(self, extremity, segment_end, collection ="edges"):
+    return [e for e in getattr(self, collection) if \
+      (e.other_end(gfapy.SegmentEnd(self, extremity), tolerant=True) == \
+        segment_end)]
 
   def _connectivity_symbols(self, n, m):
     return [self.__connectivity_symbol(n), self.__connectivity_symbol(m)]

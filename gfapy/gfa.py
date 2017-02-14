@@ -65,13 +65,13 @@ class Gfa(Lines):
     # TODO: better implementation of linecount
     if self._progress:
       linecount = 0
-      with open(fname) as f:
+      with open(filename) as f:
         for line in f:
           linecount += 1
       self._progress_log_unit("read_file", "lines", linecount,
                         "Parsing file {}".format(filename)+
                         " containing {} lines".format(linecount))
-    with open(fname) as f:
+    with open(filename) as f:
       for line in f:
         self.add_line(line.rstrip('\r\n'))
         if self._progress:

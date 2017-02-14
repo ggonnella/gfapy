@@ -93,8 +93,8 @@ class LinearPaths:
     current = segment_end.to_segment_end()
     current.segment = self.segment(current.segment)
     while True:
-      after = current.segment.dovetails(current.end_type)
-      before = current.segment.dovetails(current.end_type.invert)
+      after = current.segment.dovetails_of_end(current.end_type)
+      before = current.segment.dovetails_of_end(current.end_type.invert)
       if (len(before) == 1 and len(after) == 1) or not lst:
         lst.append(gfapy.SegmentEnd(current.name, current.end_type))
         exclude.append(current.name)
@@ -240,7 +240,7 @@ class LinearPaths:
     return merged, first_reversed, last_reversed
 
     def __list_merged(self, merged_name, segment_end, is_reversed):
-      for l in self.segment(segment_end.segment).dovetails(segment_end.end_type):
+      for l in self.segment(segment_end.segment).dovetails_of_end(segment_end.end_type):
         l2 = l.clone()
         if l2.to == segment_end.segment:
           l2.to = merged_name

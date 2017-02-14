@@ -9,7 +9,7 @@ class Destructors:
     segment_end = segment_end.to_segment_end()
     other_end = other_end.to_segment_end()
     s = self.try_get_segment(segment_end.segment)
-    for d in s.dovetails(segment_end.end_type):
+    for d in s.dovetails_of_end(segment_end.end_type):
       if not conserve_components or not self.is_cut_link(l):
         l.disconnect()
 

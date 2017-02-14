@@ -76,20 +76,20 @@ class FromTo:
     """
     The to segment name, in both cases where to is a segment name (String)
     or a segment (gfapy.line.segment.GFA1).
-      
+
     Returns
     -------
     str
     """
     return str(self.to)
 
-  def other_end(self, segment_end):
+  def other_end(self, segment_end, tolerant=False):
     """
     Parameters
     ----------
     segment_end : gfapy.SegmentEnd
       One of the two segment ends of the line.
-    
+
     Returns
     -------
     gfapy.SegmentEnd
@@ -109,6 +109,8 @@ class FromTo:
       return self.to_end
     elif (self.to_end == segment_end):
       return self.from_end
+    elif tolerant:
+      return None
     else:
       raise gfapy.ArgumentError(
         "Segment end '{}' not found\n".format(repr(segment_end))+

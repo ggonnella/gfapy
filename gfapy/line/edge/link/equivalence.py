@@ -2,8 +2,7 @@ import gfapy
 
 class Equivalence:
 
-  @property
-  def hash(self):
+  def __hash__(self):
     """
     Computes an hash for including a link in an Hash tables,
     so that the hash of a link and its complement is the same.

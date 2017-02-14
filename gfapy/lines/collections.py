@@ -87,20 +87,20 @@ class Collections:
     if self._version == "gfa1":
       return self.gfa1_links
     elif self._version == "gfa2":
-      return [ e for e in self.gfa2_edges if e.is_dovetail ]
+      return [ e for e in self.gfa2_edges if e.is_dovetail() ]
     else:
       return self.gfa1_links + \
-        [ e for e in self.gfa2_edges if e.is_dovetail ]
+        [ e for e in self.gfa2_edges if e.is_dovetail() ]
 
   @property
   def containments(self):
     if self._version == "gfa1":
       return self.gfa1_containments
     elif self._version == "gfa2":
-      return [ e for e in self.gfa2_edges if e.is_containment ]
+      return [ e for e in self.gfa2_edges if e.is_containment() ]
     else:
       return self.gfa1_containments + \
-        [ e for e in self.gfa2_edges if e.is_containment ]
+        [ e for e in self.gfa2_edges if e.is_containment() ]
 
   @property
   def edge_names(self):

@@ -2,7 +2,7 @@ import gfapy
 
 class Other:
 
-  def other_oriented_segment(self, oriented_segment):
+  def other_oriented_segment(self, oriented_segment, tolerant = False):
     """
     Parameters
     ----------
@@ -23,25 +23,27 @@ class Other:
       return self.oriented_to()
     elif (oriented_to == oriented_segment):
       return self.oriented_from()
+    elif tolerant:
+      return None
     else:
       raise gfapy.NotFoundError(
         "Oriented segment '{}' not found\n".format(repr(oriented_segment))+
         "Line: {}".format(self))
 
-  def other(self, segment):
+  def other(self, segment, tolerant = False):
     """
     The other segment of a connection line.
-    
+
     Parameters
     ----------
     segment : gfapy.line.segment.GFA1 or str
       Segment name or instance.
-    
+
     Raises
     ------
     gfapy.NotFoundError
       If segment is not involved in the connection.
-    
+
     Returns
     -------
     str
@@ -53,6 +55,8 @@ class Other:
       return self.to
     elif segment_name == str(self.to):
       return self.frm
+    elif tolerant:
+      return None
     else:
       raise gfapy.NotFoundError(
         "Line {} does not involve segment {}".format(self, segment_name))
