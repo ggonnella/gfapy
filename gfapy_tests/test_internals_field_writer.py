@@ -1,7 +1,7 @@
 import gfapy
 import unittest
 
-class TestFieldWriter(unittest.TestCase):
+class TestInternalsFieldWriter(unittest.TestCase):
   def test_field_writer_i(self):
     self.assertEqual("13", gfapy.field.to_gfa_field(13))
 

@@ -1,7 +1,8 @@
 import gfapy
 import unittest
 
-class TestFieldParser(unittest.TestCase):
+class TestInternalsFieldParser(unittest.TestCase):
+
   def test_parse_gfa_tag(self):
     o = "AA:i:1"
     self.assertEqual(["AA","i","1"], gfapy.field.parse_gfa_tag(o))

@@ -1,7 +1,7 @@
 import gfapy
 import unittest
 
-class TestFieldValidator(unittest.TestCase):
+class TestInternalsFieldValidator(unittest.TestCase):
 
   def test_field_gfa_field_validate_i(self):
     gfapy.field.validate_gfa_field("1"  , "i")
