@@ -36,6 +36,7 @@ class Finders:
       else:
         raise gfapy.NotFoundError(
             "No line found with ID {}".format(l))
+    return gfa_line
 
   def fragments_for_external(self, external_id):
     return self._records["F"].get(external_id,[])

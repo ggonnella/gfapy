@@ -37,7 +37,10 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
   """
   mod = gfapy.field.FIELD_MODULE.get(datatype)
   if mod is None:
-    linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+    try:
+      linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+    except:
+      linemsg = ""
     fieldnamemsg = "Field: {}\n".format(fieldname) if fieldname else ""
     contentmsg = "Content: {}\n".format(string)
     raise gfapy.TypeError(
@@ -51,7 +54,10 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
     else:
       return mod.unsafe_decode(string)
   except Exception as err:
-    linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+    try:
+      linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+    except:
+      linemsg = ""
     fieldnamemsg = "Field: {}\n".format(fieldname) if fieldname else ""
     contentmsg = "Content: {}\n".format(string)
     datatypemsg = "Datatype: {}\n".format(datatype)

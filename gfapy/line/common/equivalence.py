@@ -20,7 +20,9 @@ class Equivalence:
     if o is self:
       return True
     if isinstance(o, str):
-      return self.name == str(o)
+      name = self.get("name")
+      if name:
+        return name == str(o)
     if not isinstance(o, gfapy.Line):
       return False
     if (o.record_type != self.record_type):
