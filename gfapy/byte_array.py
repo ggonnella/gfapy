@@ -71,41 +71,8 @@ class ByteArray(bytes):
   def validate():
     return True #bytes object is valid ByteArray
 
-  @staticmethod
-  def default_gfa_tag_datatype():
+  def _default_gfa_tag_datatype(self):
     """
     GFA tag datatype to use, if none is provided.
-
-    Returns
-    -------
-    gfapy.Line.TagDatatype
     """
-    #TODO: Implement gfapy.Line.TagDatatype
     return 'H'
-
-  # GG: this can be probably deleted. Deprecated!
-  @staticmethod
-  def from_string(string):
-    """
-    Returns a new ByteArray from a valid hex string.
-    Parameters
-    ----------
-    string : str
-      A valid hex string with even length.
-
-    Returns
-    -------
-    ByteArray
-      The ByteArray represented by the hex string.
-
-    Raises
-    ------
-    gfapy.FormatError
-      If the string has an invalid format
-    gfapy.ValueError
-      If the argument is not an string
-    """
-    if string is str:
-      ByteArray(string)
-    else:
-      raise gfapy.ValueError

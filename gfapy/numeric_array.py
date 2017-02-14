@@ -146,8 +146,7 @@ class NumericArray(list):
     subtype = self.compute_subtype()
     return "{},{}".format(subtype, ",".join([str(v) for v in self]))
 
-  @staticmethod
-  def _default_gfa_tag_datatype():
+  def _default_gfa_tag_datatype(self):
     """
     GFA tag datatype to use, if none is provided
 

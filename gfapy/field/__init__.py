@@ -159,9 +159,9 @@ _default_tag_datatypes = [
 
 # Returns the default GFA tag for the given object.
 def get_default_gfa_tag_datatype(obj):
-  if (getattr(obj, "default_gfa_tag_datatype", None)
-     and callable(obj.default_gfa_tag_datatype)):
-    return obj.default_gfa_tag_datatype()
+  if (getattr(obj, "_default_gfa_tag_datatype", None)
+     and callable(obj._default_gfa_tag_datatype)):
+    return obj._default_gfa_tag_datatype()
   else:
     if isinstance(obj, list) and\
            (all([isinstance(v, builtins.int) for v in obj]) or
