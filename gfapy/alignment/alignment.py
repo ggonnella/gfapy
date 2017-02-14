@@ -7,11 +7,10 @@ class Alignment:
 
   def __new__(cls, *args, **kargs):
     if args[0] is None or \
-        isinstance(args[0], gfapy.Placeholder):
+        gfapy.is_placeholder(args[0]):
       return gfapy.AlignmentPlaceholder()
     if isinstance(args[0], gfapy.CIGAR) or \
-        isinstance(args[0], gfapy.Trace) or \
-          isinstance(args[0], gfapy.AlignmentPlaceholder):
+        isinstance(args[0], gfapy.Trace):
       return args[0]
     if isinstance(args[0], str):
       return Alignment.from_string(*args, **kargs)
@@ -114,7 +113,7 @@ class Alignment:
       if version == "gfa2":
         return gfapy.Trace(array)
       else:
-        raise gfapy.FormatError(
+        raise gfapy.VersionError(
           "Trace alignments are not allowed in GFA1: {}".format(repr(array)))
     elif isinstance(array[0], gfapy.CIGAR.Operation):
       return gfapy.CIGAR(array)

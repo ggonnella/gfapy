@@ -56,12 +56,8 @@ class Trace(list):
 
   @staticmethod
   def from_string(string):
-    return Trace([int(v) for v in string.split(",")])
-
-  def to_trace(self):
-    """
-    Returns
-    -------
-    self : gfapy.Trace
-    """
-    return self
+    try:
+      return Trace([int(v) for v in string.split(",")])
+    except:
+      raise gfapy.FormatError("string does not encode"+
+          " a valid trace alignment: {}".format(string))

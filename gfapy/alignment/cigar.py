@@ -63,7 +63,7 @@ class CIGAR(list):
         If the string is not a valid CIGAR string.
     """
     if string == "*":
-      return gfapy.Placeholder()
+      return gfapy.AlignmentPlaceholder()
     cigar = CIGAR()
     if not valid:
       if version == "gfa1":
@@ -109,20 +109,11 @@ class CIGAR(list):
       raise gfapy.VersionError(
           "Version error: {}".format(repr(version)))
     for op in self:
+      if not isinstance(op, gfapy.CIGAR.Operation):
+        raise gfapy.TypeError(
+            "Element is not a CIGAR operation: {}\n".format(op)+
+            "CIGAR instance is invalid: {}".format(self))
       op.validate()
-
-  def to_cigar(self, valid = None):
-    """
-    Parameters
-    ----------
-    valid
-      Ignored, for compatibility only
-
-    Returns
-    -------
-    self : gfapy.CIGAR
-    """
-    return self
 
   def length_on_reference(self):
     """
@@ -226,13 +217,16 @@ class CIGAR(list):
       if version != "gfa1" and version != "gfa2":
         raise gfapy.VersionError(
             "Version error: {}".format(repr(version)))
-      if(int(self.length) <= 0):
-        raise ValueError()
+      if not isinstance(self.length, int) and not isinstance(self.length, str):
+        raise gfapy.TypeError(
+            "Type error: length of CIGAR is {}".format(self.length))
+      if(int(self.length) < 0):
+        raise gfapy.ValueError("Length of CIGAR is {}".format(self.length))
       if version == "gfa2":
         if not self.code in Operation.CODE_GFA1_GFA2:
-          raise ValueError()
+          raise gfapy.ValueError()
       else:
         if not self.code in Operation.CODE:
-          raise ValueError()
+          raise gfapy.ValueError()
 
 Operation = CIGAR.Operation

@@ -4,7 +4,7 @@ import gfapy
 class TestTrace(unittest.TestCase):
   def test_from_string(self):
     self.assertEqual(gfapy.Trace([12,14,15]), gfapy.Trace.from_string("12,14,15"))
-    with self.assertRaises(ValueError):
+    with self.assertRaises(gfapy.FormatError):
       gfapy.Trace.from_string("12x,12,12")
 
   def test_validation(self):

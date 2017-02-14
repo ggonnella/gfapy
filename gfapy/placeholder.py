@@ -16,16 +16,6 @@ class Placeholder:
   def complement(self):
     return self
 
-  def to_cigar(self):
-    """
-    For compatibility with the to_cigar method of other classes.
-
-    Returns
-    -------
-    self : Placeholder
-    """
-    return self
-
   def is_empty(self):
     """
     A placeholder is always empty.
@@ -41,6 +31,7 @@ class Placeholder:
     """
     A placeholder is always valid.
     """
+    return None
 
   def rc(self):
     """
