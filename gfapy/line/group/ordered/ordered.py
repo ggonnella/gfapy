@@ -1,10 +1,11 @@
 from ..gfa2.references import References as  GFA2_References
 from ..gfa2.same_id import SameID
-from ..ordered.references import References as Ordered_References
-from ..ordered.captured_path import CapturedPath
+from .references import References as Ordered_References
+from .captured_path import CapturedPath
+from .to_gfa1 import ToGFA1
 from .. import Group
 
-class Ordered(Ordered_References, CapturedPath, GFA2_References, SameID, Group):
+class Ordered(Ordered_References, CapturedPath, GFA2_References, SameID, ToGFA1, Group):
   """
   An ordered group line of a GFA2 file
   """

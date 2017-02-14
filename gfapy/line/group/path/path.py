@@ -2,9 +2,10 @@ from .topology import Topology
 from .references import References
 from .validation import Validation
 from .captured_path import CapturedPath
+from .to_gfa2 import ToGFA2
 from ..group import Group
 
-class Path(Topology, References, Validation, CapturedPath, Group):
+class Path(Topology, References, Validation, CapturedPath, ToGFA2, Group):
   """A path line of a GFA1 file"""
 
   RECORD_TYPE = "P"

@@ -3,7 +3,7 @@ import re
 
 def decode(string):
   if string == "*":
-    return gfapy.Placeholder
+    return gfapy.Placeholder()
   else:
     try:
       return int(string)

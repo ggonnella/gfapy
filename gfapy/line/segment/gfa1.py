@@ -5,7 +5,7 @@ from .references import References
 from .writer_wo_sequence import WriterWoSequence
 from . import Segment
 
-class GFA1(WriterWoSequence, References, Coverage, 
+class GFA1(WriterWoSequence, References, Coverage,
            LengthGFA1, GFA1ToGFA2, Segment):
   """
   A segment line of a GFA file

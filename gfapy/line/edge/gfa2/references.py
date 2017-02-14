@@ -10,7 +10,7 @@ class References:
       orient = self.get(sid).orient
       s = self._gfa.segment(self.get(sid).line)
       if s is None:
-        if self._gfa.segments_first_order:
+        if self._gfa._segments_first_order:
           raise gfapy.NotFoundError()
         s = gfapy.line.segment.GFA2({"sid" : self.get(sid).line,
                                      "slen" : 1,
@@ -30,7 +30,7 @@ class References:
         return "edges_to_containers" if snum == 1 else "edges_to_contained"
     elif st2 == "whole":
       return "edges_to_containers" if snum == 2 else "edges_to_contained"
-    elif sid1.orient == sid2.orient:
+    elif self.sid1.orient == self.sid2.orient:
       if (st1 == "pfx" and st2 == "sfx"):
         return "dovetails_L" if snum == 1 else "dovetails_R"
       elif (st1 == "sfx" and st2 == "pfx"):

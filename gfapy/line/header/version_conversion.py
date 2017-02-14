@@ -1,6 +1,6 @@
 class VersionConversion:
 
-  def to_gfa2_a(self):
+  def _to_gfa2_a(self):
     """
     Return the string representation of the tags, changing the value
     of the VN tag to 2.0, if this is present
@@ -18,7 +18,7 @@ class VersionConversion:
         a.append(self.field_to_s(fn, tag = True))
     return a
 
-  def to_gfa1_a(self):
+  def _to_gfa1_a(self):
     """
     Return the string representation of the tags, changing the value
     of the VN tag to 1.0, if this is present

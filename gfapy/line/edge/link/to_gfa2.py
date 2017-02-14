@@ -19,21 +19,21 @@ class ToGFA2:
     gfapy.ValueError
     	If the segment length is not specified in the segment line.
     """
-    self.check_overlap()
-    if from_orient == "+":
-      from_l = self.lastpos_of("from")
-      return [from_l - self.overlap.length_on_reference, from_l]
+    self._check_overlap()
+    if self.from_orient == "+":
+      from_l = self._lastpos_of("from")
+      return [from_l - self.overlap.length_on_reference(), from_l]
     else:
-      return [0, self.overlap.length_on_reference]
+      return [0, self.overlap.length_on_reference()]
 
   @property
   def to_coords(self):
     """
     GFA2 positions of the alignment on the **to** segment.
     """
-    self.check_overlap()
-    if to_orient == "+":
-      return [0, self.overlap.length_on_query]
+    self._check_overlap()
+    if self.to_orient == "+":
+      return [0, self.overlap.length_on_query()]
     else:
-      to_l = lastpos_of("to")
-      return [to_l - self.overlap.length_on_query, to_l]
+      to_l = self._lastpos_of("to")
+      return [to_l - self.overlap.length_on_query(), to_l]

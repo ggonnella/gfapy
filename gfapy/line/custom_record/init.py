@@ -10,7 +10,7 @@ class Init:
   def tagnames(self):
     return[x for x in self._data.keys() \
              if (not x in self.positional_fieldnames) \
-                 and(not x in ["record_type"])]
+                 and (x != "record_type")]
 
   def _initialize_positional_fields(self, strings):
     """delayed, see #delayed_inizialize_positional_fields"""
@@ -28,6 +28,11 @@ class Init:
 
   def _delayed_initialize_positional_fields(self, strings, n_positional_fields):
     self._positional_fieldnames = []
+    if strings[0] in ["P", "C", "L"]:
+      raise gfapy.VersionError(
+        "GFA-like line (P,C,L) found in GFA2\n"+
+        "Line: {}\n".format(" ".join(strings))+
+        "Custom lines with record_type P, C and L are not supported by gfapy.")
     self._init_field_value("record_type", "custom_record_type", strings[0],
                      errmsginfo = strings)
     for i in range(1, n_positional_fields):

@@ -17,7 +17,7 @@ class CapturedPath:
         "Captured path cannot be computed\n"+
         "Line is not connected to a GFA instance\n"+
         "Line: {}".format(self))
-    return self._compute_captured_path[0]
+    return self._compute_captured_path()[0]
 
   def _compute_captured_path(self):
     path, prev_edge = [], False
@@ -122,7 +122,7 @@ class CapturedPath:
 
   def _push_nonfirst_edge_on_se_path(self, path, oriented_edge):
     prev_os = path[-1]
-    path << oriented_edge
+    path.append(oriented_edge)
     possible_prev = [oriented_edge.line.sid1, oriented_edge.line.sid2]
     if oriented_edge.orient == "-":
       for i, v in enumerate(possible_prev):

@@ -2,7 +2,8 @@ import gfapy
 import re
 
 def unsafe_decode(string):
-  return [ gfapy.CIGAR.from_string(s, valid = True) for s in string.split(",") ]
+  return [ gfapy.CIGAR.from_string(s, version = "gfa1", valid = True) \
+             for s in string.split(",") ]
 
 def decode(string):
   validate_encoded(string)
@@ -19,8 +20,7 @@ def validate_decoded(obj):
     pass
   elif isinstance(obj, list):
     for e in obj:
-      if isinstance(e, str):
-        e = gfapy.CIGAR.from_string(e, version = "gfa1")
+      e = gfapy.Alignment(e, version = "gfa1")
       e.validate()
   else:
     raise gfapy.TypeError(
@@ -31,7 +31,7 @@ def unsafe_encode(obj):
   if isinstance(obj, gfapy.Placeholder):
     return str(obj)
   elif isinstance(obj, list):
-    return ",".join([str(gfapy.CIGAR.from_string(cig)) for cig in obj])
+    return ",".join([str(gfapy.Alignment(cig)) for cig in obj])
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"
@@ -43,7 +43,7 @@ def encode(obj):
     return str(obj)
   if isinstance(obj, list):
     def f(cig):
-      cig = gfapy.CIGAR.from_string(cig)
+      cig = gfapy.Alignment(cig)
       cig.validate()
       return str(cig)
     return ",".join(map(f, obj))

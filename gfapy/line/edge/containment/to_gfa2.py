@@ -1,9 +1,10 @@
 class ToGFA2:
 
+  @property
   def from_coords(self):
     """
     GFA2 positions of the alignment on the **from** segment.
-    
+
     Returns
     -------
     (Integer|Lastpos, Integer|Lastpos)
@@ -16,14 +17,15 @@ class ToGFA2:
     gfapy.ValueError
     	If the segment length is not specified in the segment line.
     """
-    self.check_overlap()
-    rpos = self.pos() + self.overlap().length_on_reference()
-    if rpos == self.lastpos_of("from"):
-      rpos = rpos.to_lastpos() 
-    return [self.pos(), rpos]
+    self._check_overlap()
+    rpos = self.pos + self.overlap.length_on_reference()
+    if rpos == self._lastpos_of("from"):
+      rpos = gfapy.LastPos(rpos)
+    return [self.pos, rpos]
 
+  @property
   def to_coords(self):
     """
     GFA2 positions of the alignment on the **to** segment
     """
-    return [0, self.lastpos_of("to")]
+    return [0, self._lastpos_of("to")]

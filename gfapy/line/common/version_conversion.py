@@ -7,29 +7,20 @@ except ImportError:
     return lambda self: method(self, **kwargs)
 
 class VersionConversion:
-  pass
 
-for shall_version in ["gfa1", "gfa2"]:
-  def to_version_s(self, shall_version):
+  def to_version_s(self, version):
     """
-    ..note ::
-      gfapy.Line subclasses do not usually redefine this method, but
-      the corresponding versioned to_a method
-
     Returns
     -------
     str
       A string representation of self.
     """
-    to_version_a = getattr(self, "to_" + shall_version + "_a")
-    return gfapy.Line.SEPARATOR.join(to_version_a())
+    return gfapy.Line.SEPARATOR.join(getattr(self, "_to_"+version+"_a")())
 
-  setattr(VersionConversion, "to_" + shall_version + "_s",
-          partialmethod(to_version_s, shall_version = shall_version))
-
-  def to_version_a(self, shall_version):
+  def _to_version_a(self, version):
     """
     .. note::
+      The default is just an alias of to_list(), and ignores version.
       gfapy.Line subclasses can redefine this method to convert
       between versions.
 
@@ -40,23 +31,30 @@ for shall_version in ["gfa1", "gfa2"]:
     """
     return self.to_list()
 
-  setattr(VersionConversion, "to_" + shall_version + "_a",
-          partialmethod(to_version_a, shall_version = shall_version))
-
-  def to_version(self, version, shall_version):
+  def to_version(self, version):
     """
     Returns
     -------
     gfapy.Line
     	Convertion to the selected version.
     """
-    v = "gfa1" if shall_version == "gfa1" else "gfa2"
-    if v == version:
+    if version == self._version:
       return self
+    elif version not in gfapy.VERSIONS:
+      raise gfapy.VersionError("Version unknown ({})".format(version))
     else:
-      to_version_a = getattr(self, "to_" + shall_version + "_a")
-      return to_version_a().to_gfa_line(version = v,
-                                        vlevel = self.vlevel)
+      return gfapy.Line.from_list(getattr(self, "_to_"+version+"_a")(),
+                version=version, vlevel=self.vlevel)
 
-  setattr(VersionConversion, "to_" + shall_version,
-          partialmethod(to_version, shall_version = shall_version))
+for shall_version in ["gfa1", "gfa2"]:
+  setattr(VersionConversion, "to_"+shall_version+"_s",
+          partialmethod(VersionConversion.to_version_s,
+            version = shall_version))
+
+  setattr(VersionConversion, "_to_"+shall_version+"_a",
+          partialmethod(VersionConversion._to_version_a,
+            version = shall_version))
+
+  setattr(VersionConversion, "to_"+shall_version,
+          partialmethod(VersionConversion.to_version,
+            version = shall_version))

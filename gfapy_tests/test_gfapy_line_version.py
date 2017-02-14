@@ -27,8 +27,8 @@ class TestLineVersion(unittest.TestCase):
     self.assertEqual("gfa1", gfapy.Line.from_string("L\tA\t+\tB\t-\t*").version)
     self.assertEqual("gfa1",
            gfapy.Line.from_string("L\tA\t+\tB\t-\t*", version = "gfa1").version)
-    l = gfapy.Line.from_string("L\tA\t+\tB\t-\t*", version = "gfa2")
-    self.assertIsInstance(l, gfapy.line.CustomRecord)
+    with self.assertRaises(gfapy.VersionError):
+      gfapy.Line.from_string("L\tA\t+\tB\t-\t*", version = "gfa2")
     with self.assertRaises(gfapy.VersionError):
       gfapy.line.edge.Link(["A","+","B","-","*"], version = "gfa2")
 
@@ -36,8 +36,8 @@ class TestLineVersion(unittest.TestCase):
     self.assertEqual("gfa1", gfapy.Line.from_string("C\tA\t+\tB\t-\t10\t*").version)
     self.assertEqual("gfa1",
        gfapy.Line.from_string("C\tA\t+\tB\t-\t10\t*", version = "gfa1").version)
-    c = gfapy.Line.from_string("C\tA\t+\tB\t-\t10\t*", version = "gfa2")
-    self.assertIsInstance(c, gfapy.line.CustomRecord)
+    with self.assertRaises(gfapy.VersionError):
+      gfapy.Line.from_string("C\tA\t+\tB\t-\t10\t*", version = "gfa2")
     with self.assertRaises(gfapy.VersionError):
       gfapy.line.edge.Containment(["A","+","B","-","10","*"], version = "gfa2")
 

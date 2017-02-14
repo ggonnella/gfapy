@@ -245,6 +245,9 @@ class Init:
 
   @classmethod
   def subclass_GFA1(cls, record_type):
+    if record_type is None:
+      raise gfapy.VersionError(
+          "gfapy uses virtual records of unknown type for GFA2 only")
     if str(record_type) == "H": return gfapy.line.Header
     elif str(record_type) == "S": return gfapy.line.segment.GFA1
     elif str(record_type) == "#": return gfapy.line.Comment

@@ -20,7 +20,7 @@ def encode(obj):
     return obj
   elif isinstance(obj, gfapy.CIGAR) or isinstance(obj, gfapy.Trace):
     obj.validate()
-    return obj
+    return str(obj)
   elif isinstance(obj, gfapy.Placeholder):
     return "*"
   else:

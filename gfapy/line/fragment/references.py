@@ -1,3 +1,5 @@
+import gfapy
+
 class References():
 
   def _initialize_references(self):
@@ -5,9 +7,9 @@ class References():
     if s is None:
       if self._gfa._segments_first_order:
         raise gfapy.NotFoundError()
-      s = gfapy.line.segment.GFA2({"sid" : self.get(sid),
-                                   "slen" : 1,
-                                   "sequence" : "*"},
+      s = gfapy.line.segment.GFA2({"sid": self.get("sid"),
+                                   "slen": 1,
+                                   "sequence": "*"},
                                    version = "gfa2",
                                    virtual = True)
       s.connect(self._gfa)

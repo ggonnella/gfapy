@@ -39,19 +39,19 @@ class TestUnitHeader(unittest.TestCase):
 
   def test_to_gfa1_a(self):
     line = gfapy.Line.from_string("H\tVN:Z:1.0\txx:i:1")
-    self.assertEqual("H", line.to_gfa1_a()[0])
-    self.assertEqual(sorted(["VN:Z:1.0", "xx:i:1"]), sorted(line.to_gfa1_a()[1:]))
+    self.assertEqual("H", line._to_gfa1_a()[0])
+    self.assertEqual(sorted(["VN:Z:1.0", "xx:i:1"]), sorted(line._to_gfa1_a()[1:]))
     line = gfapy.Line.from_string("H\tVN:Z:2.0\txx:i:1")
-    self.assertEqual("H", line.to_gfa1_a()[0])
-    self.assertEqual(sorted(["VN:Z:1.0", "xx:i:1"]), sorted(line.to_gfa1_a()[1:]))
+    self.assertEqual("H", line._to_gfa1_a()[0])
+    self.assertEqual(sorted(["VN:Z:1.0", "xx:i:1"]), sorted(line._to_gfa1_a()[1:]))
 
   def test_to_gfa2_a(self):
     line = gfapy.Line.from_string("H\tVN:Z:1.0\txx:i:1")
-    self.assertEqual("H", line.to_gfa2_a()[0])
-    self.assertEqual(sorted(["VN:Z:2.0", "xx:i:1"]), sorted(line.to_gfa2_a()[1:]))
+    self.assertEqual("H", line._to_gfa2_a()[0])
+    self.assertEqual(sorted(["VN:Z:2.0", "xx:i:1"]), sorted(line._to_gfa2_a()[1:]))
     line = gfapy.Line.from_string("H\tVN:Z:2.0\txx:i:1")
-    self.assertEqual("H", line.to_gfa2_a()[0])
-    self.assertEqual(sorted(["VN:Z:2.0", "xx:i:1"]), sorted(line.to_gfa2_a()[1:]))
+    self.assertEqual("H", line._to_gfa2_a()[0])
+    self.assertEqual(sorted(["VN:Z:2.0", "xx:i:1"]), sorted(line._to_gfa2_a()[1:]))
 
   def test_add(self):
     line = gfapy.Line.from_string("H\tVN:Z:2.0\txx:i:1")

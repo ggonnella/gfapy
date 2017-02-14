@@ -1,15 +1,17 @@
+import gfapy
+
 class GFA2ToGFA1:
 
-  def to_gfa1_a(self):
+  def _to_gfa1_a(self):
     """
     Returns
     -------
     str list
       A array of GFA1 field strings.
     """
-    a = ["S", field_to_s("name", tag = False),
-              field_to_s("sequence", tag = False)]
-    a.append(self.slen().to_gfa_field(datatype = "i", fieldname = "LN"))
+    a = ["S", self.field_to_s("name", tag = False),
+              self.field_to_s("sequence", tag = False)]
+    a.append(gfapy.field.to_gfa_tag(self.slen, "LN", datatype = "i"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a

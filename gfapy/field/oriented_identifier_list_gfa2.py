@@ -10,28 +10,38 @@ def decode(string):
   return unsafe_decode(string)
 
 def validate_encoded(string):
-  if not re.match(r"^[!-~]+[+-]( [!-~][+-])*$", string):
+  if not re.match(r"^[!-~]+[+-]( [!-~]+[+-])*$", string):
     raise gfapy.FormatError(
       "{} is not a valid list of GFA2 segment names ".format(repr(string))+
       "and orientations")
 
 def validate_decoded(iterable):
   for elem in iterable:
-    elem = gfapy.OrientedLine(elem)
+    if not isinstance(elem, gfapy.OrientedLine):
+      raise gfapy.TypeError(
+            "the list contains an object of class {}\n".format(type(elem))+
+            "(accepted classes: gfapy.OrientedLine)")
     elem.validate()
     if not re.match(r"^[!-~]+$", elem.name):
       raise gfapy.FormatError(
-        "#{elem.name} is not a valid GFA2 segment name\n".format(elem.name)+
-        "(it does not match [!-~]+)")
+        "the list contains an invalid GFA2 identifier\n".format(elem.name)+
+        "(it contains spaces and/or non-printable characters)")
     if not elem.orient in ["+", "-"]:
       raise gfapy.FormatError(
-        "#{elem.orient} is not a valid orientation")
+        "{} is not a valid orientation".format(elem.orient))
 
 def unsafe_encode(obj):
   if isinstance(obj, str):
     return obj
   elif isinstance(obj, list):
-    return " ".join([str(gfapy.OrientedLine(os)) for os in obj])
+    retval = []
+    for elem in obj:
+      if not isinstance(elem, gfapy.OrientedLine):
+        raise gfapy.TypeError(
+              "the list contains an object of class {}\n".format(type(elem))+
+              "(accepted classes: gfapy.OrientedLine)")
+      retval.append(str(elem))
+    return " ".join(retval)
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"

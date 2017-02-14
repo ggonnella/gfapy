@@ -6,7 +6,7 @@ from ..gfa2.references import References
 from ..gfa2.other import Other
 from .. import Edge
 
-class GFA2(Other, References, GFA2_AlignmentType, ToGFA1, AlignmentType, FromTo, Edge):
+class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo, ToGFA1, Edge):
   """An edge line of a GFA2 file"""
 
   RECORD_TYPE = "E"

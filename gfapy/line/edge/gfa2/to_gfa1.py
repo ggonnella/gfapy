@@ -2,7 +2,7 @@ import gfapy
 
 class ToGFA1:
 
-  def to_gfa1_a(self):
+  def _to_gfa1_a(self):
     """
     Returns
     -------
@@ -39,7 +39,6 @@ class ToGFA1:
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a
-
 
   @property
   def overlap(self):

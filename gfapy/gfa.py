@@ -33,6 +33,22 @@ class Gfa(Lines):
       self._version_guess = version
       self._validate_version()
 
+  @property
+  def version(self):
+    return self._version
+
+  @version.setter
+  def version(self,value):
+    self._vlevel=value
+
+  @property
+  def vlevel(self):
+    return self._vlevel
+
+  @vlevel.setter
+  def vlevel(self,value):
+    self._vlevel=value
+
   def validate(self):
     self.__validate_segment_references()
     self.__validate_path_links()

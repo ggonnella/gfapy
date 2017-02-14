@@ -10,8 +10,8 @@ class ToGFA2:
   """
 
   @property
-  def name(self):
-    i = self.get("ID")
+  def eid(self):
+    i = self.get("id")
     if i is None:
       return gfapy.Placeholder()
       #i = "{}{} {}{} {}".format(self.from_name(), self.from_orient(),
@@ -19,8 +19,7 @@ class ToGFA2:
       #                          self.overlap())
     return i
 
-  eid = name
-  to_sym = name
+  name = eid
 
   @property
   def sid1(self):
@@ -50,32 +49,33 @@ class ToGFA2:
   def alignment(self):
     return self.overlap
 
-  def to_gfa2_a(self):
+  def _to_gfa2_a(self):
     a = ["E"]
-    i = self.get("ID")
+    i = self.get("id")
     a.append(str(i) if i else "*")
     a.append(str(self.sid1))
     a.append(str(self.sid2))
-    a += [ str(x) for x in self.from_cords ]
+    a += [ str(x) for x in self.from_coords ]
     a += [ str(x) for x in self.to_coords ]
     a.append(self.field_to_s("overlap"))
-    for fn in tagnames:
-      if fn != "ID":
+    for fn in self.tagnames:
+      if fn != "id":
         a.append(self.field_to_s(fn, tag = True))
     return a
 
   def _lastpos_of(self, field):
-    if not isinstance(getattr(self,field), gfapy.Line):
+    line = getattr(self,field)
+    if not isinstance(line, gfapy.Line):
       raise gfapy.RuntimeError(
         "Line {} is not embedded in a GFA object".format(self))
-    l = len(getattr(self,field))
-    if l is None:
+    length = line.length
+    if length is None:
       raise gfapy.ValueError(
         "Length of segment {} unknown".format(self.to.name))
-    l.to_lastpos
+    return gfapy.LastPos(length)
 
   def _check_overlap(self):
-    if isinstance(overlap, gfapy.Placeholder):
+    if isinstance(self.overlap, gfapy.Placeholder):
       raise gfapy.ValueError(
         "Link: {}\n".format(self)+
         "Missing overlap, cannot compute overlap coordinates")

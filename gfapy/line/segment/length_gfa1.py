@@ -21,7 +21,7 @@ class LengthGFA1:
     if self.LN:
       return self.LN
     elif not gfapy.is_placeholder(self.sequence):
-      return len(sequence)
+      return len(self.sequence)
     else:
       return None
 
