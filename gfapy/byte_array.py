@@ -68,7 +68,7 @@ class ByteArray(bytes):
     """
     return str(binascii.hexlify(self), "utf8").upper()
 
-  def validate():
+  def validate(self):
     return True #bytes object is valid ByteArray
 
   def _default_gfa_tag_datatype(self):

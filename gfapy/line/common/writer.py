@@ -48,16 +48,15 @@ class Writer:
       The string representation
     """
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
-    field = self._data.get(fieldname, None)
-    if field is None:
-      return ""
-      #raise gfapy.NotFoundError("No value defined for tag {}".format(fieldname))
-    t = self._field_or_default_datatype(fieldname, field)
-    if not isinstance(field, str):
-      field = gfapy.field.to_gfa_field(field, datatype = t, fieldname = fieldname)
+    v = self._data.get(fieldname, None)
+    if v is None:
+      raise gfapy.NotFoundError("Field {} not found".format(fieldname))
+    t = self._field_or_default_datatype(fieldname, v)
+    if not isinstance(v, str):
+      v = gfapy.field.to_gfa_field(v, datatype = t, fieldname = fieldname)
     if self.vlevel >= 2:
-      field.validate_gfa_field(t, fieldname)
-    return gfapy.field.to_gfa_tag(field, fieldname, datatype = t) if tag else field
+      gfapy.field.validate_gfa_field(v, t, fieldname)
+    return gfapy.field.to_gfa_tag(v, fieldname, datatype = t) if tag else v
 
   # the following is not needed unless it becomes too long
   #def __repr__(self):

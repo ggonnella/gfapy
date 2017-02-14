@@ -207,7 +207,7 @@ class Init:
         self._validate_custom_tagname(n)
         self._datatype[n] = t
     else:
-      if not self.field_datatype(t):
+      if not self._field_datatype(t):
         self._datatype[n] = t
     self._init_field_value(n, t, s, errmsginfo = errmsginfo)
 

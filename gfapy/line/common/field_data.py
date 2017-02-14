@@ -70,7 +70,7 @@ class FieldData:
         return self._data[fieldname]
     else:
       raise gfapy.FormatError(
-        "{} is not an existing or predefined field or a ".format(field_name)+
+        "{} is not an existing or predefined field or a ".format(fieldname)+
         "valid custom tag")
 
   def get(self, fieldname):
@@ -150,7 +150,8 @@ class FieldData:
       The deleted value or None, if the field was not defined.
     """
     if tagname in self.tagnames:
-      self._datatype.pop(tagname)
+      if tagname in self._datatype:
+        self._datatype.pop(tagname)
       return self._data.pop(tagname)
     else:
       return None
@@ -170,7 +171,8 @@ class FieldData:
          renaming_connected = True
          self._gfa._unregister_line(self)
     if value is None:
-      self._data.delete(fieldname)
+      if fieldname in self._data:
+        self._data.pop(fieldname)
     else:
       if self.vlevel >= 3:
         self._field_or_default_datatype(fieldname, value)

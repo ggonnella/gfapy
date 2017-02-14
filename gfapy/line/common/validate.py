@@ -42,10 +42,10 @@ class Validate:
   def _validate_tagnames_and_types(self):
     for n in self.tagnames:
       if self._is_predefined_tag(n):
-        self._validate_predefined_tag_type(n, self.field_datatype(n))
-      elif not _is_valid_custom_tagname(n):
+        self._validate_predefined_tag_type(n, self._field_datatype(n))
+      elif not self._is_valid_custom_tagname(n):
         raise gfapy.FormatError("Custom tags must be lower case\n"+
-            "Found: {}".format(tagname))
+            "Found: {}".format(n))
 
   def _validate_predefined_tag_type(self, tagname, datatype):
     if datatype != self.__class__.DATATYPE[tagname]:
