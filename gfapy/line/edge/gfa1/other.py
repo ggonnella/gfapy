@@ -19,10 +19,10 @@ class Other:
     gfapy.NotFoundError
       If segment_end is not a segment end of the line.
     """
-    if (oriented_from == oriented_segment):
-      return self.oriented_to()
-    elif (oriented_to == oriented_segment):
-      return self.oriented_from()
+    if (self.oriented_from == oriented_segment):
+      return self.oriented_to
+    elif (self.oriented_to == oriented_segment):
+      return self.oriented_from
     elif tolerant:
       return None
     else:

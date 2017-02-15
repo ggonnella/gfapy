@@ -117,6 +117,7 @@ class Equivalence:
 
 
   def _has_field_values(self, hsh, ignore_fields = None):
+    assert(isinstance(hsh, dict))
     if ignore_fields is None:
       ignore_fields = []
     if ("record_type" in hsh) and ("record_type" not in ignore_fields) \
@@ -136,6 +137,7 @@ class Equivalence:
     return True
 
   def _has_eql_fields(self, refline, ignore_fields = None):
+    assert(isinstance(refline, gfapy.Line))
     if ignore_fields is None:
       ignore_fields = []
     if ("record_type" not in ignore_fields) \
@@ -144,7 +146,9 @@ class Equivalence:
     fieldnames = refline.positional_fieldnames + refline.tagnames
     fieldnames = [i for i in fieldnames if i not in ignore_fields]
     if "name" in ignore_fields:
-      fieldnames.remove(refline.__class__.NAME_FIELD)
+      name_field = refline.__class__.NAME_FIELD
+      if name_field in fieldnames:
+        fieldnames.remove(name_field)
     for fieldname in fieldnames:
       refvalue = refline.get(fieldname)
       if gfapy.is_placeholder(refvalue):

@@ -87,7 +87,6 @@ class TestUnitLine(unittest.TestCase):
       fields.reverse()
       self.assertEqual("\t".join(["H"]+fields), lstr)
 
-
   def test_clone(self):
     l = gfapy.Line.from_string("H\tVN:Z:1.0")
     l1 = l

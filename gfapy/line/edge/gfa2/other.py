@@ -1,3 +1,5 @@
+import gfapy
+
 class Other:
 
   def other_oriented_segment(self, oriented_segment):
@@ -46,11 +48,12 @@ class Other:
       The instance or symbol of the other segment of the connection.
       (which is the **segment** itself, when the connection is circular)
     """
-    segment_name = str(segment)
-    if segment_name == self.sid1.name:
-      return sid2.line
-    elif segment_name == self.sid2.name:
-      return sid1.line
+    if isinstance(segment, gfapy.Line):
+      segment = segment.name
+    if segment == self.sid1.name:
+      return self.sid2.line
+    elif segment == self.sid2.name:
+      return self.sid1.line
     else:
       raise gfapy.NotFoundError(
-        "Line {} does not involve segment {}".format(self, segment_name))
+        "Line {} does not involve segment {}".format(self, segment))

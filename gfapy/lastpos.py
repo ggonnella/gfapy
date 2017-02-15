@@ -1,10 +1,19 @@
 import gfapy
 import copy
+from functools import total_ordering
 
+@total_ordering
 class LastPos:
 
-  def __init__(self, value):
-    self.value = value
+  def __new__(cls, value, valid=False):
+    if isinstance(value, str):
+      return cls.from_string(value, valid=valid)
+    else:
+      new_instance = object.__new__(cls)
+      new_instance.value = value
+      if not valid:
+        new_instance.validate()
+      return new_instance
 
   def validate(self):
     if not isinstance(self.value, int):
@@ -14,33 +23,50 @@ class LastPos:
       raise gfapy.ValueError("LastPos value shall be >= 0,"+
           " {} found".format(self.value))
 
-  @staticmethod
-  def from_string(string):
+  @classmethod
+  def from_string(cls, string, valid=False):
     if string[-1] == "$":
-      return LastPos(int(string[:-1]))
+      return cls(int(string[:-1]), valid=valid)
     else:
-      return int(string)
+      try:
+        v = int(string)
+      except:
+        raise gfapy.FormatError(
+            "LastPos value has a wrong format: {}".format(string))
+      if not valid:
+        if v < 0:
+          raise gfapy.ValueError("LastPos value shall be >= 0,"+
+              " {} found".format(v))
+      return v
 
   def __str__(self):
     return "{}$".format(self.value)
 
-  def to_int(self):
+  def __int__(self):
     return self.value
 
   def __eq__(self, other):
-    if not isinstance(other, LastPos):
-      return False
-    return self.value == other.value
+    if isinstance(other, int):
+      return self.value == other
+    elif not isinstance(other, LastPos):
+      return NotImplemented
+    else:
+      return self.value == other.value
+
+  def __lt__(self, other):
+    if isinstance(other, int):
+      return self.value.__lt__(other)
+    elif not isinstance(other, LastPos):
+      return NotImplemented
+    else:
+      return self.value.__lt__(other.value)
 
   def __sub__(self,other):
     o = int(other)
     if o == 0:
-      return copy.copy(self)
+      return gfapy.LastPos(self.value)
     else:
       return self.value - o
-
-  def __int__(self):
-    return self.value
 
 def posvalue(obj):
   if isinstance(obj, LastPos):

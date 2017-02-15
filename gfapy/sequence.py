@@ -19,9 +19,9 @@ def rc(sequence, valid = False, rna = False):
   rna : bool
   sequence : str
   """
-  if sequence == "*": return "*"
+  if gfapy.is_placeholder(sequence): return sequence
   def fun(c):
-    wcc = WCC.get(c)
+    wcc = WCC.get(c, c if valid else None)
     if not wcc:
       raise gfapy.ValueError("{}: no Watson-Crick complement for {}".format(sequence, c))
     return wcc
@@ -42,18 +42,18 @@ WCC = {"a":"t","t":"a","A":"T","T":"A",
        "-":"-",".":".","=":"=",
        " ":"","\n":""}
 
-def to_sequence(string):
+def Sequence(string):
   """
   Parse a string as sequence.
 
   Parameters
   ----------
   string : str
-  
+
   Returns
   -------
   gfapy.Placeholder
   	Returns self if the string content is other than "*", 
     otherwise a gfapy.Placeholder object.
   """
-  gfapy.Placeholder() if (self == "*") else self
+  return gfapy.Placeholder() if (string == "*") else string

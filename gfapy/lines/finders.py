@@ -30,7 +30,7 @@ class Finders:
   def try_get_line(self, l):
     gfa_line = self.line(l)
     if gfa_line is None:
-      if is_placeholder(l):
+      if gfapy.is_placeholder(l):
         raise gfapy.ValueError(
           "'*' is a placeholder and not a valid name for a line")
       else:
@@ -43,18 +43,18 @@ class Finders:
 
   def select(self, dict_or_line):
     is_dict = isinstance(dict_or_line, dict)
-    name = dict_or_line["name"] if is_dict else hash_or_line.get("name")
-    if name is not None and not is_placeholder(name):
+    name = dict_or_line.get("name",None) if is_dict else dict_or_line.get("name")
+    if name is not None and not gfapy.is_placeholder(name):
       collection = [self.__line_by_name(name)]
     else:
       if is_dict:
-        record_type = dict_or_line["record_type"]
+        record_type = dict_or_line.get("record_type",None)
       else:
         record_type = dict_or_line.record_type
       collection = self.__collection_for_select(record_type)
-    method = "_has_field_values" if dict_or_line else "_has_eql_fields"
+    method = "_has_field_values" if is_dict else "_has_eql_fields"
     return [line for line in collection \
-        if line.get_attr(method)(dict_or_line, ["record_type","name"])]
+        if getattr(line, method)(dict_or_line, ["record_type","name"])]
 
   def _search_duplicate(self, gfa_line):
     if gfa_line.record_type == "L":
@@ -91,7 +91,12 @@ class Finders:
       d = self._records[record_type]
       if record_type == "S" or record_type == "P":
         return list(d.values())
-      elif record_type in ["E", "G", "U", "O", "F"]:
-        return [v for k,v in d.items() if k is not None] + d[None]
+      elif record_type in ["E", "G", "U", "O"]:
+        return [v for k,v in d.items() if k is not None] + d.get(None,[])
+      elif record_type == "F":
+        retval = []
+        for v in d.values():
+          retval.extend(v)
+        return retval
       else:
         return d

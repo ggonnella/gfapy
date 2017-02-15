@@ -80,7 +80,9 @@ class References:
     	Segments connected to the current segment by dovetail overlap
       relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
     """
-    return list(set([ l.other(self) for l in self.dovetails ]))
+    seen = set()
+    return [l.other(self) for l in self.dovetails \
+              if id(l) not in seen and not seen.add(id(l))]
 
   @property
   def neighbours_L(self):
@@ -93,7 +95,9 @@ class References:
     	Segments connected to the current segment by dovetail overlap
       relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
     """
-    return list(set([ l.other(self) for l in self.dovetails_L ]))
+    seen = set()
+    return [l.other(self) for l in self.dovetails_L \
+             if id(l) not in seen and not seen.add(id(l))]
 
   @property
   def neighbours_R(self):
@@ -106,7 +110,9 @@ class References:
     	Segments connected to the current segment by dovetail overlap
       relationships (L lines for GFA1, dovetail-representing E lines for GFA2)
     """
-    return list(set([ l.other(self) for l in self.dovetails_R ]))
+    seen = set()
+    return [l.other(self) for l in self.dovetails_R \
+             if id(l) not in seen and not seen.add(id(l))]
 
   @property
   def containers(self):
@@ -120,7 +126,9 @@ class References:
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the contained segment.
     """
-    return list(set([ elem.frm for elem in self.edges_to_contained ]))
+    seen = set()
+    return [l.frm for l in self.edges_to_containers \
+             if id(l) not in seen and not seen.add(id(l))]
 
   @property
   def contained(self):
@@ -134,7 +142,9 @@ class References:
       (C lines for GFA1, containment-representing E lines for GFA2),
       where the current segment is the container segment.
     """
-    return list(set([ elem.to for elem in self.edges_to_contained ]))
+    seen = set()
+    return [l.to for l in self.edges_to_contained \
+             if id(l) not in seen and not seen.add(id(l))]
 
   @property
   def edges(self):

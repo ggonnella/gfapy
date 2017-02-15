@@ -7,10 +7,11 @@ class OrientedLine:
   """
 
   def __new__(cls, *args):
-    new_instance = object.__new__(cls)
     if isinstance(args[0], OrientedLine):
       return args[0]
-    return new_instance
+    else:
+      new_instance = object.__new__(cls)
+      return new_instance
 
   def __init__(self, *args):
     if len(args) == 1:
