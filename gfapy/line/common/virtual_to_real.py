@@ -44,7 +44,7 @@ class VirtualToReal:
     for k in (self.__class__.REFERENCE_FIELDS +
               self.__class__.REFERENCE_RELATED_FIELDS):
       ref = previous.get(k)
-      self._set_existing_field(k, ref, set_reference = true)
+      self._set_existing_field(k, ref, set_reference = True)
 
   def _update_backreference_in(self, ref, previous, k):
     if isinstance(ref, gfapy.Line):

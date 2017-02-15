@@ -144,9 +144,9 @@ class Equivalence:
     is_same
     __eq__
     """
-    (self.from_end == other.to_end and
-     self.to_end == other.from_end and
-     self.overlap == other.overlap.complement())
+    return (self.from_end == other.to_end and
+            self.to_end == other.from_end and
+            self.overlap == other.overlap.complement())
 
   def is_compatible(self, other_oriented_from, other_oriented_to,
                     other_overlap = None, allow_complement = True):
@@ -202,7 +202,8 @@ class Equivalence:
     """
     return ((self.oriented_from == other_oriented_from and
              self.oriented_to == other_oriented_to) and
-     (not self.overlap or not other_overlap or (self.overlap == other_overlap)))
+           (not self.overlap or not other_overlap or
+             (self.overlap == other_overlap)))
 
   def is_compatible_complement(self, other_oriented_from, other_oriented_to,
                                other_overlap = None):

@@ -94,7 +94,13 @@ class OrientedLine:
     str
       line name and orientation
     """
-    return "{}{}".format(self.name, self.orient)
+    if self.name:
+      return "{}{}".format(self.name, self.orient)
+    else:
+      return "({}){}".format(self.line, self.orient)
+
+  def __repr__(self):
+    return "gfapy.OrientedLine({},{})".format(repr(self.line),repr(self.orient))
 
   def __eq__(self, other):
     """

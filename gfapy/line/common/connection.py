@@ -43,7 +43,7 @@ class Connection:
       if previous.virtual:
         return self._substitute_virtual_line(previous)
       else:
-        return self.__process_not_unique(previous)
+        return self._process_not_unique(previous)
     else:
       self._gfa = gfa
       self._initialize_references()
@@ -69,7 +69,7 @@ class Connection:
     """
     pass
 
-  def __process_not_unique(self, previous):
+  def _process_not_unique(self, previous):
     """
     .. note::
       SUBCLASSES may overwrite this method

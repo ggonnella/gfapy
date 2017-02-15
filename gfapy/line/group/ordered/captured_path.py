@@ -20,7 +20,8 @@ class CapturedPath:
     return self._compute_captured_path()[0]
 
   def _compute_captured_path(self):
-    path, prev_edge = [], False
+    path = []
+    prev_edge = False
     for item in self.items:
       path, prev_edge = self._push_item_on_se_path(path, prev_edge, item)
     return path, prev_edge
@@ -56,15 +57,17 @@ class CapturedPath:
           "Captured path cannot be computed; item is not connected\n"+
           "Line: {}\n".format(self)+
           "Item: {}".format(item.line))
-      subpath, prev_edge_subpath = item.line.compute_captured_path()
+      subpath, prev_edge_subpath = item.line._compute_captured_path()
       if not subpath:
         raise gfapy.AssertionError()
       if item.orient == "+":
         for subpath_item in subpath:
-          path, prev_edge = self._push_item_on_se_path(path, prev_edge, subpath_item)
+          path, prev_edge = self._push_item_on_se_path(path, prev_edge,
+              subpath_item)
       else:
         for subpath_item in reversed(subpath):
-          path, prev_edge = self._push_item_on_se_path(path, prev_edge, subpath_item.invert)
+          path, prev_edge = self._push_item_on_se_path(path, prev_edge,
+              subpath_item.invert())
       prev_edge = prev_edge_subpath
     elif isinstance(item.line, gfapy.line.unknown.Unknown):
       raise gfapy.RuntimeError(

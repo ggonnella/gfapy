@@ -76,7 +76,7 @@ class Logger:
     """
     if part < 0 or part > 1:
       raise gfapy.ArgumentError("part must be in range [0..1]")
-    self.progress = true
+    self.progress = True
     self.part = part
     if self.verbose_level > 0:
       self.channel.write("{} Progress logging enabled".format(pfx))
@@ -85,7 +85,7 @@ class Logger:
     """
     Disable progress logging
     """
-    self.progress = false
+    self.progress = False
     if self.verbose_level > 0:
       self.channel.write("{} Progress logging disabled".format(self.pfx))
 

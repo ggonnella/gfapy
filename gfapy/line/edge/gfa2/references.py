@@ -56,9 +56,9 @@ class References:
     if ref.record_type == "U":
       return ["sets"]
     elif ref.record_type == "O":
-      ["paths"]
+      return ["paths"]
     elif ref.record_type == "S":
-      ["sid1", "sid2"]
+      return ["sid1", "sid2"]
     else:
       raise gfapy.AssertionError(
         "Bug found, please report\n"+

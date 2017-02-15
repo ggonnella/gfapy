@@ -4,4 +4,4 @@ class References:
     if self.is_complement(previous):
       pass
     else:
-      super()._process_not_unique(previous) 
+      super()._process_not_unique(previous)

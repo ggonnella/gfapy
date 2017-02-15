@@ -2,6 +2,13 @@ import gfapy
 
 class Equivalence:
 
+  def __hash__(self):
+    name = self.get("name")
+    if name:
+      return name.__hash__()
+    else:
+      return NotImplemented
+
   def __eq__(self, o):
     """
     Equivalence check

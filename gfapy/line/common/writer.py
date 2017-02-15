@@ -34,7 +34,7 @@ class Writer:
     fieldname : str
       The tag name of the field.
     tag : bool
-      *(defaults to: ***false***)*
+      *(defaults to: ***False***)*
       Return the tagname:datatype:value representation.
 
     Raises
@@ -58,25 +58,9 @@ class Writer:
       gfapy.field.validate_gfa_field(v, t, fieldname)
     return gfapy.field.to_gfa_tag(v, fieldname, datatype = t) if tag else v
 
-  # the following is not needed unless it becomes too long
-  #def __repr__(self):
-  #  local_refs = None
-  #  local_gfa = None
-  #  if hasattr(self, "refs") and getattr(self, "refs") is not None:
-  #    local_refs = self._refs
-  #    self._refs = {}
-  #    for k, v in local_refs.items():
-  #      if not self._refs.get(k, None):
-  #        self._refs[k] = []
-  #      for l in v:
-  #        self._refs[k].append(str(l).replace("\t", " "))
-  #  if self._gfa is not None:
-  #    local_gfa = self._gfa
-  #    self._gfa = "<GFAPY:{}>".format(id(local_gfa))
-  #  retval = super().__repr__()
-  #  if local_refs: self._refs = local_refs
-  #  if local_gfa: self._gfa = local_gfa
-  #  return retval
+  def __repr__(self):
+    return "gfapy.Line('{0}',version={1},vlevel={2})".format(
+        str(self),self.version,self.vlevel)
 
   @property
   def _tags(self):

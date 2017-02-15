@@ -2,8 +2,7 @@ import gfapy
 import re
 
 def unsafe_decode(string):
-  return gfapy.NumericArray.from_string(string, valid = true)
-
+  return gfapy.NumericArray.from_string(string, valid = True)
 
 def decode(string):
   return gfapy.NumericArray.from_string(string)

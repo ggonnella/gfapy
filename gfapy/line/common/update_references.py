@@ -12,7 +12,7 @@ class UpdateReferences:
 
     .. note::
       SUBCLASSES which can be referenced by virtual lines
-      may implement a specialize *backreferences_keys* method to
+      may implement a specialized *_backreference_keys* method to
       support this mechanism (the default will work in all cases
       of the current specification, but is not optimized for record type)
 
@@ -22,7 +22,8 @@ class UpdateReferences:
     newref : gfapy.Line
     key_in_ref : str list
     """
-    keys = self.__backreference_keys(oldref, key_in_ref)
+    keys = self._backreference_keys(oldref, key_in_ref)
+    assert(keys is not None)
     self.__update_field_references(oldref, newref,
                                   list(set(self.__class__.REFERENCE_FIELDS)
                                        .intersection(keys)))
@@ -38,7 +39,7 @@ class UpdateReferences:
                                     .intersection(self._refs.keys())
                                     .intersection(keys)))
 
-  def __backreference_keys(self, ref, key_in_ref):
+  def _backreference_keys(self, ref, key_in_ref):
     """
     Return a list of fields and/or @ref keys, which indicates
     where a reference "ref" _may_ be stored (in order to be able
@@ -90,15 +91,13 @@ class UpdateReferences:
           found = True
       elif isinstance(elem, gfapy.OrientedLine):
         if elem.line is oldref:
-          elem.line = newref
-          found = True
-        elif hasattr(oldref, "is_complement") and oldref.is_complement(newref):
-          elem.orient = elem.orient.invert()
+          if hasattr(oldref, "is_complement") and \
+                            oldref.is_complement(newref):
+            elem.orient = gfapy.invert(elem.orient)
           elem.line = newref
           found = True
     if newref is None and found:
       lst[:] = [e for e in lst if e is not None]
-
 
   def __update_field_references(self, oldref, newref, possible_fieldnames):
     for fn in possible_fieldnames:
