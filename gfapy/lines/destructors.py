@@ -6,8 +6,8 @@ class Destructors:
     return self
 
   def delete_other_links(self, segment_end, other_end, conserve_components = False):
-    segment_end = segment_end.to_segment_end()
-    other_end = other_end.to_segment_end()
+    segment_end = gfapy.SegmentEnd(segment_end)
+    other_end = gfapy.SegmentEnd(other_end)
     s = self.try_get_segment(segment_end.segment)
     for d in s.dovetails_of_end(segment_end.end_type):
       if not conserve_components or not self.is_cut_link(l):

@@ -3,15 +3,22 @@ import gfapy
 class LinearPaths:
 
   def linear_path(self, segment, exclude = None):
+    if isinstance(segment, gfapy.Line):
+      segment_name = segment.name
+    else:
+      segment_name = segment
+      segment = self.segment(segment_name)
+    cs = segment._connectivity()
     if exclude is None:
       exclude = set()
-    s = segment.name
     segpath = gfapy.SegmentEndsPath()
-    for i, et in enumerate("L", "R"):
+    for i, et in enumerate(["L", "R"]):
       if cs[i] == 1:
-        exclude.append(s)
-        segpath.pop()
-        segpath += self.__traverse_linear_path(gfapy.SegmentEnd(s, et), exclude)
+        exclude.add(segment_name)
+        if len(segpath) > 0:
+          segpath.pop()
+        segpath += self.__traverse_linear_path(
+            gfapy.SegmentEnd(segment, et), exclude)
     return segpath
 
   def linear_paths(self, redundant = False):
@@ -45,13 +52,13 @@ class LinearPaths:
   def merge_linear_path(self, segpath, **options):
     if len(segpath) < 2:
       return self
-    if options["redundant"] and (segpath[0] in [True, False]):
+    if options.get("redundant",False) and (segpath[0] in [True, False]):
       first_redundant = segpath.pop(0)
       last_redundant = segpath.pop()
     else:
       first_redundant = False
       last_redundant = False
-    segpath = [s.to_segment_end() for s in segpath]
+    segpath = [gfapy.SegmentEnd(s) for s in segpath]
     merged, first_reversed, last_reversed = \
         self.__create_merged_segment(segpath, options)
     self.append(merged)
@@ -68,13 +75,13 @@ class LinearPaths:
     idx1 = 1 if first_redundant else 0
     idx2 = -1 if last_redundant else None
     for sn_et in segpath[idx1:idx2]:
-      self.segment(sn_et.segment).disconnect
+      self.segment(sn_et.segment).disconnect()
       if self._progress:
         self.__progress_log("merge_linear_paths", 0.05)
     return self
 
   def merge_linear_paths(self, **options):
-    paths = self.linear_paths(options["redundant"])
+    paths = self.linear_paths(options.get("redundant",False))
     if self._progress:
       psize = sum([len(path) for path in paths]) // 2
       self.__progress_log_init("merge_linear_paths", "segments", psize,
@@ -84,26 +91,26 @@ class LinearPaths:
       self.merge_linear_path(path, options=options)
     if self._progress:
       self.__progress_log_end("merge_linear_paths")
-    if options["redundant"]:
+    if options.get("redundant",False):
       self.__remove_junctions(options["jntag"])
     return self
 
   def __traverse_linear_path(self, segment_end, exclude):
     lst = gfapy.SegmentEndsPath()
-    current = segment_end.to_segment_end()
+    current = gfapy.SegmentEnd(segment_end)
     current.segment = self.segment(current.segment)
     while True:
       after = current.segment.dovetails_of_end(current.end_type)
       before = current.segment.dovetails_of_end(gfapy.invert(current.end_type))
       if (len(before) == 1 and len(after) == 1) or not lst:
         lst.append(gfapy.SegmentEnd(current.name, current.end_type))
-        exclude.append(current.name)
+        exclude.add(current.name)
         current = after[0].other_end(current).inverted()
         if current.name in exclude:
           break
       elif len(before) == 1:
         lst.append(gfapy.SegmentEnd(current.name, current.end_type))
-        exclude.append(current.name)
+        exclude.add(current.name)
         break
       else:
         break
@@ -156,22 +163,22 @@ class LinearPaths:
   def __add_segment_to_merged(merged, segment, is_reversed, cut, init,
                               options):
     if is_reversed:
-      s = segment.sequence.rc[cut:]
+      s = gfapy.sequence.rc(segment.sequence)[cut:]
     else:
       s = segment.sequence[cut:]
     if init:
       merged.sequence = s
-      if options["merged_name"]:
+      if options.get("merged_name",None):
         merged.name = options["merged_name"]
       else:
         merged.name = segment.name
       merged.LN = segment.LN
     else:
-      if is_placeholder(segment.sequence):
+      if gfapy.is_placeholder(segment.sequence):
         merged.sequence = gfapy.Placeholder()
       else:
         merged.sequence += s
-      if not options["merged_name"]:
+      if not options.get("merged_name",None):
         merged.name += "_"
         merged.name += segment.name
       if merged.LN:
@@ -180,26 +187,30 @@ class LinearPaths:
         else:
           merged.LN = None
 
+  def __get_short_merged_name(self, options):
+    forbidden = self.names
+    i = 1
+    options["merged_name"] = "merged1"
+    while options["merged_name"] in forbidden:
+      i += 1
+      options["merged_name"] = "merged{}".format(i)
+
   def __create_merged_segment(self,segpath, options):
-    merged = self.try_get_segment(segpath.first.segment).clone()
-    jntag = options["jntag"] if options["jntag"] else "jn"
+    merged = self.try_get_segment(segpath[0].segment).clone()
+    jntag = options["jntag"] if "jntag" in options else "jn"
     merged.set(jntag, None)
     total_cut = 0
     a = segpath[0]
     first_reversed = (a.end_type == "L")
     last_reversed = None
-    if options["merged_name"] == "short":
-      forbidden = (segment_names + path_names) # TODO: GFA2
-      options["merged_name"] = "merged1"
-      while options["merged_name"] in forbidden:
-        options["merged_name"] = options["merged_name"].next()
-        # XXX String.next() in python?
-    __add_segment_to_merged(merged, self.segment(a.segment), first_reversed, 0,
-        True, options)
+    if options.get("merged_name",None) == "short":
+      self.__get_short_merged_name(self, options)
+    self.__add_segment_to_merged(merged, self.segment(a.segment),
+        first_reversed, 0, True, options)
     if self._progress:
       self.__progress_log("merge_linear_paths", 0.95)
     for i in range(len(segpath)-1):
-      b = segpath[i+1].to_segment_end().inverted()
+      b = gfapy.SegmentEnd(segpath[i+1]).inverted()
       ls = self.segment(a.segment).end_relations(a.end_type, b, "dovetails")
       if len(ls) != 1:
         msg = "A single link was expected between {}".format(a) + \
@@ -215,12 +226,12 @@ class LinearPaths:
             "Merging is only allowed if all operations are M/=")
       total_cut += cut
       last_reversed = (b.end_type == "R")
-      __add_segment_to_merged(merged, self.segment(b.segment), last_reversed,
-          cut, False, options)
-      a = b.to_segment_end().inverted()
+      self.__add_segment_to_merged(merged, self.segment(b.segment),
+          last_reversed, cut, False, options)
+      a = gfapy.SegmentEnd(b).inverted()
       if self._progress:
         self.__progress_log("merge_linear_paths", 0.95)
-    if not is_placeholder(merged.sequence):
+    if not gfapy.is_placeholder(merged.sequence):
       if self._version == "gfa1":
         if not merged.LN:
           merged.LN = len(merged.sequence)
@@ -239,16 +250,17 @@ class LinearPaths:
         merged.set(count_tag, count)
     return merged, first_reversed, last_reversed
 
-    def __list_merged(self, merged_name, segment_end, is_reversed):
-      for l in self.segment(segment_end.segment).dovetails_of_end(segment_end.end_type):
-        l2 = l.clone()
-        if l2.to == segment_end.segment:
-          l2.to = merged_name
-          if is_reversed:
-            l2.to_orient = l2.to_orient.inverted()
-        else:
-          l2.set("from", merged_name)
-          if is_reversed:
-            l2.from_orient = l2.from_orient.inverted()
-        self.add_line(l2)
+  def __link_merged(self, merged_name, segment_end, is_reversed):
+    for l in self.segment(segment_end.segment).dovetails_of_end(
+                                                 segment_end.end_type):
+      l2 = l.clone()
+      if l2.to == segment_end.segment:
+        l2.to = merged_name
+        if is_reversed:
+          l2.to_orient = gfapy.invert(l2.to_orient)
+      else:
+        l2.frm = merged_name
+        if is_reversed:
+          l2.from_orient = gfapy.invert(l2.from_orient)
+      self.add_line(l2)
 

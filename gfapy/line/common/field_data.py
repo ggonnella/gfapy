@@ -70,8 +70,12 @@ class FieldData:
         return self._data[fieldname]
     else:
       raise gfapy.FormatError(
-        "{} is not an existing or predefined field or a ".format(fieldname)+
-        "valid custom tag")
+        "{} is not a positional field,".format(fieldname)+
+        "an existing tag, an alias, a predefined tag or a valid custom tag\n"+
+        "positional fields: {}\n".format(", ".join(self.positional_fieldnames))+
+        "existing tags: {}\n".format(", ".join(self.tagnames))+
+        "aliases: {}\n".format(", ".join(self.__class__.FIELD_ALIAS.keys()))+
+        "predefined tags: {}\n".format(", ".join(self.__class__.PREDEFINED_TAGS)))
 
   def get(self, fieldname):
     """

@@ -23,7 +23,7 @@ class Topology:
   def is_cut_segment(self, segment):
     if isinstance(segment, str):
       segment = self.try_get_segment(segment)
-    if segment.connectivity in [(0,0),(0,1),(1,0)]:
+    if segment._connectivity() in [(0,0),(0,1),(1,0)]:
       return False
     start_points = set()
     for et in ["L", "R"]:

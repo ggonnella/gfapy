@@ -1,8 +1,9 @@
 import gfapy
+import re
 
 class Multiplication:
 
-  def multiply(self, segment, factor, copy_names="lowcase",
+  def multiply(self, segment, factor, copy_names = None,
                conserve_components = True):
     if factor < 0:
       raise gfapy.ArgumentError("Mulitiplication factor must be >= 0"+
@@ -19,20 +20,28 @@ class Multiplication:
         segment_name = segment
         segment = self.try_get_segment(segment)
       self.__divide_segment_and_connection_counts(segment, factor)
-      for cn in self.__compute_copy_names(copy_names, segment_name, factor):
-        self.__clone_segment_and_connections(s, cn)
+      if copy_names is None:
+        copy_names = self.__compute_copy_names(segment_name, factor)
+      for cn in copy_names:
+        self.__clone_segment_and_connections(segment, cn)
       return self
 
-  def __compute_copy_names(self, copy_names, segment_name, factor):
+  def __compute_copy_names(self, segment_name, factor):
     assert factor >= 2
-    accepted = ["lowcase", "upcase", "number", "copy"]
-    if isinstance(copy_names, list):
-      return copy_names
-    elif copy_names not in accepted:
-      raise gfapy.ArgumentError("copy_names shall be an array of "+
-          "names or one of: "+",".join(accepted))
     retval = []
-  # TODO
+    first = 2
+    m = re.search(r'(.*)\*(\d+)',segment_name)
+    if m:
+      segment_name = m.groups()[0]
+      i = int(m.groups()[1])
+    offset = 0
+    for i in range(first,factor+first):
+      name = "{}*{}".format(segment_name, i+offset)
+      while name in self.names:
+        offset+=1
+        name = "{}*{}".format(segment_name, i+offset)
+      retval.append(name)
+    return retval
 
   def __divide_counts(self, gfa_line, factor):
     for count_tag in ["KC", "RC", "FC"]:
@@ -51,11 +60,11 @@ class Multiplication:
         self.__divide_counts(l, factor)
 
   def __clone_segment_and_connections(self, segment, clone_name):
-    cpy = segment.clone
+    cpy = segment.clone()
     cpy.name = clone_name
     cpy.connect(self)
     for l in segment.dovetails + segment.containments:
-      lc = l.clone
+      lc = l.clone()
       if lc.get("from") == segment.name:
         lc.set("from", clone_name)
       if lc.to == segment.name:

@@ -48,8 +48,7 @@ class References:
     """
     return self.edges_to_contained + self.edges_to_containers
 
-  @property
-  def connectivity(self):
+  def _connectivity(self):
     """
     Computes the connectivity of a segment from its number of dovetail overlaps.
 
@@ -67,7 +66,8 @@ class References:
       raise gfapy.ArgumentError(
         "Cannot compute the connectivity of {}\n".format(self)+
         "Segment is not connected to a GFA instance")
-    return self.__connectivity_symbols(len(dovetails_L), len(dovetails_R))
+    return self._connectivity_symbols(len(self.dovetails_L),
+                                      len(self.dovetails_R))
 
   @property
   def neighbours(self):
@@ -176,7 +176,7 @@ class References:
         segment_end)]
 
   def _connectivity_symbols(self, n, m):
-    return [self.__connectivity_symbol(n), self.__connectivity_symbol(m)]
+    return (self._connectivity_symbol(n), self._connectivity_symbol(m))
 
   def _connectivity_symbol(self, n):
     return "M" if n > 1 else n

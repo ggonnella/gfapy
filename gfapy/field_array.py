@@ -14,7 +14,7 @@ class FieldArray:
     """
     Parameters
     ----------
-    datatype : gfapy.field.TAG_DATATYPE
+    datatype: gfapy.field.TAG_DATATYPE
     	The datatype to use.
     """
     if data is None:
@@ -23,18 +23,18 @@ class FieldArray:
       self._data = data
     self._datatype = datatype
 
-  def validate(self, fieldname = None):
+  def validate(self, fieldname : str = None) -> None:
     """
     Run the datatype-specific validation on each element of the array.
 
     Parameters
     ----------
-    fieldname : str
-    	Fieldname to use for error messages.
+    fieldname
+      Fieldname to use for error messages.
     """
     self._validate_gfa_field(None, fieldname)
 
-  def _validate_gfa_field(self, datatype, fieldname=None):
+  def _validate_gfa_field(self, datatype : str, fieldname=None):
     """
     Run a datatype-specific validation on each element of the array,
     using the specified datatype.

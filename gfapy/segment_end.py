@@ -6,9 +6,31 @@ class SegmentEnd:
   A segment or segment name plus an end symbol (L or R)
   """
 
-  def __init__(self, segment, end_type):
-    self.__segment = segment
-    self.__end_type = str(end_type)
+  def __new__(cls, *args):
+    if isinstance(args[0], SegmentEnd):
+      return args[0]
+    else:
+      new_instance = object.__new__(cls)
+      return new_instance
+
+  def __init__(self, *args):
+    if len(args) == 1:
+      if isinstance(args[0], SegmentEnd):
+        return
+      elif isinstance(args[0], str):
+        self.__segment = args[0][0:-1]
+        self.__end_type = args[0][-1]
+      elif isinstance(args[0], list):
+        self.__segment = args[0][0]
+        self.__end_type = args[0][1]
+      else:
+        raise gfapy.ArgumentError("Cannot create an SegmentEnd"+
+            " instance from an object of type {}".format(type(args[0])))
+    elif len(args) == 2:
+      self.__segment = args[0]
+      self.__end_type = args[1]
+    else:
+      raise gfapy.ArgumentError("Wrong number of arguments for SegmentEnd()")
 
   def validate(self):
     """

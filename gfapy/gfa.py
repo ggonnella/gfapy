@@ -1,7 +1,8 @@
 import gfapy
 from .lines import Lines
+from .graph_operations import GraphOperations
 
-class Gfa(Lines):
+class Gfa(Lines,GraphOperations):
   def __init__(self, vlevel = 1, version = None):
     self._vlevel = vlevel
     self._records = {}

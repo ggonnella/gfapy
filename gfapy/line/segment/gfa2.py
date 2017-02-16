@@ -2,9 +2,9 @@ from .gfa2_to_gfa1 import GFA2ToGFA1
 from .coverage import Coverage
 from .references import References
 from .writer_wo_sequence import WriterWoSequence
-from ..line import Line
+from . import Segment
 
-class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Line):
+class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Segment):
   """A segment line of a GFA file"""
 
   RECORD_TYPE = "S"

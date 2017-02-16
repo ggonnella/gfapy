@@ -178,6 +178,9 @@ class CIGAR(list):
       self.length = length
       self.code = code
 
+    def __len__(self):
+      return self.length
+
     def __str__(self):
       """
       The string representation of the operation.

@@ -57,6 +57,7 @@ f.each do |line|
   line.gsub!(".to_sym","")
   line.gsub!("RGFA::","gfapy.")
   line.gsub!("Line::","line.")
+  line.gsub!("RGFA","gfapy.Gfa")
   line.gsub!(/([A-Za-z_0-9]*)::/,'\1.')
   line.gsub!(/([A-Za-z_0-9]*)::/,'\1.')
   line.gsub!("nil","None")

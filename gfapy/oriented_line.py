@@ -80,10 +80,8 @@ class OrientedLine:
 
   def inverted(self):
     """
-    Returns
-    -------
-    gfapy.OrientedLine
-      same line, inverted orientation
+    Returns:
+      an oriented line with the same line element, but inverted orientation.
     """
     return OrientedLine(self.line, gfapy.invert(self.orient))
 
