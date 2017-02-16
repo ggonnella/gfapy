@@ -114,6 +114,9 @@ class References:
     return [l.other(self) for l in self.dovetails_R \
              if id(l) not in seen and not seen.add(id(l))]
 
+  def neighbours_of_end(self, extremity):
+    return getattr(self, "neighbours_{}".format(extremity))
+
   @property
   def containers(self):
     """

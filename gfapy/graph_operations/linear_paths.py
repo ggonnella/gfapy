@@ -2,6 +2,68 @@ import gfapy
 
 class LinearPaths:
 
+  # @!method merge_linear_path(segpath, **options)
+  #   Merge a linear path, i.e. a path of segments without extra-branches.
+  #   @!macro [new] merge_more
+  #     Extends the RGFA method, with additional functionality:
+  #     - +name+: the name of the merged segment is set to the name of the
+  #       single segments joined by underscore (+_+). If a name already
+  #       contained an underscore, it is splitted before merging. Whenever a
+  #       segment is reversed complemented, its name (or the name of all its
+  #       components) is suffixed with a +^+; if the last letter was already
+  #       +^+, it is removed; if it contained +_+ the name is splitted, the
+  #       elements reversed and joined back using +_+; round parentheses are
+  #       removed from the name before processing and added back after it.
+  #     - +:or+: keeps track of the origin of the merged segment; the
+  #       origin tag is set to an array of :or or name
+  #       (if no :or available) tags of the segment which have been merged;
+  #       the character +^+ is assigned the same meaning as in +name+
+  #     - +:rn+: tag used to store possible inversion positions and
+  #       it is updated by this method; i.e. it is passed from the single
+  #       segments to the merged segment, and the coordinates updated
+  #     - +:mp+: tag used to store the position of the
+  #       single segments in the merged segment; it is created or updated by
+  #       this method
+  #     Note that the extensions to the original method will only be run
+  #     if either #enable_extensions has been called on RGFA object
+  #     or the enable_tracking parameter is set..
+  #     After calling #enable_extensions, you may still obtain the original
+  #     behaviour by setting the disable_tracking parameter.
+  #   @!macro merge_more
+  #
+  #   @!macro [new] merge_lim
+  #
+  #     Limitations: all containments und paths involving merged segments are
+  #     deleted.
+  #   @!macro merge_lim
+  #
+  #   @param segpath [Array<RGFA::SegmentEnd>] a linear path, such as that
+  #     retrieved by #linear_path (see RGFA API documentation)
+  #   @!macro [new] merge_options
+  #     @param options [Hash] optional keyword arguments
+  #     @option options [String, :short, nil] :merged_name (nil)
+  #       if nil, the merged_name is automatically computed; if :short,
+  #       a name is computed starting with "merged1" and calling next until
+  #       an available name is founf; if String, the name to use
+  #     @option options [Boolean] :cut_counts (false)
+  #       if true, total count in merged segment m, composed of segments
+  #       s of set S is multiplied by the factor Sum(|s in S|)/|m|
+  #     @option options [Boolean] :enable_tracking (false)
+  #       if true, the extended method is used
+  #   @!macro merge_options
+  #
+  #   @return [RGFA] self
+  #   @see #merge_linear_paths
+
+  # @!method merge_linear_paths(**options)
+  #   Merge all linear paths in the graph, i.e.
+  #   paths of segments without extra-branches
+  #   @!macro merge_more
+  #   @!macro merge_lim
+  #   @!macro merge_options
+  #
+  #   @return [RGFA] self
+
   def linear_path(self, segment, exclude = None):
     if isinstance(segment, gfapy.Line):
       segment_name = segment.name
@@ -21,9 +83,9 @@ class LinearPaths:
             gfapy.SegmentEnd(segment, et), exclude)
     return segpath
 
-  def linear_paths(self, redundant = False):
+  def linear_paths(self, redundant_junctions=False):
     exclude = set()
-    if redundant:
+    if redundant_junctions:
       junction_exclude = set()
     retval = []
     segnames = self.segment_names
@@ -34,9 +96,9 @@ class LinearPaths:
       if self._progress:
         self.__progress_log("linear_paths")
       if sn in exclude:
-        next
+        continue
       lp = self.linear_path(sn, exclude)
-      if not redundant:
+      if not redundant_junctions:
         if len(lp) > 1:
           retval.append(lp)
       else:
@@ -49,10 +111,12 @@ class LinearPaths:
       self.__progress_log_end("linear_paths")
     return retval
 
-  def merge_linear_path(self, segpath, **options):
+  def merge_linear_path(self, segpath, redundant_junctions=False, jntag="jn",
+                        enable_tracking=False, merged_name=None,
+                        cut_counts=False):
     if len(segpath) < 2:
       return self
-    if options.get("redundant",False) and (segpath[0] in [True, False]):
+    if not redundant_junctions and (segpath[0] in [True, False]):
       first_redundant = segpath.pop(0)
       last_redundant = segpath.pop()
     else:
@@ -60,16 +124,19 @@ class LinearPaths:
       last_redundant = False
     segpath = [gfapy.SegmentEnd(s) for s in segpath]
     merged, first_reversed, last_reversed = \
-        self.__create_merged_segment(segpath, options)
+        self.__create_merged_segment(segpath,
+            redundant_junctions=redundant_junctions, jntag=jntag,
+            merged_name=merged_name,cut_counts=cut_counts,
+            enable_tracking=enable_tracking)
     self.append(merged)
     if first_redundant:
-      self.__link_duplicated_first(merged, self.segment(segpath[0].segment), \
-                                   first_reversed, options["jntag"])
+      self.__link_duplicated_first(merged, self.segment(segpath[0].segment),
+                                   first_reversed, jntag)
     else:
       self.__link_merged(merged.name, segpath[0].inverted(), first_reversed)
     if last_redundant:
-      self.__link_duplicated_last(merged, self.segment(segpath[-1].segment), \
-                                  last_reversed, options["jntag"])
+      self.__link_duplicated_last(merged, self.segment(segpath[-1].segment),
+                                  last_reversed, jntag)
     else:
       self.__link_merged(merged.name, segpath[-1], last_reversed)
     idx1 = 1 if first_redundant else 0
@@ -80,19 +147,24 @@ class LinearPaths:
         self.__progress_log("merge_linear_paths", 0.05)
     return self
 
-  def merge_linear_paths(self, **options):
-    paths = self.linear_paths(options.get("redundant",False))
+  def merge_linear_paths(self, redundant_junctions=False, jntag="jn",
+                        merged_name=None, enable_tracking=False,
+                        cut_counts=False):
+    paths = self.linear_paths(redundant_junctions)
     if self._progress:
       psize = sum([len(path) for path in paths]) // 2
       self.__progress_log_init("merge_linear_paths", "segments", psize,
           "Merge {} linear paths ".format(len(paths))+
           "({} segments)".format(psize))
     for path in paths:
-      self.merge_linear_path(path, options=options)
+      self.merge_linear_path(path, redundant_junctions=redundant_junctions,
+                             jntag=jntag, merged_name=merged_name,
+                             cut_counts=cut_counts,
+                             enable_tracking=enable_tracking)
     if self._progress:
       self.__progress_log_end("merge_linear_paths")
-    if options.get("redundant",False):
-      self.__remove_junctions(options["jntag"])
+    if redundant_junctions:
+      self.__remove_junctions(jntag)
     return self
 
   def __traverse_linear_path(self, segment_end, exclude):
@@ -130,83 +202,119 @@ class LinearPaths:
           retval[count_tag] += int(retval[count_tag]*multfactor)
     return retval
 
-  @staticmethod
-  def __reverse_segment_name(name, separator):
-    retval = []
-    for part in name.split(separator):
-      has_openp = (part[0] == "(")
-      has_closep = (part[-1] == ")")
-      if has_openp:
-        part = part[1:]
-      if has_closep:
-        part = part[:-1]
-      if part[-1] == "^":
-        part = part[:-1]
-      else:
-        part = part + "^"
-      if has_openp:
-        part += ")"
-      if has_closep:
-        part = "(" + part
-      retval.append(part)
-    return separator.join(reverse(retval))
-
-  @staticmethod
-  def __reverse_pos_array(pos_array, lastpos):
-    if pos_array is None:
-      return None
-    if lastpos is None:
-      return None
-    return list(reverse([lastpos - pos + 1 for pos in pos_array]))
-
-  @staticmethod
-  def __add_segment_to_merged(merged, segment, is_reversed, cut, init,
-                              options):
+  def _add_segment_to_merged(self,merged, segment, is_reversed, cut, init,
+                             enable_tracking=False, merged_name=None):
+    n = segment.name
     if is_reversed:
       s = gfapy.sequence.rc(segment.sequence)[cut:]
+      if enable_tracking:
+        n = self._reverse_segment_name(segment.name, "_")
+        rn = self._reverse_pos_array(segment.rn, segment.LN)
+        mp = self._reverse_pos_array(segment.mp, segment.LN)
     else:
       s = segment.sequence[cut:]
+      if enable_tracking:
+        rn = segment.rn
+        mp = segment.mp
+    if enable_tracking:
+      if not mp and segment.LN:
+        mp = [1, segment.LN]
+      if segment.get("or") is None:
+        o = n
+      elif is_reversed:
+        o = self._reverse_segment_name(segment.get("or"), ",")
+      else:
+        o = segment.get("or")
     if init:
       merged.sequence = s
-      if options.get("merged_name",None):
-        merged.name = options["merged_name"]
+      if merged_name:
+        merged.name = merged_name
       else:
-        merged.name = segment.name
+        merged.name = n
       merged.LN = segment.LN
+      if enable_tracking:
+        merged.rn = rn
+        merged.set("or",o)
+        merged.mp = mp
     else:
       if gfapy.is_placeholder(segment.sequence):
         merged.sequence = gfapy.Placeholder()
       else:
         merged.sequence += s
-      if not options.get("merged_name",None):
-        merged.name += "_"
-        merged.name += segment.name
+      if not merged_name:
+        merged.name = "{}_{}".format(merged.name, n)
       if merged.LN:
+        if enable_tracking:
+          if rn:
+            rn = [pos - cut + merged.LN for pos in rn]
+            if not merged.rn:
+              merged.rn = rn
+            else:
+              merged.rn += rn
+          if mp and merged.mp:
+            merged.mp += [pos - cut + merged.LN for pos in mp]
         if segment.LN:
           merged.LN += (segment.LN - cut)
         else:
           merged.LN = None
+      elif enable_tracking:
+        merged.mp = None
+      if enable_tracking:
+        if not merged.get("or"):
+          merged.set("or", o)
+        else:
+          merged.set("or", merged.get("or")+","+o)
 
-  def __get_short_merged_name(self, options):
+  def __get_short_merged_name(self):
     forbidden = self.names
     i = 1
-    options["merged_name"] = "merged1"
-    while options["merged_name"] in forbidden:
+    merged_name = "merged1"
+    while merged_name in forbidden:
       i += 1
-      options["merged_name"] = "merged{}".format(i)
+      merged_name = "merged{}".format(i)
+    return merged_name
 
-  def __create_merged_segment(self,segpath, options):
+  @staticmethod
+  def _reverse_segment_name(name, separator):
+    retval = []
+    for part in name.split(separator):
+      has_openp = part[0] == "("
+      has_closep = part[-1] == ")"
+      if has_openp:
+        part = part[1:-2]
+      if has_closep:
+        part = part[:-1]
+      if part[-1] == "^":
+        part = part[:-1]
+      else:
+        part+="^"
+      if has_openp:
+        part+=")"
+      if has_closep:
+        part+="("+part
+      retval.append(part)
+    return separator.join(reversed(retval))
+
+  @staticmethod
+  def _reverse_pos_array(pos_array, lastpos):
+    if pos_array is None or lastpos is None:
+      return None
+    else:
+      return [lastpos-pos+1 for pos in pos_array].reverse()
+
+  def __create_merged_segment(self, segpath, redundant_junctions=False,
+      jntag="jn", merged_name=None, enable_tracking=False, cut_counts=False):
     merged = self.try_get_segment(segpath[0].segment).clone()
-    jntag = options["jntag"] if "jntag" in options else "jn"
     merged.set(jntag, None)
     total_cut = 0
     a = segpath[0]
     first_reversed = (a.end_type == "L")
     last_reversed = None
-    if options.get("merged_name",None) == "short":
-      self.__get_short_merged_name(self, options)
-    self.__add_segment_to_merged(merged, self.segment(a.segment),
-        first_reversed, 0, True, options)
+    if merged_name == "short":
+      merged_name = self.__get_short_merged_name()
+    self._add_segment_to_merged(merged, self.segment(a.segment),
+        first_reversed, 0, True, enable_tracking=enable_tracking,
+        merged_name=merged_name)
     if self._progress:
       self.__progress_log("merge_linear_paths", 0.95)
     for i in range(len(segpath)-1):
@@ -226,8 +334,9 @@ class LinearPaths:
             "Merging is only allowed if all operations are M/=")
       total_cut += cut
       last_reversed = (b.end_type == "R")
-      self.__add_segment_to_merged(merged, self.segment(b.segment),
-          last_reversed, cut, False, options)
+      self._add_segment_to_merged(merged, self.segment(b.segment),
+          last_reversed, cut, False, enable_tracking=enable_tracking,
+          merged_name=merged_name)
       a = gfapy.SegmentEnd(b).inverted()
       if self._progress:
         self.__progress_log("merge_linear_paths", 0.95)
@@ -244,7 +353,7 @@ class LinearPaths:
         merged.set(count_tag, None)
     else:
       factor = 1
-      if options["cut_counts"]:
+      if cut_counts:
         factor = merged.length / (total_cut+merged.length)
       for count_tag,count in __sum_of_counts(segpath,factor).items():
         merged.set(count_tag, count)

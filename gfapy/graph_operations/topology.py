@@ -38,30 +38,31 @@ class Topology:
       traverse_component(start_point, cc[-1], visited)
     return any(c != cc[0] for c in cc)
 
-
   def segment_connected_component(self, segment, visited = None):
     if visited is None:
       visited = set()
-    if not isinstance(segment, str):
-      segment = segment.name
-    visited.append(segment)
+    if isinstance(segment, gfapy.Line):
+      segment_name = segment.name
+    else:
+      segment_name = segment
+      segment = self.segment(segment)
+    visited.add(segment_name)
     c = [segment]
     for e in ["L", "R"]:
-      self.__traverse_component(gfapy.SegmentEnd(sn, e), c, visited)
+      self.__traverse_component(gfapy.SegmentEnd(segment, e), c, visited)
     return c
 
-  @property
   def connected_components(self):
     components = []
     visited = set()
-    for sn in segment_names:
+    for sn in self.segment_names:
       if sn not in visited:
-        components.append(segment_connected_component(sn, visited))
+        components.append(self.segment_connected_component(sn, visited))
     return components
 
   def split_connected_components(self):
     retval = []
-    for cc in self.connected_components:
+    for cc in self.connected_components():
       gfa2 = self.clone
       gfa2.rm(gfa2.segment_names - cc)
       retval.append(gfa2)
@@ -103,12 +104,14 @@ class Topology:
 
   def __traverse_component(self, segment_end, c, visited):
     s = segment_end.segment
+    assert(isinstance(s, gfapy.Line))
     for l in s.dovetails_of_end(segment_end.end_type):
       oe = l.other_end(segment_end)
       sn = oe.name
+      s = oe.segment
       if sn in visited:
-        next
-      visited.append(sn)
-      c.append(sn)
+        continue
+      visited.add(sn)
+      c.append(s)
       for e in ["L","R"]:
-        traverse_component(gfapy.SegmentEnd(sn, e), c, visited)
+        self.__traverse_component(gfapy.SegmentEnd(s, e), c, visited)
