@@ -70,7 +70,11 @@ class TestUnitLineEquivalence(unittest.TestCase):
     self.assertEqual(str(TestUnitLineEquivalence.a), str(bcpy))
 
   def test_equal(self):
-    # ==
+    assert(TestUnitLineEquivalence.a == TestUnitLineEquivalence.a)
+    assert(TestUnitLineEquivalence.b == TestUnitLineEquivalence.b)
+    assert(TestUnitLineEquivalence.c == TestUnitLineEquivalence.c)
+    assert(TestUnitLineEquivalence.l == TestUnitLineEquivalence.l)
+    assert(TestUnitLineEquivalence.e == TestUnitLineEquivalence.e)
     assert(not (TestUnitLineEquivalence.a == TestUnitLineEquivalence.b))
     assert(not (TestUnitLineEquivalence.a == TestUnitLineEquivalence.a_ln))
     assert(not (TestUnitLineEquivalence.a == TestUnitLineEquivalence.a_seq))

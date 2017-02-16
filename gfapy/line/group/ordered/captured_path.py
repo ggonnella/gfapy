@@ -67,7 +67,7 @@ class CapturedPath:
       else:
         for subpath_item in reversed(subpath):
           path, prev_edge = self._push_item_on_se_path(path, prev_edge,
-              subpath_item.invert())
+              subpath_item.inverted())
       prev_edge = prev_edge_subpath
     elif isinstance(item.line, gfapy.line.unknown.Unknown):
       raise gfapy.RuntimeError(
@@ -110,7 +110,7 @@ class CapturedPath:
         if item.orient == "+":
           firstsubpathsegment = supath[0]
         else:
-          firstsubpathsegment = supath[-1].invert()
+          firstsubpathsegment = supath[-1].inverted()
         if firstsubpathsegment == oss[0]:
           oss.reverse()
         # if oss does not include in firstsubpathsegment
@@ -188,10 +188,10 @@ class CapturedPath:
       if (edge.sid1 == oriented_segment and edge.sid2 == path[-1]) or \
          (edge.sid1 == path[-1] and edge.sid2 == oriented_segment):
         edges.append(gfapy.OrientedLine(edge, "+"))
-      elif (edge.sid1 == oriented_segment.invert() and
-            edge.sid2 == path[-1].invert()) or\
-           (edge.sid1 == path[-1].invert() and
-            edge.sid2 == oriented_segment.invert()):
+      elif (edge.sid1 == oriented_segment.inverted() and
+            edge.sid2 == path[-1].inverted()) or\
+           (edge.sid1 == path[-1].inverted() and
+            edge.sid2 == oriented_segment.inverted()):
         edges.append(gfapy.OrientedLine(edge, "-"))
     if len(edges) == 0:
       raise gfapy.NotFoundError(

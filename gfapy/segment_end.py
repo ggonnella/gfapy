@@ -99,7 +99,7 @@ class SegmentEnd:
     """
     self.__end_type = value
 
-  def invert(self):
+  def inverted(self):
     return SegmentEnd(self.__segment, gfapy.invert(self.end_type))
 
   def __str__(self):

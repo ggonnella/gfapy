@@ -52,7 +52,7 @@ class Complement:
     self.frm = self.to
     self.to = tmp
     tmp = self.from_orient
-    self.from_orient = self.to_orient.invert()
-    self.to_orient = tmp.invert()
+    self.from_orient = gfapy.invert(self.to_orient)
+    self.to_orient = gfapy.invert(tmp)
     self.overlap = self.overlap.complement()
     return self

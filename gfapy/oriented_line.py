@@ -78,7 +78,7 @@ class OrientedLine:
     self.__validate_orient()
     return None
 
-  def invert(self):
+  def inverted(self):
     """
     Returns
     -------
@@ -86,6 +86,12 @@ class OrientedLine:
       same line, inverted orientation
     """
     return OrientedLine(self.line, gfapy.invert(self.orient))
+
+  def invert(self):
+    """
+    Invert in place
+    """
+    self.orient = gfapy.invert(self.orient)
 
   def __str__(self):
     """

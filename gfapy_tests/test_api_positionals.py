@@ -193,8 +193,8 @@ class TestAPIPositionals(unittest.TestCase):
     self.assertEqual("1", os.line)
     self.assertEqual("+", os.orient)
     # invert
-    self.assertEqual("1", os.invert().line)
-    self.assertEqual("-", os.invert().orient)
+    self.assertEqual("1", os.inverted().line)
+    self.assertEqual("-", os.inverted().orient)
     self.assertEqual("-", gfapy.invert(os.orient))
     # setter methods
     os.line = "one"

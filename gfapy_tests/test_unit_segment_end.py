@@ -54,11 +54,11 @@ class TestUnitSegmentEnd(unittest.TestCase):
     se1 = gfapy.SegmentEnd("a", "X")
     self.assertRaises(gfapy.ValueError, se1.validate)
 
-  def test_invert(self):
-    inv_s = TestUnitSegmentEnd.se_s.invert()
+  def test_inverted(self):
+    inv_s = TestUnitSegmentEnd.se_s.inverted()
     self.assertEqual(TestUnitSegmentEnd.se_s.segment, inv_s.segment)
     self.assertEqual("R", inv_s.end_type)
-    inv_r = TestUnitSegmentEnd.se_r.invert()
+    inv_r = TestUnitSegmentEnd.se_r.inverted()
     self.assertEqual(TestUnitSegmentEnd.se_r.segment, inv_r.segment)
     self.assertEqual("L", inv_r.end_type)
 
@@ -73,7 +73,7 @@ class TestUnitSegmentEnd(unittest.TestCase):
     self.assertEqual(TestUnitSegmentEnd.se_r, se3)
     # only name and end_type equivalence is checked, not segment
     assert(TestUnitSegmentEnd.se_r != TestUnitSegmentEnd.se_s)
-    assert(TestUnitSegmentEnd.se_r.invert() == TestUnitSegmentEnd.se_s)
+    assert(TestUnitSegmentEnd.se_r.inverted() == TestUnitSegmentEnd.se_s)
     # equivalence to array
     assert(TestUnitSegmentEnd.se_s == ["a","L"])
     assert(TestUnitSegmentEnd.se_r == ["a","R"])
@@ -90,4 +90,9 @@ class TestUnitSegmentEnd(unittest.TestCase):
     sep = gfapy.SegmentEndsPath([gfapy.SegmentEnd("a","L"),
                                  gfapy.SegmentEnd("b","R")])
     self.assertEqual([gfapy.SegmentEnd("b","L"),gfapy.SegmentEnd("a","R")],
-      sep.reverse())
+      list(reversed(sep)))
+    self.assertNotEqual([gfapy.SegmentEnd("b","L"),gfapy.SegmentEnd("a","R")],
+      sep)
+    sep.reverse()
+    self.assertEqual([gfapy.SegmentEnd("b","L"),gfapy.SegmentEnd("a","R")],
+      sep)

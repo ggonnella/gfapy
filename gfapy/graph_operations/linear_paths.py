@@ -59,7 +59,7 @@ class LinearPaths:
       self.__link_duplicated_first(merged, self.segment(segpath[0].segment), \
                                    first_reversed, options["jntag"])
     else:
-      self.__link_merged(merged.name, segpath[0].invert(), first_reversed)
+      self.__link_merged(merged.name, segpath[0].inverted(), first_reversed)
     if last_redundant:
       self.__link_duplicated_last(merged, self.segment(segpath[-1].segment), \
                                   last_reversed, options["jntag"])
@@ -94,11 +94,11 @@ class LinearPaths:
     current.segment = self.segment(current.segment)
     while True:
       after = current.segment.dovetails_of_end(current.end_type)
-      before = current.segment.dovetails_of_end(current.end_type.invert)
+      before = current.segment.dovetails_of_end(gfapy.invert(current.end_type))
       if (len(before) == 1 and len(after) == 1) or not lst:
         lst.append(gfapy.SegmentEnd(current.name, current.end_type))
         exclude.append(current.name)
-        current = after[0].other_end(current).invert()
+        current = after[0].other_end(current).inverted()
         if current.name in exclude:
           break
       elif len(before) == 1:
@@ -108,7 +108,7 @@ class LinearPaths:
       else:
         break
     if segment_end.end_type == "L":
-      return lst[::-1]
+      return list(reversed(lst))
     else:
       return lst
 
@@ -199,7 +199,7 @@ class LinearPaths:
     if self._progress:
       self.__progress_log("merge_linear_paths", 0.95)
     for i in range(len(segpath)-1):
-      b = segpath[i+1].to_segment_end().invert()
+      b = segpath[i+1].to_segment_end().inverted()
       ls = self.segment(a.segment).end_relations(a.end_type, b, "dovetails")
       if len(ls) != 1:
         msg = "A single link was expected between {}".format(a) + \
@@ -217,7 +217,7 @@ class LinearPaths:
       last_reversed = (b.end_type == "R")
       __add_segment_to_merged(merged, self.segment(b.segment), last_reversed,
           cut, False, options)
-      a = b.to_segment_end().invert()
+      a = b.to_segment_end().inverted()
       if self._progress:
         self.__progress_log("merge_linear_paths", 0.95)
     if not is_placeholder(merged.sequence):
@@ -245,10 +245,10 @@ class LinearPaths:
         if l2.to == segment_end.segment:
           l2.to = merged_name
           if is_reversed:
-            l2.to_orient = l2.to_orient.invert()
+            l2.to_orient = l2.to_orient.inverted()
         else:
           l2.set("from", merged_name)
           if is_reversed:
-            l2.from_orient = l2.from_orient.invert()
+            l2.from_orient = l2.from_orient.inverted()
         self.add_line(l2)
 

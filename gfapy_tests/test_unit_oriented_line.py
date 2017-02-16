@@ -44,15 +44,15 @@ class TestUnitOrientedLine(unittest.TestCase):
         gfapy.OrientedLine("a\ta","+").validate)
 
 
-  def test_invert(self):
+  def test_inverted(self):
     os = gfapy.OrientedLine("a", "+")
-    inv_os = os.invert()
+    inv_os = os.inverted()
     self.assertEqual("a", inv_os.line)
     self.assertEqual("+", os.orient)
     self.assertEqual("-", inv_os.orient)
     s = gfapy.Line.from_string("S\tb\t*\txx:Z:1.0")
     os = gfapy.OrientedLine(s, "-")
-    inv_os = os.invert()
+    inv_os = os.inverted()
     self.assertEqual(s, inv_os.line)
     self.assertEqual("-", os.orient)
     self.assertEqual("+", inv_os.orient)

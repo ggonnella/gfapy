@@ -1,15 +1,19 @@
 class SegmentEndsPath(list):
   """
-  An list containing {gfapy.SegmentEnd} elements, which defines a path
+  a list containing {gfapy.SegmentEnd} elements, which defines a path
   in the graph
   """
+
   def reverse(self):
     """
-    Create a reverse direction path
-
-    Returns
-    -------
-    gfapy.SegmentEndsPath
+    Reverses the direction of the path in place
     """
-    return SegmentEndsPath(reversed([segment_end.invert()
-                            for segment_end in self]))
+    self[:] = list(reversed(self))
+
+  def __reversed__(self):
+    """
+    Iterator over the reverse-direction path
+    """
+    for elem in SegmentEndsPath(reversed([segment_end.inverted()
+                                for segment_end in self])):
+      yield elem

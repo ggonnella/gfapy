@@ -224,8 +224,8 @@ class Equivalence:
       Does the complement link go from the first oriented segment
       to the second with an overlap equal to the provided one (if not empty)?
     """
-    return ((self.oriented_to == other_oriented_from.invert() and
-            (self.oriented_from == other_oriented_to.invert()) and
+    return ((self.oriented_to == other_oriented_from.inverted() and
+            (self.oriented_from == other_oriented_to.inverted()) and
             (not self.overlap or not other_overlap or
             (self.overlap == other_overlap.complement()))))
 

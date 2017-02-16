@@ -6,9 +6,9 @@ class Topology:
     if link.is_circular():
       return False
     if not link.get("from").dovetails_of_end(\
-             link.from_end.end_type.invert()):
+             gfapy.invert(link.from_end.end_type)):
       return True
-    if not link.to.dovetails_of_end(link.to_end.end_type.invert()):
+    if not link.to.dovetails_of_end(gfapy.invert(link.to_end.end_type)):
       return True
     c = {}
     for et in ["from", "to"]:
@@ -29,7 +29,7 @@ class Topology:
     for et in ["L", "R"]:
       for l in segment.dovetails_of_end(et):
         start_points.append(l.other_end(\
-            gfapy.SegmentEnd(segment_name, et)).invert())
+            gfapy.SegmentEnd(segment_name, et)).inverted())
     cc = []
     for start_point in start_points:
       cc.append(set())
