@@ -42,6 +42,9 @@ class LastPos:
   def __str__(self):
     return "{}$".format(self.value)
 
+  def __repr__(self):
+    return "gfapy.LastPos({})".format(self.value)
+
   def __int__(self):
     return self.value
 

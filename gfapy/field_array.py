@@ -23,6 +23,9 @@ class FieldArray:
       self._data = data
     self._datatype = datatype
 
+  def __repr__(self):
+    return "gfa.FieldArray({},{})".format(repr(self._datatype),repr(self._data))
+
   def validate(self, fieldname : str = None) -> None:
     """
     Run the datatype-specific validation on each element of the array.
@@ -48,7 +51,7 @@ class FieldArray:
     	Fieldname to use for error messages.
     """
     if not datatype:
-      datatype = self.datatype
+      datatype = self._datatype
     for elem in self._data:
       gfapy.Field.validate_gfa_field(elem, datatype, fieldname)
 
@@ -61,6 +64,9 @@ class FieldArray:
     gfapy.Field::TAG_DATATYPE
     """
     return self.datatype
+
+  def __str__(self):
+    return self._to_gfa_field(self)
 
   def _to_gfa_field(self, datatype = None, fieldname = None):
     """
@@ -79,10 +85,12 @@ class FieldArray:
     	Tab-separated string representations of the elements.
     """
     if datatype is None:
-      datatype = self.datatype
+      datatype = self._datatype
+      for x in self._data:
+        print(gfapy.Field.to_gfa_field(x, datatype = self._datatype))
     return "\t".join(
-        [ gfapy.Field.to_gfa_field(x, datatype, fieldname = fieldname) \
-            for x in self._data ])
+        [ gfapy.Field.to_gfa_field(x, datatype = self._datatype, \
+             fieldname = fieldname) for x in self._data ])
 
   def _to_gfa_tag(self, fieldname, datatype = None):
     """

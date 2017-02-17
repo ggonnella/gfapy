@@ -10,6 +10,9 @@ class Placeholder:
   def __str__(self):
     return "*"
 
+  def __repr__(self):
+    return "gfapy.Placeholder()"
+
   def __bool__(self):
     return False
 

@@ -76,7 +76,6 @@ class CIGAR(list):
       cigar.append(CIGAR.Operation(int(m.group(1)), m.group(2)))
     return cigar
 
-
   def __str__(self):
     """
     String representation of the CIGAR
@@ -90,6 +89,9 @@ class CIGAR(list):
       return "*"
     else:
       return "".join([str(op) for op in self])
+
+  def __repr__(self):
+    return "gfapy.CIGAR([{}])".format(", ".join([repr(op) for op in self]))
 
   def validate(self, version = "gfa1"):
     """
@@ -187,6 +189,8 @@ class CIGAR(list):
       """
       return "{}{}".format(self.length, self.code)
 
+    def __repr__(self):
+      return "gfapy.CIGAR.Operation({},{})".format(self.length, repr(self.code))
 
     def __eq__(self, other):
       """
