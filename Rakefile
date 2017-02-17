@@ -61,9 +61,14 @@ task :pdf do
                      "pdfdoc/rgfa-api-#$rgfaversion.pdf")
 end
 
-desc "Create the manual"
+desc "Create the RGFA manual"
 task :manual do
   system("cd manual; pandoc $(cat chapters) -o manual.pdf")
+end
+
+desc "Create the gfapy manual"
+task :pymanual do
+  system("cd gfapy_manual; pandoc $(cat chapters) -o gfapy-manual.pdf")
 end
 
 desc "Run python tests"
