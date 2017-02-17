@@ -132,8 +132,8 @@ module RGFATools::Multiplication
       return links_distribution_policy
     end
     s = segment(segment_name)
-    esize = s.dovetails(:R).size
-    bsize = s.dovetails(:L).size
+    esize = s.dovetails_of_end(:R).size
+    bsize = s.dovetails_of_end(:L).size
     auto_select_distribute_end(factor, bsize, esize,
                                links_distribution_policy == :equal)
   end
@@ -167,13 +167,13 @@ module RGFATools::Multiplication
     end_type = select_distribute_end(links_distribution_policy,
                                      segment_name, factor)
     return nil if end_type.nil?
-    et_links = segment(segment_name).dovetails(end_type)
+    et_links = segment(segment_name).dovetails_of_end(end_type)
     diff = [et_links.size - factor, 0].max
     links_signatures = et_links.map do |l|
       l.other_end([segment_name, end_type]).to_s
     end
     ([segment_name]+copy_names).each_with_index do |sn, i|
-      segment(sn).dovetails(end_type).each do |l|
+      segment(sn).dovetails_of_end(end_type).each do |l|
         l_sig = l.other_end([sn, end_type]).to_s
         to_save = links_signatures[i..i+diff].to_a
         l.disconnect unless to_save.include?(l_sig)

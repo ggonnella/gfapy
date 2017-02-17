@@ -182,9 +182,9 @@ class TestAPI::ReferencesEdges < Test::Unit::TestCase
     # dovetails_[LR]
     assert_equal(exp_sa_d_L.sort,sa.dovetails_L.map(&:name).sort)
     assert_equal(exp_sa_d_R.sort,sa.dovetails_R.map(&:name).sort)
-    # dovetails()
-    assert_equal(sa.dovetails_L,sa.dovetails(:L))
-    assert_equal(sa.dovetails_R,sa.dovetails(:R))
+    # dovetails_of_end()
+    assert_equal(sa.dovetails_L,sa.dovetails_of_end(:L))
+    assert_equal(sa.dovetails_R,sa.dovetails_of_end(:R))
     assert_equal((sa.dovetails_L + sa.dovetails_R),sa.dovetails)
     # neighbours
     assert_equal((exp_sa_d_L+exp_sa_d_R).map{|eid|:"s#{eid}"}.sort,
@@ -206,8 +206,8 @@ class TestAPI::ReferencesEdges < Test::Unit::TestCase
     sa.disconnect
     assert_equal([], sa.dovetails_L)
     assert_equal([], sa.dovetails_R)
-    assert_equal([], sa.dovetails(:L))
-    assert_equal([], sa.dovetails(:R))
+    assert_equal([], sa.dovetails_of_end(:L))
+    assert_equal([], sa.dovetails_of_end(:R))
     assert_equal([], sa.neighbours)
     assert_equal([], sa.edges_to_containers)
     assert_equal([], sa.edges_to_contained)

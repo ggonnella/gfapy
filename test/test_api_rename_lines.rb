@@ -13,8 +13,8 @@ class TestAPI::RenameLines < Test::Unit::TestCase
     assert_equal("L\tX\t+\t2\t-\t12M", gfa.dovetails[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M", gfa.containments[0].to_s)
     assert_equal("P\t4\t2+,X-\t12M", gfa.paths[0].to_s)
-    assert_raises(RGFA::NotFoundError){gfa.segment!("0").dovetails(:R)}
-    assert_equal("L\tX\t+\t2\t-\t12M", gfa.segment("X").dovetails(:R)[0].to_s)
+    assert_raises(RGFA::NotFoundError){gfa.segment!("0").dovetails_of_end(:R)}
+    assert_equal("L\tX\t+\t2\t-\t12M", gfa.segment("X").dovetails_of_end(:R)[0].to_s)
     assert_equal("C\t1\t+\tX\t+\t12\t12M",
                  gfa.segment!("1").edges_to_contained[0].to_s)
     assert_raises(RGFA::NotFoundError){gfa.segment!("0").containers}

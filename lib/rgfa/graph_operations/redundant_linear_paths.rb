@@ -12,16 +12,16 @@ module RGFA::GraphOperations::RedundantLinearPaths
     retval = []
     exclude << sn
     s = segment(sn)
-    s.dovetails(:L).each do |dL|
+    s.dovetails_of_end(:L).each do |dL|
       eL = dL.other_end([s, :L])
       next if exclude.include?(eL.name) or
-        eL.segment.dovetails(eL.end_type).size == 1
+        eL.segment.dovetails_of_end(eL.end_type).size == 1
       retval << [true, eL, [s, :R], true]
     end
-    s.dovetails(:R).each do |dR|
+    s.dovetails_of_end(:R).each do |dR|
       eR = dR.other_end([s, :R])
       next if exclude.include?(eR.name) or
-        eR.segment.dovetails(eR.end_type).size == 1
+        eR.segment.dovetails_of_end(eR.end_type).size == 1
       retval << [true, [s, :R], eR.invert, true]
     end
     return retval
@@ -30,7 +30,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
   def extend_linear_path_to_junctions(segpath)
     segpath[0] = segpath[0].to_segment_end
     segfirst = segment(segpath[0].segment)
-    segfirst_d = segfirst.dovetails(segpath[0].end_type.invert)
+    segfirst_d = segfirst.dovetails_of_end(segpath[0].end_type.invert)
     redundant_first = (segfirst_d.size > 0)
     if segfirst_d.size == 1
       segpath.unshift(segfirst_d[0].other_end(segpath[0].invert))
@@ -38,7 +38,7 @@ module RGFA::GraphOperations::RedundantLinearPaths
     segpath.unshift(redundant_first)
     segpath[-1] = segpath[-1].to_segment_end
     seglast = segment(segpath[-1].segment)
-    seglast_d = seglast.dovetails(segpath[-1].end_type)
+    seglast_d = seglast.dovetails_of_end(segpath[-1].end_type)
     redundant_last = (seglast_d.size > 0)
     if seglast_d.size == 1
       segpath << seglast_d[0].other_end(segpath[-1]).invert

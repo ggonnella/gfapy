@@ -13,8 +13,8 @@ module RGFA::GraphOperations::Topology
   # @param link [RGFA::Line::Edge::Link] a link
   def cut_link?(link)
     return false if link.circular?
-    return true if link.from.dovetails(link.from_end.end_type.invert).size == 0
-    return true if link.to.dovetails(link.to_end.end_type.invert).size == 0
+    return true if link.from.dovetails_of_end(link.from_end.end_type.invert).size == 0
+    return true if link.to.dovetails_of_end(link.to_end.end_type.invert).size == 0
     c = {}
     [:from, :to].each do |et|
       c[et] = Set.new
@@ -39,7 +39,7 @@ module RGFA::GraphOperations::Topology
     return false if [[0,0],[0,1],[1,0]].include?(segment.connectivity)
     start_points = []
     [:L, :R].each do |et|
-      start_points += segment.dovetails(et).map do |l|
+      start_points += segment.dovetails_of_end(et).map do |l|
         l.other_end([segment_name, et]).invert
       end
     end
@@ -102,7 +102,7 @@ module RGFA::GraphOperations::Topology
   # @return [Integer] number of dead ends in the graph
   def n_dead_ends
     segments.inject(0) do |n,s|
-      [:L, :R].each {|e| n+= 1 if s.dovetails(e).empty?}
+      [:L, :R].each {|e| n+= 1 if s.dovetails_of_end(e).empty?}
       n
     end
   end
@@ -113,7 +113,7 @@ module RGFA::GraphOperations::Topology
   #   dovetail alignment (GFA2)
   def n_dovetails
     segments.inject(0) do |n,s|
-      [:L, :R].each {|e| n += s.dovetails(e).size}
+      [:L, :R].each {|e| n += s.dovetails_of_end(e).size}
       n
     end
     return n / 2
@@ -166,7 +166,7 @@ module RGFA::GraphOperations::Topology
   def info(short = false)
     q, n50, tlen = lenstats
     nde = n_dead_ends()
-    ndv = n_dovetails()
+    ndv = n_dovetails_of_end()
     cc = connected_components()
     retval = []
     if short
@@ -244,7 +244,7 @@ module RGFA::GraphOperations::Topology
   def traverse_component(segment_end, c, visited)
     segment_end = segment_end.to_segment_end
     s = segment(segment_end.segment)
-    s.dovetails(segment_end.end_type).each do |l|
+    s.dovetails_of_end(segment_end.end_type).each do |l|
       oe = l.other_end(segment_end)
       sn = oe.name
       next if visited.include?(sn)

@@ -43,9 +43,9 @@ class TestAPI::ReferencesEdgesGFA1 < Test::Unit::TestCase
                   l["g+a-"], l["i-a-"]], sa.dovetails_R)
     assert_equal([l["a-d+"], l["a-e-"],
                   l["f+a+"], l["h-a+"]], sa.dovetails_L)
-    # dovetails()
-    assert_equal(sa.dovetails_R, sa.dovetails(:R))
-    assert_equal(sa.dovetails_L, sa.dovetails(:L))
+    # dovetails_of_end()
+    assert_equal(sa.dovetails_R, sa.dovetails_of_end(:R))
+    assert_equal(sa.dovetails_L, sa.dovetails_of_end(:L))
     assert_equal(sa.dovetails_L + sa.dovetails_R, sa.dovetails)
     # neighbours
     assert_equal([:b, :c, :d, :e, :f, :g, :h, :i].sort,
@@ -58,8 +58,8 @@ class TestAPI::ReferencesEdgesGFA1 < Test::Unit::TestCase
     sa.disconnect
     assert_equal([], sa.dovetails_R)
     assert_equal([], sa.dovetails_R)
-    assert_equal([], sa.dovetails(:L))
-    assert_equal([], sa.dovetails(:R))
+    assert_equal([], sa.dovetails_of_end(:L))
+    assert_equal([], sa.dovetails_of_end(:R))
     assert_equal([], sa.dovetails)
     assert_equal([], sa.neighbours)
   end

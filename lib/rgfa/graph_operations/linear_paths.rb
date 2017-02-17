@@ -168,8 +168,8 @@ module RGFA::GraphOperations::LinearPaths
     current = segment_end.to_segment_end
     current.segment = segment(current.segment)
     loop do
-      after  = current.segment.dovetails(current.end_type)
-      before = current.segment.dovetails(current.end_type.invert)
+      after  = current.segment.dovetails_of_end(current.end_type)
+      before = current.segment.dovetails_of_end(current.end_type.invert)
       if (before.size == 1 and after.size == 1) or list.empty?
         list << [current.name, current.end_type]
         exclude << current.name
@@ -309,7 +309,7 @@ module RGFA::GraphOperations::LinearPaths
   end
 
   def link_merged(merged_name, segment_end, reversed)
-    segment(segment_end.segment).dovetails(
+    segment(segment_end.segment).dovetails_of_end(
         segment_end.end_type).each do |l|
       l2 = l.clone
       if l2.to == segment_end.segment

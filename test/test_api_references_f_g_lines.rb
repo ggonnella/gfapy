@@ -78,9 +78,9 @@ class TestAPI::ReferencesFGLines < Test::Unit::TestCase
                  sa.gaps_L)
     assert_equal([gap["a+b+"], gap["a+c-"], gap["g+a-"], gap["i-a-"]],
                  sa.gaps_R)
-    # gaps()
-    assert_equal(sa.gaps_L, sa.gaps(:L))
-    assert_equal(sa.gaps_R, sa.gaps(:R))
+    # gaps_of_end()
+    assert_equal(sa.gaps_L, sa.gaps_of_end(:L))
+    assert_equal(sa.gaps_R, sa.gaps_of_end(:R))
     assert_equal(sa.gaps_L + sa.gaps_R, sa.gaps)
     # disconnection effects
     gap["a-d+"].disconnect
@@ -88,8 +88,8 @@ class TestAPI::ReferencesFGLines < Test::Unit::TestCase
     sa.disconnect
     assert_equal([], sa.gaps_L)
     assert_equal([], sa.gaps_R)
-    assert_equal([], sa.gaps(:L))
-    assert_equal([], sa.gaps(:R))
+    assert_equal([], sa.gaps_of_end(:L))
+    assert_equal([], sa.gaps_of_end(:R))
     assert_equal([], sa.gaps)
   end
 

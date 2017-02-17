@@ -1,30 +1,29 @@
 module RGFA::Line::Segment::References
 
   # References to the graph lines which involve the segment as dovetail overlap
-  # @param extremity [:L,:R, nil] left of right extremity of the segment
-  #   (default: both)
   # @return [Array<RGFA::Line::Edge>] an array of lines; the lines themselves
   #   can be modified, but the array is frozen
-  # @note to add a dovetail overlap, create a L (GFA1) or E (GFA2) line and
-  #   connect it to the graph; to remove a dovetail overlap, call
-  #   RGFA::Line#disconnect on the corresponding L or E line
-  def dovetails(extremity = nil)
-    if extremity
-      send(:"dovetails_#{extremity}")
-    else
-      dovetails_L + dovetails_R
-    end
+  def dovetails
+    dovetails_L + dovetails_R
   end
 
   # References to the graph lines which involve the segment as dovetail overlap
-  # @param extremity [:L,:R, nil] left of right extremity of the segment
-  #   (default: both)
-  def gaps(extremity = nil)
-    if extremity
-      send(:"gaps_#{extremity}")
-    else
-      gaps_L + gaps_R
-    end
+  # @param extremity [:L,:R] left of right extremity of the segment
+  # @return [Array<RGFA::Line::Edge>] an array of lines; the lines themselves
+  #   can be modified, but the array is frozen
+  def dovetails_of_end(extremity)
+    send(:"dovetails_#{extremity}")
+  end
+
+  # References to the graph lines which involve the segment as dovetail overlap
+  def gaps
+    gaps_L + gaps_R
+  end
+
+  # References to the graph lines which involve the segment as dovetail overlap
+  # @param extremity [:L,:R] left of right extremity of the segment
+  def gaps_of_end(extremity)
+    send(:"gaps_#{extremity}")
   end
 
   # References to graph edges (C lines for GFA1, E for GFA2) which involve the
@@ -55,8 +54,17 @@ module RGFA::Line::Segment::References
   # @return [Array<RGFA::Line::Segment>] segments connected to the current
   #   segment by dovetail overlap relationships (L lines for GFA1,
   #   dovetail-representing E lines for GFA2)
-  def neighbours(extremity = nil)
-    dovetails(extremity).map{|l|l.other(self)}.uniq
+  def neighbours
+    dovetails.map{|l|l.other(self)}.uniq
+  end
+
+  # List of dovetail-neighbours of a segment
+  # @return [Array<RGFA::Line::Segment>] segments connected to the current
+  #   segment by dovetail overlap relationships (L lines for GFA1,
+  #   dovetail-representing E lines for GFA2)
+  # @param extremity [:L,:R] left of right extremity of the segment
+  def neighbours_of_end(extremity)
+    dovetails_of_end(extremity).map{|l|l.other(self)}.uniq
   end
 
   # List of segments which contain the segment

@@ -31,7 +31,7 @@ module RGFA::Lines::Destructors
     segment_end = segment_end.to_segment_end
     other_end = other_end.to_segment_end
     s = segment!(segment_end.segment)
-    s.dovetails(segment_end.end_type).each do |l|
+    s.dovetails_of_end(segment_end.end_type).each do |l|
       if l.other_end(segment_end) != other_end
         if !conserve_components or !cut_link?(l)
           l.disconnect

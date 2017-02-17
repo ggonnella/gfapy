@@ -16,7 +16,7 @@ module RGFATools::SuperfluousLinks
     l = {}
     [:L, :R].each do |et|
       se[et] = [sn, et]
-      l[et] = segment(s).dovetails(et)
+      l[et] = segment(s).dovetails_of_end(et)
     end
     if l[:L].size == 1 and l[:R].size == 1
       oe = {}
