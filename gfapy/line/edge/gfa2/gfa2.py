@@ -26,7 +26,7 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo, ToGFA1,
   STORAGE_KEY = "name"
   FIELD_ALIAS = { "name" : "eid" }
   REFERENCE_FIELDS = ["sid1", "sid2"]
-  REFERENCE_RELATED_FIELDS = ["beg1", "end1", "beg2", "end2"]
+  BACKREFERENCE_RELATED_FIELDS = ["beg1", "end1", "beg2", "end2"]
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
 

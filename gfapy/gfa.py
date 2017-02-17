@@ -1,11 +1,12 @@
 import gfapy
 from .lines import Lines
 from .graph_operations import GraphOperations
+from collections import defaultdict
 
 class Gfa(Lines,GraphOperations):
   def __init__(self, vlevel = 1, version = None):
     self._vlevel = vlevel
-    self._records = {}
+    self._records = defaultdict(dict)
     self._records["H"] = gfapy.line.Header([], vlevel = vlevel)
     self._records["H"].connect(self)
     self._records["S"] = {}

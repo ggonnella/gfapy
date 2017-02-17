@@ -26,7 +26,7 @@ class Header(VersionConversion, Multiline, Connection, FieldData, Line):
   REFERENCE_FIELDS = []
   NAME_FIELD = None
   STORAGE_KEY = "merge"
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 

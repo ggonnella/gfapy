@@ -234,11 +234,11 @@ class Init:
       A subclass of gfapy.Line
     """
     if version == "gfa1":
-      return cls.subclass_GFA1(record_type)
+      return gfapy.Line.subclass_GFA1(record_type)
     elif version == "gfa2":
-      return cls.subclass_GFA2(record_type)
+      return gfapy.Line.subclass_GFA2(record_type)
     elif version is None:
-      return cls.subclass_unknown_version(record_type)
+      return gfapy.Line.subclass_unknown_version(record_type)
     else:
       raise gfapy.VersionError(
           "GFA specification version unknown ({})".format(version))
@@ -248,42 +248,48 @@ class Init:
     if record_type is None:
       raise gfapy.VersionError(
           "gfapy uses virtual records of unknown type for GFA2 only")
-    if str(record_type) == "H": return gfapy.line.Header
-    elif str(record_type) == "S": return gfapy.line.segment.GFA1
-    elif str(record_type) == "#": return gfapy.line.Comment
-    elif str(record_type) == "L": return gfapy.line.edge.Link
-    elif str(record_type) == "C": return gfapy.line.edge.Containment
-    elif str(record_type) == "P": return gfapy.line.group.Path
+    if record_type == "H": return gfapy.line.Header
+    elif record_type == "S": return gfapy.line.segment.GFA1
+    elif record_type == "#": return gfapy.line.Comment
+    elif record_type == "L": return gfapy.line.edge.Link
+    elif record_type == "C": return gfapy.line.edge.Containment
+    elif record_type == "P": return gfapy.line.group.Path
     else:
       raise gfapy.VersionError(
           "Custom record types are not supported in GFA1: '{}'".format(
             record_type))
 
+  EXTENSIONS = {}
+
   @classmethod
   def subclass_GFA2(cls, record_type):
-    if str(record_type) == "H": return gfapy.line.Header
-    elif str(record_type) == "S": return gfapy.line.segment.GFA2
-    elif str(record_type) == "#": return gfapy.line.Comment
-    elif str(record_type) == "E": return gfapy.line.edge.GFA2
-    elif str(record_type) == "F": return gfapy.line.Fragment
-    elif str(record_type) == "G": return gfapy.line.Gap
-    elif str(record_type) == "O": return gfapy.line.group.Ordered
-    elif str(record_type) == "U": return gfapy.line.group.Unordered
+    if record_type == "H": return gfapy.line.Header
+    elif record_type == "S": return gfapy.line.segment.GFA2
+    elif record_type == "#": return gfapy.line.Comment
+    elif record_type == "E": return gfapy.line.edge.GFA2
+    elif record_type == "F": return gfapy.line.Fragment
+    elif record_type == "G": return gfapy.line.Gap
+    elif record_type == "O": return gfapy.line.group.Ordered
+    elif record_type == "U": return gfapy.line.group.Unordered
+    elif record_type in gfapy.Line.EXTENSIONS:
+      return gfapy.Line.EXTENSIONS[record_type]
     else: return gfapy.line.CustomRecord
 
   @classmethod
   def subclass_unknown_version(cls, record_type):
-    if str(record_type) == "H": return gfapy.line.Header
-    elif str(record_type) == "S": return gfapy.line.segment.Factory
-    elif str(record_type) == "#": return gfapy.line.Comment
-    elif str(record_type) == "L": return gfapy.line.edge.Link
-    elif str(record_type) == "C": return gfapy.line.edge.Containment
-    elif str(record_type) == "P": return gfapy.line.group.Path
-    elif str(record_type) == "E": return gfapy.line.edge.GFA2
-    elif str(record_type) == "F": return gfapy.line.Fragment
-    elif str(record_type) == "G": return gfapy.line.Gap
-    elif str(record_type) == "O": return gfapy.line.group.Ordered
-    elif str(record_type) == "U": return gfapy.line.group.Unordered
+    if record_type == "H": return gfapy.line.Header
+    elif record_type == "S": return gfapy.line.segment.Factory
+    elif record_type == "#": return gfapy.line.Comment
+    elif record_type == "L": return gfapy.line.edge.Link
+    elif record_type == "C": return gfapy.line.edge.Containment
+    elif record_type == "P": return gfapy.line.group.Path
+    elif record_type == "E": return gfapy.line.edge.GFA2
+    elif record_type == "F": return gfapy.line.Fragment
+    elif record_type == "G": return gfapy.line.Gap
+    elif record_type == "O": return gfapy.line.group.Ordered
+    elif record_type == "U": return gfapy.line.group.Unordered
+    elif record_type in gfapy.Line.EXTENSIONS:
+      return gfapy.Line.EXTENSIONS[record_type]
     else: return gfapy.line.CustomRecord
 
   @staticmethod

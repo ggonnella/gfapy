@@ -16,7 +16,7 @@ class Unknown(Line):
   REFERENCE_FIELDS = []
   NAME_FIELD = "name"
   STORAGE_KEY = "name"
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["sets", "paths"]
   OTHER_REFERENCES = []
 

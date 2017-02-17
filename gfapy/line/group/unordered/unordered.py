@@ -18,7 +18,7 @@ class Unordered(UnorderedReferences, InducedSet, References, SameID, Group):
   NAME_FIELD = "pid"
   STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["items"]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["sets"]
   OTHER_REFERENCES = []
 

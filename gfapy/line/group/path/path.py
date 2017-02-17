@@ -20,7 +20,7 @@ class Path(Topology, References, Validation, CapturedPath, ToGFA2, Group):
   NAME_FIELD = "path_name"
   STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["segment_names", "overlaps"]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = ["links"]
 

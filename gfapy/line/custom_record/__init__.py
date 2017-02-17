@@ -25,7 +25,7 @@ class CustomRecord(Init, Line):
     "record_type" : "custom_record_type"
   }
   REFERENCE_FIELDS = []
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 

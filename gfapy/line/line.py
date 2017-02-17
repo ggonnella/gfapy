@@ -87,6 +87,8 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
 
   @classmethod
   def _define_field_aliases(cls):
+    if cls.NAME_FIELD is not None and "name" not in cls.POSFIELDS:
+      cls.FIELD_ALIAS["name"] = cls.NAME_FIELD
     for k,v in cls.FIELD_ALIAS.items():
       setattr(cls, k, getattr(cls, v))
       setattr(cls, "try_get_" + k, getattr(cls, "try_get_" + v))

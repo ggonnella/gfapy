@@ -165,7 +165,7 @@ class FieldData:
     if self._gfa:
       if not set_reference and \
         (fieldname in self.__class__.REFERENCE_FIELDS or \
-         fieldname in self.__class__.REFERENCE_RELATED_FIELDS):
+         fieldname in self.__class__.BACKREFERENCE_RELATED_FIELDS):
         raise gfapy.RuntimeError(
           "The value of field '{}' cannot be changed".format(fieldname)+
           "as the line belongs to a GFA instance")

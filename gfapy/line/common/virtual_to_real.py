@@ -42,7 +42,7 @@ class VirtualToReal:
 
   def _import_field_references(self, previous):
     for k in (self.__class__.REFERENCE_FIELDS +
-              self.__class__.REFERENCE_RELATED_FIELDS):
+              self.__class__.BACKREFERENCE_RELATED_FIELDS):
       ref = previous.get(k)
       self._set_existing_field(k, ref, set_reference = True)
 

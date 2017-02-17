@@ -36,7 +36,7 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other, GFA1_AlignmentType,
   NAME_FIELD = None
   STORAGE_KEY = None
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 

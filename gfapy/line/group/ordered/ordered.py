@@ -21,7 +21,7 @@ class Ordered(Ordered_References, CapturedPath, GFA2_References, SameID, ToGFA1,
   NAME_FIELD = "pid"
   STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["items"]
-  REFERENCE_RELATED_FIELDS = []
+  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
 
