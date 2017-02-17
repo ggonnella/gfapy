@@ -6,7 +6,7 @@ module RGFA::Line::Edge::GFA1::References
 
   def initialize_references
     [:from, :to].each do |dir|
-      s = @rgfa.segment(get(dir))
+      s = @rgfa.segment(get(:"#{dir}_segment"))
       if s.nil?
         raise RGFA::NotFoundError if @rgfa.segments_first_order
         s = RGFA::Line::Segment::GFA1.new({:name => get(dir),
@@ -15,7 +15,7 @@ module RGFA::Line::Edge::GFA1::References
                                          virtual: true)
         s.connect(@rgfa)
       end
-      set_existing_field(dir, s, set_reference: true)
+      set_existing_field(:"#{dir}_segment", s, set_reference: true)
       if self.record_type == :L
         et = send(:"#{dir}_end").end_type
         key = :"dovetails_#{et}"
@@ -29,7 +29,7 @@ module RGFA::Line::Edge::GFA1::References
   end
 
   def import_field_references(previous)
-    [:from, :to].each do |dir|
+    [:from_segment, :to_segment].each do |dir|
       set_existing_field(dir, @rgfa.segment(get(dir)), set_reference: true)
     end
   end
@@ -39,7 +39,7 @@ module RGFA::Line::Edge::GFA1::References
     when :P
       [:paths]
     when :S
-      [:from, :to]
+      [:from_segment, :to_segment]
     else
       []
     end

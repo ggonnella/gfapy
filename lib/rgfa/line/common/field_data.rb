@@ -152,4 +152,12 @@ module RGFA::Line::Common::FieldData
     end
   end
 
+  def dealias_fieldname(fieldname)
+    self.class::FIELD_ALIAS.fetch(fieldname, fieldname)
+  end
+
+  def dealias_fieldnames!(fieldnames)
+    fieldnames.map!{|fieldname| dealias_fieldname(fieldname)}
+  end
+
 end

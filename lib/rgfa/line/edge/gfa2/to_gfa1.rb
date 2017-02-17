@@ -55,6 +55,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def from
     oriented_from.line
   end
+  alias_method :from_segment, :from
 
   # Set the line of the field which will be returned by calling from
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
@@ -62,6 +63,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def from=(value)
     oriented_from.line = value
   end
+  alias_method :from_segment=, :from=
 
   # @return [:+, :-] value of the GFA1 +from_orient+ field,
   #   if the edge is a link or containment
@@ -83,6 +85,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def to
     oriented_to.line
   end
+  alias_method :to_segment, :to
 
   # Set the line of the field which will be returned by calling to
   # @param value [Symbol, RGFA::Line::Segment::GFA2]
@@ -90,6 +93,7 @@ module RGFA::Line::Edge::GFA2::ToGFA1
   def to=(value)
     oriented_to.line = value
   end
+  alias_method :to_segment=, :from=
 
   # @return [:+, :-] value of the GFA1 +to_orient+ field,
   #   if the edge is a link or containment

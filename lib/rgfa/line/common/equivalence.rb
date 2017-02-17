@@ -167,6 +167,7 @@ module RGFA::Line::Common::Equivalence
     #
     # @return [Boolean]
     def eql_fields?(refline, ignore_fields = [])
+      dealias_fieldnames!(ignore_fields)
       unless ignore_fields.include?(:record_type)
         return false if self.record_type != refline.record_type
       end

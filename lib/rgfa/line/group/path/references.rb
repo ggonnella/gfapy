@@ -55,9 +55,9 @@ module RGFA::Line::Group::Path::References
           "requires a non-existing link:\n"+
           "from=#{from} to=#{to} cigar=#{cigar}"
         end
-        l = RGFA::Line::Edge::Link.new({:from => from.line,
+        l = RGFA::Line::Edge::Link.new({:from_segment => from.line,
                                   :from_orient => from.orient,
-                                  :to => to.line,
+                                  :to_segment => to.line,
                                   :to_orient => to.orient,
                                   :overlap => cigar},
                                   virtual: true,

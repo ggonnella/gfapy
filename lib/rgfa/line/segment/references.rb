@@ -168,7 +168,7 @@ module RGFA::Line::Segment::References
     when :L
       [:dovetails_L, :dovetails_R]
     when :C
-      (key_in_ref == :from) ? [:edges_to_contained] : [:edges_to_containers]
+      (key_in_ref == :from_segment) ? [:edges_to_contained] : [:edges_to_containers]
     when :G
       [:gaps_L, :gaps_R]
     when :F

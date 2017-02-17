@@ -3,13 +3,13 @@
 class RGFA::Line::Edge::Link < RGFA::Line::Edge
 
   RECORD_TYPE = :L
-  POSFIELDS = [:from, :from_orient, :to, :to_orient, :overlap]
+  POSFIELDS = [:from_segment, :from_orient, :to_segment, :to_orient, :overlap]
   PREDEFINED_TAGS = [:MQ, :NM, :RC, :FC, :KC]
-  FIELD_ALIAS = {}
+  FIELD_ALIAS = {:from => :from_segment, :to => :to_segment}
   DATATYPE = {
-     :from => :segment_name_gfa1,
+     :from_segment => :segment_name_gfa1,
      :from_orient => :orientation,
-     :to => :segment_name_gfa1,
+     :to_segment => :segment_name_gfa1,
      :to_orient => :orientation,
      :overlap => :alignment_gfa1,
      :MQ => :i,
@@ -20,7 +20,7 @@ class RGFA::Line::Edge::Link < RGFA::Line::Edge
   }
   NAME_FIELD = nil
   STORAGE_KEY = nil
-  REFERENCE_FIELDS = [:from, :to]
+  REFERENCE_FIELDS = [:from_segment, :to_segment]
   BACKREFERENCE_RELATED_FIELDS = [:to_orient, :from_orient, :overlap]
   DEPENDENT_LINES = [:paths]
   OTHER_REFERENCES = []
