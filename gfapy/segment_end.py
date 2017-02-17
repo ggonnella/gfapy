@@ -133,6 +133,9 @@ class SegmentEnd:
     """
     return "{}{}".format(self.name, self.end_type)
 
+  def __repr__(self):
+    return "gfapy.SegmentEnd({},{})".format(repr(self.segment),repr(self.end_type))
+
   def __eq__(self, other):
     """
     Compare the segment names and attributes of two instances

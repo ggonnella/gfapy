@@ -126,14 +126,16 @@ class MultiplicationExtended:
                                            segment_name, factor)
     if end_type is None:
       return
-    et_links = self.segment(segment_name).dovetails(end_type)
+    et_links = self.segment(segment_name).dovetails_of_end(end_type)
     diff = max([len(et_links)-factor, 0])
-    links_signatures = [str(l.other_end(gfapy.SegmentEnd(segment_name, \
-                          end_type))) for l in et_links]
+    links_signatures = list([repr(l.other_end(gfapy.SegmentEnd(segment_name, \
+                          end_type))) for l in et_links])
     for i, sn in enumerate([segment_name]+copy_names):
-      for l in self.segment(sn).dovetails(end_type):
-        l_sig = str(l.other_end(gfapy.SegmentEnd(sn, end_type)))
-        if l_sig not in list(links_signatures)[i:i+diff+1]:
+      to_keep = links_signatures[i:i+diff+1]
+      links = self.segment(sn).dovetails_of_end(end_type).copy()
+      for l in links:
+        l_sig = repr(l.other_end(gfapy.SegmentEnd(sn, end_type)))
+        if l_sig not in to_keep:
           l.disconnect()
 
   def _segment_and_segment_name(self, segment_or_segment_name):

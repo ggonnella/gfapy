@@ -73,9 +73,9 @@ class Multiplication:
     cpy.connect(self)
     for l in segment.dovetails + segment.containments:
       lc = l.clone()
-      if lc.get("from") == segment.name:
-        lc.set("from", clone_name)
-      if lc.to == segment.name:
-        lc.to = clone_name
+      if lc.from_segment == segment.name:
+        lc.from_segment = clone_name
+      if lc.to_segment == segment.name:
+        lc.to_segment = clone_name
       lc.connect(self)
 
