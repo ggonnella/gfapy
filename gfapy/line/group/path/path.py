@@ -24,4 +24,4 @@ class Path(Topology, References, Validation, CapturedPath, ToGFA2, Group):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = ["links"]
 
-Path._Line__define_field_methods()
+Path._apply_definitions()

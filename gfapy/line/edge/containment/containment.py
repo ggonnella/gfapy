@@ -40,4 +40,4 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other, GFA1_AlignmentType,
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-Containment._Line__define_field_methods()
+Containment._apply_definitions()

@@ -34,4 +34,4 @@ class GFA1(WriterWoSequence, References, Coverage,
   gfa2_compatibility = ["gaps_L", "gaps_R", "fragments", "internals", "sets"]
   OTHER_REFERENCES = ["paths"] + gfa2_compatibility
 
-GFA1._Line__define_field_methods()
+GFA1._apply_definitions()

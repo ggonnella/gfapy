@@ -62,16 +62,16 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
     return self.__class__.RECORD_TYPE
 
   @classmethod
-  def __define_field_methods(cls):
+  def _apply_definitions(cls):
     """
     This avoids calls for fields which are already defined
     """
-    cls.__define_field_accessors()
-    cls.__define_field_aliases()
-    cls.__define_reference_getters()
+    cls._define_field_accessors()
+    cls._define_field_aliases()
+    cls._define_reference_getters()
 
   @classmethod
-  def __define_field_accessors(cls):
+  def _define_field_accessors(cls):
     for fieldname in cls.POSFIELDS + cls.PREDEFINED_TAGS:
       def get_method(self, fieldname):
         return self.get(fieldname)
@@ -86,13 +86,13 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
               partialmethod(try_get_method, fieldname = fieldname))
 
   @classmethod
-  def __define_field_aliases(cls):
+  def _define_field_aliases(cls):
     for k,v in cls.FIELD_ALIAS.items():
       setattr(cls, k, getattr(cls, v))
       setattr(cls, "try_get_" + k, getattr(cls, "try_get_" + v))
 
   @classmethod
-  def __define_reference_getters(cls):
+  def _define_reference_getters(cls):
     for k in cls.DEPENDENT_LINES + cls.OTHER_REFERENCES:
       def get_method(self, k):
         return self._refs.get(k , [])
@@ -104,15 +104,3 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
                        partial(set_method, k = k)))
     def all_references(self):
       return [ item for item in values for values in self._refs ]
-
-# Moved to __init__.py
-##
-## import the child classes
-##
-#from .header import Header
-#from .segment import Segment
-#from .comment import Comment
-#from .gap import Gap
-#from .fragment import Fragment
-#from .edge import Edge
-#from .unknown import Unknown

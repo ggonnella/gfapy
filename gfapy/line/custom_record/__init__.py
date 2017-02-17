@@ -29,4 +29,4 @@ class CustomRecord(Init, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-CustomRecord._Line__define_field_methods()
+CustomRecord._apply_definitions()

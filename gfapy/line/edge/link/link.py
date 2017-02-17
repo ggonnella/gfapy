@@ -39,4 +39,4 @@ class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
   DEPENDENT_LINES = ["paths"]
   OTHER_REFERENCES = []
 
-Link._Line__define_field_methods()
+Link._apply_definitions()

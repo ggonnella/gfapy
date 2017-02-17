@@ -22,4 +22,4 @@ class Unordered(UnorderedReferences, InducedSet, References, SameID, Group):
   DEPENDENT_LINES = ["sets"]
   OTHER_REFERENCES = []
 
-Unordered._Line__define_field_methods()
+Unordered._apply_definitions()

@@ -27,4 +27,4 @@ class Unknown(Line):
   def virtual(self):
     return True
 
-Unknown._Line__define_field_methods()
+Unknown._apply_definitions()

@@ -26,4 +26,4 @@ class Fragment(References, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-Fragment._Line__define_field_methods()
+Fragment._apply_definitions()

@@ -25,4 +25,4 @@ class Gap(References, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-Gap._Line__define_field_methods()
+Gap._apply_definitions()

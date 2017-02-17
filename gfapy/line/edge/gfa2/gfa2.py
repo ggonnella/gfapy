@@ -30,4 +30,4 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo, ToGFA1,
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
 
-GFA2._Line__define_field_methods()
+GFA2._apply_definitions()

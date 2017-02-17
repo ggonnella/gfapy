@@ -30,4 +30,4 @@ class Header(VersionConversion, Multiline, Connection, FieldData, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-Header._Line__define_field_methods()
+Header._apply_definitions()

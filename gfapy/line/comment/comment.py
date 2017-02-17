@@ -34,4 +34,4 @@ class Comment(Writer, Tags, Init, Line):
   DEPENDENT_LINES = []
   OTHER_REFERENCES = []
 
-Comment._Line__define_field_methods()
+Comment._apply_definitions()

@@ -25,4 +25,4 @@ class Ordered(Ordered_References, CapturedPath, GFA2_References, SameID, ToGFA1,
   DEPENDENT_LINES = ["paths", "sets"]
   OTHER_REFERENCES = []
 
-Ordered._Line__define_field_methods()
+Ordered._apply_definitions()
