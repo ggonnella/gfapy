@@ -7,7 +7,7 @@ TestAPI::Lines ||= Module.new
 class TestAPI::Lines::Collections < Test::Unit::TestCase
 
   def test_gfa1_collections
-    gfa = RGFA.from_file("test/testdata/all_line_types.gfa1.gfa")
+    gfa = RGFA.from_file("testdata/all_line_types.gfa1.gfa")
     # comments
     assert_equal(1, gfa.comments.size)
     assert(gfa.comments[0].content =~ /collections/)
@@ -42,7 +42,7 @@ class TestAPI::Lines::Collections < Test::Unit::TestCase
   end
 
   def test_gfa2_collections
-    gfa = RGFA.from_file("test/testdata/all_line_types.gfa2.gfa")
+    gfa = RGFA.from_file("testdata/all_line_types.gfa2.gfa")
     # comments
     assert_equal(3, gfa.comments.size)
     assert(gfa.comments[0].content =~ /collections/)

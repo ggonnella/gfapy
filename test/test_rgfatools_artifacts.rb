@@ -5,7 +5,7 @@ class TestRGFAToolsArtifacts < Test::Unit::TestCase
 
   def test_remove_small_components
     ["gfa", "gfa2"].each do |sfx|
-      g = RGFA.from_file("test/testdata/two_components.#{sfx}")
+      g = RGFA.from_file("testdata/two_components.#{sfx}")
       assert_equal(2, g.connected_components.size)
       g.remove_small_components(1000)
       assert_equal(2, g.connected_components.size)
@@ -18,7 +18,7 @@ class TestRGFAToolsArtifacts < Test::Unit::TestCase
 
   def test_remove_dead_ends
     ["gfa", "gfa2"].each do |sfx|
-      g = RGFA.from_file("test/testdata/dead_ends.#{sfx}")
+      g = RGFA.from_file("testdata/dead_ends.#{sfx}")
       assert_equal(6, g.segments.size)
       g.remove_dead_ends(100)
       assert_equal(6, g.segments.size)

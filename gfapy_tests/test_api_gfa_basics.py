@@ -40,7 +40,7 @@ class TestAPIGfaBasics(unittest.TestCase):
     self.assertEqual(set(lines), set(str(gfa).split("\n")))
 
   ## def test_from_file(self):
-  ##   filename = "test/testdata/example1.gfa"
+  ##   filename = "testdata/example1.gfa"
   ##   gfa = gfapy.Gfa.from_file(filename)
   ##   assert(gfa)
   ##   with open(filename) as f:
@@ -48,7 +48,7 @@ class TestAPIGfaBasics(unittest.TestCase):
   ##   self.assertEqual(txt, str(gfa))
 
   ## def test_to_file(self):
-  ##   filename = "test/testdata/example1.gfa"
+  ##   filename = "testdata/example1.gfa"
   ##   gfa = gfapy.Gfa.from_file(filename)
   ##   tmp = Tempfile("example1")
   ##   gfa.to_file(tmp.path)

@@ -84,8 +84,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_links_distribution_l1_m2
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l1.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l1.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l1.m2.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -97,8 +97,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_enable_extensions
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l1.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l1.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l1.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l1.m2.#{sfx}")
       g1.enable_extensions
       g2.enable_extensions
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
@@ -112,8 +112,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_links_distribution_l2_m2
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m2.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -125,8 +125,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_no_links_distribution_l2_m2
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m2.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -138,8 +138,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_links_distribution_l2_m3
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m3.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m3.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -151,8 +151,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_no_links_distribution_l2_m3
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m3.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m3.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -164,8 +164,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_links_distribution_l3_m2
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l3.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l3.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l3.m2.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -177,8 +177,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_no_links_distribution_l3_m2
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l3.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l3.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l3.m2.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -190,8 +190,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_muliply_without_rgfatools
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l3.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l3.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l3.m2.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -203,8 +203,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_distribution_policy_equal_with_equal
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m2.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -216,8 +216,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_distribution_policy_equal_with_not_equal
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l3.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l3.m2.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l3.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l3.m2.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -229,8 +229,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_distribution_policy_B
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.no_ld.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m2.no_ld.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)
@@ -242,8 +242,8 @@ class TestAPI::Multiplication < Test::Unit::TestCase
 
   def test_distribution_policy_E
     ["gfa", "gfa2"].each do |sfx|
-      g1 = RGFA.from_file("test/testdata/links_distri.l2.#{sfx}")
-      g2 = RGFA.from_file("test/testdata/links_distri.l2.m2.#{sfx}")
+      g1 = RGFA.from_file("testdata/links_distri.l2.#{sfx}")
+      g2 = RGFA.from_file("testdata/links_distri.l2.m2.#{sfx}")
       assert_not_equal(g2.segment_names.sort,g1.segment_names.sort)
       assert_not_equal(g2.dovetails.map(&:to_s).sort,
                        g1.dovetails.map(&:to_s).sort)

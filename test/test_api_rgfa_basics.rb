@@ -74,14 +74,14 @@ class TestAPI::RGFA::Basics < Test::Unit::TestCase
   end
 
   def test_from_file
-    filename = "test/testdata/example1.gfa"
+    filename = "testdata/example1.gfa"
     gfa = RGFA.from_file(filename)
     assert(gfa)
     assert_equal(IO.read(filename), gfa.to_s)
   end
 
   def test_to_file
-    filename = "test/testdata/example1.gfa"
+    filename = "testdata/example1.gfa"
     gfa = RGFA.from_file(filename)
     tmp = Tempfile.new("example1")
     gfa.to_file(tmp.path)
