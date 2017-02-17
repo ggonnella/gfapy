@@ -1,7 +1,7 @@
 H	VN:Z:1.0
 S	1	*	LN:i:100	or:Z:1
-S	1b	*	LN:i:100	or:Z:1
-S	2a	*	LN:i:100
-S	2b	*	LN:i:100
-L	1	+	2a	+	10M
-L	1b	+	2b	+	10M
+S	1*2	*	LN:i:100	or:Z:1
+S	2*2	*	LN:i:100
+S	2*3	*	LN:i:100
+L	1	+	2*2	+	10M
+L	1*2	+	2*3	+	10M

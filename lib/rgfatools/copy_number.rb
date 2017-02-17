@@ -94,7 +94,7 @@ module RGFATools::CopyNumber
   # @param segment [RGFA::Line::Segment, Symbol] segment or segment name
   def apply_copy_number(segment, count_tag: :cn,
                         distribute: :auto,
-                        copy_names_suffix: :lowcase, origin_tag: :or,
+                        copy_names_suffix: :asterisk, origin_tag: :or,
                         conserve_components: true)
     s, sn = segment_and_segment_name(segment)
     factor = s.get!(count_tag)
@@ -109,7 +109,7 @@ module RGFATools::CopyNumber
   # Applies the computed copy number to all segments
   # @!macro apply_copy_number
   def apply_copy_numbers(count_tag: :cn, distribute: :auto,
-                         copy_names_suffix: :lowcase, origin_tag: :or,
+                         copy_names_suffix: :asterisk, origin_tag: :or,
                          conserve_components: true)
     segments.sort_by{|s|s.get!(count_tag)}.each do |s|
       multiply_extended(s.name, s.get(count_tag),

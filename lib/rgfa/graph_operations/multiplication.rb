@@ -42,7 +42,7 @@ module RGFA::GraphOperations::Multiplication
   #   {#cut_segment?}(segment) is +false+.
   #
   # @return [RGFA] self
-  def multiply(segment, factor, copy_names: :lowcase,
+  def multiply(segment, factor, copy_names: :asterisk,
                conserve_components: true)
     segment_name = segment.kind_of?(RGFA::Line) ? segment.name : segment
     if factor < 2
@@ -61,7 +61,7 @@ module RGFA::GraphOperations::Multiplication
 
   def compute_copy_names(copy_names, segment_name, factor)
     return nil if factor < 2
-    accepted = [:lowcase, :upcase, :number, :copy]
+    accepted = [:lowcase, :upcase, :number, :copy, :asterisk]
     if copy_names.kind_of?(Array)
       return copy_names
     elsif !accepted.include?(copy_names)
@@ -72,6 +72,12 @@ module RGFA::GraphOperations::Multiplication
     retval = []
     next_name = segment_name.to_s
     case copy_names
+    when :asterisk
+      if next_name =~ /^(.)\*\d+$/
+        next_name = next_name.next
+      else
+        next_name += "*2"
+      end
     when :lowcase
       if next_name =~ /^.*[a-z]$/
         next_name = next_name.next

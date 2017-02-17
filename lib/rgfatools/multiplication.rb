@@ -19,7 +19,7 @@ module RGFATools::Multiplication
   #
   # @return [RGFA] self
   def multiply_with_rgfatools(segment, factor,
-                       copy_names: :lowcase,
+                       copy_names: :asterisk,
                        distribute: :auto,
                        conserve_components: true,
                        origin_tag: :or)
@@ -102,7 +102,7 @@ module RGFATools::Multiplication
   #
   # @return [RGFA] self
   def multiply_extended(segment, factor,
-                       copy_names: :lowcase,
+                       copy_names: :asterisk,
                        distribute: :auto,
                        conserve_components: true,
                        origin_tag: :or)

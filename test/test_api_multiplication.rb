@@ -26,24 +26,24 @@ class TestAPI::Multiplication < Test::Unit::TestCase
                  gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
     assert_equal([c], gfa.segment(:"1").relations_to(:"0").map(&:to_s))
     assert_not_equal([],
-                gfa.segment(:"1b").end_relations(:R, [:"2", :L]).map(&:to_s))
-    assert_not_equal([], gfa.segment(:"1b").relations_to(:"0"))
+                gfa.segment(:"1*2").end_relations(:R, [:"2", :L]).map(&:to_s))
+    assert_not_equal([], gfa.segment(:"1*2").relations_to(:"0"))
     assert_equal(3000, gfa.segment(:"1").RC)
-    assert_equal(3000, gfa.segment(:"1b").RC)
-    gfa.multiply(:"1b", 3 , copy_names:["6","7"])
+    assert_equal(3000, gfa.segment(:"1*2").RC)
+    gfa.multiply(:"1*2", 3 , copy_names:["6","7"])
     assert_equal([l],
                  gfa.segment(:"1").end_relations(:R, [:"2", :L]).map(&:to_s))
     assert_not_equal([],
-                gfa.segment(:"1b").end_relations(:R, [:"2", :L]).map(&:to_s))
+                gfa.segment(:"1*2").end_relations(:R, [:"2", :L]).map(&:to_s))
     assert_not_equal([],
                  gfa.segment(:"6").end_relations(:R, [:"2", :L]).map(&:to_s))
     assert_not_equal([],
                  gfa.segment(:"7").end_relations(:R, [:"2", :L]).map(&:to_s))
-    assert_not_equal([], gfa.segment(:"1b").relations_to(:"0"))
+    assert_not_equal([], gfa.segment(:"1*2").relations_to(:"0"))
     assert_not_equal([], gfa.segment(:"6").relations_to(:"0"))
     assert_not_equal([], gfa.segment(:"7").relations_to(:"0"))
     assert_equal(3000, gfa.segment(:"1").RC)
-    assert_equal(1000, gfa.segment(:"1b").RC)
+    assert_equal(1000, gfa.segment(:"1*2").RC)
     assert_equal(1000, gfa.segment(:"6").RC)
     assert_equal(1000, gfa.segment(:"7").RC)
   end
@@ -71,7 +71,7 @@ class TestAPI::Multiplication < Test::Unit::TestCase
     gfa.multiply(:"2", 2, copy_names: :number)
     assert_nothing_raised {gfa.segment!("4")}
     gfa.multiply(:"1b", 2)
-    assert_nothing_raised {gfa.segment!("1c")}
+    assert_nothing_raised {gfa.segment!("1b*2")}
     gfa.multiply(:"1b", 2, copy_names: :number)
     assert_nothing_raised {gfa.segment!("1b2")}
     gfa.multiply(:"1b", 2, copy_names: :copy)

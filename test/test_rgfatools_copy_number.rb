@@ -33,7 +33,7 @@ class TestRGFAToolsCopyNumber < Test::Unit::TestCase
       assert_equal([:"0",:"1",:"2",:"3"], gfa.segment_names)
       gfa.compute_copy_numbers(9)
       gfa.apply_copy_numbers
-      assert_equal([:"1",:"2",:"3",:"2b",:"3b",:"3c"], gfa.segment_names)
+      assert_equal([:"1",:"2",:"3",:"2*2",:"3*2",:"3*3"], gfa.segment_names)
       gfa.compute_copy_numbers(9)
       assert(gfa.segments.map(&:cn).all?{|cn|cn == 1})
     end
