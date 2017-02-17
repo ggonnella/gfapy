@@ -9,7 +9,7 @@ if ARGV.size != 1
 end
 
 gfa = RGFA.new
-gfa.enable_progress_logging(part: 0.01)
+#gfa.enable_progress_logging(part: 0.01)
 gfa.vlevel = 0
 gfa.read_file(ARGV[0])
 if redundant

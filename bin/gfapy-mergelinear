@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+import gfapy
+import argparse
+
+op = argparse.ArgumentParser()
+op.add_argument("filename")
+op.add_argument("--redundant",
+    default=False, action="store_true", dest='redundant')
+opts = op.parse_args()
+
+gfa = gfapy.Gfa()
+#gfa.enable_progress_logging(part=0.01)
+gfa.vlevel = 0
+gfa.read_file(opts.filename)
+if opts.redundant:
+  # remove isolated segments, as this mode is for comparison
+  # with readjoiner contigs, and isolated vertices are not output by readjoiner
+  for cc in gfa.connected_components:
+    if len(cc) == 1:
+      gfa.segment(cc[0]).disconnect()
+gfa.merge_linear_paths(redundant_junctions=opts.redundant,
+                       enable_tracking=False,
+                       merged_name="short")
+print(gfa)
+
