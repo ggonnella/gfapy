@@ -5,19 +5,6 @@ class MultiplicationExtended:
   '''Allowed values for the links_distribution_policy option'''
   LINKS_DISTRIBUTION_POLICY = ["off", "auto", "equal", "L", "R"]
 
-  def multiply_extended(self, segment, factor, copy_names=None,
-                        distribute="auto", conserve_components=True,
-                        origin_tag="or"):
-    """Create multiple copies of a segment"""
-    s, sn = self._segment_and_segment_name(segment)
-    if not s.get(origin_tag):
-      s.set(origin_tag, sn)
-    if copy_names is None:
-      copy_names = self._compute_copy_names(sn, factor)
-    self.multiply(sn, factor, copy_names=copy_names,
-                 conserve_components=conserve_components)
-    self._distribute_links(distribute, sn, copy_names, factor)
-
   # Create multiple copies of a segment.
   #
   # Complements the multiply method of gfatools with additional functionality.

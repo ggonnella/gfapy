@@ -22,7 +22,6 @@ class Gfa(Lines,GraphOperations):
     self._segments_first_order = False
     self._progress = False
     self._default = {"count_tag": "RC", "unit_length": 1}
-    self._extensions_enabled = False
     self._line_queue = []
     if version is None:
       self._version = None

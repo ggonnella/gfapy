@@ -4,7 +4,12 @@ import re
 class Multiplication:
 
   def multiply(self, segment, factor, copy_names = None,
-               conserve_components = True):
+               conserve_components = True, distribute = None,
+               track_origin = False, origin_tag="or", extended = False):
+    if extended:
+      if distribute == None:
+        distribute = "auto"
+      track_origin = True
     if factor < 0:
       raise gfapy.ArgumentError("Mulitiplication factor must be >= 0"+
           " ({} found)".format(factor))
@@ -12,21 +17,24 @@ class Multiplication:
       if conserve_components and factor == 1 and is_cut_segment(segment):
         return self
       else:
-        return self.rm(segment)
+        self.rm(segment)
+        return self
     elif factor == 1:
       return self
     else:
-      if isinstance(segment, str):
-        segment_name = segment
-        segment = self.try_get_segment(segment)
-      self.__divide_segment_and_connection_counts(segment, factor)
+      s, sn = self._segment_and_segment_name(segment)
+      if track_origin and not s.get(origin_tag):
+        s.set(origin_tag, sn)
+      self.__divide_segment_and_connection_counts(s, factor)
       if copy_names is None:
-        copy_names = self.__compute_copy_names(segment_name, factor)
+        copy_names = self._compute_copy_names(sn, factor)
       for cn in copy_names:
-        self.__clone_segment_and_connections(segment, cn)
+        self.__clone_segment_and_connections(s, cn)
+      if distribute:
+        self._distribute_links(distribute, sn, copy_names, factor)
       return self
 
-  def __compute_copy_names(self, segment_name, factor):
+  def _compute_copy_names(self, segment_name, factor):
     assert factor >= 2
     retval = []
     first = 2
@@ -35,7 +43,7 @@ class Multiplication:
       segment_name = m.groups()[0]
       i = int(m.groups()[1])
     offset = 0
-    for i in range(first,factor+first):
+    for i in range(first,factor+first-1):
       name = "{}*{}".format(segment_name, i+offset)
       while name in self.names:
         offset+=1

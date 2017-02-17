@@ -20,7 +20,7 @@ class TestgfapyGfaToolsLinearPaths(unittest.TestCase):
     for sfx in ["gfa", "gfa2"]:
       gfa = gfapy.Gfa.from_file("test/testdata/linear_merging.3.{}".format(sfx))
       gfa.merge_linear_paths(enable_tracking=True)
-      self.assertEqual(["0_1_2^_3"], gfa.segment_names)
+      self.assertIn(gfa.segment_names[0], ["0_1_2^_3","3^_2_1^_0^"])
       gfa = gfapy.Gfa.from_file("test/testdata/linear_merging.4.{}".format(sfx))
       gfa.merge_linear_paths(enable_tracking=True)
       try:
