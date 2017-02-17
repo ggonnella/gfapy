@@ -11,7 +11,7 @@ class GFA2ToGFA1:
     """
     a = ["S", self.field_to_s("name", tag = False),
               self.field_to_s("sequence", tag = False)]
-    a.append(gfapy.field.to_gfa_tag(self.slen, "LN", datatype = "i"))
+    a.append(gfapy.Field.to_gfa_tag(self.slen, "LN", datatype = "i"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a

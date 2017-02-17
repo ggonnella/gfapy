@@ -53,7 +53,7 @@ class FieldDatatype:
     elif not self._is_valid_custom_tagname(fieldname) and self.vlevel > 0:
       raise gfapy.FormatError(
         "{} is not a valid custom tag name".format(fieldname))
-    if datatype not in gfapy.field.TAG_DATATYPE:
+    if datatype not in gfapy.Field.TAG_DATATYPE:
       raise gfapy.ArgumentError("Unknown datatype: {}".format(datatype))
     self._datatype[fieldname] = datatype
     return datatype
@@ -67,6 +67,6 @@ class FieldDatatype:
     if t is None:
       if value is None:
         return None
-      t = gfapy.field.get_default_gfa_tag_datatype(value)
+      t = gfapy.Field.get_default_gfa_tag_datatype(value)
       self._datatype[fieldname] = t
     return t

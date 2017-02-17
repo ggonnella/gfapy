@@ -13,7 +13,7 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
   ----------
   string : str
     the GFA string to parse
-  datatype : one of gfapy.field.FIELD_DATATYPE
+  datatype : one of gfapy.Field.FIELD_DATATYPE
     the datatype to use
   safe : bool, optional
     *(defaults to: ***True***)* if **True** the safe
@@ -35,7 +35,7 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
   gfapy.ValueError
     if the decoded value is not valid
   """
-  mod = gfapy.field.FIELD_MODULE.get(datatype)
+  mod = gfapy.Field.FIELD_MODULE.get(datatype)
   if mod is None:
     try:
       linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
@@ -85,7 +85,7 @@ def parse_gfa_tag(tag):
 
   Returns
   -------
-  list of (str, gfapy.field.FIELD_DATATYPE)
+  list of (str, gfapy.Field.FIELD_DATATYPE)
     the parsed content of the field
   """
   match = re.match(r"^([A-Za-z][A-Za-z0-9]):([AifZJHB]):(.+)$", tag)

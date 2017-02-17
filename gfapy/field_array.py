@@ -14,7 +14,7 @@ class FieldArray:
     """
     Parameters
     ----------
-    datatype: gfapy.field.TAG_DATATYPE
+    datatype: gfapy.Field.TAG_DATATYPE
     	The datatype to use.
     """
     if data is None:
@@ -41,7 +41,7 @@ class FieldArray:
 
     Parameters
     ----------
-    datatype : gfapy.field.TAG_DATATYPE or None
+    datatype : gfapy.Field.TAG_DATATYPE or None
      	Datatype to use for the validation. 
       Use None to use the stored datatype (self.datatype)
     fieldname : str
@@ -50,7 +50,7 @@ class FieldArray:
     if not datatype:
       datatype = self.datatype
     for elem in self._data:
-      gfapy.field.validate_gfa_field(elem, datatype, fieldname)
+      gfapy.Field.validate_gfa_field(elem, datatype, fieldname)
 
   def _default_gfa_tag_datatype(self):
     """
@@ -68,7 +68,7 @@ class FieldArray:
 
     Parameters
     ----------
-    datatype : gfapy.field.TAG_DATATYPE
+    datatype : gfapy.Field.TAG_DATATYPE
     	*(defaults to: ***self.datatype***)* datatype of the data
     fieldname : str
     	*(defaults to ***None***)* fieldname to use for error messages
@@ -81,7 +81,7 @@ class FieldArray:
     if datatype is None:
       datatype = self.datatype
     return "\t".join(
-        [ gfapy.field.to_gfa_field(x, datatype, fieldname = fieldname) \
+        [ gfapy.Field.to_gfa_field(x, datatype, fieldname = fieldname) \
             for x in self._data ])
 
   def _to_gfa_tag(self, fieldname, datatype = None):
@@ -90,7 +90,7 @@ class FieldArray:
 
     Parameters
     ----------
-    datatype : gfapy.field.TAG_DATATYPE
+    datatype : gfapy.Field.TAG_DATATYPE
       *(defaults to: ***self.datatype***)* datatype of the data
     fieldname : str
     	Name of the tag
@@ -103,7 +103,7 @@ class FieldArray:
     if datatype is None:
       datatype = self.datatype
     return "\t".join(
-        [ gfapy.field.to_gfa_tag(x, fieldname, datatype) \
+        [ gfapy.Field.to_gfa_tag(x, fieldname, datatype) \
             for x in self._data ])
 
   def _vpush(self, value, datatype=None, fieldname=None):
@@ -130,7 +130,7 @@ class FieldArray:
     	The field name to use for error messages.
     """
     if datatype is None:
-      gfapy.field.validate_gfa_field(value, self.datatype, fieldname)
+      gfapy.Field.validate_gfa_field(value, self.datatype, fieldname)
     elif datatype != self.datatype:
       raise gfapy.InconsistencyError(
         "Datadatatype mismatch error for field {}:\n".format(fieldname)+

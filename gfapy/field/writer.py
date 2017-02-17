@@ -42,8 +42,8 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
     are not compatible
   """
   if not datatype:
-    datatype = gfapy.field.get_default_gfa_tag_datatype(obj)
-  mod = gfapy.field.FIELD_MODULE.get(datatype)
+    datatype = gfapy.Field.get_default_gfa_tag_datatype(obj)
+  mod = gfapy.Field.FIELD_MODULE.get(datatype)
   if not mod:
     fieldnamemsg = "Field: {}\n".format(fieldname) if fieldname else ""
     contentmsg = "Content: {}\n".format(repr(obj))
@@ -79,9 +79,9 @@ def to_gfa_tag(obj, fieldname, datatype = None):
   	the tag name
   datatype : gfapy.Field.TAG_DATATYPE, optional
   	(*defaults to: the value returned by 
-      {gfapy.field.get_default_gfa_tag_datatype}*)
+      {gfapy.Field.get_default_gfa_tag_datatype}*)
   """
   if not datatype:
-    datatype = gfapy.field.get_default_gfa_tag_datatype(obj)
+    datatype = gfapy.Field.get_default_gfa_tag_datatype(obj)
   return "{}:{}:{}".format(fieldname, datatype, 
           to_gfa_field(obj, datatype = datatype, fieldname = fieldname))

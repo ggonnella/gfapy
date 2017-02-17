@@ -65,7 +65,7 @@ class FieldData:
       if self._datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)
       elif value is not None:
-        self._datatype[fieldname] = gfapy.field.get_default_gfa_tag_datatype(value)
+        self._datatype[fieldname] = gfapy.Field.get_default_gfa_tag_datatype(value)
         self._data[fieldname] = value
         return self._data[fieldname]
     else:
@@ -96,18 +96,18 @@ class FieldData:
       t = self._field_datatype(fieldname)
       if t != "Z" and t != "seq":
         # value was not parsed or was set to a string by the user
-        self._data[fieldname] = gfapy.field.parse_gfa_field(v, t,
+        self._data[fieldname] = gfapy.Field.parse_gfa_field(v, t,
                                                     safe = (self.vlevel >= 1),
                                                     fieldname = fieldname,
                                                     line = self)
         return self._data[fieldname]
       else:
         if (self.vlevel >= 3):
-          gfapy.field.validate_gfa_field(v, t, fieldname)
+          gfapy.Field.validate_gfa_field(v, t, fieldname)
     elif v is not None:
       if (self.vlevel >= 3):
         t = self._field_datatype(fieldname)
-        gfapy.field.validate_gfa_field(v, t, fieldname)
+        gfapy.Field.validate_gfa_field(v, t, fieldname)
     else:
       dealiased_fieldname = self.__class__.FIELD_ALIAS.get(fieldname, None)
       if dealiased_fieldname is not None:
@@ -180,7 +180,7 @@ class FieldData:
     else:
       if self.vlevel >= 3:
         self._field_or_default_datatype(fieldname, value)
-        gfapy.field.validate_gfa_field(value, self._field_datatype(fieldname),
+        gfapy.Field.validate_gfa_field(value, self._field_datatype(fieldname),
             fieldname)
       self._data[fieldname] = value
     if renaming_connected:

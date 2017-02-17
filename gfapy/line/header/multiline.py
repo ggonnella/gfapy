@@ -35,7 +35,7 @@ class Multiline:
     elif not isinstance(prev, gfapy.FieldArray):
       if tagname in self.SINGLE_DEFINITION_TAGS:
         if self.field_to_s(tagname) == \
-            gfapy.field.to_gfa_field(value, fieldname=tagname):
+            gfapy.Field.to_gfa_field(value, fieldname=tagname):
           return self
         else:
           raise gfapy.InconsistencyError(

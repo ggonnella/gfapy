@@ -20,7 +20,7 @@ class Init:
     first_tag = len(strings)
     for i in range(len(strings)-1, 0, -1):
       try:
-        self._initialize_tag(*(gfapy.field.parse_gfa_tag(strings[i])))
+        self._initialize_tag(*(gfapy.Field.parse_gfa_tag(strings[i])))
       except:
         break
       first_tag = i

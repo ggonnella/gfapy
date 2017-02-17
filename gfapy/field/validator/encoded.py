@@ -1,6 +1,6 @@
 import gfapy
 
-def validate_gfa_field(obj, datatype, fieldname = None):
+def validate_encoded_gfa_field(obj, datatype, fieldname = None):
   """
   Validates a GFA string representation according to the field datatype.
 
@@ -21,7 +21,7 @@ def validate_gfa_field(obj, datatype, fieldname = None):
   gfapy.TypeError
   	if an unknown datatype is specified
   """
-  mod = gfapy.field.FIELD_MODULE.get(datatype)
+  mod = gfapy.Field.FIELD_MODULE.get(datatype)
   if not mod:
     raise gfapy.TypeError(
       "Datatype unknown: {}".format(repr(datatype)))
