@@ -51,10 +51,10 @@ class Other:
       If circular, then **segment**.
     """
     segment_name = str(segment)
-    if segment_name == str(self.frm):
+    if segment_name == str(self.from_segment):
       return self.to
-    elif segment_name == str(self.to):
-      return self.frm
+    elif segment_name == str(self.to_segment):
+      return self.from_segment
     elif tolerant:
       return None
     else:

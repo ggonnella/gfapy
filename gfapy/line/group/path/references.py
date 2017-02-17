@@ -47,22 +47,22 @@ class References:
 
   def _initialize_links(self):
     self._refs["links"] = []
-    for frm, to, cigar in self._compute_required_links():
+    for from_segment, to_segment, cigar in self._compute_required_links():
       l = None
       orient = "+"
-      if self._gfa.segment(frm.line) and self._gfa.segment(to.line):
-        l = self._gfa._search_link(frm, to, cigar)
-        if l is not None and l.is_compatible_complement(frm, to, cigar):
+      if self._gfa.segment(from_segment.line) and self._gfa.segment(to_segment.line):
+        l = self._gfa._search_link(from_segment, to_segment, cigar)
+        if l is not None and l.is_compatible_complement(from_segment, to_segment, cigar):
           orient = "-"
       if l is None:
         if self._gfa._segments_first_order:
           raise gfapy.NotFoundError("Path: {}\n".format(self)+
           "requires a non-existing link:\n"+
-          "from={} to={} cigar={}".format(frm, to, cigar))
-        l = gfapy.line.edge.Link({"from" : frm.line,
-                                  "from_orient" : frm.orient,
-                                  "to" : to.line,
-                                  "to_orient" : to.orient,
+          "from={} to={} cigar={}".format(from_segment, to_segment, cigar))
+        l = gfapy.line.edge.Link({"from_segment" : from_segment.line,
+                                  "from_orient" : from_segment.orient,
+                                  "to_segment" : to_segment.line,
+                                  "to_orient" : to_segment.orient,
                                   "overlap" : cigar},
                                  virtual = True,
                                  version = "gfa1")

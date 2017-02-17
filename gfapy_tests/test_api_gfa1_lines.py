@@ -9,9 +9,9 @@ class TestApiGfa1Lines(unittest.TestCase):
     gfapy.Line.from_string(s) # nothing raised
     self.assertEqual(gfapy.line.edge.Containment, gfapy.Line.from_string(s).__class__)
     self.assertEqual(fields[0], gfapy.Line.from_string(s).record_type)
-    self.assertEqual(fields[1], gfapy.Line.from_string(s).frm)
+    self.assertEqual(fields[1], gfapy.Line.from_string(s).from_segment)
     self.assertEqual(fields[2], gfapy.Line.from_string(s).from_orient)
-    self.assertEqual(fields[3], gfapy.Line.from_string(s).to)
+    self.assertEqual(fields[3], gfapy.Line.from_string(s).to_segment)
     self.assertEqual(fields[4], gfapy.Line.from_string(s).to_orient)
     self.assertEqual(12, gfapy.Line.from_string(s).pos)
     self.assertEqual([gfapy.CIGAR.Operation(12,"M")], gfapy.Line.from_string(s).overlap)
@@ -40,9 +40,9 @@ class TestApiGfa1Lines(unittest.TestCase):
     gfapy.Line.from_string(s) # nothing raised
     self.assertEqual(gfapy.line.edge.Link, gfapy.Line.from_string(s).__class__)
     self.assertEqual(fields[0], gfapy.Line.from_string(s).record_type)
-    self.assertEqual(fields[1], gfapy.Line.from_string(s).frm)
+    self.assertEqual(fields[1], gfapy.Line.from_string(s).from_segment)
     self.assertEqual(fields[2], gfapy.Line.from_string(s).from_orient)
-    self.assertEqual(fields[3], gfapy.Line.from_string(s).to)
+    self.assertEqual(fields[3], gfapy.Line.from_string(s).to_segment)
     self.assertEqual(fields[4], gfapy.Line.from_string(s).to_orient)
     self.assertEqual([gfapy.CIGAR.Operation(12,"M")],
                  gfapy.Line.from_string(s).overlap)

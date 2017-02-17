@@ -147,6 +147,7 @@ class Equivalence:
     assert(isinstance(refline, gfapy.Line))
     if ignore_fields is None:
       ignore_fields = []
+    self._dealias_fieldnames(ignore_fields)
     if ("record_type" not in ignore_fields) \
         and (self.record_type != refline.record_type):
       return False

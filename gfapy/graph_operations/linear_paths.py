@@ -363,12 +363,12 @@ class LinearPaths:
     for l in self.segment(segment_end.segment).dovetails_of_end(
                                                  segment_end.end_type):
       l2 = l.clone()
-      if l2.to == segment_end.segment:
-        l2.to = merged_name
+      if l2.to_segment == segment_end.segment:
+        l2.to_segment = merged_name
         if is_reversed:
           l2.to_orient = gfapy.invert(l2.to_orient)
       else:
-        l2.frm = merged_name
+        l2.from_segment = merged_name
         if is_reversed:
           l2.from_orient = gfapy.invert(l2.from_orient)
       self.add_line(l2)

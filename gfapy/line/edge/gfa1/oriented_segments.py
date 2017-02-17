@@ -8,9 +8,9 @@ class OrientedSegments:
     Returns
     -------
     gfapy.OrientedLine
-      The oriented segment represented by the from/from_orient fields.
+      The oriented segment represented by the from_segment/from_orient fields.
     """
-    return gfapy.OrientedLine(self.frm, self.from_orient)
+    return gfapy.OrientedLine(self.from_segment, self.from_orient)
 
   @property
   def oriented_to(self):
@@ -18,6 +18,6 @@ class OrientedSegments:
     Returns
     -------
     gfapy.OrientedLine
-      The oriented segment represented by the to/to_orient fields.
+      The oriented segment represented by the to_segment/to_orient fields.
     """
-    return gfapy.OrientedLine(self.to, self.to_orient)
+    return gfapy.OrientedLine(self.to_segment, self.to_orient)

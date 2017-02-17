@@ -20,8 +20,8 @@ class TestAPIPositionals(unittest.TestCase):
 
   fieldnames = {
     "S1":["name", "sequence"],
-    "L" :["from", "from_orient", "to", "to_orient", "overlap"],
-    "C" :["from", "from_orient", "to", "to_orient", "pos", "overlap"],
+    "L" :["from_segment", "from_orient", "to_segment", "to_orient", "overlap"],
+    "C" :["from_segment", "from_orient", "to_segment", "to_orient", "pos", "overlap"],
     "P" :["path_name", "segment_names", "overlaps"],
     "S2":["sid", "slen", "sequence"],
     "E" :["eid", "sid1", "sid2", "beg1", "end1", "beg2", "end2", "alignment"],
@@ -34,9 +34,9 @@ class TestAPIPositionals(unittest.TestCase):
   # alternative values to set tests
   v1 = {
     "S1":{"name":"sx", "sequence":"accg"},
-    "L":{"from":"a1", "from_orient":"-", "to":"a2", "to_orient":"-",
+    "L":{"from_segment":"a1", "from_orient":"-", "to_segment":"a2", "to_orient":"-",
            "overlap": gfapy.Alignment("12M")},
-    "C":{"from":"cx", "from_orient":"-", "to":"cy", "to_orient":"-",
+    "C":{"from_segment":"cx", "from_orient":"-", "to_segment":"cy", "to_orient":"-",
            "pos":123, "overlap": gfapy.Alignment("120M")},
     "P":{"path_name":"px", "segment_names":[gfapy.OrientedLine("x","+"), gfapy.OrientedLine("y","-")],
            "overlaps":[gfapy.Alignment("10M")]},
@@ -59,9 +59,9 @@ class TestAPIPositionals(unittest.TestCase):
   }
   v2 = {
     "S1":{"name":"xs", "sequence":"aggc"},
-    "L":{"from":"a5", "from_orient":"+", "to":"a7", "to_orient":"+",
+    "L":{"from_segment":"a5", "from_orient":"+", "to_segment":"a7", "to_orient":"+",
            "overlap":gfapy.Alignment("9M3I3M")},
-    "C":{"from":"cp", "from_orient":"+", "to":"cl", "to_orient":"+",
+    "C":{"from_segment":"cp", "from_orient":"+", "to_segment":"cl", "to_orient":"+",
            "pos":213, "overlap":gfapy.Alignment("110M4D10M")},
     "P":{"path_name":"pu", "segment_names":[gfapy.OrientedLine("k","-"),
            gfapy.OrientedLine("l","+")], "overlaps":[gfapy.Alignment("11M")]},
@@ -86,8 +86,9 @@ class TestAPIPositionals(unittest.TestCase):
       "S1":{"name":"sid"}, "P":{"path_name":"name"},
       "S2":{"sid":"name"}, "E":{"eid":"name"}, "G":{"gid":"name"},
       "U":{"pid":"name"}, "O":{"pid":"name"},
-      "C":{"from":"container", "from_orient":"container_orient",
-             "to":"contained", "to_orient":"contained_orient"}
+      "L":{"from_segment": "from", "to_segment": "to"},
+      "C":{"from_segment":"container", "from_orient":"container_orient",
+             "to_segment":"contained", "to_orient":"contained_orient"}
   }
 
   def test_number_of_positionals(self):

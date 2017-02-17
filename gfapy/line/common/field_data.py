@@ -185,3 +185,9 @@ class FieldData:
       self._data[fieldname] = value
     if renaming_connected:
       self._gfa._register_line(self)
+
+  def _dealias_fieldname(self, fieldname):
+    return self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
+
+  def _dealias_fieldnames(self, fieldnames):
+    fieldnames[:] = map(self._dealias_fieldname, fieldnames)

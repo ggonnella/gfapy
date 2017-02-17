@@ -64,14 +64,13 @@ class ToGFA1:
   def oriented_to(self):
     return self.sid2 if self.is_sid1_from() else self.sid1
 
-  # cannot be called from as from is a keyword :(
   @property
-  def frm(self):
+  def from_segment(self):
     """
     Returns
     -------
     str, gfapy.line.segment.GFA2
-      Value of the GFA1 **from** field, if the edge is a link or containment.
+      Value of the GFA1 **from_segment** field, if the edge is a link or containment.
 
     Raises
     ------
@@ -80,10 +79,10 @@ class ToGFA1:
     """
     return self.oriented_from.line
 
-  @frm.setter
-  def frm(self, value):
+  @from_segment.setter
+  def from_segment(self, value):
     """
-    Set the field which will be returned by calling from
+    Set the field which will be returned by calling from_segment
 
     Parameters
     ----------
@@ -119,12 +118,12 @@ class ToGFA1:
     self.oriented_from.orient = value
 
   @property
-  def to(self):
+  def to_segment(self):
     """
     Returns
     -------
     str, gfapy.line.segment.GFA2
-      Value of the GFA1 **to** field, if the edge is a link or containment.
+      Value of the GFA1 **to_segment** field, if the edge is a link or containment.
 
     Raises
     ------
@@ -133,8 +132,8 @@ class ToGFA1:
     """
     return self.oriented_to.line
 
-  @to.setter
-  def to(self, value):
+  @to_segment.setter
+  def to_segment(self, value):
     """
     Set the field which will be returned by calling to.
 

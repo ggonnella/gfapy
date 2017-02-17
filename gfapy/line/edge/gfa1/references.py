@@ -12,7 +12,7 @@ class References:
                                     version = "gfa1",
                                     virtual = True)
         s.connect(self._gfa)
-      self._set_existing_field(d, s, set_reference = True)
+      self._set_existing_field(d+"_segment", s, set_reference = True)
       if self.record_type == "L":
         et = self.from_end.end_type if d == "from" else self.to_end.end_type
         key = "dovetails_{}".format(et)
@@ -22,7 +22,7 @@ class References:
       s._add_reference(self, key)
 
   def _import_field_references(self, previous):
-    for d in ["from", "to"]:
+    for d in ["from_segment", "to_segment"]:
       self._set_existing_field(d, self._gfa.segment(self.get(d)),
           set_reference = True)
 
@@ -30,6 +30,6 @@ class References:
     if ref.record_type == "P":
       return ["paths"]
     elif ref.record_type == "S":
-      return ["from", "to"]
+      return ["from_segment", "to_segment"]
     else:
       return []

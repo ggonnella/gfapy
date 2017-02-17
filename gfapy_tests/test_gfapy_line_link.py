@@ -10,9 +10,9 @@ class TestLineLink(unittest.TestCase):
     gfapy.Line.from_string(string)
     self.assertIsInstance(gfapy.Line.from_string(string), gfapy.line.edge.Link)
     self.assertEqual(str(fields[0]), gfapy.Line.from_string(string).record_type)
-    self.assertEqual(str(fields[1]), gfapy.Line.from_string(string).frm)
+    self.assertEqual(str(fields[1]), gfapy.Line.from_string(string).from_segment)
     self.assertEqual(str(fields[2]), gfapy.Line.from_string(string).from_orient)
-    self.assertEqual(str(fields[3]), gfapy.Line.from_string(string).to)
+    self.assertEqual(str(fields[3]), gfapy.Line.from_string(string).to_segment)
     self.assertEqual(str(fields[4]), gfapy.Line.from_string(string).to_orient)
     self.assertEqual([gfapy.alignment.CIGAR.Operation(12, "M")],
                       gfapy.Line.from_string(string).overlap)

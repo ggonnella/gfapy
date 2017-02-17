@@ -130,7 +130,7 @@ class References:
       where the current segment is the contained segment.
     """
     seen = set()
-    return [l.frm for l in self.edges_to_containers \
+    return [l.from_segment for l in self.edges_to_containers \
              if id(l) not in seen and not seen.add(id(l))]
 
   @property
@@ -146,7 +146,7 @@ class References:
       where the current segment is the container segment.
     """
     seen = set()
-    return [l.to for l in self.edges_to_contained \
+    return [l.to_segment for l in self.edges_to_contained \
              if id(l) not in seen and not seen.add(id(l))]
 
   @property
@@ -191,7 +191,7 @@ class References:
     elif ref.record_type == "L":
       return ["dovetails_L", "dovetails_R"]
     elif ref.record_type == "C":
-      return ["edges_to_contained"] if (key_in_ref == "from") \
+      return ["edges_to_contained"] if (key_in_ref == "from_segment") \
         else ["edges_to_containers"]
     elif ref.record_type == "G":
       return ["gaps_L", "gaps_R"]

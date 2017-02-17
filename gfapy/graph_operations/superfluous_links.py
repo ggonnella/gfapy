@@ -37,7 +37,7 @@ class SuperfluousLinks:
     if not isinstance(segment, gfa.Line):
       segment = self.try_get_segment(segment)
     for e in segment.dovetails:
-      if e.frm == e.to:
+      if e.from_segment == e.to_segment:
         e.disconnect()
 
   def remove_self_links(self):

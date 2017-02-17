@@ -14,7 +14,7 @@ class FromTo:
     bool
       If the from and to segments are equal.
     """
-    return str(self.frm) == str(self.to)
+    return str(self.from_segment) == str(self.to_segment)
 
   def is_circular_same_end(self):
     """
@@ -36,7 +36,7 @@ class FromTo:
     .. note:: The result is meaningful only for links and dovetails edges.
     """
     return gfapy.SegmentEnd.from_list([
-                                  self.frm,
+                                  self.from_segment,
                                   "R" if self.from_orient == "+" else "L"])
 
   @property
@@ -49,7 +49,7 @@ class FromTo:
 
     .. note:: The result is meaningful only for links and dovetails edges.
     """
-    return gfapy.SegmentEnd.from_list([self.to, 
+    return gfapy.SegmentEnd.from_list([self.to_segment,
       "L" if self.to_orient == "+" else "R"])
 
   @property
@@ -69,7 +69,7 @@ class FromTo:
     -------
     str
     """
-    return str(self.frm)
+    return str(self.from_segment)
 
   @property
   def to_name(self):
@@ -81,7 +81,7 @@ class FromTo:
     -------
     str
     """
-    return str(self.to)
+    return str(self.to_segment)
 
   def other_end(self, segment_end, tolerant=False):
     """

@@ -9,9 +9,9 @@ class TestLineContainment(unittest.TestCase):
     gfapy.Line.from_string(string)
     self.assertIsInstance(gfapy.Line.from_string(string), gfapy.line.edge.Containment)
     self.assertEqual(fields[0], gfapy.Line.from_string(string).record_type)
-    self.assertEqual(fields[1], gfapy.Line.from_string(string).frm)
+    self.assertEqual(fields[1], gfapy.Line.from_string(string).from_segment)
     self.assertEqual(fields[2], gfapy.Line.from_string(string).from_orient)
-    self.assertEqual(fields[3], gfapy.Line.from_string(string).to)
+    self.assertEqual(fields[3], gfapy.Line.from_string(string).to_segment)
     self.assertEqual(fields[4], gfapy.Line.from_string(string).to_orient)
     self.assertEqual(12, gfapy.Line.from_string(string).pos)
     self.assertEqual([gfapy.alignment.cigar.CIGAR.Operation(12, "M")],

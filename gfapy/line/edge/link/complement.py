@@ -22,9 +22,9 @@ class Complement:
     	The inverted link.
     """
     l = self.clone()
-    l.frm = self.to
+    l.from_segment = self.to
     l.from_orient = gfapy.invert(self.to_orient)
-    l.to = self.frm
+    l.to_segment = self.from_segment
     l.to_orient = gfapy.invert(self.from_orient)
     l.overlap = self.overlap.complement()
     return l
@@ -48,9 +48,9 @@ class Complement:
     gfapy.line.edge.Link
       self
     """
-    tmp = self.frm
-    self.frm = self.to
-    self.to = tmp
+    tmp = self.from_segment
+    self.from_segment = self.to_segment
+    self.to_segment = tmp
     tmp = self.from_orient
     self.from_orient = gfapy.invert(self.to_orient)
     self.to_orient = gfapy.invert(tmp)
