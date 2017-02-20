@@ -2,10 +2,11 @@
 
 Different validation levels are available. They represent different compromises
 between speed and warrant of validity.  The validation level can be specified
-when the gfapy object is created, using the ```vlevel``` parameter of
-```gfapy.new``` and ```gfapy.from_file```. Four levels of validation are defined
+when the gfapy.Gfa object is created, using the ```vlevel``` parameter of
+the constructor and of the ```gfapy.Gfa.from_file()``` method.
+Four levels of validation are defined
 (0 = no validation, 1 = validation by reading, 2 = validation by reading and
-writing, 3 = continuous validation).  The default validation level value is 1.
+writing, 3 = continuous validation). The default validation level value is 1.
 
 ### Manual validation
 
@@ -21,7 +22,7 @@ segment, to the value of the LN tag (if present).
 
 It is also possible to validate the structure of the GFA, for example
 to check if there are unresolved references to lines. To do this,
-use the ```validate``` method of the ```gfapy``` class.
+use the ```validate()``` method of the ```gfapy.Gfa``` class.
 
 ### No validations
 
@@ -44,7 +45,7 @@ exception on accessing the data if not.
 
 The user is supposed to run ```validate_field(fieldname)``` when changing
 a field content to something which can be potentially invalid, or
-```validate``` if potentially cross-field validations could fail.
+```validate()``` if potentially cross-field validations could fail.
 
 ### Validation when writing
 
@@ -63,11 +64,3 @@ time a setter method is used.
 
 A validation of 3 means that gfapy guarantees (as good as it can)
 that the GFA content is always valid.
-
-### Summary of validation related methods
-
-```python
-gfapy#validate
-gfapy::Line#validate
-gfapy::Line#validate_field(fieldname)
-```
