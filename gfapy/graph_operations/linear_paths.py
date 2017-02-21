@@ -202,7 +202,7 @@ class LinearPaths:
           retval[count_tag] += int(retval[count_tag]*multfactor)
     return retval
 
-  def _add_segment_to_merged(self,merged, segment, is_reversed, cut, init,
+  def _add_segment_to_merged(self, merged, segment, is_reversed, cut, init,
                              enable_tracking=False, merged_name=None):
     n = segment.name
     if is_reversed:
@@ -226,23 +226,23 @@ class LinearPaths:
       else:
         o = segment.get("or")
     if init:
-      merged.sequence = s
+      merged.sequence = [s]
       if merged_name:
-        merged.name = merged_name
+        merged.name = [merged_name]
       else:
-        merged.name = n
+        merged.name = [n]
       merged.LN = segment.LN
       if enable_tracking:
         merged.rn = rn
-        merged.set("or",o)
+        merged.set("or",[o])
         merged.mp = mp
     else:
       if gfapy.is_placeholder(segment.sequence):
         merged.sequence = gfapy.Placeholder()
       else:
-        merged.sequence += s
+        merged.sequence.append(s)
       if not merged_name:
-        merged.name = "{}_{}".format(merged.name, n)
+        merged.name.append(n)
       if merged.LN:
         if enable_tracking:
           if rn:
@@ -261,9 +261,9 @@ class LinearPaths:
         merged.mp = None
       if enable_tracking:
         if not merged.get("or"):
-          merged.set("or", o)
+          merged.set("or", [o])
         else:
-          merged.set("or", merged.get("or")+","+o)
+          merged.get("or").append(o)
 
   def __get_short_merged_name(self):
     forbidden = self.names
@@ -306,6 +306,8 @@ class LinearPaths:
       jntag="jn", merged_name=None, enable_tracking=False, cut_counts=False):
     merged = self.try_get_segment(segpath[0].segment).clone()
     merged.set(jntag, None)
+    merged_vlevel = merged.vlevel
+    merged.vlevel = 0
     total_cut = 0
     a = segpath[0]
     first_reversed = (a.end_type == "L")
@@ -340,7 +342,14 @@ class LinearPaths:
       a = gfapy.SegmentEnd(b).inverted()
       if self._progress:
         self.__progress_log("merge_linear_paths", 0.95)
+    merged.vlevel = merged_vlevel
+    if isinstance(merged.name, list):
+      merged.name = "_".join(merged.name)
+    ortag = merged.get("or")
+    if isinstance(ortag, list):
+      merged.set("or", ",".join(ortag))
     if not gfapy.is_placeholder(merged.sequence):
+      merged.sequence = "".join(merged.sequence)
       if self._version == "gfa1":
         if not merged.LN:
           merged.LN = len(merged.sequence)
