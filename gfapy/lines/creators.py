@@ -29,21 +29,19 @@ class Creators:
     elif storage_key == "name":
       if gfa_line.record_type not in self._records:
         self._records[gfa_line.record_type] = {}
-      if gfapy.is_placeholder(gfa_line.name):
-        if None not in self._records[gfa_line.record_type]:
-          self._records[gfa_line.record_type][None] = []
-        self._records[gfa_line.record_type][None].append(gfa_line)
-      else:
-        self._records[gfa_line.record_type][gfa_line.name] = gfa_line
+      key = gfa_line.name
+      if gfapy.is_placeholder(key):
+        key = id(gfa_line)
+      self._records[gfa_line.record_type][key] = gfa_line
     elif storage_key == "external":
       if gfa_line.external.line not in self._records[gfa_line.record_type]:
-        self._records[gfa_line.record_type][gfa_line.external.line] = []
-      self._records[gfa_line.record_type][gfa_line.external.line].append(\
-          gfa_line)
+        self._records[gfa_line.record_type][gfa_line.external.line] = {}
+      self._records[gfa_line.record_type][\
+          gfa_line.external.line][id(gfa_line)] = gfa_line
     elif storage_key is None:
       if gfa_line.record_type not in self._records:
-        self._records[gfa_line.record_type] = []
-      self._records[gfa_line.record_type].append(gfa_line)
+        self._records[gfa_line.record_type] = {}
+      self._records[gfa_line.record_type][id(gfa_line)] = gfa_line
 
   def __add_line_unknown_version(self, gfa_line):
     if isinstance(gfa_line, str):

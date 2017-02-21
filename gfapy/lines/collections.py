@@ -3,55 +3,58 @@ import gfapy
 class Collections:
   @property
   def comments(self):
-    return self._records["#"]
+    d = self._records["#"]
+    return list(d.values())
 
   @property
   def gfa1_containments(self):
-    return self._records["C"]
+    d = self._records["C"]
+    return list(d.values())
 
   @property
   def gfa1_links(self):
-    return self._records["L"]
+    d = self._records["L"]
+    return list(d.values())
 
   @property
   def gfa2_edges(self):
     d = self._records["E"]
-    return [v for k,v in d.items() if k is not None] + d[None]
+    return list(d.values())
 
   @property
   def gaps(self):
     d = self._records["G"]
-    return [v for k,v in d.items() if k is not None] + d[None]
+    return list(d.values())
 
   @property
   def sets(self):
     d = self._records["U"]
-    return [v for k,v in d.items() if k is not None] + d[None]
+    return list(d.values())
 
   @property
   def gfa2_paths(self):
     d = self._records["O"]
-    return [v for k,v in d.items() if k is not None] + d[None]
+    return list(d.values())
 
   @property
   def gfa2_edge_names(self):
     d = self._records["E"]
-    return [k for k in d.keys() if k is not None]
+    return list([k for k in d.keys() if isinstance(k, str)])
 
   @property
   def gap_names(self):
     d = self._records["G"]
-    return [k for k in d.keys() if k is not None]
+    return list([k for k in d.keys() if isinstance(k, str)])
 
   @property
   def set_names(self):
     d = self._records["U"]
-    return [k for k in d.keys() if k is not None]
+    return list([k for k in d.keys() if isinstance(k, str)])
 
   @property
   def gfa2_path_names(self):
     d = self._records["O"]
-    return [k for k in d.keys() if k is not None]
+    return list([k for k in d.keys() if isinstance(k, str)])
 
   @property
   def segments(self):
@@ -117,7 +120,7 @@ class Collections:
   @property
   def fragments(self):
     d = self._records["F"]
-    return [f for e in d.values() for f in e]
+    return [f for e in d.values() for f in e.values()]
 
   @property
   def external_names(self):
@@ -152,24 +155,13 @@ class Collections:
     cr = []
     for k in self.custom_record_keys:
       collection = self._records[k]
-      if isinstance(collection,dict):
-        cr += list(collection.values())
-      else:
-        cr += collection
+      cr += list(collection.values())
     return cr
 
   def custom_records_of_type(self, record_type):
     if record_type not in self.custom_record_keys:
       return []
-    try:
-      collection = self._records[record_type]
-    except NameError:
-      return []
-    else:
-      if isinstance(collection,dict):
-        return list(collection.values())
-      else:
-        return collection
+    return list(self._records[record_type].values())
 
   @property
   def lines(self):

@@ -13,13 +13,13 @@ class TestAPILinesCollections(unittest.TestCase):
     self.assertEqual(["2_to_6", "1_to_5"], [x.name for x in gfa.containments])
     # dovetails
     self.assertEqual(4, len(gfa.dovetails))
-    self.assertEqual(["1_to_2", "1_to_3", "11_to_12", "11_to_13"],
-                 [x.name for x in gfa.dovetails])
+    self.assertEqual(set(["1_to_2", "1_to_3", "11_to_12", "11_to_13"]),
+                 set([x.name for x in gfa.dovetails]))
     # edges
     self.assertEqual(6, len(gfa.edges))
-    self.assertEqual(["1_to_2", "1_to_3", "11_to_12",
-                  "11_to_13", "2_to_6", "1_to_5"],
-                 [x.name for x in gfa.edges])
+    self.assertEqual(set(["1_to_2", "1_to_3", "11_to_12",
+                  "11_to_13", "2_to_6", "1_to_5"]),
+                 set([x.name for x in gfa.edges]))
     # segments
     self.assertSetEqual(set(["1", "3", "5", "13", "11", "12", "4", "6", "2"]),
                  set([x.name for x in gfa.segments]))

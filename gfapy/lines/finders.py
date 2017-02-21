@@ -39,7 +39,7 @@ class Finders:
     return gfa_line
 
   def fragments_for_external(self, external_id):
-    return self._records["F"].get(external_id,[])
+    return list(self._records["F"].get(external_id,{}).values())
 
   def select(self, dict_or_line):
     is_dict = isinstance(dict_or_line, dict)
@@ -89,14 +89,10 @@ class Finders:
       return self.lines
     else:
       d = self._records[record_type]
-      if record_type == "S" or record_type == "P":
-        return list(d.values())
-      elif record_type in ["E", "G", "U", "O"]:
-        return [v for k,v in d.items() if k is not None] + d.get(None,[])
-      elif record_type == "F":
+      if record_type == "F":
         retval = []
         for v in d.values():
-          retval.extend(v)
+          retval.extend(list(v.values()))
         return retval
       else:
-        return d
+        return list(d.values())
