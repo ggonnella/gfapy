@@ -86,8 +86,6 @@ class FieldArray:
     """
     if datatype is None:
       datatype = self._datatype
-      for x in self._data:
-        print(gfapy.Field.to_gfa_field(x, datatype = self._datatype))
     return "\t".join(
         [ gfapy.Field.to_gfa_field(x, datatype = self._datatype, \
              fieldname = fieldname) for x in self._data ])

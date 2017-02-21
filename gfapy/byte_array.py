@@ -24,7 +24,7 @@ class ByteArray(bytes):
   a_lst = list(a)
   a_lst[0] = 0
   a = gfapy.ByteArray(a_lst)
-  print(a) # => "000203"
+  str(a) # => "000203"
   """
 
   def __new__(cls, arg):
