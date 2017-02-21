@@ -2,6 +2,7 @@ import gfapy
 from .lines import Lines
 from .graph_operations import GraphOperations
 from collections import defaultdict
+import sys
 
 class Gfa(Lines,GraphOperations):
   def __init__(self, vlevel = 1, version = None):
@@ -21,7 +22,7 @@ class Gfa(Lines,GraphOperations):
     self._records["L"] = []
     self._records["#"] = []
     self._segments_first_order = False
-    self._progress = False
+    self._progress = None
     self._default = {"count_tag": "RC", "unit_length": 1}
     self._line_queue = []
     if version is None:
@@ -69,9 +70,9 @@ class Gfa(Lines,GraphOperations):
       with open(filename) as f:
         for line in f:
           linecount += 1
-      self._progress_log_unit("read_file", "lines", linecount,
-                        "Parsing file {}".format(filename)+
-                        " containing {} lines".format(linecount))
+      self._progress_log_init("read_file", "lines", linecount,
+                              "Parsing file {}".format(filename)+
+                              " containing {} lines".format(linecount))
     with open(filename) as f:
       for line in f:
         self.add_line(line.rstrip('\r\n'))
@@ -155,4 +156,23 @@ class Gfa(Lines,GraphOperations):
     if vlevel >= 1:
       gfa.validate()
     return gfa
+
+  # Progress logging related-methods:
+
+  def enable_progress_logging(self, part=0.1, channel=sys.stderr):
+    '''Activate logging of progress'''
+    self._progress = gfapy.Logger(channel=channel)
+    self._progress.enable_progress(part=part)
+
+  def _progress_log_init(self, symbol, units, total, initmsg = None):
+    if self._progress is not None:
+      self._progress.progress_init(symbol, units, total, initmsg)
+
+  def _progress_log(self, symbol, progress=1, **keyargs):
+    if self._progress is not None:
+      self._progress.progress_log(symbol, progress)
+
+  def _progress_log_end(self, symbol, **keyargs):
+    if self._progress is not None:
+      self._progress.progress_end(symbol)
 

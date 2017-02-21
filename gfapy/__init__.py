@@ -14,6 +14,7 @@ from gfapy.lastpos import isfirstpos, islastpos, posvalue
 from gfapy.symbol_invert import invert
 from gfapy.field import Field
 from gfapy.line import Line
+from gfapy.logger import Logger
 from gfapy.segment_end_path import SegmentEndsPath
 from gfapy.segment_end import *
 from gfapy.oriented_line import OrientedLine
