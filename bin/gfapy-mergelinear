@@ -12,7 +12,7 @@ op.add_argument("--redundant",
 opts = op.parse_args()
 
 gfa = gfapy.Gfa()
-#gfa.enable_progress_logging(part=0.01)
+gfa.enable_progress_logging(part=0.01)
 gfa.vlevel = 0
 gfa.read_file(opts.filename)
 if opts.redundant:
