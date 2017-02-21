@@ -26,9 +26,7 @@ class TestUnitSegmentEnd(unittest.TestCase):
         gfapy.SegmentEnd.from_list(["a", "L"]).__class__)
     self.assertRaises(gfapy.ArgumentError, gfapy.SegmentEnd.from_list,
       ["a", "L", "L"])
-    # from_list() performs validation
-    self.assertRaises(gfapy.ValueError, gfapy.SegmentEnd.from_list,
-      ["a", "X"])
+    gfapy.SegmentEnd.from_list(["a", "X"]) # no validation
 
   def test_segment(self):
     self.assertEqual(TestUnitSegmentEnd.sym, TestUnitSegmentEnd.se_s.segment)

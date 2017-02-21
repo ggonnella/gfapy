@@ -172,7 +172,7 @@ class SegmentEnd:
     return SegmentEnd(string[0:-1], string[-1])
 
   @classmethod
-  def from_list(cls, lst):
+  def from_list(cls, lst, valid=True):
     """
     Create and validate a SegmentEnd from an list
 
@@ -184,5 +184,6 @@ class SegmentEnd:
       raise gfapy.ArgumentError("SegmentEnd.from_list requires a list of"+
           " two elements as argument, {} found".format(repr(lst)))
     se = SegmentEnd(lst[0], str(lst[1]))
-    se.validate()
+    if not valid:
+      se.validate()
     return se
