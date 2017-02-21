@@ -90,11 +90,11 @@ class LinearPaths:
     retval = []
     segnames = self.segment_names
     if self._progress:
-      self.__progress_log_init("linear_paths", "segments", len(segnames),
+      self._progress_log_init("linear_paths", "segments", len(segnames),
           "Detect linear paths ({})".format(len(segnames)))
     for sn in segnames:
       if self._progress:
-        self.__progress_log("linear_paths")
+        self._progress_log("linear_paths")
       if sn in exclude:
         continue
       lp = self.linear_path(sn, exclude)
@@ -108,7 +108,7 @@ class LinearPaths:
         else:
           retval += self.__junction_junction_paths(sn, junction_exclude)
     if self._progress:
-      self.__progress_log_end("linear_paths")
+      self._progress_log_end("linear_paths")
     return retval
 
   def merge_linear_path(self, segpath, redundant_junctions=False, jntag="jn",
@@ -144,7 +144,7 @@ class LinearPaths:
     for sn_et in segpath[idx1:idx2]:
       self.segment(sn_et.segment).disconnect()
       if self._progress:
-        self.__progress_log("merge_linear_paths", 0.05)
+        self._progress_log("merge_linear_paths", 0.05)
     return self
 
   def merge_linear_paths(self, redundant_junctions=False, jntag="jn",
@@ -152,8 +152,8 @@ class LinearPaths:
                         cut_counts=False):
     paths = self.linear_paths(redundant_junctions)
     if self._progress:
-      psize = sum([len(path) for path in paths]) // 2
-      self.__progress_log_init("merge_linear_paths", "segments", psize,
+      psize = sum([len(path) for path in paths])
+      self._progress_log_init("merge_linear_paths", "segments", psize,
           "Merge {} linear paths ".format(len(paths))+
           "({} segments)".format(psize))
     for path in paths:
@@ -162,7 +162,7 @@ class LinearPaths:
                              cut_counts=cut_counts,
                              enable_tracking=enable_tracking)
     if self._progress:
-      self.__progress_log_end("merge_linear_paths")
+      self._progress_log_end("merge_linear_paths")
     if redundant_junctions:
       self.__remove_junctions(jntag)
     return self
@@ -318,7 +318,7 @@ class LinearPaths:
         first_reversed, 0, True, enable_tracking=enable_tracking,
         merged_name=merged_name)
     if self._progress:
-      self.__progress_log("merge_linear_paths", 0.95)
+      self._progress_log("merge_linear_paths", 0.95)
     for i in range(len(segpath)-1):
       b = gfapy.SegmentEnd(segpath[i+1]).inverted()
       ls = self.segment(a.segment).end_relations(a.end_type, b, "dovetails")
@@ -341,7 +341,7 @@ class LinearPaths:
           merged_name=merged_name)
       a = gfapy.SegmentEnd(b).inverted()
       if self._progress:
-        self.__progress_log("merge_linear_paths", 0.95)
+        self._progress_log("merge_linear_paths", 0.95)
     merged.vlevel = merged_vlevel
     if isinstance(merged.name, list):
       merged.name = "_".join(merged.name)
@@ -364,7 +364,7 @@ class LinearPaths:
       factor = 1
       if cut_counts:
         factor = merged.length / (total_cut+merged.length)
-      for count_tag,count in __sum_of_counts(segpath,factor).items():
+      for count_tag,count in self.__sum_of_counts(segpath,factor).items():
         merged.set(count_tag, count)
     return merged, first_reversed, last_reversed
 
