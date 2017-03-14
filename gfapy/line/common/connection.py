@@ -67,7 +67,22 @@ class Connection:
       overwrite this method to connect their reference
       fields
     """
-    pass
+    if self.REFERENCE_INITIALIZERS:
+      for field, klass, refkey in self.REFERENCE_INITIALIZERS:
+        self._initialize_reference(field, klass, refkey)
+
+  def _initialize_reference(self, field, klass, refkey):
+    name = self.get(field)
+    line = self.gfa.line(name)
+    if line is None:
+      data = []
+      for i in range(len(klass.POSFIELDS)):
+        data.append("1")
+      line = klass(data, virtual=True, version="gfa2")
+      line.name = name
+      line.connect(self.gfa)
+    self._set_existing_field(field, line, set_reference=True)
+    line._add_reference(self, refkey)
 
   def _process_not_unique(self, previous):
     """

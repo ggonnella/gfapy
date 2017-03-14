@@ -2,60 +2,28 @@ import gfapy
 import re
 
 class Taxon(gfapy.Line):
-
   RECORD_TYPE = "T"
-  POSFIELDS = ["tid", "desc"]
-  PREDEFINED_TAGS = ["UL"]
-  DATATYPE = {
-    "tid":"identifier_gfa2",
-    "desc":"Z",
-    "UL":"Z",
-  }
+  POSFIELDS = ["tid"]
+  DATATYPE = { "tid":"identifier_gfa2",
+               "UL":"Z" }
   NAME_FIELD = "tid"
-  DEPENDENT_LINES = ["metagenomic_assignments"]
 
-Taxon._apply_definitions()
+Taxon.register_extension()
 
 class MetagenomicAssignment(gfapy.Line):
-
   RECORD_TYPE = "M"
-  POSFIELDS = ["mid", "tid", "sid", "score"]
+  POSFIELDS = ["mid", "tid", "sid"]
   DATATYPE = {
     "mid":"optional_identifier_gfa2",
     "tid":"identifier_gfa2",
     "sid":"identifier_gfa2",
-    "score":"optional_integer",
+    "SC":"i",
   }
   NAME_FIELD = "mid"
-  REFERENCE_FIELDS = ["tid", "sid"]
 
-  def _initialize_references(self):
-    s = self.gfa.segment(self.sid)
-    if s is None:
-      s = gfapy.line.segment.GFA2([self.sid, "1", "*"],
-                                   virtual=True, version="gfa2")
-      s.connect(self.gfa)
-    self._set_existing_field("sid", s, set_reference=True)
-    s._add_reference(self, "metagenomic_assignments")
-
-    t = self.gfa.line(self.tid)
-    if t is None:
-      t = Taxon([self.tid, "*"],
-                virtual=True, version="gfa2")
-      t.connect(self.gfa)
-    self._set_existing_field("tid", t, set_reference=True)
-    t._add_reference(self, "metagenomic_assignments")
-
-MetagenomicAssignment._apply_definitions()
-
-gfapy.line.segment.GFA2.DEPENDENT_LINES.append("metagenomic_assignments")
-gfapy.line.segment.GFA2._define_reference_getters()
-gfapy.Line.EXTENSIONS["M"] = MetagenomicAssignment
-gfapy.Line.EXTENSIONS["T"] = Taxon
-gfapy.Line.RECORD_TYPE_VERSIONS["specific"]["gfa2"].append("M")
-gfapy.Line.RECORD_TYPE_VERSIONS["specific"]["gfa2"].append("T")
-gfapy.lines.finders.Finders.RECORDS_WITH_NAME.append("T")
-gfapy.lines.finders.Finders.RECORDS_WITH_NAME.append("M")
+MetagenomicAssignment.register_extension(references=
+    [("sid", gfapy.line.segment.GFA2, "metagenomic_assignments"),
+     ("tid", Taxon, "metagenomic_assignments")])
 
 class TaxonID:
 

@@ -14,6 +14,8 @@ from .common.validate import Validate
 from .common.default_record_definition import DefaultRecordDefinition
 from functools import partial
 
+import gfapy
+
 try:
   from functools import partialmethod
 except ImportError:
@@ -73,6 +75,8 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
 
   @classmethod
   def _define_field_accessors(cls):
+    if not cls.PREDEFINED_TAGS:
+      cls.PREDEFINED_TAGS = list(set(cls.DATATYPE.keys()) - set(cls.POSFIELDS))
     for fieldname in cls.POSFIELDS + cls.PREDEFINED_TAGS:
       def get_method(self, fieldname):
         return self.get(fieldname)
@@ -111,3 +115,31 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
                        partial(set_method, k = k)))
     def all_references(self):
       return [ item for item in values for values in self._refs ]
+
+  @classmethod
+  def register_extension(cls, references=[]):
+    # check the definitions
+    for posfield in cls.POSFIELDS:
+      if posfield not in cls.DATATYPE:
+        raise gfapy.RuntimeError("Extension {} ".format(str(cls))+
+            "defines no datatype for the positional field {}".format(posfield))
+    if not cls.RECORD_TYPE:
+      raise gfapy.RuntimeError("Extension {} ".format(str(cls))+
+            "does not define the RECORD_TYPE constant")
+    if cls.NAME_FIELD is not None:
+      gfapy.lines.finders.Finders.RECORDS_WITH_NAME.append(cls.RECORD_TYPE)
+    for field, klass, refkey in references:
+      if field not in cls.REFERENCE_FIELDS:
+        if not cls.REFERENCE_FIELDS:
+          cls.REFERENCE_FIELDS = []
+        cls.REFERENCE_FIELDS.append(field)
+      if refkey not in klass.DEPENDENT_LINES:
+        klass.DEPENDENT_LINES.append(refkey)
+        klass._define_reference_getters()
+      if cls.REFERENCE_INITIALIZERS is None:
+        cls.REFERENCE_INITIALIZERS = []
+      cls.REFERENCE_INITIALIZERS.append((field, klass, refkey))
+    cls._apply_definitions()
+    gfapy.Line.EXTENSIONS[cls.RECORD_TYPE] = cls
+    gfapy.Line.RECORD_TYPE_VERSIONS["specific"]["gfa2"].append(cls.RECORD_TYPE)
+
