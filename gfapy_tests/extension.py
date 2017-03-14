@@ -12,12 +12,7 @@ class Taxon(gfapy.Line):
     "UL":"Z",
   }
   NAME_FIELD = "tid"
-  STORAGE_KEY = "name"
-  FIELD_ALIAS = {}
-  REFERENCE_FIELDS = []
-  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["metagenomic_assignments"]
-  OTHER_REFERENCES = []
 
 Taxon._apply_definitions()
 
@@ -25,7 +20,6 @@ class MetagenomicAssignment(gfapy.Line):
 
   RECORD_TYPE = "M"
   POSFIELDS = ["mid", "tid", "sid", "score"]
-  PREDEFINED_TAGS = []
   DATATYPE = {
     "mid":"optional_identifier_gfa2",
     "tid":"identifier_gfa2",
@@ -33,12 +27,7 @@ class MetagenomicAssignment(gfapy.Line):
     "score":"optional_integer",
   }
   NAME_FIELD = "mid"
-  STORAGE_KEY = "name"
-  FIELD_ALIAS = {}
   REFERENCE_FIELDS = ["tid", "sid"]
-  BACKREFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = []
-  OTHER_REFERENCES = []
 
   def _initialize_references(self):
     s = self.gfa.segment(self.sid)

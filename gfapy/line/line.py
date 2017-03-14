@@ -11,6 +11,7 @@ from .common.virtual_to_real import VirtualToReal
 from .common.update_references import UpdateReferences
 from .common.disconnection import Disconnection
 from .common.validate import Validate
+from .common.default_record_definition import DefaultRecordDefinition
 from functools import partial
 
 try:
@@ -22,7 +23,7 @@ except ImportError:
 
 class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldData,
            Equivalence, Cloning, Connection, VirtualToReal, UpdateReferences,
-           Disconnection, Validate):
+           Disconnection, Validate, DefaultRecordDefinition):
   """
   Generic representation of a record of a GFA file.
 
@@ -87,6 +88,10 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
 
   @classmethod
   def _define_field_aliases(cls):
+    if cls.STORAGE_KEY is None and cls.NAME_FIELD is not None:
+      cls.STORAGE_KEY = "name"
+    if cls.FIELD_ALIAS is None:
+      cls.FIELD_ALIAS = {}
     if cls.NAME_FIELD is not None and "name" not in cls.POSFIELDS:
       cls.FIELD_ALIAS["name"] = cls.NAME_FIELD
     for k,v in cls.FIELD_ALIAS.items():

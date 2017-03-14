@@ -1,4 +1,4 @@
-from . import Segment
+from .segment import Segment
 import gfapy
 
 class Factory(Segment):

@@ -8,17 +8,9 @@ class Unknown(Line):
 
   RECORD_TYPE = None
   POSFIELDS = ["name"]
-  FIELD_ALIAS = { }
-  PREDEFINED_TAGS = []
-  DATATYPE = {
-      "name" : "identifier_gfa2",
-  }
-  REFERENCE_FIELDS = []
+  DATATYPE = {"name": "identifier_gfa2"}
   NAME_FIELD = "name"
-  STORAGE_KEY = "name"
-  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["sets", "paths"]
-  OTHER_REFERENCES = []
 
   def __str__(self):
     return "?record_type?\t{}\tco:Z:line_created_by_gfapy".format(self.name)

@@ -1,10 +1,11 @@
-"""
-Implementation of the support for multiple header line in the
-GFA file (which also may contain the same value defined multiple
-times in different lines).
-"""
 import gfapy
+
 class Multiline:
+  """
+  Implementation of the support for multiple header line in the
+  GFA file (which also may contain the same value defined multiple
+  times in different lines).
+  """
 
   SINGLE_DEFINITION_TAGS = ["VN", "TS"]
 

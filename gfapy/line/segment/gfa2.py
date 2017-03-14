@@ -21,13 +21,9 @@ class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Segment):
     "UR" : "Z",
   }
   NAME_FIELD = "sid"
-  STORAGE_KEY = "name"
   FIELD_ALIAS = { "name" : "sid", "length" : "slen", "LN" : "slen" }
-  REFERENCE_FIELDS = []
-  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["dovetails_L", "dovetails_R", "gaps_L", "gaps_R",
                      "edges_to_contained", "edges_to_containers",
                      "fragments", "internals", "paths", "sets"]
-  OTHER_REFERENCES = []
 
 GFA2._apply_definitions()

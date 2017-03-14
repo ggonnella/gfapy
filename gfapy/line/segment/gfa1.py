@@ -25,10 +25,7 @@ class GFA1(WriterWoSequence, References, Coverage,
     "UR" : "Z",
   }
   NAME_FIELD = "name"
-  STORAGE_KEY = "name"
   FIELD_ALIAS = { "sid" : "name" }
-  REFERENCE_FIELDS = []
-  BACKREFERENCE_RELATED_FIELDS = []
   DEPENDENT_LINES = ["dovetails_L", "dovetails_R",
                      "edges_to_contained", "edges_to_containers"]
   gfa2_compatibility = ["gaps_L", "gaps_R", "fragments", "internals", "sets"]

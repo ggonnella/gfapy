@@ -21,17 +21,9 @@ class Comment(Writer, Tags, Init, Line):
 
   RECORD_TYPE = "#"
   POSFIELDS = ["content", "spacer"]
-  PREDEFINED_TAGS = []
   DATATYPE = {
     "content" : "comment",
     "spacer" : "comment",
   }
-  NAME_FIELD = None
-  STORAGE_KEY = None
-  FIELD_ALIAS = {}
-  REFERENCE_FIELDS = []
-  BACKREFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = []
-  OTHER_REFERENCES = []
 
 Comment._apply_definitions()

@@ -8,9 +8,11 @@ from ..gfa1.other import Other
 from ..containment.canonical import Canonical
 from ..containment.pos import Pos
 from ..containment.to_gfa2 import ToGFA2 as Containment_ToGFA2
-from .. import Edge
+from ..edge import Edge
 
-class Containment(Containment_ToGFA2, Pos, Canonical, Other, GFA1_AlignmentType, OrientedSegments, References, GFA1_ToGFA2, AlignmentType, FromTo, Edge):
+class Containment(Containment_ToGFA2, Pos, Canonical, Other,
+                  GFA1_AlignmentType, OrientedSegments, References,
+                  GFA1_ToGFA2, AlignmentType, FromTo, Edge):
   """A containment line of a GFA file"""
 
   RECORD_TYPE = "C"
@@ -33,11 +35,6 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other, GFA1_AlignmentType,
      "MQ" : "i",
      "NM" : "i",
   }
-  NAME_FIELD = None
-  STORAGE_KEY = None
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
-  BACKREFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = []
-  OTHER_REFERENCES = []
 
 Containment._apply_definitions()

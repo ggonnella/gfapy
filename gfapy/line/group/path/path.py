@@ -7,10 +7,8 @@ from ..group import Group
 
 class Path(Topology, References, Validation, CapturedPath, ToGFA2, Group):
   """A path line of a GFA1 file"""
-
   RECORD_TYPE = "P"
   POSFIELDS = ["path_name", "segment_names", "overlaps"]
-  PREDEFINED_TAGS = []
   FIELD_ALIAS = { "name" : "path_name" }
   DATATYPE = {
     "path_name" : "path_name_gfa1",
@@ -18,10 +16,7 @@ class Path(Topology, References, Validation, CapturedPath, ToGFA2, Group):
     "overlaps" : "alignment_list_gfa1",
   }
   NAME_FIELD = "path_name"
-  STORAGE_KEY = "name"
   REFERENCE_FIELDS = ["segment_names", "overlaps"]
-  BACKREFERENCE_RELATED_FIELDS = []
-  DEPENDENT_LINES = []
   OTHER_REFERENCES = ["links"]
 
 Path._apply_definitions()

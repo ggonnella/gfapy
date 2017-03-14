@@ -10,14 +10,15 @@ from .complement import Complement
 from .equivalence import Equivalence
 from .references import References as Link_References
 from .to_gfa2 import ToGFA2 as Link_ToGFA2
-from .. import Edge
+from ..edge import Edge
 
 class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
     Canonical, Other, GFA1_AlignmentType, OrientedSegments, GFA1_References, \
     AlignmentType, FromTo, Edge):
   """A link connects two segments, or a segment to itself."""
   RECORD_TYPE = "L"
-  POSFIELDS = ["from_segment", "from_orient", "to_segment", "to_orient", "overlap"]
+  POSFIELDS = ["from_segment", "from_orient", "to_segment", "to_orient",
+               "overlap"]
   PREDEFINED_TAGS = ["MQ", "NM", "RC", "FC", "KC"]
   FIELD_ALIAS = {"from": "from_segment", "to": "to_segment"}
   DATATYPE = {
@@ -32,11 +33,8 @@ class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
     "FC" : "i",
     "KC" : "i",
   }
-  NAME_FIELD = None
-  STORAGE_KEY = None
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
   BACKREFERENCE_RELATED_FIELDS = ["to_orient", "from_orient", "overlap"]
   DEPENDENT_LINES = ["paths"]
-  OTHER_REFERENCES = []
 
 Link._apply_definitions()

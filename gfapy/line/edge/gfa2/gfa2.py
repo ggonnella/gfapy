@@ -4,14 +4,15 @@ from ..gfa2.to_gfa1 import ToGFA1
 from ..gfa2.alignment_type import AlignmentType as GFA2_AlignmentType
 from ..gfa2.references import References
 from ..gfa2.other import Other
-from .. import Edge
+from ..edge import Edge
 
-class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo, ToGFA1, Edge):
+class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
+           ToGFA1, Edge):
   """An edge line of a GFA2 file"""
 
   RECORD_TYPE = "E"
-  POSFIELDS = ["eid", "sid1", "sid2", "beg1", "end1", "beg2", "end2", "alignment"]
-  PREDEFINED_TAGS = []
+  POSFIELDS = ["eid", "sid1", "sid2", "beg1", "end1", "beg2", "end2",
+               "alignment"]
   DATATYPE = {
     "eid" : "optional_identifier_gfa2",
     "sid1" : "oriented_identifier_gfa2",
@@ -23,11 +24,9 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo, ToGFA1,
     "alignment" : "alignment_gfa2",
   }
   NAME_FIELD = "eid"
-  STORAGE_KEY = "name"
   FIELD_ALIAS = { "name" : "eid" }
   REFERENCE_FIELDS = ["sid1", "sid2"]
   BACKREFERENCE_RELATED_FIELDS = ["beg1", "end1", "beg2", "end2"]
   DEPENDENT_LINES = ["paths", "sets"]
-  OTHER_REFERENCES = []
 
 GFA2._apply_definitions()
