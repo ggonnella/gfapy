@@ -185,3 +185,9 @@ class Field:
       gfapy.Field.validate_encoded_gfa_field(obj, datatype, fieldname)
     else:
       gfapy.Field.validate_decoded_gfa_field(obj, datatype, fieldname)
+
+  @classmethod
+  def register_datatype(cls, name, klass):
+    cls.GFA2_POSFIELD_DATATYPE.append(name)
+    cls.FIELD_MODULE[name] = klass
+

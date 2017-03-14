@@ -32,9 +32,6 @@ class TaxonID:
         not re.match(r"^[a-zA-Z0-9_]+$", string):
       raise gfapy.ValueError("Invalid taxon ID: {}".format(string))
 
-  def unsafe_decode(string):
-    return string
-
   def decode(string):
     TaxonID.validate_encoded(string)
     return string
@@ -42,24 +39,15 @@ class TaxonID:
   def validate_decoded(obj):
     if isinstance(obj,Taxon):
       TaxonID.validate_encoded(obj.name)
-      return obj.name
-    if isinstance(obj,str):
-      TaxonID.validate_encoded(obj)
-      return obj
     else:
       raise gfapy.TypeError(
         "Invalid type for taxon ID: "+"{}".format(repr(obj)))
 
-  def unsafe_encode(obj):
-    if isinstance(obj, Taxon):
-      obj = obj.name
-    return obj
-
   def encode(obj):
     TaxonID.validate_decoded(obj)
-    return TaxonID.unsafe_encode(obj)
+    return obj
 
-gfapy.Field.GFA2_POSFIELD_DATATYPE.append("taxon_id")
-gfapy.Field.FIELD_MODULE["taxon_id"] = TaxonID
+gfapy.Field.register_datatype("taxon_id", TaxonID)
+
 Taxon.DATATYPE["tid"] = "taxon_id"
 MetagenomicAssignment.DATATYPE["tid"] = "taxon_id"

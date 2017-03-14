@@ -5,7 +5,7 @@ from .extension import *
 class TestAPIExtensions(unittest.TestCase):
 
   def test_extensions(self):
-    g = gfapy.Gfa(version="gfa2")
+    g = gfapy.Gfa(version="gfa2", vlevel=0)
     MetagenomicAssignment(["*","N12","C","SC:i:20"])
     sA = gfapy.Line.from_string("S\tA\t1000\t*")
     g.append(sA)

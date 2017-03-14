@@ -52,7 +52,7 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
       contentmsg +
       "Datatype unknown: {}".format(repr(datatype)))
   try:
-    if safe:
+    if safe or not getattr(mod, "unsafe_encode"):
       return mod.encode(obj)
     else:
       return mod.unsafe_encode(obj)

@@ -49,7 +49,7 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
       contentmsg +
       "Datatype unknown: {}".format(repr(datatype)))
   try:
-    if safe:
+    if safe or not getattr(mod, "unsafe_decode"):
       return mod.decode(string)
     else:
       return mod.unsafe_decode(string)
