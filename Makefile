@@ -29,3 +29,7 @@ tests:
 # Remove distribution files
 cleanup:
 	rm -rf dist/ build/ gfapy.egg-info/
+
+upload:
+	twine register dist/*
+	twine upload dist/*
