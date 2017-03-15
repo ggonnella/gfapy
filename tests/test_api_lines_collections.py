@@ -4,7 +4,7 @@ import unittest
 class TestAPILinesCollections(unittest.TestCase):
 
   def test_gfa1_collections(self):
-    gfa = gfapy.Gfa.from_file("testdata/all_line_types.gfa1.gfa")
+    gfa = gfapy.Gfa.from_file("tests/testdata/all_line_types.gfa1.gfa")
     # comments
     self.assertEqual(1, len(gfa.comments))
     self.assertRegex(gfa.comments[0].content, r'collections')
@@ -38,7 +38,7 @@ class TestAPILinesCollections(unittest.TestCase):
                  gfa.paths]), set([str(x) for x in gfa.lines]))
 
   def test_gfa2_collections(self):
-    gfa = gfapy.Gfa.from_file("testdata/all_line_types.gfa2.gfa")
+    gfa = gfapy.Gfa.from_file("tests/testdata/all_line_types.gfa2.gfa")
     # comments
     self.assertEqual(3, len(gfa.comments))
     self.assertRegex(gfa.comments[0].content, r'collections')

@@ -48,7 +48,7 @@ Usage
 If you installed gfapy as described above, you can import it in your script
 using the conventional Python syntax::
 
-  import gfapy
+  >>> import gfapy
 
 Documentation
 =============

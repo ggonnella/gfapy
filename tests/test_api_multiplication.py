@@ -54,8 +54,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_links_distribution_l1_m2(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l1.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l1.m2.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l1.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l1.m2.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -66,8 +66,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_links_distribution_l2_m2(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m2.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m2.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -78,8 +78,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_no_links_distribution_l2_m2(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m2.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m2.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -90,8 +90,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_links_distribution_l2_m3(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m3.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m3.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -102,8 +102,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_no_links_distribution_l2_m3(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m3.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m3.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -114,8 +114,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_links_distribution_l3_m2(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l3.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l3.m2.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.m2.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -126,8 +126,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_no_links_distribution_l3_m2(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l3.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -138,8 +138,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_muliply_without_rgfatools(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l3.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -150,8 +150,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_distribution_policy_equal_with_equal(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m2.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m2.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -162,8 +162,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_distribution_policy_equal_with_not_equal(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l3.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l3.m2.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -174,8 +174,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_distribution_policy_L(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m2.no_ld.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m2.no_ld.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
@@ -186,8 +186,8 @@ class TestAPIMultiplication(unittest.TestCase):
 
   def test_distribution_policy_R(self):
     for sfx in ["gfa", "gfa2"]:
-      g1 = gfapy.Gfa.from_file("testdata/links_distri.l2.{}".format(sfx))
-      g2 = gfapy.Gfa.from_file("testdata/links_distri.l2.m2.{}".format(sfx))
+      g1 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.{}".format(sfx))
+      g2 = gfapy.Gfa.from_file("tests/testdata/links_distri.l2.m2.{}".format(sfx))
       self.assertNotEqual(set(g2.segment_names),set(g1.segment_names))
       self.assertNotEqual(set([str(x) for x in g2.dovetails]),
                           set([str(x) for x in g1.dovetails]))
