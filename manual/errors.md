@@ -1,7 +1,7 @@
 ## Errors
 
-All exception raised in the library are subclasses of RGFA::Error.
-This means that ```rescue RGFA::Error``` catches all library errors.
+All exception raised in the library are subclasses of gfapy.Error.
+This means that ```except gfapy.Error``` catches all library errors.
 
 Different types of errors are defined and are summarized in the following table:
 
@@ -30,4 +30,3 @@ by the programmer (e.g. a value is implied to be positive at a certain point
 of the code). It the checks fails, an assertion error is raised.
 The user may report the problem, as this may indicate a bug (unless the user
 did something he was not supposed to do, such as calling an API private method).
-

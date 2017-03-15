@@ -1,4 +1,0 @@
-html, body{margin: 0; padding: 0; text-align: center}
-.page{box-sizing: border-box; height: 100%; width: 100%; border: 1px solid transparent; page-break-after: always;}
-.page-middle{height: 100%; width: 100%; display: table;}
-.page-middle-inner{height: 100%; width: 100%; display: table-cell; vertical-align: middle;}

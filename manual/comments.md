@@ -1,24 +1,22 @@
 ## Comments
 
 GFA lines starting with a ```#``` symbol are considered comments.
-In RGFA comments are represented by instances of RGFA::Line::Comment.
-They have a similar interface to other line instances (see below),
+In gfapy comments are represented by instances of ```gfapy.line.Comment```.
+They have a similar interface to other line instances,
 with some differences, e.g. they do not support tags.
 
-### Comments in RGFA objects
+### Accessing the comments
 
-Adding a comment to a RGFA object is done similary to other lines, by using the
-```RGFA#<<(line)``` method.  The comments of a RGFA object can be accessed
-using the ```comments``` method. This returns an array of comment line
-instances.  To remove a comment from the RGFA, first find the instance (using
-the #comments array), then call ```disconnect``` on the line instance or
-``rm(line)``` on the RGFA object (passing the instance as parameter).
+Adding a comment to a gfapy.Gfa instance is done similary to other lines, by using the
+```add_line(line)``` method.  The comments of a gfapy object can be accessed
+using the ```comments``` method. This returns a list of comment line
+instances.  To remove a comment from the Gfa, you need to find the instance in
+the list, and call ```disconnect()``` on it.
 
-Examples:
-```ruby
-g << "# this is a comment"
-g.comments.map(&:to_s) # => ["# this is a comment"]
-g.comments[0].disconnect # or g.rm(g.comments[0])
+```python
+g.add_line("# this is a comment")
+[str(c) for c in g.comments] # => ["# this is a comment"]
+g.comments[0].disconnect()
 g.comments # => []
 ```
 
@@ -30,18 +28,20 @@ initial spacing characters, is included in the field +content+.
 The initial spacing characters can be read/changed using the +spacer+
 field. The default value is a single space.
 
-Tags are not supported by comment lines. If the line contains tags,
-these are nor parsed, but included in the +content+ field.
-Trying to set or get tag values raises exceptions.
-
-### Summary of comments-related API methods
-
-```ruby
-RGFA#<<(comment_line)
-RGFA#comments
-RGFA::Line::Comment#disconnect
-RGFA#rm(comment_line)
-RGFA::Line::Comment#content/content=
-RGFA::Line::Comment#spacer/spacer=
+```python
+g.add_line("# this is a comment")
+c = g.comments[-1]
+g.content # => "this is a comment"
+g.spacer # => " "
 ```
 
+Tags are not supported by comment lines. If the line contains tags,
+these are nor parsed, but included in the +content+ field.
+Trying to set tags values raises exceptions.
+
+```python
+c = gfapy.Line.from_string("# this is not a tag\txx:i:1")
+c.content # => "this is not a tag\txx:i:1"
+c.xx # => None
+c.xx = 1 # raises an exception
+```

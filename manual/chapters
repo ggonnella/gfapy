@@ -1,5 +1,5 @@
 introduction.md
-rgfa.md
+gfa.md
 validation.md
 positional_fields.md
 placeholders.md
@@ -12,4 +12,3 @@ custom_records.md
 comments.md
 errors.md
 graph_operations.md
-extending_rgfa.md

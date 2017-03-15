@@ -1,6 +1,6 @@
-# RGFA
+# gfapy
 
-RGFA is a Ruby library for working with GFA files. It allows to parse,
+gfapy is a python library for working with GFA files. It allows to parse,
 validate, edit and write GFA files.
 
 This manual explains how to access the information in GFA files using the
@@ -9,7 +9,7 @@ each class, method and constant defined by the library.
 
 A test suite makes sure that the functionality described by this manual also
 works as intented. However, if this is not the case, please report any bug
-using the Github issues tracked (https://github.com/ggonnella/rgfa/issues).
+using the Github issues tracked (https://github.com/ggonnella/gfapy/issues).
 
 ## GFA specifications
 

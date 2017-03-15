@@ -5,76 +5,77 @@ overlaps; E/F: alignment). If an alignment is not given, the placeholder symbol
 ```*``` is used instead.  In GFA1 the alignments can be given as CIGAR strings,
 in GFA2 also as Dazzler traces.
 
-RGFA uses different classes (in module RGFA::Alignment) for representing the two
+Gfapy uses different classes (in module gfapy::Alignment) for representing the two
 possible alignment styles (cigar strings and traces) and undefined alignments
 (placeholders).
 
 ### Creating an alignment
 
 An alignment instance is usually created from its GFA string representation
-by using the ```String#to_alignment``` method:
-```ruby
-"*".to_alignment        # => RGFA::Alignment::Placeholder
-"10,10,10".to_alignment # => RGFA::Alignment::Trace
-"30M2I30M".to_alignment # => RGFA::Alignment::CIGAR
-```
-
-The alignment classes also provide a ```to_alignment```
-method (returning self), so that is always safe to call the method on a
+or from a list by using the ```gfapy.Alignment``` constructor.
+If the argument is an alignment object it will be returned,
+so that is always safe to call the method on a
 variable which can contain a string or an alignment instance:
-```ruby
-RGFA::Alignment::Placeholder.new.to_alignment
-RGFA::Alignment::Trace.new([12,13,0]).to_alignment
+
+```python
+gfapy.Alignment("*")        # => gfapy.AlignmentPlaceholder
+gfapy.Alignment("10,10,10") # => gfapy.Trace
+gfapy.Alignment([10,10,10]) # => gfapy.Trace
+gfapy.Alignment("30M2I30M") # => gfapy.CIGAR
+gfapy.Alignment(gfapy.Alignment("*"))
+gfapy.Alignment(gfapy.Alignment("10,10"))
 ```
 
 ### Recognizing undefined alignments
 
-The ```placeholder?``` method is available for strings and
-alignment instances and is the correct way to understand if an alignment
+The ```gfapy.is_placeholder()``` method allows to understand if an alignment
 field contains a defined value (cigar, trace) or not (placeholder).
+The method works correctly with both alignment objects and their string
+or list representation.
 
-```ruby
-"30M".to_alignment.placeholder? # => false
-"10,10,10".to_alignment.placeholder? # => false
-"*".to_alignment.placeholder? # => true
-"*".placeholder? # => true
-RGFA::Alignment::CIGAR.new([]).placeholder? # => true
-RGFA::Alignment::Trace.new([]).placeholder? # => true
-RGFA::Alignment::Placeholder.new.placeholder? # => true
+```python
+gfapy.is_placeholder(gfapy.Alignment("30M"))   # => False
+gfapy.is_placeholder(gfapy.Alignment("10,10")) # => False
+gfapy.is_placeholder(gfapy.Alignment("*"))     # => True
+gfapy.is_placeholder("*") # => True
+gfapy.is_placeholder("30M") # => False
+gfapy.is_placeholder("10,10") # => True
+gfapy.is_placeholder([]) # => True
+gfapy.is_placeholder([10,10]) # => False
 ```
+
+Note that, as a placeholder is False in boolean context, just a
+```if not aligment``` will also work, if alignment is an alignment object,
+but not if it is a string representation.
 
 ### Reading and editing CIGARs
 
 CIGARs are represented by arrays of cigar operation objects.
-Each cigar operation provides the methods ```len```/```len=``` and
-```code```/```code=```. Len is the length of the operation (Integer).
+Each cigar operation provides the properties ```length``` and
+```code```. Length is the length of the CIGAR operation (int).
+Code is one of the codes allowed by the GFA specification.
 
-```ruby
-cigar = "30M".to_alignment
-cigar.kind_of?(Array) # => true
+```python
+cigar = gfapy.Alignment("30M")
+isinstance(cigar, list) # => True
 operation = cigar[0]
-operation.class # => RGFA::Alignment::CIGAR::Operation
-operation.code # => :M
-operation.len # => 30
-operation.to_s # => "30M"
-operation.code = :D
-operation.len = 10
-operation.to_s # => "10D"
+type(operation) # => "gfapy.CIGAR.Operation"
+operation.code # => "M"
+operation.code = "D"
+operation.length # => 30
+len(operation) # => 30
+str(operation) # => "30D"
 ```
 
-CIGAR values can be edited using the methods ```len=``` and ```code=```
-of the single operations or editing the array itself (which allows e.g.
-to add or remove operations). If the array is emptied, its
-string representation will be ```*```.
-
-```ruby
-cigar = "30M".to_alignment
-cigar << RGFA::Alignment::CIGAR::Operation.new(12, :D)
-cigar.to_s # "30M12D"
-cigar.delete(cigar[1])
-cigar.to_s # "30M"
-cigar.delete(cigar[0])
-cigar.to_s # "*"
+The CIGAR object can be edited using the list methods.
+If the array is emptied, its string representation will be ```*```.
+```python
+cigar = gfapy.Alignment("1I20M2D")
+cigar[0].code = "M"
+cigar.pop(1)
+str(cigar) # => "1M2D"
+cigar[:] = []
+str(Cigar) # => "*"
 ```
 
 CIGARs consider one sequence as reference and another sequence
@@ -83,10 +84,10 @@ compute the length of the alignment on the two sequences.
 These methods are used by the library e.g. to convert GFA1 L lines to GFA2
 E lines (which is only possible if CIGARs are provided).
 
-```ruby
-cigar = "30M10D20M5I10M".to_alignment
-cigar.length_on_reference # => 70
-cigar.length_on_query # => 65
+```python
+cigar = gfapy.Alignment("30M10D20M5I10M")
+cigar.length_on_reference() # => 70
+cigar.length_on_query() # => 65
 ```
 
 #### Validation
@@ -97,17 +98,15 @@ The codes can be M, I, D or P. For GFA1 the other codes are formally accepted
 (no exception is raised), but their use is discouraged.
 An error is raised in GFA2 on validation, if the other codes are used.
 
-```ruby
-cigar = "30M10D20M5I10M".to_alignment
-cigar.validate # no exception raised
-cigar = "-30M".to_alignment
+```python
+cigar = gfapy.Alignment("30M10D20M5I10M")
+cigar.validate() # no exception raised
+cigar[1].code = "L"
 cigar.validate # raises an exception
-cigar = "30X".to_alignment
-cigar.validate # raises an exception
-cigar = "10=".to_alignment(version: :gfa1)
-cigar.validate # no exception raised
-cigar = "10=".to_alignment(version: :gfa2)
-cigar.validate # raises an exception
+cigar = gfapy.Alignment("30M10D20M5I10M")
+cigar[1].code = "X"
+cigar.validate(version="gfa1") # no exception raised
+cigar.validate(version="gfa2") # exception raised
 ```
 
 ### Reading and editing traces
@@ -117,9 +116,9 @@ using a trace spacing value. If traces are used, a trace spacing value must be
 defined in a TS integer tag, either in the header, or in the single lines
 which contain traces.
 
-```ruby
+```python
 gfa.header.TS    # => the global TS value
-gfa.edges(:x).TS # => an edge''s own TS tag
+gfa.line("x").TS # => an edge''s own TS tag
 ```
 
 ### Complement alignment
@@ -131,23 +130,23 @@ two sequences are switched. This method is used by the library
 e.g. to compare links, as they can be expressed in different ways, by
 switching the two sequences.
 
-```ruby
-cigar = "2M1D3M".to_alignment
-cigar.complement.to_s # => "3M1I2M"
+```python
+cigar = gfapy.Alignment("2M1D3M")
+str(cigar.complement()) # => "3M1I2M"
 ```
 
-The current version of RGFA does not provide a way to compute the alignment in
-RGFA, thus the trace information can be accessed and edited, but not used for
-this purpose.  Because of this there is currently no way in RGFA to compute a
+The current version of gfapy does not provide a way to compute the alignment in
+gfapy, thus the trace information can be accessed and edited, but not used for
+this purpose. Because of this there is currently no way in gfapy to compute a
 complement trace (trace obtained when the sequences are switched).
 
-```ruby
-trace = "1,2,3".to_alignment
-trace.complement.to_s # => "*"
+```python
+trace = gfapy.Alignment("1,2,3")
+str(trace.complement()) # => "*"
 ```
 
 The complement of a placeholder is a placeholder:
 
-```ruby
-"*".to_alignment.complement.to_s # => "*"
+```python
+str(gfapy.Alignment("*").complement()) # => "*"
 ```

@@ -1,18 +1,5 @@
-*.gem
-.yardoc
 doc
-gfapy_doc/_build
-doc/_build
-pdfdoc/index.html
-pdfdoc/rgfa*.pdf
-pdfdoc/cover.html
-cheatsheet/*.aux
-cheatsheet/*_latexmk
-cheatsheet/*.fls
-cheatsheet/*.log
-cheatsheet/*.pdf
-cheatsheet/version
-manual/manual.pdf
+
 # Compiled python modules
 *.pyc
 
@@ -22,3 +9,6 @@ manual/manual.pdf
 # Python egg metadata, regenerated from source files by setuptools
 /*.egg-info
 /*.egg
+
+# Wheel data
+build

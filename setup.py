@@ -1,20 +1,34 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def readme():
   with open('README.rst') as f:
     return f.read()
 
 setup(name='gfapy',
-      version='1.3',
-      description='Python library for accessing the GFA format',
+      version='1.0.0rc1',
+      description='Library for handling data in the GFA1 and GFA2 formats',
       long_description=readme(),
-      url='https://github.com/ggonnella/rgfa',
+      url='https://github.com/ggonnella/gfapy',
       keywords="bioinformatics genomics sequences GFA assembly graphs",
-      author='Giorgio Gonnella, Tim Weber',
+      author='Giorgio Gonnella and others (see CONTRIBUTORS)',
       author_email='gonnella@zbh.uni-hamburg.de',
-      license='MIT',
-      packages=['gfapy'],
-      scripts=['bin/pygfadiff'],
+      license='ISC',
+      # see https://pypi.python.org/pypi?%3Aaction=list_classifiers
+      classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: ISC License (ISCL)',
+        'Operating System :: OS Independent',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 3 :: Only',
+        'Topic :: Scientific/Engineering :: Bio-Informatics',
+        'Topic :: Software Development :: Libraries',
+      ],
+      packages=find_packages(),
+      scripts=['bin/gfadiff'],
       zip_safe=False,
       test_suite="nose.collector",
       include_package_data=True,

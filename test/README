@@ -1,7 +1,0 @@
-test_api # => test of API public methods
-test_internals # => test of some non-public methods
-test_unit # => unit tests for some modules
-
-Not all modules have unit tests, as in some cases everything is tested
-by test_api, in some other cases by test_api plus test_internals.
-If this is not the case, then test_unit are present.

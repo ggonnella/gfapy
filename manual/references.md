@@ -1,30 +1,40 @@
 ## References
 
 Some fields in GFA lines contain identifiers or lists of identifiers
-(sometimes followed by orientation symbols), which reference
-other lines of the GFA file.
+(sometimes followed by orientation strings), which reference
+other lines of the GFA file. In gfapy it is possible to follow these
+references and traverse the graph.
 
-### Connecting a line to a RGFA object
+### Connecting a line to a gfapy object
 
 In stand-alone line instances, the identifiers which reference
-other lines are symbols (or, if they are oriented identifiers,
-then instances of RGFA::OrientedLine containing a symbol).
-Lists of identifiers are represented by arrays of symbols and oriented
-segment instances.
+other lines are either strings containing the line name, pairs
+of strings (name and orientation) in a gfapy.OrientedLine object,
+or lists of lines names or gfapy.OrientedLine objects.
 
-When a line is connected to a RGFA object (adding the line using
-```RGFA#<<(line)``` or calling ```RGFA::Line#connect(rgfa)```),
-the symbols in the fields (and in arrays and oriented line instances)
-are changed into references to the corresponding lines in the RGFA object.
+Using the ```add_line(line)``` (alias: ```append(line)```) method of the
+gfapy.Gfa object, or the equivalent ```connect(gfa)``` method of the gfapy.Line
+instance, a line is added to a Gfa instance (this is done automatically when a
+GFA file is parsed). All strings expressing references are then changed into
+references to the corresponding line objects.  The method ```is_connected()```
+allows to determine if a line is connected to an gfapy instance. The read-only
+property ```gfa``` allows to find the gfapy.Gfa instance to which the line is
+connected.
 
-The method ```RGFA::Line#connected?``` allows to determine if
-a line is connected to an RGFA instance. The method ```RGFA::Line#rgfa```
-returns the RGFA instance to which the line is connected.
+```python
+link.is_connected() # => False
+link.gfa            # => None
+link.from_segment   # => "A"
+link.connect(gfa)   # or gfa.add_line(link); or gfa.append(link)
+link.is_connected() # => True
+link.gfa            # => gfapy.Gfa(...)
+link.from_segment   # => gfapy.Segment("S\tA\t*", ...)
+```
 
 ### References for each record type
 
-The following tables list the references for each record type.
-```[]``` represent arrays.
+The following tables describes the references contained in each record type.
+The notation ```[]``` represent lists.
 
 #### GFA1
 
@@ -41,27 +51,31 @@ retrieved using ```links``` (which is not a field).
 
 #### GFA2
 
-| Record type | Fields        | Type of reference                    |
-|-------------|---------------|--------------------------------------|
-| Edge        | sid1, sid2    | Segment                              |
-| Gap         | sid1, sid2    | Segment                              |
-| Fragment    | sid           | Segment                              |
-| U Group     | items         | [Edge/O-Group/U-Group/Segment]       |
-| O Group     | items         | [OrientedLine(Edge/O-Group/Segment)] |
+| Record type | Fields        | Type of reference                |
+|-------------|---------------|----------------------------------|
+| Edge        | sid1, sid2    | Segment                          |
+| Gap         | sid1, sid2    | Segment                          |
+| Fragment    | sid           | Segment                          |
+| Set         | items         | [Edge/Set/Path/Segment]          |
+| Path        | items         | [OrientedLine(Edge/Set/Segment)] |
 
 ### Backreferences for each record type
 
-When a line containing a reference to another line is connected to a RGFA
+When a line containing a reference to another line is connected to a gfapy
 object, backreferences to it are created in the targeted line.
 
-For each backreference collection a getter method exist, which is named
-as the collection (e.g. ```RGFA::Line::Segment#dovetails_L```).
-The methods return frozen arrays (as changing the content of
-the array directly would invalid other related references in the graph object).
-To change the reference which generated the backreference, see the section
-"Editing reference fields" below.
+For each backreference collection a read-only property exist, which is named
+as the collection (e.g. ```dovetails_L``` for segments). Note that
+the reference list returned by these arrays are read-only and editing
+the references is done using other methods (see the section
+"Editing reference fields" below).
 
-The following tables list the backreferences collections for each record type.
+```python
+segment.dovetails_L # => [gfapy.line.edge.Link(...), ...]
+```
+
+The following tables describe the backreferences collections for each record
+type.
 
 #### GFA1
 
@@ -94,44 +108,60 @@ The following tables list the backreferences collections for each record type.
 |             | sets                | U    |
 | U Group     | sets                | U    |
 
-#### Backreference convenience methods
+#### Segment backreference convenience methods
 
-In some cases, additional methods are available which combine in different way
+For segments, additional methods are available which combine in different way
 the backreferences information.
-
-The segment ```dovetails``` and ```gaps```
-methods take an optional argument. Without argument all dovetail overlaps
-(references to links or dovetail edges) or gaps are returned.  If :L or :R is
-provided as argument, the dovetails overlaps (or gaps) of the left or,
+The ```dovetails_of_end(end)``` and ```gaps_of_end(end)``` methods take an
+argument "L" or "R" and return the dovetails overlaps (or gaps) of the left or,
 respectively, right end of the segment sequence are returned (equivalent to
-dovetails_L/dovetails_R and gaps_L/gaps_R).
+```dovetails_L```/```dovetails_R``` and ```gaps_L```/```gaps_R```).
+
 The segment ```containments``` methods returns both containments
 where the segment is the container or the contained segment.
-The segment ```edges``` method returns all edges (dovetails, containments
+The segment ```edges``` property is a list of all edges (dovetails, containments
 and internals) with a reference to the segment.
 
-Other methods
-directly compute list of segments from the edges lists mentioned above.
-In particular,
-the segment ```neighbours``` method computes the set of segment
+Other methods directly compute list of segments from the edges lists mentioned
+above. The ```neighbours_L```, ```neighbours_R``` properties
+and the ``neighbours(end)``` method computes the set of segment
 instances which are connected by dovetails to the segment.
-The segment ```containers``` and ```contained``` methods similarly
+The segment ```containers``` and ```contained``` properties similarly
 compute the set of segment instances which, respectively, contains
 the segment, or are contained in the segment.
 
+```python
+s.dovetails_of_end("L") # => [gfapy.line.edge.Link(...), ...]
+s.dovetails_L == segment.dovetails_of_end("L") # => True
+s.gaps_of_end("R") # => []
+s.edges # => [gfapy.line.edge.Link(...), ...]
+s.neighbours_L # => [gfapy.line.segment.GFA1(...), ...]
+s.containers # => [gfapy.line.segment.GFA1(...), ...]
+```
+
 ### Multiline group definitions
 
-Groups can be defined on multiple lines, by using the same ID
-for each line defining the group. If multiple RGFA::Line::Group
-instances with the same ID are connected to the RGFA, the final
-RGFA will only contain the last instance: all previous one are
-disconnected and their items list prepended to the last instance.
-All tags will be copied to the last instance added.
+The GFA2 specification opens the possibility (experimental) to
+define groups on multiple lines, by using the same ID
+for each line defining the group. This is supported by gfapy.
 
-The tags of multiple line defining a group
-may not contradict each other. Either are the tag names on different
-lines defining the group all different, or, if the same tag is present
-on different lines, the value and datatype must be the same.
+This means that if multiple ```gfapy.line.group.Ordered``` or
+```gfapy.line.group.Unordered``` instances connected to a gfapy have the same
+```gid```, they are merged into a single instance (technically the
+last one getting added to the graph object). The items list are merged.
+
+The tags of multiple line defining a group shall not contradict each other
+(i.e. either are the tag names on different lines defining the group all
+different, or, if the same tag is present on different lines, the value and
+datatype must be the same, in which case the multiple definition will be
+ignored).
+
+```python
+gfa.add_line("U\tu1\ts1 s2 s3")
+[s.name for s in gfa.sets[-1].items] # => ["s1","s2","s3"]
+gfa.add_line("U\tu1\t4 5")
+[s.name for s in gfa.sets[-1].items] # => ["s1","s2","s3","s4","s5"]
+```
 
 ### Induced set and captured path
 
@@ -147,31 +177,46 @@ Furthermore groups may refer to other groups (set to sets or paths,
 paths to paths only), which then indirectly contain references to
 segments and edges.
 
-RGFA provides methods for the computation of the sets of segments
+gfapy provides methods for the computation of the sets of segments
 and edges which are implied by an ordered or unordered group.
 Thereby all references to subgroups are resolved and implicit
 elements are added, as described in the specification.
 The computation can, therefore, only be applied to connected lines.
 For unordered groups, this computation is provided by the method
-```induced_set```, which returns an array of segment and edge instances.
+```induced_set()```, which returns an array of segment and edge instances.
 For ordered group, the computation is provided by the method
-```captured_path```, whcih returns a list of RGFA::OrientedLine instances,
+```captured_path()```, whcih returns a list of gfapy.OrientedLine instances,
 alternating segment and edge instances (and starting and ending in
 segments).
 
-The methods ```induced_segments_set```, ```induced_edges_set```,
-```captured_segments``` and ```captured_edges``` return, respectively,
+The methods ```induced_segments_set()```, ```induced_edges_set()```,
+```captured_segments()``` and ```captured_edges()``` return, respectively,
 the list of only segments or edges, in ordered or unordered groups.
 
-### Disconnecting a line from a RGFA object
+```python
+gfa.add_line("U\tu1\ts1 s2 s3")
+u = gfa.sets[-1]
+u.induced_edges_set # => [gfapy.line.edge.GFA2("E\te1\ts1+\ts2-...", ...)]
+[l.name for l in u.induced_set ] # => ["s1", "s2", "s3", "e1"]
+```
 
-Lines can be disconnected using ```RGFA#rm(line)``` or
-```RGFA::Line#disconnect```.
+### Disconnecting a line from a gfapy object
+
+Lines can be disconnected using the ```rm(line)``` method of the
+```gfapy.Gfa``` object or the ```disconnect()``` method of the
+line instance.
+
+```python
+line = gfa.segment("sA")
+gfa.rm(line)
+# or equivalent:
+line.disconnect()
+```
 
 Disconnecting a line affects other lines as well. Lines which are dependent
 on the disconnected line are disconnected as well. Any other reference to
 disconnected lines is removed as well. In the disconnected line, references
-to lines are transformed back to symbols and backreferences are deleted.
+to lines are transformed back to strings and backreferences are deleted.
 
 The following tables show which dependent lines are disconnected if they
 refer to a line which is being disconnected.
@@ -185,38 +230,39 @@ refer to a line which is being disconnected.
 
 #### GFA2
 
-| Record type | Dependent lines                            |
-|-------------|--------------------------------------------|
-| Segment     | edges, gaps, fragments, u-groups, o-groups |
-| Edge        | u-groups, o-groups                         |
-| U-Group     | groups                                     |
+| Record type | Dependent lines                     |
+|-------------|-------------------------------------|
+| Segment     | edges, gaps, fragments, sets, paths |
+| Edge        | sets, paths                         |
+| Sets        | sets, paths                         |
 
 ### Editing reference fields
 
 In connected line instances, it is not allowed to directly change the content
 of fields containing references to other lines, as this would make the state of
-the RGFA object invalid.
+the gfapy object invalid.
 
 Besides the fields containing references, some other fields are read-only in
 connected lines. Changing some of the fields would require moving the
 backreferences to other collections (position fields of edges and gaps,
-from_orient and to_orient of links). The overlaps field of connected links is
+```from_orient``` and ```to_orient``` of links). The overlaps field of connected links is
 readonly as it may be necessary to identify the link in paths.
 
 #### Renaming an element
 
-The name field of a line (e.g. segment name/sid) is not a reference and thus
+The name field of a line (e.g. segment ```name```/```sid```) is not a reference and thus
 can be edited also in connected lines.  When the name of the line is changed,
 no manual editing of references (e.g. from/to fields in links) is necessary, as
 all lines which refer to the line will still refer to the same instance.
-The references to the instance in the RGFA lines collections will be
+The references to the instance in the gfapy lines collections will be
 automatically updated. Also, the new name will be correctly used when
-converting to string, such as when the RGFA is written to a GFA file.
+converting to string, such as when the gfapy is written to a GFA file.
 
 Renaming a line to a name which already exists has the same effect of adding
-a line with that name. That is, in most cases, ```RGFA::NotUniqueError``` is
-raised. An exception are GFA2 groups: in this case
-the line will be appended to the existing line with the same name.
+a line with that name. That is, in most cases, ```gfapy.NotUniqueError``` is
+raised. An exception are GFA2 sets and paths: in this case
+the line will be appended to the existing line with the same name
+(as described in "Multiline group definitions").
 
 #### Adding and removing group elements
 
@@ -225,19 +271,19 @@ non-connected lines, using the following methods.
 
 To add an item to or remove an item from an unordered group, use the methods
 ```add_item(item)``` and ```rm_item(item)```, which take as argument either
-a symbol (identifier) or a line instance.
+a string (identifier) or a line instance.
 
 To append or prepend an item to an ordered group, use the methods
 ```append_item(item)``` and ```prepend_item(item)```.  To remove the first or
 the last item of an ordered group use the methods
-```rm_first_item``` and
-```rm_last_item```.
+```rm_first_item()``` and
+```rm_last_item()```.
 
 #### Editing read-only fields of connected lines
 
 Editing the read-only information of edges, gaps, links, containments,
 fragments and paths is more complicated.  These lines shall be disconnected
-before the edit and connected again to the RGFA object after it. Before
+before the edit and connected again to the gfapy object after it. Before
 disconnecting a line, you should check if there are other lines dependent on it
 (see tables above). If so, you will have to disconnect these lines first,
 eventually update their fields and reconnect them at the end of the operation.
@@ -245,9 +291,9 @@ eventually update their fields and reconnect them at the end of the operation.
 ### Virtual lines
 
 The order of the lines in GFA is not prescribed. Therefore, during parsing,
-or constructing a RGFA in memory, it is possible that a line is referenced to,
-before it is added to the RGFA instance.
-Whenever this happens, RGFA creates a "virtual" line instance.
+or constructing a gfapy in memory, it is possible that a line is referenced to,
+before it is added to the gfapy instance.
+Whenever this happens, gfapy creates a "virtual" line instance.
 
 Users do not have to handle with virtual lines, if they work with
 complete and valid GFA files.
@@ -255,54 +301,23 @@ complete and valid GFA files.
 Virtual lines are similar to normal line instances, with some limitations
 (they contain only limited information and it is not allowed to add tags to
 them). To check if a line is a virtual line, one can use the
-```RGFA::Line#virtual?``` method.
+```is_virtual()``` method of the line.
 
 As soon as the parser founds the real line corresponding to a previously
 introduced virtual line, the virtual line is exchanged with the real line
 and all references are corrected to point to the real line.
 
-### Summary of references-related API methods
-
-```ruby
-RGFA#<<(line)/rm(line)
-RGFA::Line#connect(rgfa)
-RGFA::Line#disconnect
-RGFA::Line#connected?
-RGFA::Line#rgfa
-RGFA::Line#virtual?
-RGFA::Line::Segment::GFA1/GFA2#dovetails(_L|_R)
-RGFA::Line::Segment::GFA1/GFA2#dovetails
-RGFA::Line::Segment::GFA1/GFA2#neighbours
-RGFA::Line::Segment::GFA1/GFA2#contain(ed|ers)
-RGFA::Line::Segment::GFA1/GFA2#edges_to_contain(ed|ers)
-RGFA::Line::Segment::GFA1/GFA2#containments
-RGFA::Line::Segment::GFA1/GFA2#internals
-RGFA::Line::Segment::GFA1/GFA2#edges
-RGFA::Line::Segment::GFA2#gaps(_L|_R)
-RGFA::Line::Segment::GFA2#gaps
-RGFA::Line::Segment::GFA2#fragments
-RGFA::Line::Segment::GFA1/GFA2#paths
-RGFA::Line::Segment::GFA2#sets
-RGFA::Line::Fragment#sid
-RGFA::Line::Edge::Containment/Link#from/to
-RGFA::Line::Gap/Edge::GFA2#sid1/sid2
-RGFA::Line::Gap/Edge::GFA2#sets/paths
-RGFA::Line::Group::Path#segment_names
-RGFA::Line::Group::Path#links
-RGFA::Line::Group::Unordered#items
-RGFA::Line::Group::Unordered#paths
-RGFA::Line::Group::Unordered#add_item(item)
-RGFA::Line::Group::Unordered#rm_item(item)
-RGFA::Line::Group::Ordered#items
-RGFA::Line::Group::Ordered#paths
-RGFA::Line::Group::Ordered#append_item(item)
-RGFA::Line::Group::Ordered#prepend_item(item)
-RGFA::Line::Group::Ordered#rm_first_item
-RGFA::Line::Group::Ordered#rm_last_item
-RGFA::Line::Group::Ordered#captured_paths
-RGFA::Line::Group::Ordered#captured_segments
-RGFA::Line::Group::Ordered#captured_edges
-RGFA::Line::Group::Unordered#induced_set
-RGFA::Line::Group::Unordered#induced_segments_set
-RGFA::Line::Group::Unordered#induced_edges_set
+```python
+g = gfapy.Gfa()
+g.add_line("S\t1\t*")
+g.add_line("L\t\1\t+\t2\t+\t*")
+l = g.dovetails[-1]
+g.segment("1").is_virtual() # => False
+g.segment("2").is_virtual() # => True
+l.to_segment == g.segment("2") # => True
+g.segment("2").dovetails = [l] # => True
+g.add_line("S\t2\t*")
+g.segment("2").is_virtual() # => False
+l.to_segment == g.segment("2") # => True
+g.segment("2").dovetails = [l] # => True
 ```
