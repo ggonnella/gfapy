@@ -1,14 +1,14 @@
 ## Comments
 
 GFA lines starting with a ```#``` symbol are considered comments.
-In gfapy comments are represented by instances of ```gfapy.line.Comment```.
+In Gfapy comments are represented by instances of ```gfapy.line.Comment```.
 They have a similar interface to other line instances,
 with some differences, e.g. they do not support tags.
 
 ### Accessing the comments
 
-Adding a comment to a gfapy.Gfa instance is done similary to other lines, by using the
-```add_line(line)``` method.  The comments of a gfapy object can be accessed
+Adding a comment to a ```gfapy.Gfa``` instance is done similary to other lines, by using the
+```add_line(line)``` method.  The comments of a Gfa object can be accessed
 using the ```comments``` method. This returns a list of comment line
 instances.  To remove a comment from the Gfa, you need to find the instance in
 the list, and call ```disconnect()``` on it.

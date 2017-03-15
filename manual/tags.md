@@ -20,7 +20,7 @@ must be unique for each line, i.e. each line may only contain a tag once.
 ### Custom tags
 
 Some tags are explicitely defined in the specification (these are named
-_predefined tags_ in gfapy), and the user or an application can define its own
+_predefined tags_ in Gfapy), and the user or an application can define its own
 custom tags.
 
 Custom tags are user or program specific and may of course collide with the
@@ -38,7 +38,7 @@ if (myvalue > 120) or (myvalue % 2 == 1):
 ```
 
 Also it is good practice to allow the user of the script to change the name of
-the custom tags. For example, gfapy employs the +or+ custom tag to track
+the custom tags. For example, Gfapy employs the +or+ custom tag to track
 the original segment from which a segment in the final graph is derived. All
 methods which read or write the +or+ tag allow to specify an alternative tag
 name to use instead of +or+, for the case that this name collides with the
@@ -78,7 +78,7 @@ The GFA2 specification is currently not as strict regarding tags: anyone can
 use both upper and lower case tags, and no tags are predefined except for VN
 and TS.
 
-However, gfapy follows the same conventions as for GFA1: i.e. it allows the tags
+However, Gfapy follows the same conventions as for GFA1: i.e. it allows the tags
 specified as predefined tags in GFA1 to be used also in GFA2. No other upper
 case tag is allowed in GFA2.
 
@@ -113,7 +113,7 @@ tag, all other tags must contain at least one lower case letter.
 ```
 
 The datatype must be one of the datatypes specified above.  For predefined
-tags, gfapy also checks that the datatype given in the specification is used.
+tags, Gfapy also checks that the datatype given in the specification is used.
 
 ```
 "xx:X:1" # => error: datatype X is unknown
@@ -148,7 +148,7 @@ line.validate()
 
 ### Reading and writing tags
 
-Tags can be read using a property on the gfapy line object, which is called as
+Tags can be read using a property on the Gfapy line object, which is called as
 the tag (e.g. line.xx). A special version of the property prefixed by
 ```try_get_``` raises an error if the tag was not available (e.g.
 ```line.try_get_LN```), while the tag property (e.g. ```line.LN```) would
@@ -174,7 +174,7 @@ line.delete("xy")  # => tag is eliminated
 line.xx = None     # => tag is eliminated
 ```
 
-The ```gfapy::Line#tagnames``` property is a list of the names (as
+The ```tagnames``` property of gfapy Line instances is a list of the names (as
 strings) of all defined tags for a line.
 
 ```python
@@ -222,7 +222,7 @@ line.get_datatype("xx") # => "i"
 line.set_datatype("xx", "Z")
 ```
 
-If a new custom tag is specified, gfapy selects the correct datatype for it: i/f
+If a new custom tag is specified, Gfapy selects the correct datatype for it: i/f
 for numeric values, J/B for arrays, J for hashes and Z for strings and strings.
 If the user wants to specify a different datatype, he may do so by setting it
 with ```set_datatype()``` (this can be done also before assigning a value, which
@@ -279,7 +279,7 @@ gfapy.NumericValue([12,13,14]).compute_subtype() # => "C"
 ### Special cases: custom records, headers, comments and virtual lines.
 
 GFA2 allows custom records, introduced by record type strings other than the
-predefined ones. gfapy uses a pragmatical approach for identifying tags in
+predefined ones. Gfapy uses a pragmatical approach for identifying tags in
 custom records, and tries to interpret the rightmost fields as tags, until the
 first field from the right raises an error; all remaining fields are treated as
 positional fields.

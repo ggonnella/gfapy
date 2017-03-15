@@ -2,23 +2,23 @@
 
 Some fields in GFA lines contain identifiers or lists of identifiers
 (sometimes followed by orientation strings), which reference
-other lines of the GFA file. In gfapy it is possible to follow these
+other lines of the GFA file. In Gfapy it is possible to follow these
 references and traverse the graph.
 
-### Connecting a line to a gfapy object
+### Connecting a line to a Gfa object
 
 In stand-alone line instances, the identifiers which reference
 other lines are either strings containing the line name, pairs
-of strings (name and orientation) in a gfapy.OrientedLine object,
-or lists of lines names or gfapy.OrientedLine objects.
+of strings (name and orientation) in a ```gfapy.OrientedLine``` object,
+or lists of lines names or ```gfapy.OrientedLine``` objects.
 
 Using the ```add_line(line)``` (alias: ```append(line)```) method of the
-gfapy.Gfa object, or the equivalent ```connect(gfa)``` method of the gfapy.Line
+```gfapy.Gfa``` object, or the equivalent ```connect(gfa)``` method of the gfapy.Line
 instance, a line is added to a Gfa instance (this is done automatically when a
 GFA file is parsed). All strings expressing references are then changed into
 references to the corresponding line objects.  The method ```is_connected()```
 allows to determine if a line is connected to an gfapy instance. The read-only
-property ```gfa``` allows to find the gfapy.Gfa instance to which the line is
+property ```gfa``` contains the ```gfapy.Gfa``` instance to which the line is
 connected.
 
 ```python
@@ -61,7 +61,7 @@ retrieved using ```links``` (which is not a field).
 
 ### Backreferences for each record type
 
-When a line containing a reference to another line is connected to a gfapy
+When a line containing a reference to another line is connected to a Gfa
 object, backreferences to it are created in the targeted line.
 
 For each backreference collection a read-only property exist, which is named
@@ -146,7 +146,7 @@ define groups on multiple lines, by using the same ID
 for each line defining the group. This is supported by gfapy.
 
 This means that if multiple ```gfapy.line.group.Ordered``` or
-```gfapy.line.group.Unordered``` instances connected to a gfapy have the same
+```gfapy.line.group.Unordered``` instances connected to a Gfa object have the same
 ```gid```, they are merged into a single instance (technically the
 last one getting added to the graph object). The items list are merged.
 
@@ -177,7 +177,7 @@ Furthermore groups may refer to other groups (set to sets or paths,
 paths to paths only), which then indirectly contain references to
 segments and edges.
 
-gfapy provides methods for the computation of the sets of segments
+Gfapy provides methods for the computation of the sets of segments
 and edges which are implied by an ordered or unordered group.
 Thereby all references to subgroups are resolved and implicit
 elements are added, as described in the specification.
@@ -185,7 +185,7 @@ The computation can, therefore, only be applied to connected lines.
 For unordered groups, this computation is provided by the method
 ```induced_set()```, which returns an array of segment and edge instances.
 For ordered group, the computation is provided by the method
-```captured_path()```, whcih returns a list of gfapy.OrientedLine instances,
+```captured_path()```, whcih returns a list of ```gfapy.OrientedLine``` instances,
 alternating segment and edge instances (and starting and ending in
 segments).
 
@@ -200,7 +200,7 @@ u.induced_edges_set # => [gfapy.line.edge.GFA2("E\te1\ts1+\ts2-...", ...)]
 [l.name for l in u.induced_set ] # => ["s1", "s2", "s3", "e1"]
 ```
 
-### Disconnecting a line from a gfapy object
+### Disconnecting a line from a Gfa object
 
 Lines can be disconnected using the ```rm(line)``` method of the
 ```gfapy.Gfa``` object or the ```disconnect()``` method of the
@@ -240,7 +240,7 @@ refer to a line which is being disconnected.
 
 In connected line instances, it is not allowed to directly change the content
 of fields containing references to other lines, as this would make the state of
-the gfapy object invalid.
+the Gfa object invalid.
 
 Besides the fields containing references, some other fields are read-only in
 connected lines. Changing some of the fields would require moving the
@@ -254,9 +254,9 @@ The name field of a line (e.g. segment ```name```/```sid```) is not a reference 
 can be edited also in connected lines.  When the name of the line is changed,
 no manual editing of references (e.g. from/to fields in links) is necessary, as
 all lines which refer to the line will still refer to the same instance.
-The references to the instance in the gfapy lines collections will be
+The references to the instance in the Gfa lines collections will be
 automatically updated. Also, the new name will be correctly used when
-converting to string, such as when the gfapy is written to a GFA file.
+converting to string, such as when the Gfa instance is written to a GFA file.
 
 Renaming a line to a name which already exists has the same effect of adding
 a line with that name. That is, in most cases, ```gfapy.NotUniqueError``` is
@@ -283,7 +283,7 @@ the last item of an ordered group use the methods
 
 Editing the read-only information of edges, gaps, links, containments,
 fragments and paths is more complicated.  These lines shall be disconnected
-before the edit and connected again to the gfapy object after it. Before
+before the edit and connected again to the Gfa object after it. Before
 disconnecting a line, you should check if there are other lines dependent on it
 (see tables above). If so, you will have to disconnect these lines first,
 eventually update their fields and reconnect them at the end of the operation.
@@ -291,9 +291,9 @@ eventually update their fields and reconnect them at the end of the operation.
 ### Virtual lines
 
 The order of the lines in GFA is not prescribed. Therefore, during parsing,
-or constructing a gfapy in memory, it is possible that a line is referenced to,
-before it is added to the gfapy instance.
-Whenever this happens, gfapy creates a "virtual" line instance.
+or constructing a Gfa in memory, it is possible that a line is referenced to,
+before it is added to the Gfa instance.
+Whenever this happens, Gfapy creates a "virtual" line instance.
 
 Users do not have to handle with virtual lines, if they work with
 complete and valid GFA files.

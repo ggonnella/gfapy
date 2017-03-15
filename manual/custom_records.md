@@ -27,10 +27,10 @@ gfa.custom_records
 gfa.custom_records_of_type("X")
 ```
 
-Adding custom records to and removing them from a gfapy instance
+Adding custom records to and removing them from a Gfa instance
 is similar to any other line. So to delete a custom record, ```disconnect()```
 is called on the instance. To add a custom record line, the instance or its string representation
-is added using ```add_line``` on the gfapy.
+is added using ```add_line``` on the Gfa instance.
 
 ```python
 gfa.add_line("X\ta\tb")
@@ -39,7 +39,7 @@ gfa.custom_records("X")[-1].disconnect()
 
 ### Tags
 
-As gfapy cannot know how many positional fields are present when parsing custom
+As Gfapy cannot know how many positional fields are present when parsing custom
 records, an heuristic approach is followed, to identify tags.
 A field resembles a tag if it starts with ```tn:d:``` where ```tn``` is a valid
 tag name and ```d``` a valid tag datatype (see Tags chapter).
@@ -95,11 +95,12 @@ x.positional_fieldnames # => ["a", "b"]
 
 ### Extensions
 
-The support for custom fields is limited, as gfapy does not know which and
+The support for custom fields is limited, as Gfapy does not know which and
 how many fields are there and how shall they be validated.
-It is possible to create an extension of gfapy, which defines new record
+It is possible to create an extension of Gfapy, which defines new record
 types: this will allow to use these record types in a similar way
 to the built-in types. However, extending the library requires sligthly
 more advanced programming than just using the predefined record types.
-In the chapter Extending gfapy these extensions are discussed and an
-example is made.
+
+The manual for writing extensions is provided as Supplementary Information
+to the manuscript describing Gfapy.

@@ -31,7 +31,7 @@ the ```header``` property.
 
 Some lines use identifiers: segments, gaps, edges, paths and sets. Given an
 identifier, the line can be retrieved using the ```line(id)```
-method. Note that identifier are represented in gfapy by Python strings.
+method. Note that identifier are represented in Gfapy by Python strings.
 
 The list of all identifier can be retrieved using the ```names``` property;
 for the identifiers of a single line type, use ```segment_names```,
@@ -54,7 +54,7 @@ drawing indication for segments in graphical programs.
 ### Relationships between segments
 
 Segments are put in relation to each other by edges lines (E lines in GFA2,
-L and C Lines in GFA1), as well as gaps. gfapy allows to convert edges
+L and C Lines in GFA1), as well as gaps. Gfapy allows to convert edges
 lines from one spefication version to the other (subject to limitations,
 see the Versions chapter). Gap lines cannot be converted, as no GFA1
 specification exist for them.
@@ -96,7 +96,7 @@ instance. See the "Header" chapter for more information.
 All lines which start by the string ```#``` are comments; they are
 handled in the "Comments" chapter.
 Custom lines are lines of GFA2 files which start with a non-standard
-record type. gfapy provides basic built-in support for accessing the information
+record type. Gfapy provides basic built-in support for accessing the information
 in custom lines, and allows to define extensions for own record types for
 defining more advanced functionality.
 
@@ -115,7 +115,7 @@ Accessing the information stored in the fields of a line instance
 is described in the "Positional fields" and "Tags"
 chapters.
 
-Once a line instance has been added to a gfapy.Gfa instance, either directly, or using its
+Once a line instance has been added to a ```gfapy.Gfa``` instance, either directly, or using its
 string representation, the line is said to be _connected_ to the Gfa.
 Reading the information in fields is always allowed, while changing the content
 of some fields (fields which refer to other lines) is only possible for
@@ -140,6 +140,6 @@ Lines with an identifier can be renamed. This is done simply by editing the
 corresponding field (such as ```name``` or ```sid``` for a segment).
 This field is not a reference
 to another line and can be freely edited also in line instances connected
-to a gfapy. All references to the line from other lines will still be up to
+to a Gfa. All references to the line from other lines will still be up to
 date, as they will refer to the same instance (whose name has been changed)
 and their string representation will use the new name.

@@ -10,7 +10,7 @@ user-specific record types, by using non-standard codes.
 
 ### Version autodetection
 
-gfapy tries to autodetect the version of a GFA file from its syntax.  The
+Gfapy tries to autodetect the version of a GFA file from its syntax.  The
 version of a valid GFA can always be recognized, unless it contains only header
 and comment lines, as any other line refer to segments, and segments are
 version-specific.  If a GFA contains only header and commments, the version
@@ -24,24 +24,24 @@ Here is the list of such elements:
 - custom record-type lines (GFA2 specific)
 
 If subsequent version-specific elements are found which contrast with the first
-one, gfapy::VersionError is raised.
+one, a ```gfapy.VersionError``` is raised.
 
 P/C/L lines are technically not GFA1-specific, as they could be custom records
-in GFA2. However, their use in GFA2 is not supported by gfapy and an exception
+in GFA2. However, their use in GFA2 is not supported by Gfapy and an exception
 is thrown if these records are found in that version.  Thus if these lines are
 found, their processing is delayed until a version-specific signal is found.
-If the version is GFA2, gfapy::VersionError is raised.
+If the version is GFA2, ```gfapy.VersionError``` is raised.
 
 ### Setting and reading the version
 
 Besides relying on autodetection, it is possible to explicitely set the version
-of the gfapy or line objects, if this is known.  Methods which create Gfa instances
+of the ```gfapy.Gfa``` or ```gfapy.Line``` objects, if this is known.  Methods which create Gfa instances
 (the constructor and the ```from_file()``` method), as well as methods which
-create gfapy lines (the constructor and the ```from_strig()``` method),
+create Gfa lines (the constructor and the ```from_strig()``` method),
 accept a ```version```
 parameter, which can be set to the strings ```"gfa1"``` or ```"gfa2"```.
 
-Instances of gfapy.Gfa and gfapy.Line have a ```version``` property
+Instances of ```gfapy.Gfa``` and ```gfapy.Line``` have a ```version``` property
 which contain ```"gfa1"```, ```"gfa2"``` or ```"unknown"```.
 
 ### Line queue
@@ -50,14 +50,14 @@ The version autodetection feature is achieved by deferring the processing
 of version-specific lines (ie everything besides headers and comments)
 which are found before the version can be detected as explained above.
 These lines are put on a line queue. Once the version is clear,
-the method ```process_line_queue()``` is called on the gfapy instance.
+the method ```process_line_queue()``` is called on the ```Gfa``` instance.
 
 This method can also be called by the user, if e.g. an example GFA is
 created programmatically, where the version is unclear. For the reasons
 explained above, this will generally not be the case, as such a GFA file
 would only contain headers and comments.
 
-### Conversion of gfapy or RGFA::Line instances
+### Conversion of Gfa or Line instances
 
 The conversion of GFA lines between GFA version is possible in some
 cases. When possible, this is achieved by using the ```to_gfa1()```

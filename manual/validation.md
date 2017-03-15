@@ -2,7 +2,7 @@
 
 Different validation levels are available. They represent different compromises
 between speed and warrant of validity.  The validation level can be specified
-when the gfapy.Gfa object is created, using the ```vlevel``` parameter of
+when the ```gfapy.Gfa``` object is created, using the ```vlevel``` parameter of
 the constructor and of the ```gfapy.Gfa.from_file()``` method.
 Four levels of validation are defined
 (0 = no validation, 1 = validation by reading, 2 = validation by reading and
@@ -26,7 +26,7 @@ use the ```validate()``` method of the ```gfapy.Gfa``` class.
 
 ### No validations
 
-If the validation is set to 0, gfapy will try to accept any input
+If the validation is set to 0, Gfapy will try to accept any input
 and never raise an exception. This is not always possible, and in
 some cases, an exception will still be raised, if the data is invalid.
 
@@ -39,7 +39,7 @@ Additionally, all tags will be validated, either
 during parsing or on first access.
 Record-type cross-field validations will also be performed.
 
-In other words, a validation of 1 means that gfapy guarantees (as good as
+In other words, a validation of 1 means that Gfapy guarantees (as good as
 it can) that the GFA content read from a file is valid, and will raise an
 exception on accessing the data if not.
 
@@ -52,7 +52,7 @@ a field content to something which can be potentially invalid, or
 Setting the level to 2 will perform all validations described above,
 plus validate the fields content when their value is written to string.
 
-In other words, a validation of 2 means that gfapy guarantee (as good as
+In other words, a validation of 2 means that Gfapy guarantee (as good as
 it can) that the GFA content read from a file and written to a file is valid
 and will raise an exception on accessing the data or writing to file if not.
 
@@ -62,5 +62,5 @@ If the validation level is set to 3, all validations for lower levels
 described above are run, plus a validation of fields contents each
 time a setter method is used.
 
-A validation of 3 means that gfapy guarantees (as good as it can)
+A validation of 3 means that Gfapy guarantees (as good as it can)
 that the GFA content is always valid.

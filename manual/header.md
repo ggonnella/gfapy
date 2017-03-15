@@ -4,12 +4,12 @@ GFA files may contain one or multiple header lines (record type: "H").  These
 lines may be present in any part of the file, not necessarily at the beginning.
 
 Although the header may consist of multiple lines, its content refers to the
-whole file. Therefore in gfapy the header is accessed using a single line
+whole file. Therefore in Gfapy the header is accessed using a single line
 instance (accessible by the ```header``` method).  Header lines contain only
 tags. If not header line is present in the Gfa, then the header line object
 will be empty (i.e. contain no tags).
 
-Note that header lines cannot be connected to the gfapy as other lines
+Note that header lines cannot be connected to the Gfa as other lines
 (i.e. calling ```connect``` on them raises an exception). Instead they
 must be merged to the existing Gfa header, using
 ```add_line(line)``` on the gfa instance.
@@ -109,7 +109,7 @@ if it contains multiple instances of the tag.
 times, the output string will contain the instances of the tag, separated by
 tabs).
 
-However, when the gfapy is output to file or string, the header is
+However, when the Gfa is output to file or string, the header is
 splitted into multiple H lines with single tags, so that standard-compliant GFA
 is output. The splitted header can be retrieved using the ```headers``` method
 on the Gfa instance.

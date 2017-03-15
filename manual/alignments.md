@@ -5,14 +5,14 @@ overlaps; E/F: alignment). If an alignment is not given, the placeholder symbol
 ```*``` is used instead.  In GFA1 the alignments can be given as CIGAR strings,
 in GFA2 also as Dazzler traces.
 
-Gfapy uses different classes (in module gfapy::Alignment) for representing the two
+Gfapy uses different classes for representing the two
 possible alignment styles (cigar strings and traces) and undefined alignments
 (placeholders).
 
 ### Creating an alignment
 
 An alignment instance is usually created from its GFA string representation
-or from a list by using the ```gfapy.Alignment``` constructor.
+or from a list by using the ```gfapy.Alignment()``` constructor.
 If the argument is an alignment object it will be returned,
 so that is always safe to call the method on a
 variable which can contain a string or an alignment instance:
@@ -135,9 +135,9 @@ cigar = gfapy.Alignment("2M1D3M")
 str(cigar.complement()) # => "3M1I2M"
 ```
 
-The current version of gfapy does not provide a way to compute the alignment in
-gfapy, thus the trace information can be accessed and edited, but not used for
-this purpose. Because of this there is currently no way in gfapy to compute a
+The current version of Gfapy does not provide a way to compute the alignment,
+thus the trace information can be accessed and edited, but not used for
+this purpose. Because of this there is currently no way in Gfapy to compute a
 complement trace (trace obtained when the sequences are switched).
 
 ```python

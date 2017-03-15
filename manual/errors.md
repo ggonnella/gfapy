@@ -1,6 +1,6 @@
 ## Errors
 
-All exception raised in the library are subclasses of gfapy.Error.
+All exception raised in the library are subclasses of ```gfapy.Error```.
 This means that ```except gfapy.Error``` catches all library errors.
 
 Different types of errors are defined and are summarized in the following table:

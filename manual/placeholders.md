@@ -5,8 +5,7 @@ L/C: ```overlap```; P: ```overlaps```; E: ```eid```, ```alignment```;
 F: ```alignment```; G: ```gid```, ```var```; U/O: ```pid```.
 In GFA this value is represented by a ```*```.
 
-In gfapy instances of the class RGFA::Placeholder (and its subclasses) represent
-the undefined value.
+In Gfapy the class Placeholder represent the undefined value.
 
 ### Distinguishing placeholders
 

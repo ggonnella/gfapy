@@ -1,6 +1,6 @@
-# gfapy
+# Gfapy
 
-gfapy is a python library for working with GFA files. It allows to parse,
+Gfapy is a Python 3 library for working with GFA files. It allows to parse,
 validate, edit and write GFA files.
 
 This manual explains how to access the information in GFA files using the

@@ -15,7 +15,7 @@ e.g. a 1-character prefix of a sequence will have begin 0 and end 1.
 
 The GFA2 positions must contain an additional string (```$```) appended to the
 integer, if (and only if) they are the last position in the segment sequence.
-These particular positions are represented in gfapy as instances of the class
+These particular positions are represented in Gfapy as instances of the class
 ```gfapy.LastPos```.
 
 To create a lastpos instance, the constructor can be used with

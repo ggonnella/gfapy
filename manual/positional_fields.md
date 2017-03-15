@@ -16,7 +16,7 @@ of the field names are used and spaces are subsituted with underscores.
 In some cases, the field names were changed, as they represent keywords
 in common programming languages (```from```, ```send```).
 
-The following tables shows the field names used in gfapy, for each kind of line.
+The following tables shows the field names used in Gfapy, for each kind of line.
 Headers have no positional fields. Comments and custom lines follow particular
 rules, see the respective chapters.
 
@@ -52,7 +52,7 @@ complex cases, more details are found in the following chapters.
 The positional fields in GFA can never be empty. However, there are some
 fields with optional values. If a value is not specified, a placeholder
 character is used instead (```*```). Such undefined values are represented
-in gfapy by the gfapy.Placeholder class, which is described more in detail in the
+in Gfapy by the ```gfapy.Placeholder``` class, which is described more in detail in the
 Placeholders chapter.
 
 #### Arrays
@@ -70,7 +70,7 @@ type(gfa1_path.overlaps) # => "list"
 
 #### Orientations
 
-Orientations are represented by strings. The ```gfapy.invert``` method
+Orientations are represented by strings. The ```gfapy.invert()``` method
 applied to an orientation string returns the other orientation.
 ```python
 gfapy.invert("+") # => "-"
@@ -80,10 +80,10 @@ gfapy.invert("-") # => "+"
 #### Identifiers
 
 The identifier of the line itself (available for S, P, E, G, U, O lines)
-can always be accessed in gfapy using the ```name``` alias and is represented
-in gfapy by a Symbol. If it is optional (E, G, U, O lines)
+can always be accessed in Gfapy using the ```name``` alias and is represented
+in Gfapy by a string. If it is optional (E, G, U, O lines)
 and not specified, it is represented by a Placeholder instance.
-The fragment identifier is also a Symbol.
+The fragment identifier is also a string.
 
 Identifiers which refer to other lines are also present in some line types
 (L, C, E, G, U, O, F). These are never placeholders and in stand-alone lines
@@ -94,7 +94,7 @@ instances to which they refer to (see the References chapter).
 
 Oriented identifiers (e.g. ```segment_names``` in GFA1 paths)
 are represented by elements of the class
-```gfapy::OrientedLine```. The ```segment``` method of the oriented
+```gfapy.OrientedLine```. The ```segment``` method of the oriented
 segments returns the segment identifier (or segment reference in connected
 path lines) and the ```orient``` method returns the orientation string.
 The ```name``` method returns the string of the segment, even if this is
@@ -108,33 +108,33 @@ are available.
 Examples:
 ```python
 p = "P\tP1\ta+,b-\t*".to_rgfa_line
-p.segment_names # => [OrientedLine(:a,:+),OrientedLine(:b,:-)]
-p[0].segment # => :a
-p[0].name # => :a
-p[0].orient # => :+
-p[0].invert # => OrientedLine(:a,:-)
-p[0].orient = :-
+p.segment_names # => [OrientedLine("a","+"),OrientedLine("b","-")]
+p[0].segment # => "a"
+p[0].name # => "a"
+p[0].orient # => "+"
+p[0].invert # => OrientedLine("a","-")
+p[0].orient = "-"
 p[0].segment = "S\tX\t*".to_rgfa_line
-p[0] # => OrientedLine(gfapy::Line("S\tX\t*"), :-)
-p[0].name # => :X
-p[0] = OL[gfapy::Line("S\tY\t*"), :+]
+p[0] # => OrientedLine(gfapy.Line("S\tX\t*"), "-")
+p[0].name # => "X"
+p[0] = OrientedLine(gfapy.Line("S\tY\t*"), "+"])
 ```
 
 #### Sequences
 
-Sequences (S field sequence) are represented by strings in gfapy.
+Sequences (S field sequence) are represented by strings in Gfapy.
 Depending on the GFA version, the alphabet definition is more or less
 restrictive. The definitions are correctly applied by the validation methods.
 
-The method ```rc``` is provided to compute the reverse complement of a nucleotidic
+The method ```rc()``` is provided to compute the reverse complement of a nucleotidic
 sequence. The extended IUPAC alphabet is understood by the method. Applied to
 non nucleotidic sequences, the results will be meaningless:
 ```python
-"gcat".rc # => "atgc"
-"*".rc # => "*" (placeholder)
-"yatc".rc # => "gatr" (wildcards)
-"gCat".rc # => "atGc" (case remains)
-"ctg".rc(rna: true) # => "cug"
+gfapy.rc("gcat") # => "atgc"
+gfapy.rc("*") # => "*" (placeholder)
+gfapy.rc("yatc") # => "gatr" (wildcards)
+gfapy.rc("gCat") # => "atGc" (case remains)
+gfapy.rc("ctg", rna: true) # => "cug"
 ```
 
 #### Integers and positions
@@ -197,7 +197,7 @@ For more details, see the Alignments chapter.
 
 The ```positional_fieldnames``` method returns the list of the names
 (as strings) of the positional fields of a line.
-The positional fields can be read using a method on the gfapy line object, which
+The positional fields can be read using a method on the Gfapy line object, which
 is called as the field name.  Setting the value is done with an equal sign
 version of the field name method (e.g. segment.slen = 120).  In alternative,
 the ```set(fieldname, value)``` and ```get(fieldname)``` methods can also be
@@ -236,7 +236,7 @@ c.field_to_s("pos") # => "1"
 
 Note that setting the value of reference and backreferences-related
 fields is generally not allowed, when a line instance is connected to a
-gfapy object (see the References chapter).
+Gfapy object (see the References chapter).
 
 ```python
 s = gfa.Line.from_string("L\ts1\t+\ts2\t-\t*")
