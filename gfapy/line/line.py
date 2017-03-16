@@ -12,6 +12,7 @@ from .common.update_references import UpdateReferences
 from .common.disconnection import Disconnection
 from .common.validate import Validate
 from .common.default_record_definition import DefaultRecordDefinition
+from collections import OrderedDict
 from functools import partial
 
 import gfapy
@@ -119,10 +120,18 @@ class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldD
   @classmethod
   def register_extension(cls, references=[]):
     # check the definitions
-    for posfield in cls.POSFIELDS:
-      if posfield not in cls.DATATYPE:
-        raise gfapy.RuntimeError("Extension {} ".format(str(cls))+
-            "defines no datatype for the positional field {}".format(posfield))
+    if isinstance(cls.POSFIELDS,OrderedDict):
+      for fieldname, datatype in cls.POSFIELDS.items():
+        cls.DATATYPE[fieldname] = datatype
+      cls.POSFIELDS = list(cls.POSFIELDS.keys())
+    else:
+      for posfield in cls.POSFIELDS:
+        if posfield not in cls.DATATYPE:
+          raise gfapy.RuntimeError("Extension {} ".format(str(cls))+
+              "defines no datatype for the positional field {}".format(posfield))
+    if hasattr(cls, "TAGS_DATATYPE"):
+      for fieldname, datatype in cls.TAGS_DATATYPE.items():
+        cls.DATATYPE[fieldname] = datatype
     if not cls.RECORD_TYPE:
       raise gfapy.RuntimeError("Extension {} ".format(str(cls))+
             "does not define the RECORD_TYPE constant")

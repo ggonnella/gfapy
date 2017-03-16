@@ -1,24 +1,21 @@
 import gfapy
 import re
+from collections import OrderedDict
 
 class Taxon(gfapy.Line):
   RECORD_TYPE = "T"
-  POSFIELDS = ["tid"]
-  DATATYPE = { "tid":"identifier_gfa2",
-               "UL":"Z" }
+  POSFIELDS = OrderedDict([("tid","identifier_gfa2")])
+  TAGS_DATATYPE = {"UL":"Z"}
   NAME_FIELD = "tid"
 
 Taxon.register_extension()
 
 class MetagenomicAssignment(gfapy.Line):
   RECORD_TYPE = "M"
-  POSFIELDS = ["mid", "tid", "sid"]
-  DATATYPE = {
-    "mid":"optional_identifier_gfa2",
-    "tid":"identifier_gfa2",
-    "sid":"identifier_gfa2",
-    "SC":"i",
-  }
+  POSFIELDS = OrderedDict([("mid","optional_identifier_gfa2"),
+                           ("tid","identifier_gfa2"),
+                           ("sid","identifier_gfa2")])
+  TAGS_DATATYPE = {"SC":"i"}
   NAME_FIELD = "mid"
 
 MetagenomicAssignment.register_extension(references=
