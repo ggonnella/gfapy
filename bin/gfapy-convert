@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""
+Convert a GFA file to the other specification version"
+"""
+
+import sys
+import os
+from gfapy import Gfa
+import argparse
+
+op = argparse.ArgumentParser(description=__doc__)
+op.add_argument("filename")
+opts = op.parse_args()
+
+gfa = Gfa.from_file(opts.filename)
+if gfa.version == "gfa1":
+  print(str(gfa.to_gfa2)+"\n")
+else:
+  print(str(gfa.to_gfa1)+"\n")

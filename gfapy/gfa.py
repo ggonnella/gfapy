@@ -59,7 +59,29 @@ class Gfa(Lines,GraphOperations):
   def __str__(self):
     return "\n".join([str(line) for line in self.lines])
 
-  # TODO: implement equivalent of to_gfa1_s, to_gfa2_s, to_gfa1, to_gfa2
+  def to_gfa1_s(self):
+    return "\n".join([line.to_gfa1_s() for line in self.lines])
+
+  def to_gfa1(self):
+    if self.version == "gfa1":
+      return self
+    else:
+      gfa1 = gfapy.Gfa(version="gfa1", vlevel=self.vlevel)
+      for line in self.lines:
+        gfa1.add_line(line.to_gfa1())
+      return gfa1
+
+  def to_gfa2_s(self):
+    return "\n".join([line.to_gfa2_s() for line in self.lines])
+
+  def to_gfa2(self):
+    if self.version == "gfa2":
+      return self
+    else:
+      gfa2 = gfapy.Gfa(version="gfa2", vlevel=self.vlevel)
+      for line in self.lines:
+        gfa2.add_line(line.to_gfa2())
+      return gfa2
 
   # TODO: implement clone (see how clone for lines was implemented)
 
