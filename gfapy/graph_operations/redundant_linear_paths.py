@@ -2,7 +2,7 @@ import gfapy
 
 class RedundantLinearPaths:
 
-  def __junction_junction_paths(self, sn, exclude):
+  def _junction_junction_paths(self, sn, exclude):
     retval = []
     exclude.append(sn)
     s = self.segment(sn)
@@ -16,21 +16,21 @@ class RedundantLinearPaths:
         retval.append([True, gfapy.SegmentEnd(s, "R"), eR.inverted(), True])
     return retval
 
-  def __extend_linear_path_to_junctions(self, segpath):
+  def _extend_linear_path_to_junctions(self, segpath):
     segfirst = self.segment(segpath[0].segment)
     segfirst_d = segfirst.dovetails_of_end(gfapy.invert(segpath[0].end_type))
     redundant_first = (len(segfirst_d) > 0)
     if len(segfirst_d) == 1:
       segpath.insert(0, segfirst_d[0].other_end(segpath[0].inverted()))
     segpath.insert(0, redundant_first)
-    seglast = segment(segpath[-1].segment)
+    seglast = self.segment(segpath[-1].segment)
     seglast_d = seglast.dovetails_of_end(segpath[-1].end_type)
     redundant_last = (len(seglast_d) > 0)
     if len(seglast_d) == 1:
       segpath.append(seglast_d[0].other_end(segpath[-1].inverted()))
     segpath.append(redundant_last)
 
-  def __link_duplicated_first(self, merged, first, is_reversed, jntag):
+  def _link_duplicated_first(self, merged, first, is_reversed, jntag):
     # annotate junction
     if jntag is None:
       jntag = "jn"
@@ -57,7 +57,7 @@ class RedundantLinearPaths:
     else:
       raise gfapy.AssertionError()
 
-  def __link_duplicated_last(self, merged, last, is_reversed, jntag):
+  def _link_duplicated_last(self, merged, last, is_reversed, jntag):
     # annotate junction
     if jntag is None:
       jntag = "jn"
@@ -86,7 +86,7 @@ class RedundantLinearPaths:
     else:
       raise gfapy.AssertionError()
 
-  def __remove_junctions(self, jntag):
+  def _remove_junctions(self, jntag):
     if jntag is None:
       jntag = "jn"
     for s in self.segments:

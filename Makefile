@@ -7,7 +7,7 @@ PIP=pip3
 
 # Install using pip
 install:
-	${PIP} install . --upgrade --user
+	${PIP} install --upgrade --user --editable .
 
 # Source distribution
 sdist:

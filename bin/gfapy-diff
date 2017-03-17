@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""
+Compare two GFA files
+"""
+
+import sys
+import os
+import gfapy
+import argparse
+
+op = argparse.ArgumentParser(description=__doc__)
+op.add_argument("filename1")
+op.add_argument("filename2")
+opts = op.parse_args()
+
+gfa1 = gfapy.Gfa.from_file(opts.filename1)
+gfa2 = gfapy.Gfa.from_file(opts.filename2)
+
+different = False
+
+if gfa1.version != gfa2.version:
+  print("# different version")
+  exit(1)
+else:
+  for s in gfa1.segments:
+    s2 = gfa2.segment(s)
+    if s2 is None:
+      different = True
+      print("# segment {} in {} but not in {}".format(s.name, opts.filename1, opts.filename2))
+    if s.diff(s2):
+      different = True
+      for diff in s.diff(s2):
+        print(diff)
+  for s in gfa2.segments:
+    s1 = gfa1.segment(s)
+    if s1 is None:
+      different = True
+      print("# segment {} in {} but not in {}".format(s.name, opts.filename2, opts.filename1))
+
+if different:
+  exit(1)
+else:
+  exit(0)

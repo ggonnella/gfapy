@@ -27,8 +27,8 @@ class GFA1(WriterWoSequence, References, Coverage,
   NAME_FIELD = "name"
   FIELD_ALIAS = { "sid" : "name" }
   DEPENDENT_LINES = ["dovetails_L", "dovetails_R",
-                     "edges_to_contained", "edges_to_containers"]
+                     "edges_to_contained", "edges_to_containers", "paths"]
   gfa2_compatibility = ["gaps_L", "gaps_R", "fragments", "internals", "sets"]
-  OTHER_REFERENCES = ["paths"] + gfa2_compatibility
+  OTHER_REFERENCES = gfa2_compatibility
 
 GFA1._apply_definitions()

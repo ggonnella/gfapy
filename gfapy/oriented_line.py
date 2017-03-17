@@ -101,7 +101,7 @@ class OrientedLine:
     if self.name:
       return "{}{}".format(self.name, self.orient)
     else:
-      return "({}){}".format(self.line, self.orient)
+      return "({}){}".format(str(self.line), self.orient)
 
   def __repr__(self):
     return "gfapy.OrientedLine({},{})".format(repr(self.line),repr(self.orient))
@@ -154,7 +154,7 @@ class OrientedLine:
         .format(self.line.__class__, self.line))
     if not re.match(r"^[!-~]+$", string):
       raise gfapy.FormatError(
-      "{} is not a valid GFA2 identifier\n".format(repr(string))+
+      "{} is not a valid GFA identifier\n".format(repr(string))+
       "(it contains spaces or non-printable characters)")
 
   @staticmethod

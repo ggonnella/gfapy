@@ -18,11 +18,27 @@ class Writer:
     str list
       A list of string representations of the fields.
     """
-    a = [ self.record_type ] + \
-        [ self.field_to_s(fn, tag = False) for fn in self.positional_fieldnames ] + \
-        [ self.field_to_s(fn, tag = True) for fn in self.tagnames ]
+    a = [self.record_type]
+    errors = []
+    for fn in self.positional_fieldnames:
+      try:
+        fstr = self.field_to_s(fn, tag = False)
+      except:
+        fstr = str(self.get(fn))
+        errors.append(fn)
+      a.append(fstr)
+    for fn in self.tagnames:
+      try:
+        fstr = self.field_to_s(fn, tag = True)
+      except:
+        fstr = str(self.get(fn))
+        errors.append(fn)
+      a.append(fstr)
     if self.virtual:
       a.append("co:Z:GFAPY_virtual_line")
+    if errors:
+      a.append("# INVALID; errors found in fields: "+
+          ",".join(errors))
     return a
 
   def field_to_s(self, fieldname, tag = False):
@@ -53,14 +69,20 @@ class Writer:
       raise gfapy.NotFoundError("Field {} not found".format(fieldname))
     t = self._field_or_default_datatype(fieldname, v)
     if not isinstance(v, str):
-      v = gfapy.Field.to_gfa_field(v, datatype = t, fieldname = fieldname)
+      v = gfapy.Field.to_gfa_field(v, datatype = t, fieldname = fieldname,
+                                  line = self)
     if self.vlevel >= 2:
       gfapy.Field.validate_gfa_field(v, t, fieldname)
-    return gfapy.Field.to_gfa_tag(v, fieldname, datatype = t) if tag else v
+    return gfapy.Field.to_gfa_tag(v, fieldname, datatype = t, line = self) if tag else v
 
   def __repr__(self):
-    return "gfapy.Line('{0}',version={1},vlevel={2})".format(
-        str(self),self.version,self.vlevel)
+    try:
+      s = str(self)
+    except:
+      s = "\t".join([ self.record_type + "(error!)" ] + \
+          [ repr(self.get(fn)) for fn in self.positional_fieldnames ] + \
+          [ (fn + ":" + self.get_datatype(fn) + ":" + repr(self.get(fn))) for fn in self.tagnames ])
+    return "gfapy.Line('{0}',version={1},vlevel={2})".format(s,self.version,self.vlevel)
 
   @property
   def _tags(self):

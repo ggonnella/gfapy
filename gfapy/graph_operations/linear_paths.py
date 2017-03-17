@@ -103,10 +103,10 @@ class LinearPaths:
           retval.append(lp)
       else:
         if lp:
-          self.__extend_linear_path_to_junctions(lp)
+          self._extend_linear_path_to_junctions(lp)
           retval.append(lp)
         else:
-          retval += self.__junction_junction_paths(sn, junction_exclude)
+          retval += self._junction_junction_paths(sn, junction_exclude)
     if self._progress:
       self._progress_log_end("linear_paths")
     return retval
@@ -116,7 +116,7 @@ class LinearPaths:
                         cut_counts=False):
     if len(segpath) < 2:
       return self
-    if not redundant_junctions and (segpath[0] in [True, False]):
+    if segpath[0] in [True, False]:
       first_redundant = segpath.pop(0)
       last_redundant = segpath.pop()
     else:
@@ -130,12 +130,12 @@ class LinearPaths:
             enable_tracking=enable_tracking)
     self.append(merged)
     if first_redundant:
-      self.__link_duplicated_first(merged, self.segment(segpath[0].segment),
+      self._link_duplicated_first(merged, self.segment(segpath[0].segment),
                                    first_reversed, jntag)
     else:
       self.__link_merged(merged.name, segpath[0].inverted(), first_reversed)
     if last_redundant:
-      self.__link_duplicated_last(merged, self.segment(segpath[-1].segment),
+      self._link_duplicated_last(merged, self.segment(segpath[-1].segment),
                                   last_reversed, jntag)
     else:
       self.__link_merged(merged.name, segpath[-1], last_reversed)
@@ -164,7 +164,7 @@ class LinearPaths:
     if self._progress:
       self._progress_log_end("merge_linear_paths")
     if redundant_junctions:
-      self.__remove_junctions(jntag)
+      self._remove_junctions(jntag)
     return self
 
   def __traverse_linear_path(self, segment_end, exclude):
@@ -380,5 +380,6 @@ class LinearPaths:
         l2.from_segment = merged_name
         if is_reversed:
           l2.from_orient = gfapy.invert(l2.from_orient)
+      l.disconnect()
       self.add_line(l2)
 

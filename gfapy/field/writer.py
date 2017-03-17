@@ -3,7 +3,8 @@ Encoding of python objects to GFA string representation
 """
 import gfapy
 
-def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
+def to_gfa_field(obj, datatype = None, safe = True, fieldname = None,
+                 line = None):
   """
   Encode a python object into a GFA field. The python object can be
   either an encoded GFA field (in which case, at most it is validated,
@@ -21,6 +22,8 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
     will be chosen (see gfapy.DefaultDatatype module).
   fieldname : str, optional
   	fieldname, for error messages
+  line : gfapy.Line, optional
+  	line, for error messages
   safe : bool, optional
   	*(defaults to: ***True***)* if **True**, the safe
     version of the encode function is used, which guarantees that the
@@ -66,7 +69,7 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None):
           contentmsg +
           str(err)) from err
 
-def to_gfa_tag(obj, fieldname, datatype = None):
+def to_gfa_tag(obj, fieldname, datatype = None, line = None):
   """
   Representation of the data as a GFA tag **xx:d:content**, where **xx** is
   the tag name and **d** is the datatype.
@@ -76,12 +79,15 @@ def to_gfa_tag(obj, fieldname, datatype = None):
   obj : object
     the python object to encode
   fieldname : Symbol
-  	the tag name
+    the tag name
+  line : gfapy.Line, optional
+    line, for error messages
   datatype : gfapy.Field.TAG_DATATYPE, optional
-  	(*defaults to: the value returned by 
+    (*defaults to: the value returned by 
       {gfapy.Field.get_default_gfa_tag_datatype}*)
   """
   if not datatype:
     datatype = gfapy.Field.get_default_gfa_tag_datatype(obj)
   return "{}:{}:{}".format(fieldname, datatype, 
-          to_gfa_field(obj, datatype = datatype, fieldname = fieldname))
+          to_gfa_field(obj, datatype = datatype, fieldname = fieldname,
+            line = line))

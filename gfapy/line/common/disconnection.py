@@ -74,7 +74,8 @@ class Disconnection:
     if isinstance(ref, gfapy.Line):
       ref._update_references(self, None, k)
     elif isinstance(ref, gfapy.OrientedLine):
-      ref.line._update_references(self, None, k)
+      if isinstance(ref.line, gfapy.Line):
+        ref.line._update_references(self, None, k)
     elif isinstance(ref, list):
       for i in range(len(ref)):
        self._remove_backreference(ref[i], k)
@@ -83,7 +84,8 @@ class Disconnection:
     if isinstance(ref, gfapy.Line):
       ref.disconnect()
     elif isinstance(ref, gfapy.OrientedLine):
-      ref.line.disconnect()
+      if isinstance(ref.line, gfapy.Line):
+        ref.line.disconnect()
     elif isinstance(ref, list):
       for i in range(len(ref)):
         self._disconnect_dependent_line(ref[i])
