@@ -2,6 +2,8 @@ import gfapy
 
 class Creators:
   def add_line(self, gfa_line):
+    if gfa_line is None:
+      return self
     if self._version == "gfa1":
       self.__add_line_GFA1(gfa_line)
     elif self._version == "gfa2":

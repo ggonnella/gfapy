@@ -60,7 +60,15 @@ class Gfa(Lines,GraphOperations):
     return "\n".join([str(line) for line in self.lines])
 
   def to_gfa1_s(self):
-    return "\n".join([line.to_gfa1_s() for line in self.lines])
+    if self.version == "gfa1":
+      return str(self)
+    else:
+      lines = []
+      for line in self.lines:
+        converted = line.to_gfa1_s()
+        if converted:
+          lines.append(converted)
+      return "\n".join(converted)
 
   def to_gfa1(self):
     if self.version == "gfa1":
@@ -68,11 +76,19 @@ class Gfa(Lines,GraphOperations):
     else:
       gfa1 = gfapy.Gfa(version="gfa1", vlevel=self.vlevel)
       for line in self.lines:
-        gfa1.add_line(line.to_gfa1())
+        gfa1.add_line(line.to_gfa1(raise_on_failure=False))
       return gfa1
 
   def to_gfa2_s(self):
-    return "\n".join([line.to_gfa2_s() for line in self.lines])
+    if self.version == "gfa2":
+      return str(self)
+    else:
+      lines = []
+      for line in self.lines:
+        converted = line.to_gfa2_s()
+        if converted:
+          lines.append(converted)
+      return "\n".join(converted)
 
   def to_gfa2(self):
     if self.version == "gfa2":
@@ -80,7 +96,7 @@ class Gfa(Lines,GraphOperations):
     else:
       gfa2 = gfapy.Gfa(version="gfa2", vlevel=self.vlevel)
       for line in self.lines:
-        gfa2.add_line(line.to_gfa2())
+        gfa2.add_line(line.to_gfa2(raise_on_failure=False))
       return gfa2
 
   # TODO: implement clone (see how clone for lines was implemented)

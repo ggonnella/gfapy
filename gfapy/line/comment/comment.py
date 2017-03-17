@@ -3,8 +3,9 @@ from ..line import Line
 from .init import Init
 from .tags import Tags
 from .writer import Writer
+from .version_conversion import VersionConversion
 
-class Comment(Writer, Tags, Init, Line):
+class Comment(Writer, Tags, Init, VersionConversion, Line):
   """
   A comment line of a GFA file
 

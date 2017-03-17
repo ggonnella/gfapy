@@ -26,7 +26,8 @@ class TestApiVersion(unittest.TestCase):
         str(gfapy.Line.from_string("S\tA\tNNNN").to_gfa1()))
     self.assertEqual("S\tA\t4\tNNNN",
         str(gfapy.Line.from_string("S\tA\tNNNN").to_gfa2()))
-    self.assertEqual("S\tA\tNNNN\tLN:i:4",str(gfapy.Line.from_string("S\tA\t4\tNNNN").to_gfa1()))
+    self.assertEqual("S\tA\tNNNN\tsl:i:4",str(gfapy.Line.from_string("S\tA\t4\tNNNN").to_gfa1()))
+    self.assertEqual("S\tA\t*\tLN:i:4",str(gfapy.Line.from_string("S\tA\t4\t*").to_gfa1()))
     self.assertEqual("S\tA\t4\tNNNN",str(gfapy.Line.from_string("S\tA\t4\tNNNN").to_gfa2()))
     # wrong sequence alphabet for GFA2->GFA1
     self.assertEqual("S\tA\t4\t[[]]",str(gfapy.Line.from_string("S\tA\t4\t[[]]").to_gfa2()))

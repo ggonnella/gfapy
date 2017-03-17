@@ -14,6 +14,6 @@ opts = op.parse_args()
 
 gfa = Gfa.from_file(opts.filename)
 if gfa.version == "gfa1":
-  print(str(gfa.to_gfa2)+"\n")
+  print(str(gfa.to_gfa2()))
 else:
-  print(str(gfa.to_gfa1)+"\n")
+  print(str(gfa.to_gfa1()))

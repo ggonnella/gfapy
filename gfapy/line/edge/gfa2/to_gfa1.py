@@ -35,7 +35,7 @@ class ToGFA1:
       a.append(str(self.pos))
     a.append(str(self.overlap))
     if not gfapy.is_placeholder(self.eid):
-      a.append(self.eid.to_gfa_tag("ID", datatype = "Z"))
+      a.append(gfapy.Field.to_gfa_tag(self.eid, "id", datatype = "Z"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a

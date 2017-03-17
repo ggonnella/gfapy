@@ -20,7 +20,8 @@ class VersionConversion:
   def _to_version_a(self, version):
     """
     .. note::
-      The default is just an alias of to_list(), and ignores version.
+      The default is an alias of to_list() if version is equal to the
+      version of the line, and an empty list otherwise.
       gfapy.Line subclasses can redefine this method to convert
       between versions.
 
@@ -29,22 +30,32 @@ class VersionConversion:
     str list
       A list of string representations of the fields.
     """
-    return self.to_list()
+    if version == self._version:
+      return self.to_list()
+    else:
+      return []
 
-  def to_version(self, version):
+  def to_version(self, version, raise_on_failure=True):
     """
     Returns
     -------
     gfapy.Line
-    	Convertion to the selected version.
+    	Conversion to the selected version.
     """
     if version == self._version:
       return self
     elif version not in gfapy.VERSIONS:
       raise gfapy.VersionError("Version unknown ({})".format(version))
     else:
-      return gfapy.Line.from_list(getattr(self, "_to_"+version+"_a")(),
-                version=version, vlevel=self.vlevel)
+      l = getattr(self, "_to_"+version+"_a")()
+      if l:
+        return gfapy.Line.from_list(l, version=version, vlevel=self.vlevel)
+      elif raise_on_failure:
+        raise gfapy.VersionError("Records of type {} ".format(self.record_type)+
+            "cannot be converted from version {} ".format(self._version)+
+            "to version {}".format(version))
+      else:
+        return None
 
 for shall_version in ["gfa1", "gfa2"]:
   setattr(VersionConversion, "to_"+shall_version+"_s",
