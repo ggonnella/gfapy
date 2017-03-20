@@ -53,8 +53,11 @@ using the conventional Python syntax::
 Documentation
 ~~~~~~~~~~~~~
 
-An user manual is available at
-https://github.com/ggonnella/gfapy/blob/master/manual/gfapy-manual.pdf
+The documentation, including this introduction to Gfapy, an user manual
+and the API documentation is hosted on the ReadTheDocs server,
+at the URL http://gfapy.readthedocs.io/en/latest/ and it can be
+downloaded as PDF from the URL
+https://github.com/ggonnella/gfapy/blob/master/manual/gfapy-manual.pdf.
 
 References
 ~~~~~~~~~~
