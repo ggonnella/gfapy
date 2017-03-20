@@ -124,10 +124,12 @@ class Collections:
 
   @property
   def external_names(self):
+    """Identifiers of the external sequences mentioned in F records"""
     return list(self._records["F"].keys())
 
   @property
   def names(self):
+    """All identifiers in the GFA identifiers namespace"""
     return self.segment_names + \
       self.edge_names + \
       self.gap_names + \
@@ -140,6 +142,7 @@ class Collections:
 
   @property
   def custom_record_keys(self):
+    """Record types of the custom records"""
     if self._version == "gfa1":
       return []
     else:
@@ -152,6 +155,7 @@ class Collections:
 
   @property
   def custom_records(self):
+    """All custom records"""
     cr = []
     for k in self.custom_record_keys:
       collection = self._records[k]
@@ -159,12 +163,14 @@ class Collections:
     return cr
 
   def custom_records_of_type(self, record_type):
+    """List of custom records of the specified type"""
     if record_type not in self.custom_record_keys:
       return []
     return list(self._records[record_type].values())
 
   @property
   def lines(self):
+    """All the lines of the GFA"""
     return self.comments + \
       self.headers + \
       self.segments + \

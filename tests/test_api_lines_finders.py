@@ -25,8 +25,8 @@ class TestAPILinesFinders(unittest.TestCase):
               "X\tx2",
               "G\t*\t1+\t2+\t2000\t*"]
   l_gfa2 = [gfapy.Line.from_string(x) for x in l_gfa2_a]
-  gfa1 = gfapy.Gfa.from_list(l_gfa1)
-  gfa2 = gfapy.Gfa.from_list(l_gfa2)
+  gfa1 = gfapy.Gfa(l_gfa1)
+  gfa2 = gfapy.Gfa(l_gfa2)
 
   def test_segment_gfa1(self):
     # existing name as argument

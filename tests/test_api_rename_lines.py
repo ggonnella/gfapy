@@ -4,7 +4,7 @@ import unittest
 class TestAPIRenameLines(unittest.TestCase):
 
   def test_rename(self):
-    gfa = gfapy.Gfa.from_list(["S\t0\t*", "S\t1\t*", "S\t2\t*",
+    gfa = gfapy.Gfa(["S\t0\t*", "S\t1\t*", "S\t2\t*",
       "L\t0\t+\t2\t-\t12M", "C\t1\t+\t0\t+\t12\t12M", "P\t4\t2+,0-\t12M"])
     gfa.segment("0").name = "X"
     with self.assertRaises(gfapy.NotFoundError): gfa.try_get_segment("0")

@@ -2,12 +2,25 @@ import gfapy
 
 class Finders:
   def segment(self, s):
+    """Search a segment in a GFA.
+
+    If the argument is a line, it is returned. If it is a string,
+    it is used as a segment identifier, and the segment with that identifier
+    is returned. If no segment has the identifier, None is returned.
+    Note that None is also returned if a line of another type (not segment)
+    has the identifier (differently from the line() method, which returns
+    the lines independently from the record type).
+
+    Parameters:
+      l (str, gfapy.Line)
+    """
     if isinstance(s, gfapy.Line):
       return s
     else:
       return self._records["S"].get(s, None)
 
   def try_get_segment(self, s):
+    """Call segment() and raise an exception is the segment is not found."""
     seg = self.segment(s)
     if seg is None:
       raise gfapy.NotFoundError("No segment has name {}".format(s))
@@ -18,6 +31,15 @@ class Finders:
   RECORDS_WITH_NAME = ["E", "S", "P", "U", "G", "O", None]
 
   def line(self, l):
+    """Search a line in a GFA.
+
+    If the argument is a line, it is returned. If it is a string,
+    it is used as a line identifier, and the line with that identifier
+    is returned. If no line has the identifier, None is returned.
+
+    Parameters:
+      l (str, gfapy.Line)
+    """
     if gfapy.is_placeholder(l):
       return None
     elif isinstance(l, gfapy.Line):
@@ -28,6 +50,7 @@ class Finders:
       return None
 
   def try_get_line(self, l):
+    """Call line() and raise an exception is the line is not found."""
     gfa_line = self.line(l)
     if gfa_line is None:
       if gfapy.is_placeholder(l):
@@ -39,9 +62,20 @@ class Finders:
     return gfa_line
 
   def fragments_for_external(self, external_id):
+    """List of F lines with a given external ID."""
     return list(self._records["F"].get(external_id,{}).values())
 
   def select(self, dict_or_line):
+    """Select all lines which respect a chriterion.
+
+    The chriterion is expressed by the argument, which is either a line
+    instance or a dictionary. If it is a dictionary, it shall contain
+    pairs of fieldnames/values and the method returns all lines
+    where the mentioned fieldnames have the corresponding values.
+    If it is a line, it is compared with the lines of the same type
+    in the Gfa instance and lines with the same field values
+    are returned (undefined placeholder values are thereby not compared).
+    """
     is_dict = isinstance(dict_or_line, dict)
     name = dict_or_line.get("name",None) if is_dict else dict_or_line.get("name")
     if name is not None and not gfapy.is_placeholder(name):

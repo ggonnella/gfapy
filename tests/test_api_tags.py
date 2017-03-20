@@ -20,19 +20,19 @@ class TestApiTags(unittest.TestCase):
       gfapy.line.Header(["ZZ:Z:1"], version=version, vlevel=0) # nothing raised
       gfapy.line.Header.from_string("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
       gfapy.line.Header.from_string("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
-      gfapy.Gfa.from_string("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
+      gfapy.Gfa("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
       for level in [1,2,3]:
         self.assertRaises(gfapy.FormatError,
           gfapy.line.Header,["ZZ:Z:1"], version=version, vlevel=level)
         self.assertRaises(gfapy.FormatError,
           gfapy.Line.from_string, "H\tZZ:Z:1", version=version, vlevel=level)
         self.assertRaises(gfapy.FormatError,
-          gfapy.Gfa.from_string, "H\tZZ:Z:1", version=version, vlevel=level)
+          gfapy.Gfa, "H\tZZ:Z:1", version=version, vlevel=level)
       # lower case
       for level in [0,1,2,3]:
         gfapy.line.Header(["zz:Z:1"], version=version, vlevel=0) # nothing raised
         gfapy.Line.from_string("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
-        gfapy.Gfa.from_string("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
+        gfapy.Gfa("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
 
   def test_wrong_tag_format(self):
     self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["VN i:1"])
@@ -68,7 +68,7 @@ class TestApiTags(unittest.TestCase):
           ["zz:i:1", "VN:Z:0", "zz:i:2"], version=version, vlevel=level)
         self.assertRaises(gfapy.NotUniqueError, gfapy.Line.from_string,
             "H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version, vlevel=level)
-        self.assertRaises(gfapy.NotUniqueError, gfapy.Gfa.from_string,
+        self.assertRaises(gfapy.NotUniqueError, gfapy.Gfa,
             "H\tzz:i:1\tVN:Z:#{version}\tzz:i:2", version=version, vlevel=level)
 
   def test_validate_field(self):

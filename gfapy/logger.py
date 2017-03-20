@@ -69,10 +69,10 @@ class Logger:
     Parameters
     ----------
     part : float
-      - part = 0      => output at every call of {gfapy.Logger.progress_log}
-      - 0 < part < 1  => output once per part of the total progress
-      (e.g. 0.001 = log every 0.1% progress)
-      - part = 1      => output only total elapsed time
+      if part = 0, output at every call of {gfapy.Logger.progress_log};
+      if 0 < part < 1, output once per part of the total progress
+      (e.g. 0.001 = log every 0.1% progress);
+      if part = 1, output only total elapsed time
     """
     if part < 0 or part > 1:
       raise gfapy.ArgumentError("part must be in range [0..1]")

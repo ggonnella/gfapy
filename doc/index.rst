@@ -13,8 +13,19 @@ Gfapy documentation
    readme
    changelog
 
+   tutorial/gfa
+   tutorial/validation
+   tutorial/positional_fields
+   tutorial/placeholders
+   tutorial/positions
    tutorial/alignments
-
+   tutorial/tags
+   tutorial/references
+   tutorial/header
+   tutorial/custom_records
+   tutorial/comments
+   tutorial/errors
+   tutorial/graph_operations
 
 Indices and tables
 ==================

@@ -13,7 +13,7 @@ class TestUnitLineFinders(unittest.TestCase):
                 "C\t1\t-\t4\t-\t1\t*",
                 "P\tp1\t1+,2+\t*"]
   l_gfa1 = [gfapy.Line.from_string(s) for s in l_gfa1_str]
-  gfa1 = gfapy.Gfa.from_list(l_gfa1)
+  gfa1 = gfapy.Gfa(l_gfa1)
 
   l_gfa2_str = ["S\t5\t100\t*",
                 "S\t6\t110\t*",
@@ -28,7 +28,7 @@ class TestUnitLineFinders(unittest.TestCase):
                 "X\tx2",
                 "G\t*\t5+\t6+\t2000\t*"]
   l_gfa2 = [gfapy.Line.from_string(s) for s in l_gfa2_str]
-  gfa2 = gfapy.Gfa.from_list(l_gfa2)
+  gfa2 = gfapy.Gfa(l_gfa2)
 
   def test_search_link(self):
     # search using the direct link

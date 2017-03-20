@@ -82,7 +82,7 @@ class Writer:
       s = "\t".join([ self.record_type + "(error!)" ] + \
           [ repr(self.get(fn)) for fn in self.positional_fieldnames ] + \
           [ (fn + ":" + self.get_datatype(fn) + ":" + repr(self.get(fn))) for fn in self.tagnames ])
-    return "gfapy.Line('{0}',version={1},vlevel={2})".format(s,self.version,self.vlevel)
+    return "gfapy.Line('{0}',version='{1}',vlevel={2})".format(s,self.version,self.vlevel)
 
   @property
   def _tags(self):

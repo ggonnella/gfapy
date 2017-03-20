@@ -40,7 +40,7 @@ class TestAPIMultiplication(unittest.TestCase):
     self.assertEqual(1000, gfa.segment("7").RC)
 
   def test_multiply_segment_copy_names(self):
-    gfa = gfapy.Gfa.from_list(["H\tVN:Z:1.0",
+    gfa = gfapy.Gfa(["H\tVN:Z:1.0",
            "S\t1\t*\tRC:i:600",
            "S\t1b\t*\tRC:i:6000",
            "S\t2\t*\tRC:i:60000",

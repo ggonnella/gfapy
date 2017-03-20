@@ -48,6 +48,6 @@ class TestApiCustomRecords(unittest.TestCase):
 
   def test_custom_records(self):
     x = ["X\tVN:Z:1.0", "Y\ttesttesttest"]
-    self.assertEqual(x[0], str(gfapy.Gfa.from_list(x).custom_records_of_type("X")[0]))
-    self.assertEqual(x[1], str(gfapy.Gfa.from_list(x).custom_records_of_type("Y")[0]))
+    self.assertEqual(x[0], str(gfapy.Gfa(x).custom_records_of_type("X")[0]))
+    self.assertEqual(x[1], str(gfapy.Gfa(x).custom_records_of_type("Y")[0]))
 

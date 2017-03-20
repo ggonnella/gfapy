@@ -39,8 +39,8 @@ class ArgumentError(Error):
 
 class NotUniqueError(Error):
   """An element which should have been unique is not unique
-  e.g. a tag name is duplicated in a line;
-       a duplicated record ID is found
+
+  e.g. a tag name is duplicated in a line; a duplicated record ID is found
   """
   pass
 

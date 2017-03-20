@@ -6,7 +6,7 @@
     sA = "S\tA\t100\t*"
     sB = "S\tB\t100\t*"
     x = "E\tx\tA+\tB-\t0\t100$\t0\t100$\t4,2\tTS:i:50"
-    gfa = gfapy.Gfa.from_list([h, sA, sB, x])
+    gfa = gfapy.Gfa([h, sA, sB, x])
 
 Alignments
 ~~~~~~~~~~
@@ -175,11 +175,10 @@ header global value).
 
 .. doctest::
 
-    # gfa:
+    >>> print(gfa) #doctest: +SKIP
     H TS:i:100
     E x A+ B- 0 100$ 0 100$ 4,2 TS:i:50
     ...
-
     >>> gfa.header.TS
     100
     >>> gfa.line("x").TS

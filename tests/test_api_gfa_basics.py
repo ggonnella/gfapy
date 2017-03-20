@@ -60,7 +60,7 @@ class TestAPIGfaBasics(unittest.TestCase):
      "L\t1\t+\t2\t-\t*","C\t1\t+\t3\t-\t12\t*","P\t4\t1+,2-\t*"]
     gfa1 = gfapy.Gfa()
     for l in lines: gfa1.append(l)
-    gfa2 = gfapy.Gfa.from_string("\n".join(lines))
+    gfa2 = gfapy.Gfa("\n".join(lines))
     assert(gfa2)
     self.assertEqual(gfapy.Gfa, gfa2.__class__)
     self.assertEqual(str(gfa1), str(gfa2))
@@ -70,7 +70,7 @@ class TestAPIGfaBasics(unittest.TestCase):
      "L\t1\t+\t2\t-\t*","C\t1\t+\t3\t-\t12\t*","P\t4\t1+,2-\t*"]
     gfa1 = gfapy.Gfa()
     for l in lines: gfa1.append(l)
-    gfa2 = gfapy.Gfa.from_list(lines)
+    gfa2 = gfapy.Gfa(lines)
     assert(gfa2)
     self.assertEqual(gfapy.Gfa, gfa2.__class__)
     self.assertEqual(str(gfa1), str(gfa2))

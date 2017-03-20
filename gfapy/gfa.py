@@ -5,7 +5,31 @@ from collections import defaultdict
 import sys
 
 class Gfa(Lines,GraphOperations):
-  def __init__(self, vlevel = 1, version = None):
+  """Representation of the data in a GFA file.
+
+  Parameters:
+    data (str or list): optional, string content of a GFA file, or
+       the same as a list (splitted on newlines); default: create an empty Gfa
+       instance
+    vlevel (int): validation level (default: 1)
+    version (str): GFA version ('gfa1' or 'gfa2';
+        default: automatic recognition)
+
+  Raises:
+    ~gfapy.error.ArgumentError: if the vlevel or version are invalid
+    ~gfapy.error.FormatError: if data is provided, which is invalid
+    ~gfapy.error.VersionError: if an unknown version is specified, or data is
+        provided, which is not compatible with the specified version
+  """
+
+  def __init__(self, *args, vlevel = 1, version = None):
+    if not isinstance(vlevel, int):
+      raise gfapy.ArgumentError("vlevel is not an integer ({})".format(vlevel))
+    if vlevel < 0:
+      raise gfapy.ArgumentError(
+          "vlevel is not a positive integer ({})".format(vlevel))
+    if not version in ['gfa1', 'gfa2', None]:
+      raise gfapy.VersionError("GFA version unknown ({})".format(version))
     self._vlevel = vlevel
     self._records = defaultdict(dict)
     self._records["H"] = gfapy.line.Header([], vlevel = vlevel)
@@ -34,9 +58,27 @@ class Gfa(Lines,GraphOperations):
       self._version_explanation = "set during initialization"
       self._version_guess = version
       self._validate_version()
+    if len(args) == 1:
+      lst = None
+      if isinstance(args[0], str):
+        lst = args[0].split("\n")
+      elif isinstance(args[0], list):
+        lst = args[0]
+      else:
+        raise gfapy.ArgumentError("Cannot create a Gfa"+
+            " instance from an object of type {}".format(type(args[0])))
+      for line in lst:
+          self.add_line(line)
+      self.process_line_queue()
+      if vlevel >= 1:
+        self.validate()
+    elif len(args) > 1:
+      raise gfapy.ArgumentError("Wrong number of arguments for Gfa()"+
+          "({})".format(len(args)))
 
   @property
   def version(self):
+    """GFA version ('gfa1' or 'gfa2')"""
     return self._version
 
   @version.setter
@@ -45,6 +87,7 @@ class Gfa(Lines,GraphOperations):
 
   @property
   def vlevel(self):
+    """Level of validation"""
     return self._vlevel
 
   @vlevel.setter
@@ -52,6 +95,10 @@ class Gfa(Lines,GraphOperations):
     self._vlevel=value
 
   def validate(self):
+    """Validate the GFA instance
+
+    Checks if all references are solved correctly.
+    """
     self.__validate_segment_references()
     self.__validate_path_links()
     return None
@@ -60,6 +107,11 @@ class Gfa(Lines,GraphOperations):
     return "\n".join([str(line) for line in self.lines])
 
   def to_gfa1_s(self):
+    """Create a GFA1 string representation for the GFA data
+
+    If the Gfa has version 'gfa1', its string representation is
+    returned. Otherwise a conversion from GFA2 is performed.
+    """
     if self.version == "gfa1":
       return str(self)
     else:
@@ -71,6 +123,11 @@ class Gfa(Lines,GraphOperations):
       return "\n".join(converted)
 
   def to_gfa1(self):
+    """Create a GFA1 Gfa instance for the GFA data
+
+    If the Gfa has version 'gfa1', it is
+    returned. Otherwise a conversion from GFA2 is performed.
+    """
     if self.version == "gfa1":
       return self
     else:
@@ -80,6 +137,11 @@ class Gfa(Lines,GraphOperations):
       return gfa1
 
   def to_gfa2_s(self):
+    """Create a GFA2 string representation for the GFA data
+
+    If the Gfa has version 'gfa2', its string representation is
+    returned. Otherwise a conversion from GFA1 is performed.
+    """
     if self.version == "gfa2":
       return str(self)
     else:
@@ -91,6 +153,11 @@ class Gfa(Lines,GraphOperations):
       return "\n".join(converted)
 
   def to_gfa2(self):
+    """Create a GFA2 Gfa instance for the GFA data.
+
+    If the Gfa has version 'gfa2', it is
+    returned. Otherwise a conversion from GFA1 is performed.
+    """
     if self.version == "gfa2":
       return self
     else:
@@ -102,12 +169,17 @@ class Gfa(Lines,GraphOperations):
   # TODO: implement clone (see how clone for lines was implemented)
 
   def read_file(self, filename):
-    # TODO: better implementation of linecount
+    """Read GFA data from a file and load it into the Gfa instance.
+
+    Parameters:
+      filename (str)
+    """
     if self._progress:
       linecount = 0
       with open(filename) as f:
         for line in f:
           linecount += 1
+      # TODO: better implementation of linecount
       self._progress_log_init("read_file", "lines", linecount,
                               "Parsing file {}".format(filename)+
                               " containing {} lines".format(linecount))
@@ -127,14 +199,30 @@ class Gfa(Lines,GraphOperations):
 
   @classmethod
   def from_file(cls, filename, vlevel = 1, version = None):
+    """Create a Gfa instance from the contents of a GFA file.
+
+    Parameters:
+      filename (str)
+      vlevel (int) : the validation level
+      version (str) : the GFA version ('gfa1' or 'gfa2'; default:
+          determine version automatically)
+
+    Returns:
+      gfapy.Gfa
+    """
     gfa = cls(vlevel = vlevel, version = version)
     gfa.read_file(filename)
     return gfa
 
   def to_file(self, filename):
+    """Write the content of the instance to a GFA file
+
+    Parameters:
+      filename (str)
+    """
     with open(filename, "w") as f:
       for line in self.lines:
-        f.write(l+"\n")
+        f.write(str(line)+"\n")
 
   def __eq__(self, other):
     self.lines == other.lines
@@ -181,24 +269,16 @@ class Gfa(Lines,GraphOperations):
       raise gfapy.VersionError("GFA specification version {} not supported".
               format(self._version))
 
-  @classmethod
-  def from_string(cls, string, vlevel=1, version=None):
-    return cls.from_list(string.split("\n"), vlevel=vlevel, version=version)
-
-  @classmethod
-  def from_list(cls, lines_array, vlevel=1, version=None):
-    gfa = cls(vlevel=vlevel, version=version)
-    for line in lines_array:
-      gfa.add_line(line)
-    gfa.process_line_queue()
-    if vlevel >= 1:
-      gfa.validate()
-    return gfa
-
   # Progress logging related-methods:
 
   def enable_progress_logging(self, part=0.1, channel=sys.stderr):
-    '''Activate logging of progress'''
+    '''Activate logging of progress for some graph operations.
+
+    Parameters:
+      part (float) : report when every specified portion of the computation
+          is completed (default: 0.1)
+      channel : output channel (default: standard error)
+    '''
     self._progress = gfapy.Logger(channel=channel)
     self._progress.enable_progress(part=part)
 
