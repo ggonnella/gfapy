@@ -13,6 +13,7 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
   RECORD_TYPE = "E"
   POSFIELDS = ["eid", "sid1", "sid2", "beg1", "end1", "beg2", "end2",
                "alignment"]
+  PREDEFINED_TAGS = ["TS"]
   DATATYPE = {
     "eid" : "optional_identifier_gfa2",
     "sid1" : "oriented_identifier_gfa2",
@@ -22,6 +23,7 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
     "beg2" : "position_gfa2",
     "end2" : "position_gfa2",
     "alignment" : "alignment_gfa2",
+    "TS" : "i",
   }
   NAME_FIELD = "eid"
   FIELD_ALIAS = { "name" : "eid" }

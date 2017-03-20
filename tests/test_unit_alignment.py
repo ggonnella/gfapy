@@ -40,12 +40,16 @@ class TestUnitAlignment(unittest.TestCase):
     assert(isinstance(gfapy.Alignment(malformed2),gfapy.CIGAR))
     self.assertRaises(gfapy.TypeError, gfapy.Alignment(malformed2).validate)
 
-  def test_to_cigar(self):
-    self.assertEqual(TestUnitAlignment.cigar_1, gfapy.CIGAR.from_string(TestUnitAlignment.cigar_1_s))
-    assert(isinstance(gfapy.CIGAR.from_string("*"), gfapy.AlignmentPlaceholder))
-    self.assertEqual(TestUnitAlignment.cigar_1, gfapy.CIGAR(TestUnitAlignment.cigar_1_a))
+  def test_cigar_from_string(self):
+    self.assertEqual(TestUnitAlignment.cigar_1,
+        gfapy.CIGAR._from_string(TestUnitAlignment.cigar_1_s))
+    assert(isinstance(gfapy.CIGAR._from_string("*"),
+      gfapy.AlignmentPlaceholder))
+    self.assertEqual(TestUnitAlignment.cigar_1,
+        gfapy.CIGAR(TestUnitAlignment.cigar_1_a))
 
-  def test_to_trace(self):
-    self.assertEqual(TestUnitAlignment.trace_1, gfapy.Trace.from_string(TestUnitAlignment.trace_1_s))
-    self.assertRaises(gfapy.FormatError, gfapy.Trace.from_string, "A,1,2")
+  def test_trace_from_string(self):
+    self.assertEqual(TestUnitAlignment.trace_1,
+        gfapy.Trace._from_string(TestUnitAlignment.trace_1_s))
+    self.assertRaises(gfapy.FormatError, gfapy.Trace._from_string, "A,1,2")
 

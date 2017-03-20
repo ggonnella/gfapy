@@ -21,13 +21,13 @@ and validation of custom fields. The custom lines can be connected, using
 references, to each other and to lines of the standard record types.
 
 Requirements
-============
+~~~~~~~~~~~~
 
 Gfapy has been written for Python 3 and tested using Python version 3.3.
 It does not require any additional Python packages or other software.
 
 Installation
-============
+~~~~~~~~~~~~
 
 Gfapy is distributed as a Python package and can be installed using
 the python package manager pip.
@@ -43,7 +43,7 @@ use the following command::
   pip install -e git+https://github.com/ggonnella/gfapy.git#egg=gfapy
 
 Usage
-=====
+~~~~~
 
 If you installed gfapy as described above, you can import it in your script
 using the conventional Python syntax::
@@ -51,13 +51,13 @@ using the conventional Python syntax::
   >>> import gfapy
 
 Documentation
-=============
+~~~~~~~~~~~~~
 
 An user manual is available at
 https://github.com/ggonnella/gfapy/blob/master/manual/gfapy-manual.pdf
 
 References
-==========
+~~~~~~~~~~
 
 The manuscript describing Gfapy has been submitted and is currently under
 review. This section will be updated, as soon as the publication is available.

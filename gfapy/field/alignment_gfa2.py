@@ -1,10 +1,10 @@
 import gfapy
 
 def unsafe_decode(string):
-  return gfapy.Alignment.from_string(string, valid = True, version = "gfa2")
+  return gfapy.Alignment(string, valid = True, version = "gfa2")
 
 def decode(string):
-  return gfapy.Alignment.from_string(string, valid = False, version = "gfa2")
+  return gfapy.Alignment(string, valid = False, version = "gfa2")
 
 validate_encoded = decode
 

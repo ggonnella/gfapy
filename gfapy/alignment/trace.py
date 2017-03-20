@@ -2,37 +2,40 @@ import gfapy
 from .alignment import Alignment
 
 class Trace(list):
-  """
-  List of trace points.
+  """Trace alignment.
 
   A trace is a list of integers, each giving the number of characters
-  in the second segment to align to the next TS characters in the first
-  segment.
+  in the second segment to align to the next ``TS`` characters in the first
+  segment (where  ``TS``, the trace spacing, is either the default spacing
+  given in the header line ``TS`` tag, or the the spacing given in the ``TS``
+  tag on the line itself, where the trace alignment is used).
 
-  TS is either the default spacing given in the header line TS tag,
-  or the the spacing given in the TS tag on the line of the edge.
-
-  Note: a complement operation such as for CIGARs cannot be defined
-  for a trace, without computing the alignment.
+  Instances are usually created from their string representations, using the
+  :class:`~gfapy.alignment.alignment.Alignment` factory class constructor.
   """
 
-  def validate(self, ts = None):
+  def complement(self):
+    """Computes the complement of the trace alignment.
+
+    A complement operation (such as for CIGARs) cannot be defined
+    for a trace, without computing the alignment. This is currently not
+    available in gfapy.
+
+    Returns:
+      gfapy.AlignmentPlaceholder
     """
-    Validate the numeric array
+    return gfapy.AlignmentPlaceholder()
 
-    Parameters
-    ----------
-    ts : int, optional
-      Trace Spacing.
-      If an integer is specified, it will be checked that all values
-      are < **ts**. If **ts** == **None** (default), this check is skipped.
+  def validate(self, ts = None):
+    """Validates the trace alignment
 
-    Raises
-    ------
-    gfapy.TypeError
-      If the list contains non-integer values
-    gfapy.ValueError
-      If the list contains values < 0 or > **ts**
+    Parameters:
+      ts (int): Trace Spacing. If specified, it will be checked that all values
+        are < **ts** (default: **None**, no check).
+
+    Raises:
+      ~gfapy.error.TypeError: If the list contains non-integer values
+      ~gfapy.ValueError: If the list contains values < 0 or > **ts**
     """
     for e in self:
       if not isinstance(e, int):
@@ -54,8 +57,14 @@ class Trace(list):
     else:
       return ",".join([str(v) for v in self])
 
-  @staticmethod
-  def from_string(string):
+  def __repr__(self):
+    if not self:
+      return 'gfapy.Trace([])'
+    else:
+      return "gfapy.Trace([{}])".format(str(self))
+
+  @classmethod
+  def _from_string(cls,string):
     try:
       return Trace([int(v) for v in string.split(",")])
     except:

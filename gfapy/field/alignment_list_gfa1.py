@@ -2,7 +2,7 @@ import gfapy
 import re
 
 def unsafe_decode(string):
-  return [ gfapy.CIGAR.from_string(s, version = "gfa1", valid = True) \
+  return [ gfapy.Alignment(s, version = "gfa1", valid = True) \
              for s in string.split(",") ]
 
 def decode(string):

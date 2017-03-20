@@ -13,7 +13,8 @@ Gfapy documentation
    readme
    changelog
 
-   source/modules
+   tutorial/alignments
+
 
 Indices and tables
 ==================

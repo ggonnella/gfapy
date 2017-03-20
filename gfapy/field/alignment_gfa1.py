@@ -2,10 +2,10 @@ import gfapy
 import re
 
 def decode(string):
-  return gfapy.CIGAR.from_string(string, valid = False, version = "gfa1")
+  return gfapy.Alignment(string, valid = False, version = "gfa1")
 
 def unsafe_decode(string):
-  return gfapy.CIGAR.from_string(string, valid = True, version = "gfa1")
+  return gfapy.Alignment(string, valid = True, version = "gfa1")
 
 def validate_encoded(string):
   if not re.match(r"^(\*|([0-9]+[MIDNSHPX=])+)$", string):
