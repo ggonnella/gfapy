@@ -19,8 +19,10 @@ wheel:
 
 # Create the manual
 manual:
-	cd manual; \
-		cat chapters | xargs pandoc -o gfapy-manual.pdf
+	cd doc && make latexpdf
+	mkdir -p manual
+	cp doc/_build/latex/Gfapy.pdf manual/gfapy-manual.pdf
+
 
 # Run unit tests
 tests:
