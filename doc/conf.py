@@ -22,7 +22,6 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -50,6 +49,9 @@ napoleon_google_docstring = True
 napoleon_use_param = False
 napoleon_use_ivar = True
 
+# Default role:
+default_role = 'any'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -64,8 +66,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Gfapy'
-copyright = '2017, Giorgio Gonnella, Tim Weber, Stefan Kurtz'
-author = 'Giorgio Gonnella, Tim Weber, Stefan Kurtz'
+copyright = '2017, Giorgio Gonnella and others (see CONTRIBUTORS)'
+author = 'Giorgio Gonnella and others (see CONTRIBUTORS)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -93,7 +95,6 @@ pygments_style = 'sphinx'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -147,7 +148,6 @@ latex_documents = [
     (master_doc, 'Gfapy.tex', 'Gfapy Documentation',
      'Giorgio Gonnella', 'manual'),
 ]
-
 
 # -- Options for manual page output ---------------------------------------
 

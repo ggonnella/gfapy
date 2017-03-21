@@ -3,21 +3,16 @@ import gfapy
 class Other:
 
   def other_oriented_segment(self, oriented_segment):
-    """
-    Parameters
-    ----------
-    oriented_segment : gfapy.OrientedLine
-      One of the two oriented segments of the line.
+    """The other oriented segment.
 
-    Returns
-    -------
-    gfapy.OrientedLine
-      The other oriented segment.
+    Parameters:
+      oriented_segment (gfapy.OrientedLine) : One of the two oriented segments of the line.
 
-    Raises
-    ------
-    gfapy.NotFoundError
-      If segment_end is not a segment end of the line.
+    Returns:
+      gfapy.OrientedLine
+
+    Raises:
+      gfapy.error.NotFoundError: If segment_end is not a segment end of the line.
     """
     if (self.sid1 == oriented_segment):
       return self.sid2
@@ -29,24 +24,17 @@ class Other:
           "Line: {}".format(self))
 
   def other(self, segment):
-    """
-    The other segment of a connection line.
+    """The other segment of an edge line.
 
-    Parameters
-    ----------
-    segment : gfapy.line.segment.GFA2
-      Segment name or instance.
+    Parameters:
+      segment (gfapy.line.segment.GFA2) : Segment name or instance.
 
-    Raises
-    ------
-    gfapy.NotFoundError
-      If segment is not involved in the connection.
+    Raises:
+      gfapy.error.NotFoundError: If segment is not a segment of the line.
 
-    Returns
-    -------
-    gfapy.Line::Segment::GFA2, Symbol
-      The instance or symbol of the other segment of the connection.
-      (which is the **segment** itself, when the connection is circular)
+    Returns:
+      gfapy.line.segment.GFA2 or str : instance or name of the other segment
+        of the connection (the segment itself, if the connection is circular)
     """
     if isinstance(segment, gfapy.Line):
       segment = segment.name

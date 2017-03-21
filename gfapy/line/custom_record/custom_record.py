@@ -11,8 +11,8 @@ class CustomRecord(Init, Line):
   - divide content by tabs
   - from the back, fields are parsed using parse_gfa_tag;
   until an exception is thrown, they are all considered tags
-  - from the first exception to the first field, they are all considered
-  positional fields with name field0, field1, etc
+  - from the first exception back to the first field, they are all considered
+  positional fields with name field1, field2, etc
   """
 
   RECORD_TYPE = None

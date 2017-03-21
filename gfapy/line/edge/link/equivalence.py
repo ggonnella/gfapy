@@ -51,7 +51,7 @@ class Equivalence:
 
     .. note::
       This method shall be overridden if custom tags
-      are defined, which have a ``complementation'' operation which determines
+      are defined, which have a complementation operation which determines
       their value in the equivalent but complement link.
 
     Parameters

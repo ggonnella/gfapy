@@ -70,21 +70,18 @@ def to_gfa_field(obj, datatype = None, safe = True, fieldname = None,
           str(err)) from err
 
 def to_gfa_tag(obj, fieldname, datatype = None, line = None):
-  """
-  Representation of the data as a GFA tag **xx:d:content**, where **xx** is
-  the tag name and **d** is the datatype.
+  """Representation of the data as a GFA tag.
 
-  Parameters
-  ----------
-  obj : object
-    the python object to encode
-  fieldname : Symbol
-    the tag name
-  line : gfapy.Line, optional
-    line, for error messages
-  datatype : gfapy.Field.TAG_DATATYPE, optional
-    (*defaults to: the value returned by 
-      {gfapy.Field.get_default_gfa_tag_datatype}*)
+  The representation is ``xx:d:content``, where ``xx`` is
+  the tag name and ``d`` is the datatype.
+
+  Parameters:
+    obj (object): the python object to encode
+    fieldname (string): the tag name
+    datatype (string): (one of gfapy.Field.TAG_DATATYPE)
+      the datatype; if not specified, the value returned by
+      :func:``~gfapy.field.Field.get_default_gfa_tag_datatype``
+      is used.
   """
   if not datatype:
     datatype = gfapy.Field.get_default_gfa_tag_datatype(obj)

@@ -8,6 +8,8 @@
     x = "E\tx\tA+\tB-\t0\t100$\t0\t100$\t4,2\tTS:i:50"
     gfa = gfapy.Gfa([h, sA, sB, x])
 
+.. _alignments:
+
 Alignments
 ~~~~~~~~~~
 

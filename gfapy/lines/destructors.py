@@ -3,7 +3,6 @@ import gfapy
 class Destructors:
   def rm(self, gfa_line):
     self.try_get_line(gfa_line).disconnect()
-    return self
 
   def delete_other_links(self, segment_end, other_end,
                          conserve_components = False):

@@ -3,7 +3,7 @@ import gfapy
 class Creators:
   def add_line(self, gfa_line):
     if gfa_line is None:
-      return self
+      return
     if self._version == "gfa1":
       self.__add_line_GFA1(gfa_line)
     elif self._version == "gfa2":
@@ -12,7 +12,6 @@ class Creators:
       self.__add_line_unknown_version(gfa_line)
     else:
       raise gfapy.AssertionError("This point should never be reached")
-    return self
 
   append = add_line
 

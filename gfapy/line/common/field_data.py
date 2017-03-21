@@ -4,34 +4,27 @@ class FieldData:
 
   @property
   def positional_fieldnames(self):
-    """
-    Returns
-    -------
-    str list
-      Names of the positional fields.
+    """Name of the positional fields.
+    Returns:
+      str list
 
-    .. note::
-      These names are not always the field names
-      in the specification,
-      as these may be implemented as aliases to cope with
-      different names for the same content in GFA1 vs GFA2.
+    Note:
+      The field names can vary from the exact name of the
+      fields in the specification, due to compatibility issues.
     """
     return self.__class__.POSFIELDS
 
   @property
   def tagnames(self):
-    """
-    Returns
-    -------
-    str list
-      Name of the defined tags.
+    """Names of the tags defined in the line.
+    Returns:
+      str list
     """
     return [ x for x in self._data.keys() \
         if x not in self.positional_fieldnames ]
 
   def set(self, fieldname, value):
-    """
-    Set the value of a field.
+    """Set the value of a field.
 
     If a datatype for a new custom tag is not set,
     the default for the value assigned to the field will be used
@@ -167,7 +160,7 @@ class FieldData:
         (fieldname in self.__class__.REFERENCE_FIELDS or \
          fieldname in self.__class__.BACKREFERENCE_RELATED_FIELDS):
         raise gfapy.RuntimeError(
-          "The value of field '{}' cannot be changed".format(fieldname)+
+          "The value of field '{}' cannot be changed, ".format(fieldname)+
           "as the line belongs to a GFA instance")
       if (fieldname == self.__class__.STORAGE_KEY) or \
         (self.__class__.STORAGE_KEY == "name" and \

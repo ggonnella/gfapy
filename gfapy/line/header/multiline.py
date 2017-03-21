@@ -32,12 +32,12 @@ class Multiline:
       if datatype is not None:
         self.set_datatype(tagname, datatype)
       self.set(tagname, value)
-      return self
+      return
     elif not isinstance(prev, gfapy.FieldArray):
       if tagname in self.SINGLE_DEFINITION_TAGS:
         if self.field_to_s(tagname) == \
             gfapy.Field.to_gfa_field(value, fieldname=tagname):
-          return self
+          return
         else:
           raise gfapy.InconsistencyError(
             "Inconsistent values for header tag {} found\n".format(tagname)+
@@ -49,7 +49,6 @@ class Multiline:
       prev.vpush(value, datatype, tagname)
     else:
       prev.append(value)
-    return self
 
   def field_to_s(self, fieldname, tag = False):
     """

@@ -3,6 +3,8 @@
     import gfapy
     gfa = gfapy.Gfa()
 
+.. _positional_fields:
+
 Positional fields
 -----------------
 
@@ -24,8 +26,9 @@ In some cases, the field names were changed, as they represent keywords
 in common programming languages (``from``, ``send``).
 
 The following tables shows the field names used in Gfapy, for each kind
-of line. Headers have no positional fields. Comments and custom lines
-follow particular rules, see the respective chapters.
+of line. Headers have no positional fields. Comments and custom records
+follow particular rules, see the respective chapters (:ref:`comments` and
+:ref:`custom_records`).
 
 GFA1 field names
 ^^^^^^^^^^^^^^^^
@@ -67,8 +70,7 @@ Datatypes
 The datatype of each positional field is described in the specification
 and cannot be changed (differently from tags). Here is a short
 description of the Python classes used to represent data for different
-datatypes. For some complex cases, more details are found in the
-following chapters.
+datatypes.
 
 Placeholders
 ^^^^^^^^^^^^
@@ -76,8 +78,8 @@ Placeholders
 The positional fields in GFA can never be empty. However, there are some
 fields with optional values. If a value is not specified, a placeholder
 character is used instead (``*``). Such undefined values are represented
-in Gfapy by the ``gfapy.Placeholder`` class, which is described more in
-detail in the Placeholders chapter.
+in Gfapy by the `Placeholder` class, which is described more in
+detail in the :ref:`placeholders` chapter.
 
 Arrays
 ^^^^^^
@@ -119,7 +121,7 @@ Identifiers which refer to other lines are also present in some line
 types (L, C, E, G, U, O, F). These are never placeholders and in
 stand-alone lines are represented by strings. In connected lines they
 are references to the Line instances to which they refer to (see the
-References chapter).
+:ref:`references` chapter).
 
 Oriented identifiers
 ^^^^^^^^^^^^^^^^^^^^
@@ -200,14 +202,14 @@ be also a placeholder. Positions are 0-based coordinates.
 The position fields of GFA2 E lines (``beg1, beg2, end1, end2``) and F
 lines (``s_beg, s_end, f_beg, f_end``) contain a dollar string as suffix
 if the position is equal to the segment length. For more information,
-see the Positions chapter.
+see the :ref:`positions` chapter.
 
 Alignments
 ^^^^^^^^^^
 
 Alignments are always optional, ie they can be placeholders. If they are
 specified they are CIGAR alignments or, only in GFA2, trace alignments.
-For more details, see the Alignments chapter.
+For more details, see the :ref:`alignments` chapter.
 
 GFA1 datatypes
 ^^^^^^^^^^^^^^
@@ -312,32 +314,55 @@ When a field is read, the value is converted into an appropriate object.
 The string representation of a field can be read using the
 ``field_to_s(fieldname)`` method.
 
-.. code:: python
+.. doctest::
 
-    link.from_segment # => gfapy.line.segment.GFA1("S\ts1\t*")
-    link.field_to_s(from_segment) # => ("s1")
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.add_line("S\ts1\t*")
+    >>> gfa.add_line("L\ts1\t+\ts2\t-\t*")
+    >>> link = gfa.dovetails[0]
+    >>> str(link.from_segment)
+    'S\ts1\t*'
+    >>> link.field_to_s('from_segment')
+    's1'
 
 When setting a non-string field, the user can specify the value of a tag
 either as a Python non-string object, or as the string representation of
 the value.
 
-.. code:: python
+.. doctest::
 
-    c.pos = 1
-    c.pos = "1"
-    c.pos # => 1
-    c.field_to_s("pos") # => "1"
+    >>> gfa = gfapy.Gfa(version='gfa1')
+    >>> gfa.add_line("C\ta\t+\tb\t-\t10\t*")
+    >>> c = gfa.containments[0]
+    >>> c.pos
+    10
+    >>> c.pos = 1
+    >>> c.pos
+    1
+    >>> c.pos = "2"
+    >>> c.pos
+    2
+    >>> c.field_to_s("pos")
+    '2'
 
 Note that setting the value of reference and backreferences-related
 fields is generally not allowed, when a line instance is connected to a
-Gfapy object (see the References chapter).
+Gfa object (see the :ref:`references` chapter).
 
-.. code:: python
+.. doctest::
 
-    s = gfa.Line.from_string("L\ts1\t+\ts2\t-\t*")
-    s.from_segment = "s3"
-    gfa.add_line(s)
-    s.from_segment = "s4" # raises an exception
+    >>> gfa = gfapy.Gfa(version='gfa1')
+    >>> l = gfapy.Line.from_string("L\ts1\t+\ts2\t-\t*")
+    >>> l.from_name
+    's1'
+    >>> l.from_segment = "s3"
+    >>> l.from_name
+    's3'
+    >>> gfa.add_line(l)
+    >>> l.from_segment = "s4"
+    Traceback (most recent call last):
+    ...
+    gfapy.error.RuntimeError: ...
 
 Validation
 ~~~~~~~~~~
@@ -348,7 +373,7 @@ Python object whose string representation is a correctly formatted
 string).
 
 Depending on the validation level, more or less checks are done
-automatically (see the Validation chapter). Not regarding which
+automatically (see the :ref:`validation` chapter). Not regarding which
 validation level is selected, the user can trigger a manual validation
 using the ``validate_field(fieldname)`` method for a single field, or
 using ``validate``, which does a full validation on the whole line,

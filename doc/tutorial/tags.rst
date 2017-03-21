@@ -1,3 +1,5 @@
+.. _tags:
+
 Tags
 ----
 
@@ -149,7 +151,7 @@ string.
     line.xx = "A" # error
 
 Depending on the validation level, more or less checks are done
-automatically (see validation chapter). Per default - validation level
+automatically (see :ref:`validation` chapter). Per default - validation level
 (1) - validation is performed only during parsing or accessing values
 the first time, therefore the user must perform a manual validation if
 he changes values to something which is not guaranteed to be correct. To
@@ -320,11 +322,11 @@ remaining fields are treated as positional fields.
 For easier access, the entire header of the GFA is summarized in a
 single line instance. A class (``gfapy.FieldArray``) has been defined to
 handle the special case when multiple H lines define the same tag (see
-"Header" chapter for details).
+:ref:`header` chapter for details).
 
 Comment lines are represented by a subclass of the same class
 (``gfapy.Line``) as the records. However, they cannot contain tags: the
-entire line is taken as content of the comment. See the "Comments"
+entire line is taken as content of the comment. See the :ref:`comments`
 chapter for more information about comments.
 
 .. code:: python
@@ -335,4 +337,4 @@ Virtual ``gfapy.Line`` instances (e.g. segment instances automatically
 created because of not yet resolved references found in edges) cannot be
 modified by the user, and tags cannot be specified for them. This
 includes all instances of the ``gfapy::Line::Unknown`` class. See the
-"References" chapter for more information about virtual lines.
+:ref:`references` chapter for more information about virtual lines.

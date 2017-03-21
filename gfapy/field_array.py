@@ -24,7 +24,8 @@ class FieldArray:
     self._datatype = datatype
 
   def __repr__(self):
-    return "gfa.FieldArray({},{})".format(repr(self._datatype),repr(self._data))
+    return "gfapy.FieldArray({},{})".format(
+        repr(self._datatype),repr(self._data))
 
   def validate(self, fieldname : str = None) -> None:
     """

@@ -69,7 +69,10 @@ class FromTo:
     -------
     str
     """
-    return str(self.from_segment)
+    if isinstance(self.from_segment, str):
+      return self.from_segment
+    else:
+      return self.from_segment.name
 
   @property
   def to_name(self):
@@ -81,7 +84,10 @@ class FromTo:
     -------
     str
     """
-    return str(self.to_segment)
+    if isinstance(self.to_segment, str):
+      return self.to_segment
+    else:
+      return self.to_segment.name
 
   def other_end(self, segment_end, tolerant=False):
     """

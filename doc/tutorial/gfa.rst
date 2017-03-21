@@ -13,6 +13,8 @@
     gfa2.add_line("X\tcustom line")
     gfa2.add_line("Y\tcustom line")
 
+.. _gfa:
+
 The Gfa class
 -------------
 
@@ -48,9 +50,7 @@ overwritten).
 
     >>> g1 = gfapy.Gfa()
     >>> g1.append("H\tVN:Z:1.0") #doctest: +ELLIPSIS
-    <gfapy.gfa.Gfa object at 0x...>
     >>> g1.append("S\ta\t*") #doctest: +ELLIPSIS
-    <gfapy.gfa.Gfa object at 0x...>
     >>> g1.to_file("my.gfa") #doctest: +SKIP
     >>> g2 = gfapy.Gfa.from_file("my.gfa") #doctest: +SKIP
     >>> str(g1)
@@ -60,7 +60,7 @@ overwritten).
 All methods for creating a Gfa (constructor and from_file) accept
 a ``vlevel`` parameter, the validation level,
 and can assume the values 0, 1, 2 and 3. An higher value means
-more validations are performed. The Validations chapter explains
+more validations are performed. The :ref:`validation` chapter explains
 the meaning of the different validation levels in detail.
 The default value is 1.
 
@@ -93,7 +93,6 @@ segment followed by a GFA2 segment).
     >>> g = gfapy.Gfa()
     >>> g.version
     >>> g.add_line("S\t1\t*") # doctest: +ELLIPSIS
-    <gfapy.gfa.Gfa object at ...>
     >>> g.version
     'gfa1'
     >>> g.add_line("S\t1\t100\t*")
@@ -105,7 +104,8 @@ segment followed by a GFA2 segment).
 Collections of lines
 ~~~~~~~~~~~~~~~~~~~~
 
-The property ``lines`` of the Gfa object is a list of all the lines
+The property :attr:`~gfapy.lines.collections.Collections.lines`
+of the Gfa object is a list of all the lines
 in the GFA file (including the header, which is splitted into single-tag
 lines). The list itself shall not be modified by the user directly (i.e.
 adding and removing lines is done using a different interface, see
@@ -120,20 +120,22 @@ as a read-only property, which is named after the record type, in plural.
 
 .. doctest::
 
-   >>> [str(line) for line in gfa1.segments] # doctest: +SKIP
-   ['S\t1\t*','S\t2\t*','S\t3\t*']
+   >>> [str(line) for line in gfa1.segments]
+   ['S\t1\t*', 'S\t3\t*', 'S\t2\t*']
    >>> [str(line) for line in gfa2.fragments]
    []
 
-A particular case are edges; these are in GFA1 links and containments,
-while in GFA2 there is an unified
-edge record type, which also allows to represent internal alignments.
-In Gfapy, the ``edges`` property retrieves all edges (i.e. all E lines in
-GFA2, and all L and C lines in GFA1). The ``dovetails`` property is a list
-of all edges which represent dovetail overlaps (i.e. all
-L lines in GFA1 and a subset of the E lines in GFA2). The ``containments``
-property is a list of all edges which represent containments
-(i.e. all C lines in GFA1 and a subset of the E lines in GFA2).
+A particular case are edges; these are in GFA1 links and containments, while in
+GFA2 there is an unified edge record type, which also allows to represent
+internal alignments.  In Gfapy, the
+:attr:`~gfapy.lines.collections.Collections.edges` property retrieves all edges
+(i.e. all E lines in GFA2, and all L and C lines in GFA1). The
+:attr:`~gfapy.lines.collections.Collections.dovetails` property is a list of
+all edges which represent dovetail overlaps (i.e. all L lines in GFA1 and a
+subset of the E lines in GFA2). The
+:attr:`~gfapy.lines.collections.Collections.containments` property is a list of
+all edges which represent containments (i.e. all C lines in GFA1 and a subset
+of the E lines in GFA2).
 
 .. doctest::
 
@@ -144,9 +146,10 @@ property is a list of all edges which represent containments
    >>> gfa2.containments
    []
 
-Paths are retrieved using the ``paths`` property: this list contains
-all P lines in GFA1 and all O lines in GFA2. Sets returns the list
-of all U lines in GFA2 (empty list in GFA1).
+Paths are retrieved using the
+:attr:`~gfapy.lines.collections.Collections.paths` property.  This list
+contains all P lines in GFA1 and all O lines in GFA2. Sets returns the list of
+all U lines in GFA2 (empty list in GFA1).
 
 .. doctest::
 
@@ -157,8 +160,9 @@ of all U lines in GFA2 (empty list in GFA1).
 
 The header contain metadata in a single or multiple lines. For ease of
 access to the header information, all its tags are summarized in a
-single line instance, which is retrieved using the read-only ``header`` property.
-The Header chapter of this manual explains more in
+single line instance, which is retrieved using the
+:attr:`~gfapy.lines.headers.Headers.header` property.  This list
+The :ref:`header` chapter of this manual explains more in
 detail, how to work with the header object.
 
 .. doctest::
@@ -167,7 +171,8 @@ detail, how to work with the header object.
    100
 
 All lines which start by the string ``#`` are comments; they are handled in
-the "Comments" chapter and are retrieved using the ``comments`` property:
+the :ref:`comments` chapter and are retrieved using the
+:attr:`~gfapy.lines.collections.Collections.comments` property.
 
 .. doctest::
 
@@ -178,15 +183,14 @@ Custom lines are lines of GFA2 files which start
 with a non-standard record type. Gfapy provides basic built-in support
 for accessing the information in custom lines, and allows to define
 extensions for own record types for defining more advanced
-functionality (described in the Supplemental Information to the manuscript
-presenting gfapy).
+functionality (see the :ref:`custom_records` chapter).
 
 .. doctest::
 
-   >>> [str(line) for line in gfa2.custom_records] #doctest: +SKIP
-   ['X\tcustom line', 'Y\tcustom line']
-   >>> gfa2.custom_record_keys) #doctest: +SKIP
-   ['X', 'Y']
+   >>> [str(line) for line in gfa2.custom_records]
+   ['Y\tcustom line', 'X\tcustom line']
+   >>> gfa2.custom_record_keys
+   ['Y', 'X']
    >>> [str(line) for line in gfa2.custom_records_of_type('X')]
    ['X\tcustom line']
 
@@ -198,27 +202,26 @@ paths in GFA1, segments, gaps, edges, paths and sets in GFA2.  A line of this
 type can be retrieved by identifier, using the method
 :func:`Gfa.line(ID) <gfapy.gfa.Gfa.line>` using the identifier as argument.
 
-The list of all identifier can be retrieved using the ``names``
-property; for the identifiers of a single line type, a property is
-available, named after the record type in singular, with the ``_names``
-suffix:
-
 .. doctest::
 
    >>> str(gfa1.line('1'))
    'S\t1\t*'
 
-The list of all identifier can be retrieved using the ``names``
+The list of all identifier can be retrieved using the
+:attr:`~gfapy.lines.collections.Collections.names`
 property; for the identifiers of a single line type, a property is
-available, named after the record type in singular, with the ``_names``
-suffix. Segment names and path names are for both GFA versions,
-while edge, gap and set names will always be empty lists in GFA1
-Gfa instances.
+available, named after the record type in singular, with a ``_names``
+suffix:
+:attr:`~gfapy.lines.collections.Collections.segment_names`,
+:attr:`~gfapy.lines.collections.Collections.edge_names`,
+:attr:`~gfapy.lines.collections.Collections.gap_names`,
+:attr:`~gfapy.lines.collections.Collections.path_names` and
+:attr:`~gfapy.lines.collections.Collections.set_names`.
 
 .. doctest::
 
    >>> g = gfapy.Gfa()
-   >>> g = g.add_line("S\tA\t*")
+   >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
    >>> g.names
    ['A']
    >>> g.segment_names
@@ -239,7 +242,8 @@ Fragments contain identifiers which refer to external sequences
 (not contained in the GFA file). According to the specification, the
 these identifiers are not part of the same namespace as the identifier
 of the GFA lines. They can be retrieved using the
-``external_names`` property:
+:attr:`~gfapy.lines.collections.Collections.external_names`
+property.
 
 .. doctest::
 
@@ -258,32 +262,70 @@ New lines can be added to a Gfa instance using the
 method or its alias
 :func:`Gfa.append(line) <gfapy.lines.creators.Creators.append>`.
 The argument can be either a string
-describing a line with valid GFA syntax, or a :class:`~gfapy.line.Line`
+describing a line with valid GFA syntax, or a :class:`~gfapy.line.line.Line`
 instance. If a string is added, a line instance is created and
 then added.
+
+.. doctest::
+
+   >>> g = gfapy.Gfa()
+   >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
+   >>> g.segment_names
+   ['A']
+   >>> g.append("S\tB\t*") #doctest: +ELLIPSIS
+   >>> g.segment_names
+   ['B', 'A']
 
 Editing the lines
 ~~~~~~~~~~~~~~~~~
 
 Accessing the information stored in the fields of a line instance is
-described in the "Positional fields" and "Tags" chapters.
+described in the :ref:`positional_fields` and :ref:`tags` chapters.
 
 In Gfapy, a line instance belonging to a Gfa instance is said
 to be *connected* to the Gfa instance. Direct editing the content of a connected
 line is only possible, for those fields which do not contain
 references to other lines. For more information on how to modify the content of
-the fields of connected line, see the "References" chapter.
+the fields of connected line, see the :ref:`references` chapter.
+
+.. doctest::
+
+   >>> g = gfapy.Gfa()
+   >>> e = gfapy.Line.from_string("E\t*\tA+\tB-\t0\t10\t90\t100$\t*")
+   >>> e.sid1 = "C+"
+   >>> g.add_line(e) #doctest: +ELLIPSIS
+   >>> e.sid1 = "A+"
+   Traceback (most recent call last):
+   gfapy.error.RuntimeError: ...
 
 Removing lines
 ~~~~~~~~~~~~~~
 
 Disconnecting a line from the Gfa instance is done using the
-``rm(line)`` method. The argument
-can be a line instance or a string (in which case the line is searched
-using the ``line(name)`` method, then eliminated). A line instance can
-also be disconnected using the ``disconnect()`` method on it.
-Disconnecting a line may trigger other operations, such as the
-disconnection of other lines (see the "References" chapter).
+:func:`Gfa.rm(line) <gfapy.lines.destructors.Destructors.rm>` method. The
+argument can be a line instance or the name of a line.
+
+In alternative, a line instance can also be disconnected using the
+`disconnect` method on it.  Disconnecting a line
+may trigger other operations, such as the disconnection of other lines (see the
+:ref:`references` chapter).
+
+.. doctest::
+
+   >>> g = gfapy.Gfa()
+   >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
+   >>> g.segment_names
+   ['A']
+   >>> g.rm('A') #doctest: +ELLIPSIS
+   >>> g.segment_names
+   []
+   >>> g.append("S\tB\t*") #doctest: +ELLIPSIS
+   >>> g.segment_names
+   ['B']
+   >>> b = g.line('B')
+   >>> b.disconnect()
+   >>> g.segment_names
+   []
 
 Renaming lines
 ~~~~~~~~~~~~~~
@@ -295,3 +337,18 @@ also in line instances connected to a Gfa. All references to the line
 from other lines will still be up to date, as they will refer to the
 same instance (whose name has been changed) and their string
 representation will use the new name.
+
+.. doctest::
+
+   >>> g = gfapy.Gfa()
+   >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
+   >>> g.add_line("L\tA\t+\tB\t-\t*") #doctest: +ELLIPSIS
+   >>> g.segment_names
+   ['B', 'A']
+   >>> g.dovetails[0].from_name
+   'A'
+   >>> g.segment('A').name = 'C'
+   >>> g.segment_names
+   ['B', 'C']
+   >>> g.dovetails[0].from_name
+   'C'

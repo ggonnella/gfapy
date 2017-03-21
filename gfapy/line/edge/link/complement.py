@@ -3,23 +3,21 @@ import gfapy
 class Complement:
 
   def complement(self):
-    """
-    Creates the equivalent link with from/to inverted.
+    """Creates the equivalent link with from and to inverted.
 
-    The CIGAR operations (order/type) are inverted as well.
+    The CIGAR operations (order and type) are inverted as well.
     Tags are left unchanged.
 
-    .. note:: The path references are not copied to the complement link.
+    Note:
+        The path references are not copied to the complement link.
 
-    .. note::
-      This method shall be overridden if custom tags
-      are defined, which have a ``complementation'' operation which determines
-      their value in the equivalent complement link.
+    Note:
+        This method shall be overridden if custom tags are defined, which have a
+        complementation operation which determines their value in the
+        equivalent complement link.
 
-    Returns
-    -------
-    gfapy.line.edge.Link
-    	The inverted link.
+    Returns:
+        gfapy.line.edge.Link: The inverted link.
     """
     l = self.clone()
     l.from_segment = self.to
@@ -30,23 +28,21 @@ class Complement:
     return l
 
   def make_complement(self):
-    """
-    Complements the link inplace.
+    """Complements the link inplace.
+
     The tags are left unchanged.
 
-    .. note::
-      The path references are not complemented by this method; therefore
-      the method shall be used before the link is embedded in a graph.
+    Note:
+        The path references are not complemented by this method; therefore
+        the method shall be used before the link is embedded in a graph.
 
-    .. note::
-      This method shall be overridden if custom tags
-      are defined, which have a ``complementation'' operation which determines
-      their value in the complement link.
+    Note:
+        This method shall be overridden if custom tags are defined, which have a
+        complementation operation which determines their value in the
+        complement link.
 
-    Returns
-    -------
-    gfapy.line.edge.Link
-      self
+    Returns:
+        gfapy.line.edge.Link: self
     """
     tmp = self.from_segment
     self.from_segment = self.to_segment

@@ -8,7 +8,7 @@ from ..edge import Edge
 
 class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
            ToGFA1, Edge):
-  """An edge line of a GFA2 file"""
+  """An edge line of a GFA2 file."""
 
   RECORD_TYPE = "E"
   POSFIELDS = ["eid", "sid1", "sid2", "beg1", "end1", "beg2", "end2",
@@ -32,3 +32,4 @@ class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
   DEPENDENT_LINES = ["paths", "sets"]
 
 GFA2._apply_definitions()
+

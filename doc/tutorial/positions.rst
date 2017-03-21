@@ -1,5 +1,11 @@
-Position fields
----------------
+.. testsetup:: *
+
+    import gfapy
+
+.. _positions:
+
+Positions
+---------
 
 The only position field in GFA1 is the ``pos`` field in the C lines.
 This represents the starting position of the contained segment in the
@@ -12,44 +18,58 @@ after each string in the sequence. Thus ranges are represented similarly
 to the Python range conventions: e.g. a 1-character prefix of a sequence
 will have begin 0 and end 1.
 
-GFA2 last position string
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Last positions in GFA2
+~~~~~~~~~~~~~~~~~~~~~~
 
 The GFA2 positions must contain an additional string (``$``) appended to
 the integer, if (and only if) they are the last position in the segment
 sequence. These particular positions are represented in Gfapy as
-instances of the class ``gfapy.LastPos``.
+instances of the class :class:`~gfapy.lastpos.LastPos`.
 
 To create a lastpos instance, the constructor can be used with an
 integer, or the string representation (which must end with the dollar
 sign, otherwise an integer is returned):
 
-.. code:: python
+.. doctest::
 
-    str(gfapy.LastPos(12))   # => "12$"
-    gfapy.LastPos("12")      # => 12
-    str(gfapy.LastPos("12")) # => "12"
-    gfapy.LastPos("12$")     # => gfapy.LastPos(12)
-    str(gfapy.LastPos("12$")) # => "12$"
+    >>> str(gfapy.LastPos(12))
+    '12$'
+    >>> gfapy.LastPos("12")
+    12
+    >>> str(gfapy.LastPos("12"))
+    '12'
+    >>> gfapy.LastPos("12$")
+    gfapy.LastPos(12)
+    >>> str(gfapy.LastPos("12$"))
+    '12$'
 
 Subtracting an integer from a lastpos returns a lastpos if 0 subtracted,
 an integer otherwise. This allows to do some arithmetic on positions
 without making them invalid.
 
-.. code:: python
+.. doctest::
 
-    gfapy.LastPos(12) - 0 # => gfapy.LastPos(12)
-    gfapy.LastPos(12) - 1 # => 11
+    >>> gfapy.LastPos(12) - 0
+    gfapy.LastPos(12)
+    >>> gfapy.LastPos(12) - 1
+    11
 
-The functions ``gfapy.islastpos`` and \`\`isfirstpos\`\`\` allow to
+The functions :func:`~gfapy.lastpos.islastpos` and
+:func:`~gfapy.lastpos.isfirstpos` allow to
 determine if a position value is 0 (first), or the last position, using
 the same syntax for lastpos and integer instances.
 
-.. code:: python
+.. doctest::
 
-    gfapy.isfirst(0)  # True
-    gfapy.islast(0)   # False
-    gfapy.isfirst(12) # False
-    gfapy.islast(12)  # False
-    gfapy.islast(gfapy.LastPos("12"))  # False
-    gfapy.islast(gfapy.LastPos("12$")) # True
+    >>> gfapy.isfirstpos(0)
+    True
+    >>> gfapy.islastpos(0)
+    False
+    >>> gfapy.isfirstpos(12)
+    False
+    >>> gfapy.islastpos(12)
+    False
+    >>> gfapy.islastpos(gfapy.LastPos("12"))
+    False
+    >>> gfapy.islastpos(gfapy.LastPos("12$"))
+    True

@@ -1,3 +1,5 @@
+.. _graph_operations:
+
 Graph operations
 ----------------
 
