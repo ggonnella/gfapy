@@ -5,7 +5,7 @@ def readme():
     return f.read()
 
 setup(name='gfapy',
-      version='1.0.0rc2',
+      version='1.0.0rc3',
       description='Library for handling data in the GFA1 and GFA2 formats',
       long_description=readme(),
       url='https://github.com/ggonnella/gfapy',
