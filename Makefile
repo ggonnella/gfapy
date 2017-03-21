@@ -26,7 +26,7 @@ manual:
 
 # Run unit tests
 tests:
-	${PYTHON} -m unittest discover
+	@PYTHONHASHSEED=0 ${PYTHON} -m unittest discover
 
 # Remove distribution files
 cleanup:
@@ -34,4 +34,4 @@ cleanup:
 
 upload:
 	twine register dist/*
-	twine upload dist/*
+	for file in dist/*; do twine upload $$file; done
