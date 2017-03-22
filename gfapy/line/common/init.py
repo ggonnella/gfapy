@@ -188,6 +188,10 @@ class Init:
     self._data[n] = s
 
   def _initialize_positional_fields(self, strings):
+    if strings[0] != self.RECORD_TYPE and self.RECORD_TYPE != "\n":
+      raise gfapy.FormatError("Record type of records of "+
+          "class {} must be {} ({} found)".format(self.__class__,
+            self.RECORD_TYPE, strings[0]))
     if self.version is None:
       raise gfapy.AssertionError(
         "Bug found, please report\n"+
