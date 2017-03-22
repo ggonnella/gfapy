@@ -1,5 +1,8 @@
 language: python
 python:
   - "3.3"
-install: "pip install ."
+install:
+  - pip install .
+  - pip install nose
+  - pip install Sphinx
 script: "make tests"
