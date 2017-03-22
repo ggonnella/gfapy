@@ -26,6 +26,9 @@ manual:
 
 # Run unit tests
 tests:
+	cd doc && make doctest
+	@echo
+	@echo "Running unit test suite..."
 	@PYTHONHASHSEED=0 ${PYTHON} -m unittest discover
 
 # Remove distribution files
