@@ -9,7 +9,7 @@ class TestUnitOrientedLine(unittest.TestCase):
     gfapy.OrientedLine("a","*")
     # no validation on creation: (invalid line name)
     gfapy.OrientedLine("a\ta","+")
-    b = gfapy.OrientedLine.from_string("a+")
+    b = gfapy.OrientedLine("a+")
     self.assertEqual(a, b)
     c = gfapy.OrientedLine.from_list(["a","+"])
     self.assertEqual(a, c)
@@ -23,7 +23,7 @@ class TestUnitOrientedLine(unittest.TestCase):
     self.assertEqual("a", a.line)
     self.assertEqual("+", a.orient)
     self.assertEqual("a", a.name)
-    s = gfapy.Line.from_string("S\tb\t*\txx:Z:1.0")
+    s = gfapy.Line("S\tb\t*\txx:Z:1.0")
     a.line = s
     self.assertEqual(s, a.line)
     self.assertEqual("b", a.name)
@@ -34,7 +34,7 @@ class TestUnitOrientedLine(unittest.TestCase):
 
   def test_validate(self):
     gfapy.OrientedLine("a","+").validate()
-    gfapy.OrientedLine(gfapy.Line.from_string("S\tb\t*\txx:Z:1.0"),
+    gfapy.OrientedLine(gfapy.Line("S\tb\t*\txx:Z:1.0"),
                        "-").validate()
     self.assertRaises(gfapy.ValueError,
         gfapy.OrientedLine("a","*").validate)
@@ -50,7 +50,7 @@ class TestUnitOrientedLine(unittest.TestCase):
     self.assertEqual("a", inv_os.line)
     self.assertEqual("+", os.orient)
     self.assertEqual("-", inv_os.orient)
-    s = gfapy.Line.from_string("S\tb\t*\txx:Z:1.0")
+    s = gfapy.Line("S\tb\t*\txx:Z:1.0")
     os = gfapy.OrientedLine(s, "-")
     inv_os = os.inverted()
     self.assertEqual(s, inv_os.line)
@@ -61,17 +61,17 @@ class TestUnitOrientedLine(unittest.TestCase):
 
   def test_str(self):
     self.assertEqual("a-", str(gfapy.OrientedLine("a","-")))
-    s = gfapy.Line.from_string("S\tb\t*\txx:Z:1.0")
+    s = gfapy.Line("S\tb\t*\txx:Z:1.0")
     self.assertEqual("b+", str(gfapy.OrientedLine(s,"+")))
 
   def test_equal(self):
     a = gfapy.OrientedLine("a", "+")
-    b = gfapy.OrientedLine(gfapy.Line.from_string("S\ta\t*"), "+")
+    b = gfapy.OrientedLine(gfapy.Line("S\ta\t*"), "+")
     c = gfapy.OrientedLine("a", "-")
     self.assertEqual(a, b)
     self.assertNotEqual(a, c)
     # line itself is not checked for equiv, only name:
-    b2 = gfapy.OrientedLine(gfapy.Line.from_string("S\ta\tCACAC"), "+")
+    b2 = gfapy.OrientedLine(gfapy.Line("S\ta\tCACAC"), "+")
     self.assertEqual(b, b2)
     # equivalence to string:
     self.assertEqual("a+", a)
@@ -93,7 +93,7 @@ class TestUnitOrientedLine(unittest.TestCase):
     a.line = "b"
 
   def test_delegate_methods(self):
-    ol = gfapy.OrientedLine(gfapy.Line.from_string("S\ta\tCACAC"), "+")
+    ol = gfapy.OrientedLine(gfapy.Line("S\ta\tCACAC"), "+")
     self.assertEqual("CACAC", ol.sequence)
     self.assertEqual("CACAC", ol.field_to_s("sequence"))
     ol.set("xx", 1)

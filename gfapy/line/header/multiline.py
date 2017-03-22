@@ -101,7 +101,7 @@ class Multiline:
     """
     retval = []
     for tagname, datatype, value in self._tags():
-      h = gfapy.line.Header([], vlevel = self.vlevel)
+      h = gfapy.line.Header(["H"], vlevel = self.vlevel)
       h.set_datatype(tagname, datatype)
       h.set(tagname, value)
       retval.append(h)

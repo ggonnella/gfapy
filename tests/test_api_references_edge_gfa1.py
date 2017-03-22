@@ -5,13 +5,13 @@ class TestAPIReferencesEdgesGFA1(unittest.TestCase):
 
   def test_links_references(self):
     g = gfapy.Gfa()
-    lab = gfapy.Line.from_string("L\ta\t+\tb\t+\t*")
+    lab = gfapy.Line("L\ta\t+\tb\t+\t*")
     self.assertEqual("a", lab.from_segment)
     self.assertEqual("b", lab.to_segment)
     g.append(lab)
-    sa = gfapy.Line.from_string("S\ta\t*")
+    sa = gfapy.Line("S\ta\t*")
     g.append(sa)
-    sb = gfapy.Line.from_string("S\tb\t*")
+    sb = gfapy.Line("S\tb\t*")
     g.append(sb)
     self.assertEqual(sa, lab.from_segment)
     self.assertEqual(sb, lab.to_segment)
@@ -28,16 +28,16 @@ class TestAPIReferencesEdgesGFA1(unittest.TestCase):
 
   def test_links_backreferences(self):
     g = gfapy.Gfa()
-    sa = gfapy.Line.from_string("S\ta\t*")
+    sa = gfapy.Line("S\ta\t*")
     g.append(sa)
     # links
     s = {}; l = {}
     for name in ["b", "c", "d", "e", "f", "g", "h", "i"]:
-      s[name] = gfapy.Line.from_string("S\t{}\t*".format(name))
+      s[name] = gfapy.Line("S\t{}\t*".format(name))
       g.append(s[name])
     for name in \
          ["a+b+", "a+c-", "a-d+", "a-e-", "f+a+", "g+a-", "h-a+", "i-a-"]:
-      l[name] = gfapy.Line.from_string("\t".join(list("L"+name+"*")))
+      l[name] = gfapy.Line("\t".join(list("L"+name+"*")))
       g.append(l[name])
     # dovetails_[LR]()
     self.assertEqual([l["a+b+"], l["a+c-"],
@@ -66,12 +66,12 @@ class TestAPIReferencesEdgesGFA1(unittest.TestCase):
 
   def test_containments_references(self):
     g = gfapy.Gfa()
-    cab = gfapy.Line.from_string("C\ta\t+\tb\t+\t10\t*")
+    cab = gfapy.Line("C\ta\t+\tb\t+\t10\t*")
     self.assertEqual("a", cab.from_segment)
     self.assertEqual("b", cab.to_segment)
-    sa = gfapy.Line.from_string("S\ta\t*")
+    sa = gfapy.Line("S\ta\t*")
     g.append(sa)
-    sb = gfapy.Line.from_string("S\tb\t*")
+    sb = gfapy.Line("S\tb\t*")
     g.append(sb)
     g.append(cab)
     self.assertEqual(sa, cab.from_segment)
@@ -89,16 +89,16 @@ class TestAPIReferencesEdgesGFA1(unittest.TestCase):
 
   def test_containments_backreferences(self):
     g = gfapy.Gfa()
-    sa = gfapy.Line.from_string("S\ta\t*")
+    sa = gfapy.Line("S\ta\t*")
     g.append(sa)
     # containments:
     s = {}; c = {}
     for name in ["b", "c", "d", "e", "f", "g", "h", "i"]:
-      s[name] = gfapy.Line.from_string("S\t"+"{}".format(name)+"\t*")
+      s[name] = gfapy.Line("S\t"+"{}".format(name)+"\t*")
       g.append(s[name])
     for name in \
         ["a+b+", "a+c-", "a-d+", "a-e-", "f+a+", "g+a-", "h-a+", "i-a-"]:
-      c[name] = gfapy.Line.from_string("\t".join(list("C{}9*".format(name))))
+      c[name] = gfapy.Line("\t".join(list("C{}9*".format(name))))
       g.append(c[name])
     # edges to contained/containers
     self.assertEqual([c["a+b+"], c["a+c-"], c["a-d+"], c["a-e-"]],

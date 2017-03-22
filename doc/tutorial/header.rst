@@ -27,7 +27,7 @@ an exception). Instead they must be merged to the existing Gfa header, using
     >>> gfa.add_line("H\tnn:f:1.0") #doctest: +ELLIPSIS
     >>> gfa.header.nn
     1.0
-    >>> gfapy.Line.from_string("H\tnn:f:1.0").connect(gfa)
+    >>> gfapy.Line("H\tnn:f:1.0").connect(gfa)
     Traceback (most recent call last):
     ...
     gfapy.error.RuntimeError: ...

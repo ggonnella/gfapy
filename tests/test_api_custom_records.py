@@ -5,7 +5,7 @@ class TestApiCustomRecords(unittest.TestCase):
 
   def test_from_string(self):
     str1 = "X\tthis is a\tcustom line"
-    l1 = gfapy.Line.from_string(str1)
+    l1 = gfapy.Line(str1)
     self.assertEqual(gfapy.line.CustomRecord, l1.__class__)
     self.assertEqual("X", l1.record_type)
     self.assertEqual("this is a", l1.field1)
@@ -13,7 +13,7 @@ class TestApiCustomRecords(unittest.TestCase):
 
   def test_from_string_with_tags(self):
     str2 = "XX\txx:i:2\txxxxxx\txx:i:1"
-    l2 = gfapy.Line.from_string(str2)
+    l2 = gfapy.Line(str2)
     self.assertEqual(gfapy.line.CustomRecord, l2.__class__)
     self.assertEqual("XX", l2.record_type)
     self.assertEqual("xx:i:2", l2.field1)
@@ -27,9 +27,9 @@ class TestApiCustomRecords(unittest.TestCase):
 
   def test_to_s(self):
     str1 = "X\tthis is a\tcustom line"
-    self.assertEqual(str1, str(gfapy.Line.from_string(str1)))
+    self.assertEqual(str1, str(gfapy.Line(str1)))
     str2 = "XX\txx:i:2\txxxxxx\txx:i:1"
-    self.assertEqual(str2, str(gfapy.Line.from_string(str2)))
+    self.assertEqual(str2, str(gfapy.Line(str2)))
 
   def test_add_custom_records(self):
     gfa = gfapy.Gfa(version="gfa2")

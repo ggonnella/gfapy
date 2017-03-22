@@ -124,7 +124,7 @@ class OrientedLine:
     elif isinstance(other, list):
       other = OrientedLine.from_list(other)
     elif isinstance(other, str):
-      other = OrientedLine.from_string(other)
+      other = OrientedLine(other)
     else:
       return False
     return (self.name == other.name) and (self.orient == other.orient)

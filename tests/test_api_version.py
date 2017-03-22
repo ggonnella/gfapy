@@ -147,95 +147,95 @@ class TestApiVersion(unittest.TestCase):
     self.assertEqual("gfa2", gfa.version)
 
   def test_header_version(self):
-    self.assertEqual("generic", gfapy.Line.from_string("H\tVN:Z:1.0").version)
-    self.assertEqual("gfa1", gfapy.Line.from_string("H\tVN:Z:1.0", version="gfa1").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("H\tVN:Z:1.0", version="gfa2").version)
+    self.assertEqual("generic", gfapy.Line("H\tVN:Z:1.0").version)
+    self.assertEqual("gfa1", gfapy.Line("H\tVN:Z:1.0", version="gfa1").version)
+    self.assertEqual("gfa2", gfapy.Line("H\tVN:Z:1.0", version="gfa2").version)
 
   def test_comment_version(self):
-    self.assertEqual("generic", gfapy.Line.from_string("# VN:Z:1.0").version)
-    self.assertEqual("gfa1", gfapy.Line.from_string("# VN:Z:1.0", version="gfa1").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("# VN:Z:1.0", version="gfa2").version)
+    self.assertEqual("generic", gfapy.Line("# VN:Z:1.0").version)
+    self.assertEqual("gfa1", gfapy.Line("# VN:Z:1.0", version="gfa1").version)
+    self.assertEqual("gfa2", gfapy.Line("# VN:Z:1.0", version="gfa2").version)
 
   def test_segment_version(self):
-    self.assertEqual("gfa1", gfapy.Line.from_string("S\tA\tNNNN").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("S\tA\t1\tNNNN").version)
-    self.assertEqual("gfa1", gfapy.Line.from_string("S\tA\tNNNN", version="gfa1").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("S\tA\t1\tNNNN", version="gfa2").version)
+    self.assertEqual("gfa1", gfapy.Line("S\tA\tNNNN").version)
+    self.assertEqual("gfa2", gfapy.Line("S\tA\t1\tNNNN").version)
+    self.assertEqual("gfa1", gfapy.Line("S\tA\tNNNN", version="gfa1").version)
+    self.assertEqual("gfa2", gfapy.Line("S\tA\t1\tNNNN", version="gfa2").version)
     self.assertRaises(gfapy.FormatError,
-      gfapy.Line.from_string, "S\tA\t1\tNNNN", version="gfa1")
+      gfapy.Line, "S\tA\t1\tNNNN", version="gfa1")
     self.assertRaises(gfapy.FormatError,
-      gfapy.Line.from_string, "S\tA\tNNNN", version="gfa2")
+      gfapy.Line, "S\tA\tNNNN", version="gfa2")
 
   def test_link_version(self):
     string = "L\tA\t+\tB\t-\t*"
-    self.assertEqual("gfa1", gfapy.Line.from_string(string).version)
-    self.assertEqual("gfa1", gfapy.Line.from_string(string, version="gfa1").version)
-    self.assertRaises(gfapy.VersionError, gfapy.Line.from_string, string, version="gfa2")
+    self.assertEqual("gfa1", gfapy.Line(string).version)
+    self.assertEqual("gfa1", gfapy.Line(string, version="gfa1").version)
+    self.assertRaises(gfapy.VersionError, gfapy.Line, string, version="gfa2")
     self.assertRaises(gfapy.VersionError,
       gfapy.line.edge.Link, ["A","+","B","-","*"], version="gfa2")
 
   def test_containment_version(self):
     string = "C\tA\t+\tB\t-\t10\t*"
-    self.assertEqual("gfa1", gfapy.Line.from_string(string).version)
-    self.assertEqual("gfa1", gfapy.Line.from_string(string,version="gfa1").version)
-    self.assertRaises(gfapy.VersionError, gfapy.Line.from_string,string,version="gfa2")
+    self.assertEqual("gfa1", gfapy.Line(string).version)
+    self.assertEqual("gfa1", gfapy.Line(string,version="gfa1").version)
+    self.assertRaises(gfapy.VersionError, gfapy.Line,string,version="gfa2")
     self.assertRaises(gfapy.VersionError, gfapy.line.edge.Containment,
                       ["A","+","B","-","10","*"], version="gfa2")
 
   def test_edge_version(self):
-    self.assertEqual("gfa2", gfapy.Line.from_string("E\t*\tA-\tB+\t0\t100\t0\t100\t*").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("E\t*\tA-\tB+\t0\t100\t0\t100\t*",version=\
+    self.assertEqual("gfa2", gfapy.Line("E\t*\tA-\tB+\t0\t100\t0\t100\t*").version)
+    self.assertEqual("gfa2", gfapy.Line("E\t*\tA-\tB+\t0\t100\t0\t100\t*",version=\
                                                             "gfa2").version)
     self.assertRaises(gfapy.VersionError,
-      gfapy.Line.from_string, "E\t*\tA-\tB+\t0\t100\t0\t100\t*", version="gfa1")
+      gfapy.Line, "E\t*\tA-\tB+\t0\t100\t0\t100\t*", version="gfa1")
     self.assertRaises(gfapy.VersionError,
       gfapy.line.edge.GFA2, ["A-","B+", "0", "100", "0", "100", "*"],
                                  version="gfa1")
 
   def test_gap_version(self):
-    self.assertEqual("gfa2", gfapy.Line.from_string("G\t*\tA-\tB+\t100\t*").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("G\t*\tA-\tB+\t100\t*",
+    self.assertEqual("gfa2", gfapy.Line("G\t*\tA-\tB+\t100\t*").version)
+    self.assertEqual("gfa2", gfapy.Line("G\t*\tA-\tB+\t100\t*",
                                version="gfa2").version)
     self.assertRaises(gfapy.VersionError,
-      gfapy.Line.from_string, "G\t*\tA-\tB+\t100\t*", version="gfa1")
+      gfapy.Line, "G\t*\tA-\tB+\t100\t*", version="gfa1")
     self.assertRaises(gfapy.VersionError,
       gfapy.line.Gap,["A-","B+", "100", "*"], version="gfa1")
 
   def test_fragment_version(self):
-    self.assertEqual("gfa2", gfapy.Line.from_string("F\tA\tread1-\t0\t100\t0\t100\t*").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("F\tA\tread1-\t0\t100\t0\t100\t*", version=\
+    self.assertEqual("gfa2", gfapy.Line("F\tA\tread1-\t0\t100\t0\t100\t*").version)
+    self.assertEqual("gfa2", gfapy.Line("F\tA\tread1-\t0\t100\t0\t100\t*", version=\
                                                             "gfa2").version)
     self.assertRaises(gfapy.VersionError,
-      gfapy.Line.from_string, "F\tA\tread1-\t0\t100\t0\t100\t*", version="gfa1")
+      gfapy.Line, "F\tA\tread1-\t0\t100\t0\t100\t*", version="gfa1")
     self.assertRaises(gfapy.VersionError,
       gfapy.line.Fragment,["A","read-", "0", "100", "0", "100", "*"],
                                version="gfa1")
 
   def test_custom_record_version(self):
-    self.assertEqual("gfa2", gfapy.Line.from_string("X\tVN:Z:1.0").version)
-    self.assertEqual("gfa2", gfapy.Line.from_string("X\tVN:Z:1.0", version="gfa2").version)
+    self.assertEqual("gfa2", gfapy.Line("X\tVN:Z:1.0").version)
+    self.assertEqual("gfa2", gfapy.Line("X\tVN:Z:1.0", version="gfa2").version)
     self.assertRaises(gfapy.VersionError,
-      gfapy.Line.from_string, "X\tVN:Z:1.0", version="gfa1")
+      gfapy.Line, "X\tVN:Z:1.0", version="gfa1")
     self.assertRaises(gfapy.VersionError,
       gfapy.line.CustomRecord, ["X","VN:Z:1.0"], version="gfa1")
 
   def test_path_version(self):
     string = "P\t1\tA+,B-\t*"
-    self.assertEqual("gfa1", gfapy.Line.from_string(string).version)
-    self.assertEqual("gfa1", gfapy.Line.from_string(string, version="gfa1").version)
-    self.assertRaises(gfapy.VersionError, gfapy.Line.from_string, string, version="gfa2")
+    self.assertEqual("gfa1", gfapy.Line(string).version)
+    self.assertEqual("gfa1", gfapy.Line(string, version="gfa1").version)
+    self.assertRaises(gfapy.VersionError, gfapy.Line, string, version="gfa2")
     string = "O\t1\tA+ B-"
-    self.assertEqual("gfa2", gfapy.Line.from_string(string).version)
-    self.assertEqual("gfa2", gfapy.Line.from_string(string, version="gfa2").version)
-    self.assertRaises(gfapy.VersionError, gfapy.Line.from_string, string, version="gfa1")
+    self.assertEqual("gfa2", gfapy.Line(string).version)
+    self.assertEqual("gfa2", gfapy.Line(string, version="gfa2").version)
+    self.assertRaises(gfapy.VersionError, gfapy.Line, string, version="gfa1")
 
   def test_set_version(self):
     string = "U\t1\tA B C"
-    self.assertEqual("gfa2", gfapy.Line.from_string(string).version)
-    self.assertEqual("gfa2", gfapy.Line.from_string(string, version="gfa2").version)
-    self.assertRaises(gfapy.VersionError, gfapy.Line.from_string, string, version="gfa1")
+    self.assertEqual("gfa2", gfapy.Line(string).version)
+    self.assertEqual("gfa2", gfapy.Line(string, version="gfa2").version)
+    self.assertRaises(gfapy.VersionError, gfapy.Line, string, version="gfa1")
 
   def test_unknown_record_version(self):
-    self.assertEqual("gfa2", gfapy.line.Unknown(["A"]).version)
-    self.assertEqual("gfa2", gfapy.line.Unknown(["A"], version="gfa2").version)
-    self.assertRaises(gfapy.VersionError, gfapy.line.Unknown,["A"], version="gfa1")
+    self.assertEqual("gfa2", gfapy.line.Unknown([None, "A"]).version)
+    self.assertEqual("gfa2", gfapy.line.Unknown([None, "A"], version="gfa2").version)
+    self.assertRaises(gfapy.VersionError, gfapy.line.Unknown,["\n","A"], version="gfa1")

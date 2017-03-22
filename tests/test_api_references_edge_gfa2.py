@@ -5,12 +5,12 @@ class TestAPIReferencesEdgesGFA2(unittest.TestCase):
 
   def test_edges_references(self):
     g = gfapy.Gfa()
-    lab = gfapy.Line.from_string("E\t*\ta+\tb+\t0\t10\t90\t100$\t*")
+    lab = gfapy.Line("E\t*\ta+\tb+\t0\t10\t90\t100$\t*")
     self.assertEqual(gfapy.OrientedLine("a","+"), lab.sid1)
     self.assertEqual(gfapy.OrientedLine("b","+"), lab.sid2)
-    sa = gfapy.Line.from_string("S\ta\t100\t*")
+    sa = gfapy.Line("S\ta\t100\t*")
     g.append(sa)
-    sb = gfapy.Line.from_string("S\tb\t100\t*")
+    sb = gfapy.Line("S\tb\t100\t*")
     g.append(sb)
     g.append(lab)
     self.assertEqual(sa, lab.sid1.line)
@@ -28,7 +28,7 @@ class TestAPIReferencesEdgesGFA2(unittest.TestCase):
 
   def test_edges_backreferences(self):
     g = gfapy.Gfa()
-    sa = gfapy.Line.from_string("S\ta\t100\t*")
+    sa = gfapy.Line("S\ta\t100\t*")
     g.append(sa)
     s = {}
     for sbeg1, beg1 in {"0":0,"1":30,"2":70,"$":gfapy.LastPos("100$")}.items():
@@ -45,13 +45,13 @@ class TestAPIReferencesEdgesGFA2(unittest.TestCase):
                 other = "s{}".format(eid)
                 g.append("\t".join(["E",eid,"a{}".format(or1),"{}".format(other)+"{}".format(or2),
                                     str(beg1),str(end1),str(beg2),str(end2),"*"]))
-                s[other] = gfapy.Line.from_string("S\t{}".format(other)+"\t100\t*")
+                s[other] = gfapy.Line("S\t{}".format(other)+"\t100\t*")
                 g.append(s[other])
                 eid = ">{}".format(or1)+"{}".format(or2)+"{}".format(sbeg1)+"{}".format(send1)+"{}".format(sbeg2)+"{}".format(send2)
                 other = "s{}".format(eid)
                 g.append("\t".join(["E",eid,"{}".format(other)+"{}".format(or1),"a{}".format(or2),
                                     str(beg1),str(end1),str(beg2),str(end2),"*"]))
-                s[other] = gfapy.Line.from_string("S\t{}".format(other)+"\t100\t*")
+                s[other] = gfapy.Line("S\t{}".format(other)+"\t100\t*")
                 g.append(s[other])
     exp_sa_d_L = []
     exp_sa_d_R = []

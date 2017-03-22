@@ -49,7 +49,7 @@ class VersionConversion:
     else:
       l = getattr(self, "_to_"+version+"_a")()
       if l:
-        return gfapy.Line.from_list(l, version=version, vlevel=self.vlevel)
+        return gfapy.Line(l, version=version, vlevel=self.vlevel)
       elif raise_on_failure:
         raise gfapy.VersionError("Records of type {} ".format(self.record_type)+
             "cannot be converted from version {} ".format(self._version)+

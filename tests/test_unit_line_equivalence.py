@@ -3,19 +3,19 @@ import gfapy
 
 class TestUnitLineEquivalence(unittest.TestCase):
 
-  a      = gfapy.Line.from_string("S\tA\t*\tLN:i:8\txx:Z:a")
-  b      = gfapy.Line.from_string("S\tB\t*\tLN:i:10")
-  c      = gfapy.Line.from_string("C\tA\t+\tB\t+\t10\t*")
-  l      = gfapy.Line.from_string("L\tA\t+\tB\t+\t*")
-  e      = gfapy.Line.from_string("E\t1\tA+\tB-\t0\t100$\t20\t121\t*")
+  a      = gfapy.Line("S\tA\t*\tLN:i:8\txx:Z:a")
+  b      = gfapy.Line("S\tB\t*\tLN:i:10")
+  c      = gfapy.Line("C\tA\t+\tB\t+\t10\t*")
+  l      = gfapy.Line("L\tA\t+\tB\t+\t*")
+  e      = gfapy.Line("E\t1\tA+\tB-\t0\t100$\t20\t121\t*")
 
-  a_ln   = gfapy.Line.from_string("S\tA\t*\tLN:i:10\txx:Z:a")
-  a_seq  = gfapy.Line.from_string("S\tA\tACCTTCGT\tLN:i:8\txx:Z:a")
-  a_gfa2 = gfapy.Line.from_string("S\tA\t8\tACCTTCGT\txx:Z:a")
-  a_noxx = gfapy.Line.from_string("S\tA\t*\tLN:i:8")
-  a_yy   = gfapy.Line.from_string("S\tA\t*\tLN:i:8\txx:Z:a\tyy:Z:b")
-  l_from = gfapy.Line.from_string("L\tC\t+\tB\t+\t*")
-  e_name = gfapy.Line.from_string("E\t2\tA+\tB-\t0\t100$\t20\t121\t*")
+  a_ln   = gfapy.Line("S\tA\t*\tLN:i:10\txx:Z:a")
+  a_seq  = gfapy.Line("S\tA\tACCTTCGT\tLN:i:8\txx:Z:a")
+  a_gfa2 = gfapy.Line("S\tA\t8\tACCTTCGT\txx:Z:a")
+  a_noxx = gfapy.Line("S\tA\t*\tLN:i:8")
+  a_yy   = gfapy.Line("S\tA\t*\tLN:i:8\txx:Z:a\tyy:Z:b")
+  l_from = gfapy.Line("L\tC\t+\tB\t+\t*")
+  e_name = gfapy.Line("E\t2\tA+\tB-\t0\t100$\t20\t121\t*")
 
   h_a    = {"record_type": "S",
             "name": "A",

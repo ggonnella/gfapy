@@ -5,10 +5,10 @@ class TestAPIReferencesFGLines(unittest.TestCase):
 
   def test_fragments_references(self):
     g = gfapy.Gfa()
-    f = gfapy.Line.from_string("F\ta\tf+\t0\t200\t281\t502$\t*")
+    f = gfapy.Line("F\ta\tf+\t0\t200\t281\t502$\t*")
     self.assertEqual("a", f.sid)
     self.assertEqual(gfapy.OrientedLine("f","+"), f.external)
-    sa = gfapy.Line.from_string("S\ta\t100\t*")
+    sa = gfapy.Line("S\ta\t100\t*")
     g.append(sa)
     g.append(f)
     self.assertEqual(sa, f.sid)
@@ -24,9 +24,9 @@ class TestAPIReferencesFGLines(unittest.TestCase):
 
   def test_fragments_backreferences(self):
     g = gfapy.Gfa()
-    f1 = gfapy.Line.from_string("F\ta\tf+\t0\t200\t281\t502$\t*")
-    f2 = gfapy.Line.from_string("F\ta\tf+\t240\t440$\t0\t210\t*")
-    sa = gfapy.Line.from_string("S\ta\t100\t*")
+    f1 = gfapy.Line("F\ta\tf+\t0\t200\t281\t502$\t*")
+    f2 = gfapy.Line("F\ta\tf+\t240\t440$\t0\t210\t*")
+    sa = gfapy.Line("S\ta\t100\t*")
     g.append(sa)
     g.append(f1)
     g.append(f2)
@@ -39,12 +39,12 @@ class TestAPIReferencesFGLines(unittest.TestCase):
 
   def test_gap_references(self):
     g = gfapy.Gfa()
-    gap = gfapy.Line.from_string("G\t*\ta+\tb+\t90\t*")
+    gap = gfapy.Line("G\t*\ta+\tb+\t90\t*")
     self.assertEqual(gfapy.OrientedLine("a","+"), gap.sid1)
     self.assertEqual(gfapy.OrientedLine("b","+"), gap.sid2)
-    sa = gfapy.Line.from_string("S\ta\t100\t*");
+    sa = gfapy.Line("S\ta\t100\t*");
     g.append(sa)
-    sb = gfapy.Line.from_string("S\tb\t100\t*");
+    sb = gfapy.Line("S\tb\t100\t*");
     g.append(sb)
     g.append(gap)
     self.assertEqual(sa, gap.sid1.line)
@@ -62,17 +62,17 @@ class TestAPIReferencesFGLines(unittest.TestCase):
 
   def test_gaps_backreferences(self):
     g = gfapy.Gfa()
-    sa = gfapy.Line.from_string("S\ta\t100\t*")
+    sa = gfapy.Line("S\ta\t100\t*")
     g.append(sa)
     # gaps
     s = {}
     gap = {}
     for name in ["b", "c", "d", "e", "f", "g", "h", "i"]:
-      s[name] = gfapy.Line.from_string("S\t{}\t100\t*".format(name))
+      s[name] = gfapy.Line("S\t{}\t100\t*".format(name))
       g.append(s[name])
     for name in \
       ["a+b+", "a+c-", "a-d+", "a-e-", "f+a+", "g+a-", "h-a+", "i-a-"]:
-      gap[name] = gfapy.Line.from_string("\t".join(
+      gap[name] = gfapy.Line("\t".join(
                                    ["G","*",name[0:2],name[2:4],"200","*"]))
       g.append(gap[name])
     # gaps_[LR]()

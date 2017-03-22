@@ -61,7 +61,7 @@ tags raises exceptions.
 
 .. doctest::
 
-    >>> c = gfapy.Line.from_string("# this is not a tag\txx:i:1")
+    >>> c = gfapy.Line("# this is not a tag\txx:i:1")
     >>> c.content
     'this is not a tag\txx:i:1'
     >>> c.xx

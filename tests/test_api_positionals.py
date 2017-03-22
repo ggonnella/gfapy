@@ -16,7 +16,7 @@ class TestAPIPositionals(unittest.TestCase):
     "O": "O\t*\t1+ 2+ 3+",
   }
   f = {k:v.split("\t") for k, v in s.items()}
-  l = {k:gfapy.Line.from_string(v) for k, v in s.items()}
+  l = {k:gfapy.Line(v) for k, v in s.items()}
 
   fieldnames = {
     "S1":["name", "sequence"],
@@ -93,11 +93,11 @@ class TestAPIPositionals(unittest.TestCase):
 
   def test_number_of_positionals(self):
     for rt, fields in TestAPIPositionals.f.items():
-      gfapy.Line.from_list(fields) # nothing raised
+      gfapy.Line(fields) # nothing raised
       too_less = fields.copy(); too_less.pop()
-      with self.assertRaises(gfapy.FormatError): gfapy.Line.from_list(too_less)
+      with self.assertRaises(gfapy.FormatError): gfapy.Line(too_less)
       too_many = fields.copy(); too_many.append("*")
-      with self.assertRaises(gfapy.FormatError): gfapy.Line.from_list(too_many)
+      with self.assertRaises(gfapy.FormatError): gfapy.Line(too_many)
 
   def test_positional_fieldnames(self):
     for rt, line in TestAPIPositionals.l.items():

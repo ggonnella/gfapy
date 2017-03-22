@@ -7,9 +7,9 @@ class TestAPIReferencesGroups(unittest.TestCase):
     g = gfapy.Gfa()
     s = {}; l = {}
     for name in ["a", "b", "c", "d", "e", "f"]:
-      s[name] = gfapy.Line.from_string("S\t{}\t*".format(name))
+      s[name] = gfapy.Line("S\t{}\t*".format(name))
       g.append(s[name])
-    path = gfapy.Line.from_string("P\tp1\tf+,a+,b+,c-,e+\t*")
+    path = gfapy.Line("P\tp1\tf+,a+,b+,c-,e+\t*")
     self.assertEqual([gfapy.OrientedLine("f","+"), gfapy.OrientedLine("a","+"),
                       gfapy.OrientedLine("b","+"), gfapy.OrientedLine("c","-"),
                       gfapy.OrientedLine("e","+")], path.segment_names)
@@ -18,7 +18,7 @@ class TestAPIReferencesGroups(unittest.TestCase):
     g.append(path)
     # add links
     for name in ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"]:
-      l[name] = gfapy.Line.from_string("\t".join((list("L{}*".format(name)))))
+      l[name] = gfapy.Line("\t".join((list("L{}*".format(name)))))
       g.append(l[name])
     # segment_names
     self.assertEqual([gfapy.OrientedLine(s["f"],"+"),
@@ -67,15 +67,15 @@ class TestAPIReferencesGroups(unittest.TestCase):
     g = gfapy.Gfa()
     s = {}; l = {}
     for name in ["a", "b", "c", "d", "e", "f"]:
-      s[name] = gfapy.Line.from_string("S\t{}\t*".format(name))
+      s[name] = gfapy.Line("S\t{}\t*".format(name))
       g.append(s[name])
-    path = gfapy.Line.from_string("P\tp1\tf+,a+,b+,c-,e+\t*")
+    path = gfapy.Line("P\tp1\tf+,a+,b+,c-,e+\t*")
     g.append(path)
     for sname in ["a", "b", "c", "e", "f"]:
       self.assertEqual([path], s[sname].paths)
     self.assertEqual([], s["d"].paths)
     for name in ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"]:
-      l[name] = gfapy.Line.from_string("\t".join(list("L{}*".format(name))))
+      l[name] = gfapy.Line("\t".join(list("L{}*".format(name))))
       g.append(l[name])
     for lname in ["a+b+", "b+c-", "e-c+", "a-f-"]:
       self.assertEqual([path], l[lname].paths)
@@ -99,12 +99,12 @@ class TestAPIReferencesGroups(unittest.TestCase):
     g = gfapy.Gfa()
     s = {}
     for name in ["a", "b", "c", "d", "e", "f"]:
-      s[name] = gfapy.Line.from_string("S\t{}\t1000\t*".format(name))
+      s[name] = gfapy.Line("S\t{}\t1000\t*".format(name))
       g.append(s[name])
-    path1_part1 = gfapy.Line.from_string("O\tp1\tp2- b+")
-    path1_part2 = gfapy.Line.from_string("O\tp1\tc- e-c+-")
+    path1_part1 = gfapy.Line("O\tp1\tp2- b+")
+    path1_part2 = gfapy.Line("O\tp1\tc- e-c+-")
     path1 = path1_part2
-    path2 = gfapy.Line.from_string("O\tp2\tf+ a+")
+    path2 = gfapy.Line("O\tp2\tf+ a+")
     self.assertEqual([gfapy.OrientedLine("p2","-"),
                       gfapy.OrientedLine("b","+")], path1_part1.items)
     self.assertEqual([gfapy.OrientedLine("c","-"),
@@ -122,7 +122,7 @@ class TestAPIReferencesGroups(unittest.TestCase):
     for name in ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-", "f-b+"]:
       coord1 = "900\t1000$" if (name[1] == "+") else "0\t100"
       coord2 = "0\t100" if (name[3] == "+")  else "900\t1000$"
-      e[name] = gfapy.Line.from_string("E\t{}\t{}\t{}\t{}\t{}\t100M".format(name,name[0:2],name[2:4],coord1,coord2))
+      e[name] = gfapy.Line("E\t{}\t{}\t{}\t{}\t{}\t100M".format(name,name[0:2],name[2:4],coord1,coord2))
       g.append(e[name])
     # items
     self.assertEqual([gfapy.OrientedLine(path2,"-"),
@@ -187,9 +187,9 @@ class TestAPIReferencesGroups(unittest.TestCase):
   def test_sets_references(self):
     g = gfapy.Gfa()
     s = {}
-    set1 = gfapy.Line.from_string("U\tset1\tb set2 c e-c+")
-    set2 = gfapy.Line.from_string("U\tset2\tg c-d+ path1")
-    path1 = gfapy.Line.from_string("O\tpath1\tf+ a+")
+    set1 = gfapy.Line("U\tset1\tb set2 c e-c+")
+    set2 = gfapy.Line("U\tset2\tg c-d+ path1")
+    path1 = gfapy.Line("O\tpath1\tf+ a+")
     self.assertEqual(["b", "set2", "c", "e-c+"], set1.items)
     self.assertEqual(["g", "c-d+", "path1"], set2.items)
     # induced set of non-connected cannot be computed
@@ -203,13 +203,13 @@ class TestAPIReferencesGroups(unittest.TestCase):
     # connect items
     g.append(path1)
     for name in ["a", "b", "c", "d", "e", "f", "g"]:
-      s[name] = gfapy.Line.from_string("S\t"+"{}".format(name)+"\t1000\t*")
+      s[name] = gfapy.Line("S\t"+"{}".format(name)+"\t1000\t*")
       g.append(s[name])
     e = {}
     for name in ["a+b+", "b+c-", "c-d+", "e-c+", "a-f-"]:
       coord1 = "900\t1000$" if (name[1] == "+") else "0\t100"
       coord2 = "0\t100" if (name[3] == "+")  else "900\t1000$"
-      e[name] = gfapy.Line.from_string("E\t{}\t{}\t{}\t{}\t{}\t100M".format(name,name[0:2],name[2:4],coord1,coord2))
+      e[name] = gfapy.Line("E\t{}\t{}\t{}\t{}\t{}\t100M".format(name,name[0:2],name[2:4],coord1,coord2))
       g.append(e[name])
     # items
     self.assertEqual([s["b"], set2, s["c"], e["e-c+"]], set1.items)

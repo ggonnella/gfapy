@@ -6,20 +6,20 @@ class TestAPIExtensions(unittest.TestCase):
 
   def test_extensions(self):
     g = gfapy.Gfa(version="gfa2", vlevel=0)
-    MetagenomicAssignment(["*","N12","C","SC:i:20"])
-    sA = gfapy.Line.from_string("S\tA\t1000\t*")
+    MetagenomicAssignment(["M", "*","N12","C","SC:i:20"])
+    sA = gfapy.Line("S\tA\t1000\t*")
     g.append(sA)
-    tB12 = gfapy.Line.from_string("T\tB12_c")
+    tB12 = gfapy.Line("T\tB12_c")
     g.append(tB12)
-    m1 = gfapy.Line.from_string("M\t1\ttaxon:123\tA\tSC:i:40\txx:Z:cjaks536")
+    m1 = gfapy.Line("M\t1\ttaxon:123\tA\tSC:i:40\txx:Z:cjaks536")
     g.append(m1)
-    m2 = gfapy.Line.from_string("M\t2\ttaxon:123\tB\txx:Z:cga5r5cs")
+    m2 = gfapy.Line("M\t2\ttaxon:123\tB\txx:Z:cga5r5cs")
     g.append(m2)
-    sB = gfapy.Line.from_string("S\tB\t1000\t*")
+    sB = gfapy.Line("S\tB\t1000\t*")
     g.append(sB)
-    mx = gfapy.Line.from_string("M\t*\tB12_c\tB\tSC:i:20")
+    mx = gfapy.Line("M\t*\tB12_c\tB\tSC:i:20")
     g.append(mx)
-    t123 = gfapy.Line.from_string(
+    t123 = gfapy.Line(
       "T\ttaxon:123\tUL:Z:http://www.taxon123.com")
     g.append(t123)
     self.assertEqual(MetagenomicAssignment, m1.__class__)

@@ -4,7 +4,7 @@ import gfapy
 class TestUnitLineCloning(unittest.TestCase):
 
   def test_clone_tags(self):
-    l = gfapy.Line.from_string("H\tVN:Z:1.0")
+    l = gfapy.Line("H\tVN:Z:1.0")
     l1 = l
     l2 = l.clone()
     self.assertIsInstance(l, gfapy.line.Header)
@@ -16,13 +16,13 @@ class TestUnitLineCloning(unittest.TestCase):
     self.assertEqual("2.0", l.VN)
 
   def test_clone_deep_string(self):
-    s = gfapy.Line.from_string("S\t1\tCAGCTTG")
+    s = gfapy.Line("S\t1\tCAGCTTG")
     s_clone = s.clone()
     s_clone.sequence += "CCC"
     self.assertNotEqual(s_clone.sequence, s.sequence)
 
   def test_clone_deep_posfield_array(self):
-    u = gfapy.Line.from_string("U\t*\t1 2 3")
+    u = gfapy.Line("U\t*\t1 2 3")
     u_clone = u.clone()
     self.assertEqual(u_clone.items, u.items)
     self.assertNotEqual(id(u_clone.items), id(u.items))
@@ -30,7 +30,7 @@ class TestUnitLineCloning(unittest.TestCase):
     self.assertNotEqual(u_clone.items, u.items)
 
   def test_clone_deep_J_field(self):
-    h = gfapy.Line.from_string("H\txx:J:[1,2,3]")
+    h = gfapy.Line("H\txx:J:[1,2,3]")
     h_clone = h.clone()
     self.assertEqual(h_clone.xx, h.xx)
     self.assertNotEqual(id(h_clone.xx), id(h.xx))
@@ -39,8 +39,8 @@ class TestUnitLineCloning(unittest.TestCase):
 
   def test_clone_disconnected(self):
     g = gfapy.Gfa()
-    sA = gfapy.Line.from_string("S\tA\t7\tCAGCTTG")
-    u = gfapy.Line.from_string("U\tU12\tA B C")
+    sA = gfapy.Line("S\tA\t7\tCAGCTTG")
+    u = gfapy.Line("U\tU12\tA B C")
     g.add_line(sA)
     g.add_line(u)
     assert(u.is_connected())

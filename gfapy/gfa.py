@@ -32,12 +32,12 @@ class Gfa(Lines,GraphOperations):
       raise gfapy.VersionError("GFA version unknown ({})".format(version))
     self._vlevel = vlevel
     self._records = defaultdict(dict)
-    self._records["H"] = gfapy.line.Header([], vlevel = vlevel)
+    self._records["H"] = gfapy.line.Header(["H"], vlevel = vlevel)
     self._records["H"].connect(self)
     self._records["S"] = {}
     self._records["P"] = {}
     self._records["F"] = {}
-    self._records[None] = {}
+    self._records["\n"] = {}
     self._records["E"] = {}
     self._records["U"] = {}
     self._records["G"] = {}

@@ -11,7 +11,7 @@ class TestAPILinesFinders(unittest.TestCase):
               "L\t1\t-\t3\t+\t*",
               "C\t1\t-\t4\t-\t1\t*",
               "P\tp1\t1+,2+\t*"]
-  l_gfa1 = [gfapy.Line.from_string(x) for x in l_gfa1_a]
+  l_gfa1 = [gfapy.Line(x) for x in l_gfa1_a]
   l_gfa2_a = ["S\t1\t100\t*",
               "S\t2\t110\t*",
               "E\te1\t1+\t2-\t0\t100$\t10\t110$\t*",
@@ -24,7 +24,7 @@ class TestAPILinesFinders(unittest.TestCase):
               "X\tx1\txx:Z:A",
               "X\tx2",
               "G\t*\t1+\t2+\t2000\t*"]
-  l_gfa2 = [gfapy.Line.from_string(x) for x in l_gfa2_a]
+  l_gfa2 = [gfapy.Line(x) for x in l_gfa2_a]
   gfa1 = gfapy.Gfa(l_gfa1)
   gfa2 = gfapy.Gfa(l_gfa2)
 

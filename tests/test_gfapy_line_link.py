@@ -7,45 +7,45 @@ class TestLineLink(unittest.TestCase):
     fields=["L","1","+","2","-","12M","RC:i:1232","NM:i:3","ab:Z:abcd",
             "FC:i:2321","KC:i:1212","MQ:i:40"]
     string = "\t".join(fields)
-    gfapy.Line.from_string(string)
-    self.assertIsInstance(gfapy.Line.from_string(string), gfapy.line.edge.Link)
-    self.assertEqual(str(fields[0]), gfapy.Line.from_string(string).record_type)
-    self.assertEqual(str(fields[1]), gfapy.Line.from_string(string).from_segment)
-    self.assertEqual(str(fields[2]), gfapy.Line.from_string(string).from_orient)
-    self.assertEqual(str(fields[3]), gfapy.Line.from_string(string).to_segment)
-    self.assertEqual(str(fields[4]), gfapy.Line.from_string(string).to_orient)
+    gfapy.Line(string)
+    self.assertIsInstance(gfapy.Line(string), gfapy.line.edge.Link)
+    self.assertEqual(str(fields[0]), gfapy.Line(string).record_type)
+    self.assertEqual(str(fields[1]), gfapy.Line(string).from_segment)
+    self.assertEqual(str(fields[2]), gfapy.Line(string).from_orient)
+    self.assertEqual(str(fields[3]), gfapy.Line(string).to_segment)
+    self.assertEqual(str(fields[4]), gfapy.Line(string).to_orient)
     self.assertEqual([gfapy.alignment.CIGAR.Operation(12, "M")],
-                      gfapy.Line.from_string(string).overlap)
-    self.assertEqual(1232, gfapy.Line.from_string(string).RC)
-    self.assertEqual(3, gfapy.Line.from_string(string).NM)
-    self.assertEqual(2321, gfapy.Line.from_string(string).FC)
-    self.assertEqual(1212, gfapy.Line.from_string(string).KC)
-    self.assertEqual(40, gfapy.Line.from_string(string).MQ)
-    self.assertEqual("abcd", gfapy.Line.from_string(string).ab)
+                      gfapy.Line(string).overlap)
+    self.assertEqual(1232, gfapy.Line(string).RC)
+    self.assertEqual(3, gfapy.Line(string).NM)
+    self.assertEqual(2321, gfapy.Line(string).FC)
+    self.assertEqual(1212, gfapy.Line(string).KC)
+    self.assertEqual(40, gfapy.Line(string).MQ)
+    self.assertEqual("abcd", gfapy.Line(string).ab)
     with self.assertRaises(gfapy.FormatError):
-      gfapy.Line.from_string((string+"\tH1"))
+      gfapy.Line((string+"\tH1"))
     with self.assertRaises(gfapy.FormatError):
-      gfapy.Line.from_string("L\tH")
+      gfapy.Line("L\tH")
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[2]="x"
-      gfapy.Line.from_string("\t".join(f), vlevel = 2)
+      gfapy.Line("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[4]="x"
-      gfapy.Line.from_string("\t".join(f), vlevel = 2)
+      gfapy.Line("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.FormatError):
       f=fields[:]
       f[5]="x"
-      gfapy.Line.from_string("\t".join(f), vlevel = 2)
+      gfapy.Line("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[6]="RC:Z:1232"
-      gfapy.Line.from_string("\t".join(f), vlevel = 2)
+      gfapy.Line("\t".join(f), vlevel = 2)
     with self.assertRaises(gfapy.TypeError):
       f=fields[:]
       f[7]="NM:Z:1232"
-      gfapy.Line.from_string("\t".join(f), vlevel = 2)
+      gfapy.Line("\t".join(f), vlevel = 2)
 
   #TODO
   #def test_coords

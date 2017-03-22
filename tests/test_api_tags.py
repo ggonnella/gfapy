@@ -5,74 +5,74 @@ class TestApiTags(unittest.TestCase):
 
   def test_predefined_tags(self):
     # correct type:
-    gfapy.line.Header(["VN:Z:1"], vlevel=3) # nothing raised
+    gfapy.line.Header(["H", "VN:Z:1"], vlevel=3) # nothing raised
     # custom tags with the same letters as predefined tags but lower case
-    gfapy.line.Header(["vn:i:1"], vlevel=3) # nothing raised
+    gfapy.line.Header(["H", "vn:i:1"], vlevel=3) # nothing raised
     # wrong type
-    gfapy.line.Header(["VN:i:1"], vlevel=0) # nothing raised
+    gfapy.line.Header(["H", "VN:i:1"], vlevel=0) # nothing raised
     for level in [1,2,3]:
       self.assertRaises(gfapy.TypeError,
-        gfapy.line.Header, ["VN:i:1"], vlevel=level)
+        gfapy.line.Header, ["H", "VN:i:1"], vlevel=level)
 
   def test_custom_tags(self):
     for version in ["gfa1","gfa2"]:
       # upper case
-      gfapy.line.Header(["ZZ:Z:1"], version=version, vlevel=0) # nothing raised
-      gfapy.line.Header.from_string("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
-      gfapy.line.Header.from_string("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
+      gfapy.line.Header(["H", "ZZ:Z:1"], version=version, vlevel=0) # nothing raised
+      gfapy.line.Header("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
+      gfapy.line.Header("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
       gfapy.Gfa("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
       for level in [1,2,3]:
         self.assertRaises(gfapy.FormatError,
-          gfapy.line.Header,["ZZ:Z:1"], version=version, vlevel=level)
+          gfapy.line.Header,["H", "ZZ:Z:1"], version=version, vlevel=level)
         self.assertRaises(gfapy.FormatError,
-          gfapy.Line.from_string, "H\tZZ:Z:1", version=version, vlevel=level)
+          gfapy.Line, "H\tZZ:Z:1", version=version, vlevel=level)
         self.assertRaises(gfapy.FormatError,
           gfapy.Gfa, "H\tZZ:Z:1", version=version, vlevel=level)
       # lower case
       for level in [0,1,2,3]:
-        gfapy.line.Header(["zz:Z:1"], version=version, vlevel=0) # nothing raised
-        gfapy.Line.from_string("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
+        gfapy.line.Header(["H", "zz:Z:1"], version=version, vlevel=0) # nothing raised
+        gfapy.Line("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
         gfapy.Gfa("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
 
   def test_wrong_tag_format(self):
-    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["VN i:1"])
-    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["vna:i:1"])
-    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["VN:ZZ:1"])
+    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["H", "VN i:1"])
+    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["H", "vna:i:1"])
+    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["H", "VN:ZZ:1"])
     # the content can include :, so four : are e.g. not an error
-    self.assertEqual("1:1:1", gfapy.line.Header(["VN:Z:1:1:1"]).VN)
+    self.assertEqual("1:1:1", gfapy.line.Header(["H", "VN:Z:1:1:1"]).VN)
 
   def test_wrong_tag_data(self):
     # validation level 0
     # - some wrong data passes through
-    gfapy.line.Header(["zz:B:i,1,1,A"], vlevel=0) # nothing raised
-    gfapy.line.Header(["zz:Z:i,\t1,1,A"], vlevel=0) # nothing raised
+    gfapy.line.Header(["H", "zz:B:i,1,1,A"], vlevel=0) # nothing raised
+    gfapy.line.Header(["H", "zz:Z:i,\t1,1,A"], vlevel=0) # nothing raised
     # - some errors are catched
-    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["zz:i:1A"], vlevel=0)
+    self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["H", "zz:i:1A"], vlevel=0)
     # level > 0, wrong data is catched
     for level in [1,2,3]:
       self.assertRaises(gfapy.ValueError,
-        gfapy.line.Header,["zz:B:i,1,1,A"],vlevel=level)
+        gfapy.line.Header,["H", "zz:B:i,1,1,A"],vlevel=level)
       self.assertRaises(gfapy.FormatError,
-        gfapy.line.Header,["zz:i:1A"],vlevel=level)
+        gfapy.line.Header,["H", "zz:i:1A"],vlevel=level)
 
   def test_duplicate_tag(self):
     for version in ["gfa1","gfa2"]:
-      gfapy.line.Header(["zz:i:1", "VN:Z:1", "zz:i:2"],
+      gfapy.line.Header(["H", "zz:i:1", "VN:Z:1", "zz:i:2"],
                               version=version, vlevel=0) # nothing raised
-      gfapy.Line.from_string("H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version,
+      gfapy.Line("H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version,
                                                vlevel=0) # nothing raised
-      gfapy.Line.from_string("H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version,
+      gfapy.Line("H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version,
                                           vlevel=0) # nothing raised
       for level in [1,2,3]:
         self.assertRaises(gfapy.NotUniqueError, gfapy.line.Header,
-          ["zz:i:1", "VN:Z:0", "zz:i:2"], version=version, vlevel=level)
-        self.assertRaises(gfapy.NotUniqueError, gfapy.Line.from_string,
+          ["H", "zz:i:1", "VN:Z:0", "zz:i:2"], version=version, vlevel=level)
+        self.assertRaises(gfapy.NotUniqueError, gfapy.Line,
             "H\tzz:i:1\tVN:Z:0\tzz:i:2",version=version, vlevel=level)
         self.assertRaises(gfapy.NotUniqueError, gfapy.Gfa,
             "H\tzz:i:1\tVN:Z:#{version}\tzz:i:2", version=version, vlevel=level)
 
   def test_validate_field(self):
-    l = gfapy.line.Header(["zz:i:1", "VN:Z:1.0"], version="gfa1", vlevel=0)
+    l = gfapy.line.Header(["H", "zz:i:1", "VN:Z:1.0"], version="gfa1", vlevel=0)
     l.zz = "x"
     self.assertRaises(gfapy.FormatError, l.validate_field, "zz")
     l.set_datatype("zz", "Z")
@@ -80,14 +80,14 @@ class TestApiTags(unittest.TestCase):
 
   def test_validate(self):
     # wrong tag value
-    l = gfapy.line.Header(["zz:i:1", "VN:Z:1.0"], version="gfa1", vlevel=0)
+    l = gfapy.line.Header(["H", "zz:i:1", "VN:Z:1.0"], version="gfa1", vlevel=0)
     l.zz = "x"
     self.assertRaises(gfapy.FormatError, l.validate)
     # wrong predefined tag name
-    l = gfapy.line.Header(["zz:i:1", "VZ:Z:1.0"], version="gfa1", vlevel=0)
+    l = gfapy.line.Header(["H", "zz:i:1", "VZ:Z:1.0"], version="gfa1", vlevel=0)
     self.assertRaises(gfapy.FormatError, l.validate)
     # wrong predefined tag datatype
-    l = gfapy.line.Header(["zz:i:1", "VN:i:1"], version="gfa1", vlevel=0)
+    l = gfapy.line.Header(["H", "zz:i:1", "VN:i:1"], version="gfa1", vlevel=0)
     self.assertRaises(gfapy.TypeError, l.validate)
 
   # test tags for get/set tests:
@@ -100,8 +100,7 @@ class TestApiTags(unittest.TestCase):
   def test_get_tag_content(self):
     for version in ["gfa1","gfa2"]:
       for level in [0,1,2,3]:
-        l = gfapy.line.segment.Factory(["12","*","xx:f:1.3","KC:i:10"],
-                                    vlevel=level)
+        l = gfapy.Line(["S", "12","*","xx:f:1.3","KC:i:10"], vlevel=level)
         # tagnames
         self.assertEqual(sorted(["xx", "KC"]), sorted(l.tagnames))
         # test presence of tag
@@ -166,8 +165,7 @@ class TestApiTags(unittest.TestCase):
   def test_set_tag_content(self):
     for version in ["gfa1","gfa2"]:
       for level in [0,1,2,3]:
-        l = gfapy.line.segment.Factory(["12","*","xx:f:13","KC:i:10"],
-                                       vlevel=level)
+        l = gfapy.Line(["S", "12","*","xx:f:13","KC:i:10"], vlevel=level)
         # set tag content, fieldname methods
         l.KC = 12 # nothing raised; self.assertEqual(12, l.KC)
         l.RC = 12 # nothing raised; self.assertEqual(12, l.RC)
@@ -210,8 +208,7 @@ class TestApiTags(unittest.TestCase):
   def test_delete_tag(self):
     for version in ["gfa1","gfa2"]:
       for level in [0,1,2,3]:
-        l = gfapy.line.segment.Factory(["12","*","xx:f:13","KC:i:10"],
-                                             vlevel=level)
+        l = gfapy.Line(["S", "12","*","xx:f:13","KC:i:10"], vlevel=level)
         # delete method
         l.delete("KC") # nothing raised
         self.assertEqual(None, l.KC)
@@ -221,8 +218,7 @@ class TestApiTags(unittest.TestCase):
         l.delete("xx") # nothing raised
         self.assertEqual([], l.tagnames)
         l.delete("zz") # nothing raised
-        l = gfapy.line.segment.Factory(["12","*","xx:f:13","KC:i:10"],
-                                             vlevel=level)
+        l = gfapy.Line(["S", "12","*","xx:f:13","KC:i:10"], vlevel=level)
         # set to None
         l.set("KC",None)  # nothing raised
         self.assertEqual(None, l.KC)
@@ -237,7 +233,7 @@ class TestApiTags(unittest.TestCase):
         l.set("zz",None)  # nothing raised
 
   def test_datatype_to_python_objects(self):
-    l = gfapy.line.Header(["a1:A:1", "z1:Z:hallo",
+    l = gfapy.line.Header(["H", "a1:A:1", "z1:Z:hallo",
                                 "b1:B:c,12,12", "b2:B:f,1E-2,3.0,3",
                                 "h1:H:00A1",
                                 "j1:J:[12,\"a\"]", "j2:J:{\"a\":1,\"b\":[2,3]}",
@@ -254,43 +250,43 @@ class TestApiTags(unittest.TestCase):
 
 
   def test_python_object_to_datatype(self):
-    l = gfapy.line.Header([])
+    l = gfapy.line.Header(["H"])
     # String
     l.zz="1"  # nothing raised
     self.assertEqual("1", l.zz)
     self.assertEqual("Z", l.get_datatype("zz"))
     self.assertEqual("1", l.field_to_s("zz"))
-    self.assertEqual("1", gfapy.Line.from_string(str(l)).zz)
+    self.assertEqual("1", gfapy.Line(str(l)).zz)
     # Integer
     l.ii=1  # nothing raised
     self.assertEqual(1, l.ii)
     self.assertEqual("i", l.get_datatype("ii"))
     self.assertEqual("1", l.field_to_s("ii"))
-    self.assertEqual(1, gfapy.Line.from_string(str(l)).ii)
+    self.assertEqual(1, gfapy.Line(str(l)).ii)
     # Float
     l.ff=1.0  # nothing raised
     self.assertEqual(1.0, l.ff)
     self.assertEqual("f", l.get_datatype("ff"))
     self.assertEqual("1.0", l.field_to_s("ff"))
-    self.assertEqual(1.0, gfapy.Line.from_string(str(l)).ff)
+    self.assertEqual(1.0, gfapy.Line(str(l)).ff)
     # Array: all floats
     l.af=[1.0,1.0]  # nothing raised
     self.assertEqual([1.0,1.0], l.af)
     self.assertEqual("B", l.get_datatype("af"))
     self.assertEqual("f,1.0,1.0", l.field_to_s("af"))
-    self.assertEqual([1.0,1.0], gfapy.Line.from_string(str(l)).af)
+    self.assertEqual([1.0,1.0], gfapy.Line(str(l)).af)
     # Array: all integers
     l.ai=[1,1]  # nothing raised
     self.assertEqual([1,1], l.ai)
     self.assertEqual("B", l.get_datatype("ai"))
     self.assertEqual("C,1,1", l.field_to_s("ai"))
-    self.assertEqual([1,1], gfapy.Line.from_string(str(l)).ai)
+    self.assertEqual([1,1], gfapy.Line(str(l)).ai)
     # Array: anything else
     l.aa=[1,1.0,"X"]  # nothing raised
     self.assertEqual([1,1.0,"X"], l.aa)
     self.assertEqual("J", l.get_datatype("aa"))
     self.assertEqual('[1, 1.0, "X"]', l.field_to_s("aa"))
-    self.assertEqual([1,1.0,"X"], gfapy.Line.from_string(str(l)).aa)
+    self.assertEqual([1,1.0,"X"], gfapy.Line(str(l)).aa)
     # Hash
     l.hh={"a":1.0, "b":1}  # nothing raised
     self.assertEqual({"a":1.0,"b":1}, l.hh)
@@ -299,13 +295,13 @@ class TestApiTags(unittest.TestCase):
       self.assertEqual('{"a": 1.0, "b": 1}', l.field_to_s("hh"))
     except:
       self.assertEqual('{"b": 1, "a": 1.0}', l.field_to_s("hh"))
-    self.assertEqual({"a":1.0,"b":1}, gfapy.Line.from_string(str(l)).hh)
+    self.assertEqual({"a":1.0,"b":1}, gfapy.Line(str(l)).hh)
     # gfapy.ByteArray
     l.ba=gfapy.ByteArray([0,255])  # nothing raised
     self.assertEqual(gfapy.ByteArray([0,255]), l.ba)
     self.assertEqual("H", l.get_datatype("ba"))
     self.assertEqual('00FF', l.field_to_s("ba"))
-    self.assertEqual(gfapy.ByteArray([0,255]), gfapy.Line.from_string(str(l)).ba)
+    self.assertEqual(gfapy.ByteArray([0,255]), gfapy.Line(str(l)).ba)
 
   def test_byte_arrays(self):
     # creation:, from array, from string

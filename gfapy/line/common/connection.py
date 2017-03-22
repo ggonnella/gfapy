@@ -75,7 +75,7 @@ class Connection:
     name = self.get(field)
     line = self.gfa.line(name)
     if line is None:
-      data = []
+      data = [klass.RECORD_TYPE]
       for i in range(len(klass.POSFIELDS)):
         data.append("1")
       line = klass(data, virtual=True, version="gfa2")

@@ -4,7 +4,7 @@ import gfapy
 class TestUnitLineConnection(unittest.TestCase):
 
   def test_connected_and_gfa(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     assert(not s1.is_connected())
     self.assertEqual(None, s1.gfa)
     g = gfapy.Gfa()
@@ -13,7 +13,7 @@ class TestUnitLineConnection(unittest.TestCase):
     assert(g is s1.gfa)
 
   def test_connect(self):
-    s2 = gfapy.Line.from_string("S\t2\tACCAT")
+    s2 = gfapy.Line("S\t2\tACCAT")
     assert(not s2.is_connected())
     self.assertEqual(None, s2.gfa)
     g = gfapy.Gfa()
@@ -22,14 +22,14 @@ class TestUnitLineConnection(unittest.TestCase):
     assert(g is s2.gfa)
 
   def test_connect_registers_line(self):
-    s2 = gfapy.Line.from_string("S\t2\tACCAT")
+    s2 = gfapy.Line("S\t2\tACCAT")
     g = gfapy.Gfa()
     self.assertEqual([], g.segments)
     s2.connect(g)
     self.assertEqual([s2], g.segments)
 
   def test_disconnect(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     g = gfapy.Gfa()
     g.append(s1)
     assert(s1.is_connected())
@@ -39,7 +39,7 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual(None, s1.gfa)
 
   def test_disconnect_unregisters_line(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     g = gfapy.Gfa()
     g.append(s1)
     self.assertEqual([s1], g.segments)
@@ -47,8 +47,8 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual([], g.segments)
 
   def test_disconnect_removes_field_backreferences(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
-    l = gfapy.Line.from_string("L\t1\t+\t2\t-\t*")
+    s1 = gfapy.Line("S\t1\tACCAT")
+    l = gfapy.Line("L\t1\t+\t2\t-\t*")
     g = gfapy.Gfa()
     g.append(s1)
     g.append(l)
@@ -57,8 +57,8 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual([], s1.dovetails)
 
   def test_disconnect_removes_field_references(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
-    l = gfapy.Line.from_string("L\t1\t+\t2\t-\t*")
+    s1 = gfapy.Line("S\t1\tACCAT")
+    l = gfapy.Line("L\t1\t+\t2\t-\t*")
     g = gfapy.Gfa()
     g.append(s1)
     g.append(l)
@@ -68,8 +68,8 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual("1", l.get("from"))
 
   def test_disconnect_disconnects_depent_lines(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
-    l = gfapy.Line.from_string("L\t1\t+\t2\t-\t*")
+    s1 = gfapy.Line("S\t1\tACCAT")
+    l = gfapy.Line("L\t1\t+\t2\t-\t*")
     g = gfapy.Gfa()
     g.append(s1)
     g.append(l)
@@ -78,12 +78,12 @@ class TestUnitLineConnection(unittest.TestCase):
     assert(not l.is_connected())
 
   def test_disconnect_removes_nonfield_backreferences(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
-    s2 = gfapy.Line.from_string("S\t2\tCATGG")
-    s3 = gfapy.Line.from_string("S\t3\tTGGAA")
-    l12 = gfapy.Line.from_string("L\t1\t+\t2\t+\t*")
-    l23 = gfapy.Line.from_string("L\t2\t+\t3\t+\t*")
-    p4 = gfapy.Line.from_string("P\t4\t1+,2+,3+\t*")
+    s1 = gfapy.Line("S\t1\tACCAT")
+    s2 = gfapy.Line("S\t2\tCATGG")
+    s3 = gfapy.Line("S\t3\tTGGAA")
+    l12 = gfapy.Line("L\t1\t+\t2\t+\t*")
+    l23 = gfapy.Line("L\t2\t+\t3\t+\t*")
+    p4 = gfapy.Line("P\t4\t1+,2+,3+\t*")
     g = gfapy.Gfa()
     for line in [s1, s2, s3, l12, l23, p4]:
       g.append(line)
@@ -92,12 +92,12 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual([], l12.paths)
 
   def test_disconnect_removes_nonfield_references(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
-    s2 = gfapy.Line.from_string("S\t2\tCATGG")
-    s3 = gfapy.Line.from_string("S\t3\tTGGAA")
-    l12 = gfapy.Line.from_string("L\t1\t+\t2\t+\t*")
-    l23 = gfapy.Line.from_string("L\t2\t+\t3\t+\t*")
-    p4 = gfapy.Line.from_string("P\t4\t1+,2+,3+\t*")
+    s1 = gfapy.Line("S\t1\tACCAT")
+    s2 = gfapy.Line("S\t2\tCATGG")
+    s3 = gfapy.Line("S\t3\tTGGAA")
+    l12 = gfapy.Line("L\t1\t+\t2\t+\t*")
+    l23 = gfapy.Line("L\t2\t+\t3\t+\t*")
+    p4 = gfapy.Line("P\t4\t1+,2+,3+\t*")
     g = gfapy.Gfa()
     for line in [s1, s2, s3, l12, l23, p4]:
       g.append(line)
@@ -106,7 +106,7 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual([], p4.links)
 
   def test_add_reference(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     self.assertEqual([], s1.gaps_L)
     s1._add_reference("X", "gaps_L")
     self.assertEqual(["X"], s1.gaps_L)
@@ -116,7 +116,7 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual(["Z", "X", "Y"], s1.gaps_L)
 
   def test_delete_reference(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     s1._add_reference("A", "gaps_L")
     s1._add_reference("B", "gaps_L")
     s1._add_reference("C", "gaps_L")
@@ -131,7 +131,7 @@ class TestUnitLineConnection(unittest.TestCase):
     self.assertEqual(["B", "D"], s1.gaps_L)
 
   def test_update_references(self):
-    s1 = gfapy.Line.from_string("S\t1\tACCAT")
+    s1 = gfapy.Line("S\t1\tACCAT")
     gA = gfapy.line.Gap({})
     gnewA = gfapy.line.Gap({})
     gB = gfapy.line.Gap({})

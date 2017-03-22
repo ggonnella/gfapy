@@ -11,9 +11,9 @@ class TestAPILinesCreators(unittest.TestCase):
 
   def test_add_segments(self):
     gfa = gfapy.Gfa()
-    s1 = gfapy.Line.from_string("S\t1\t*")
-    s2 = gfapy.Line.from_string("S\t2\t*")
-    s2c = gfapy.Line.from_string("S\t2\t*")
+    s1 = gfapy.Line("S\t1\t*")
+    s2 = gfapy.Line("S\t2\t*")
+    s2c = gfapy.Line("S\t2\t*")
     gfa.append(s1) # nothing raised
     gfa.append(s2) # nothing raised
     self.assertSetEqual(set([str(s) for s in [s1, s2]]), set([str(s) for s in gfa.segments]))
@@ -27,7 +27,7 @@ class TestAPILinesCreators(unittest.TestCase):
   def test_add_links(self):
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    l1 = gfapy.Line.from_string("L\t1\t+\t2\t+\t12M")
+    l1 = gfapy.Line("L\t1\t+\t2\t+\t12M")
     l2 = "L\t1\t+\t3\t+\t12M"
     gfa = gfapy.Gfa()
     gfa.append(s1)
@@ -42,7 +42,7 @@ class TestAPILinesCreators(unittest.TestCase):
   def test_add_containments(self):
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    c1 = gfapy.Line.from_string("C\t1\t+\t2\t+\t12\t12M")
+    c1 = gfapy.Line("C\t1\t+\t2\t+\t12\t12M")
     c2 = "C\t1\t+\t3\t+\t12\t12M"
     gfa = gfapy.Gfa()
     gfa.append(s1)
@@ -58,7 +58,7 @@ class TestAPILinesCreators(unittest.TestCase):
   def test_add_paths(self):
     s1 = "S\t1\t*"
     s2 = "S\t2\t*"
-    p1 = gfapy.Line.from_string("P\t4\t1+,2+\t122M")
+    p1 = gfapy.Line("P\t4\t1+,2+\t122M")
     p2 = "P\t1\t1+,2+\t122M"
     p3 = "P\t5\t1+,2+,3+\t122M,120M"
     gfa = gfapy.Gfa()

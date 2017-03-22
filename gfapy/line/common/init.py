@@ -23,7 +23,7 @@ class Init:
   RECORD_TYPE_VERSIONS = {
       "specific" :
         {"gfa1" : ["C", "L", "P"],
-         "gfa2" : ["E", "G", "F", "O", "U", None]},
+         "gfa2" : ["E", "G", "F", "O", "U", "\n"]},
       "generic" : ["H", "#"],
       "different" : ["S"]
     }
@@ -33,6 +33,13 @@ class Init:
   - generic => same syntax for all versions
   - different => different syntax in different versions
   """
+
+  def __new__(cls, data, vlevel = 1, virtual = False, version = None):
+    if isinstance(data, str):
+      data = data.split("\t")
+    if isinstance(data, list) and cls.RECORD_TYPE == None:
+      cls = gfapy.Line.subclass(data, version = version)
+    return object.__new__(cls)
 
   def __init__(self, data, vlevel = 1, virtual = False, version = None):
     """
@@ -91,8 +98,6 @@ class Init:
          when converting a field to string
     - 3: validation on each field access
     """
-    if not hasattr(self.__class__, "RECORD_TYPE"):
-      raise gfapy.RuntimeError("This class shall not be directly instantiated")
     self.vlevel = vlevel
     self._virtual = virtual
     self._datatype = {}
@@ -100,55 +105,60 @@ class Init:
     self._gfa = None
     self._version = version
     self._refs = {}
+    if self.__class__ == gfapy.Line:
+      raise gfapy.AssertionError("Line subclass unknown")
     if isinstance(data, dict):
+      # API private initialization using dict
       self._data.update(data)
     else:
-      # normal initialization, data is an array of strings
+      # public initialization using list (or tab-separated string)
+      if self.__class__ == gfapy.line.Comment:
+        data = gfapy.Line._init_comment_data(data)
+      elif isinstance(data, str):
+        data = data.split(gfapy.Line.SEPARATOR)
       if self.version is None:
-        self._process_unknown_version(data)
+        self._compute_version(data[0])
       else:
         self._validate_version()
-        self._initialize_positional_fields(data)
-        self._initialize_tags(data)
+      self._initialize_positional_fields(data)
+      self._initialize_tags(data)
       if self.vlevel >= 1:
         self._validate_record_type_specific_info()
       if self.version is None:
-        raise "RECORD_TYPE_VERSION has no value for {}".format(self.record_type)
+        raise gfapy.RuntimeError("version could not be determined, "+
+            "record_type={}".format(self.record_type))
 
-  def to_gfa_line(self, vlevel = None, version = None):
-    """
-    Parameters
-    ----------
-    vlevel : bool
-      ignored (compatibility reasons)
-    version : bool
-      ignored (compatibility reasons)
+  @staticmethod
+  def _init_comment_data(data):
+    if isinstance(data, list) and (data[0] != "#"):
+      # unproperly splitten, rejoin
+      data = "\t".join(data)
+    if isinstance(data, str):
+      match = re.match(r"^#(\s*)(.*)$", data)
+      if match is None:
+        raise gfapy.FormatError("Comment lines must begin with #\n"+
+            "Line: {}".format(data))
+      data = ["#", match.group(2), match.group(1)]
+    return data
 
-    Returns
-    -------
-    gfapy.Line
-      self
-    """
-    return self
-
-  def _process_unknown_version(self, data):
-    rt = self.__class__.RECORD_TYPE
+  def _compute_version(self, rt):
     if rt in Init.RECORD_TYPE_VERSIONS["generic"]:
       self._version = "generic"
-      self._initialize_positional_fields(data)
-      self._initialize_tags(data)
-      return
-    for k, v in Init.RECORD_TYPE_VERSIONS["specific"].items():
-      if rt in v:
-        self._version = k
-        self._initialize_positional_fields(data)
-        self._initialize_tags(data)
-        return
-    if rt in Init.RECORD_TYPE_VERSIONS["different"]:
-      raise gfapy.RuntimeError(
-        "GFA version not specified\n"+
-        "Records of type {} ".format(rt)+
-        "have different syntax according to the version")
+    elif rt in Init.RECORD_TYPE_VERSIONS["different"]:
+      if hasattr(self.__class__, "VERSION"):
+        self._version = self.__class__.VERSION
+      else:
+        raise gfapy.RuntimeError(
+            "GFA version not specified\n"+
+            "Records of type {} ".format(rt)+
+            "have different syntax according to the version")
+    else:
+      for k, v in Init.RECORD_TYPE_VERSIONS["specific"].items():
+        if rt in v:
+          self._version = k
+          break
+    if not self._version:
+      self._version = "gfa2"
 
   def _validate_version(self):
     rt = self.__class__.RECORD_TYPE
@@ -182,17 +192,16 @@ class Init:
       raise gfapy.AssertionError(
         "Bug found, please report\n"+
         "strings: {}".format(repr(strings)))
-    if (self.vlevel >= 1) and (len(strings) < self._n_positional_fields):
+    if (self.vlevel >= 1) and (len(strings)-1 < self._n_positional_fields):
       raise gfapy.FormatError(
         "{} positional fields expected, ".format(self._n_positional_fields) +
-        "{} found\n{}".format(len(strings), repr(strings)))
-    for i in range(self._n_positional_fields):
-      n = self.__class__.POSFIELDS[i]
-      self._init_field_value(n, self.__class__.DATATYPE[n], strings[i],
+        "{} found\n{}".format(len(strings)-1, repr(strings)))
+    for i, n in enumerate(self.POSFIELDS):
+      self._init_field_value(n, self.__class__.DATATYPE[n], strings[i+1],
                        errmsginfo = strings)
 
   def _initialize_tags(self, strings):
-    for i in range(self._n_positional_fields, len(strings)):
+    for i in range(len(self.POSFIELDS)+1, len(strings)):
       self._initialize_tag(*(gfapy.Field.parse_gfa_tag(strings[i])),
           errmsginfo = strings)
 
@@ -211,8 +220,8 @@ class Init:
         self._datatype[n] = t
     self._init_field_value(n, t, s, errmsginfo = errmsginfo)
 
-  @classmethod
-  def subclass(cls, record_type, version = None):
+  @staticmethod
+  def subclass(data, version = None):
     """
     Select a subclass based on the record type.
 
@@ -233,18 +242,21 @@ class Init:
     Class
       A subclass of gfapy.Line
     """
-    if version == "gfa1":
+    record_type = data[0]
+    if record_type and record_type[0] == "#":
+      return gfapy.line.Comment
+    elif version == "gfa1":
       return gfapy.Line.subclass_GFA1(record_type)
     elif version == "gfa2":
       return gfapy.Line.subclass_GFA2(record_type)
     elif version is None:
-      return gfapy.Line.subclass_unknown_version(record_type)
+      return gfapy.Line.subclass_unknown_version(data)
     else:
       raise gfapy.VersionError(
           "GFA specification version unknown ({})".format(version))
 
-  @classmethod
-  def subclass_GFA1(cls, record_type):
+  @staticmethod
+  def subclass_GFA1(record_type):
     if record_type is None:
       raise gfapy.VersionError(
           "gfapy uses virtual records of unknown type for GFA2 only")
@@ -261,8 +273,8 @@ class Init:
 
   EXTENSIONS = {}
 
-  @classmethod
-  def subclass_GFA2(cls, record_type):
+  @staticmethod
+  def subclass_GFA2(record_type):
     if record_type == "H": return gfapy.line.Header
     elif record_type == "S": return gfapy.line.segment.GFA2
     elif record_type == "#": return gfapy.line.Comment
@@ -275,10 +287,11 @@ class Init:
       return gfapy.Line.EXTENSIONS[record_type]
     else: return gfapy.line.CustomRecord
 
-  @classmethod
-  def subclass_unknown_version(cls, record_type):
+  @staticmethod
+  def subclass_unknown_version(data):
+    record_type = data[0]
     if record_type == "H": return gfapy.line.Header
-    elif record_type == "S": return gfapy.line.segment.Factory
+    elif record_type == "S": return gfapy.line.Segment.subclass(data)
     elif record_type == "#": return gfapy.line.Comment
     elif record_type == "L": return gfapy.line.edge.Link
     elif record_type == "C": return gfapy.line.edge.Containment
@@ -292,67 +305,3 @@ class Init:
       return gfapy.Line.EXTENSIONS[record_type]
     else: return gfapy.line.CustomRecord
 
-  @staticmethod
-  def from_string(string, vlevel = 1, version = None):
-    """
-    Parses a line of a GFA file and creates an object of the correct
-    record type child class of {gfapy.Line}
-
-    Returns
-    -------
-    Subclass of gfapy.Line
-
-    Raises
-    ------
-    gfapy.Error
-      If the fields do not comply to the GFA specification.
-
-    Parameters
-    ----------
-    vlevel : int, optional
-      *(defaults to: 1)*
-      See gfapy.Line.initialize
-    version : gfapy.VERSIONS, optional
-      GFA version, None if unknown.
-    """
-    if string[0] == "#":
-      match = re.match(r"^#(\s*)(.*)$", string)
-      return gfapy.line.Comment([match.group(2), match.group(1)],
-                                 vlevel = vlevel,
-                                 version = version)
-    else:
-      return gfapy.Line.from_list(string.split(gfapy.Line.SEPARATOR),
-          vlevel = vlevel, version = version)
-
-  @staticmethod
-  def from_list(lst, vlevel = 1, version = None):
-    """
-    Parses an array containing the fields of a GFA file line and creates an
-    object of the correct record type child class of {gfapy.Line}
-
-    .. note::
-      This method modifies the content of the array; if you still
-      need the array, you must create a copy before calling it.
-
-    Returns
-    -------
-    Subclass of gfapy.Line
-
-    Raises
-    ------
-    gfapy.Error
-      If the fields do not comply to the GFA specification.
-
-    Parameters
-    ----------
-    vlevel : int, optional
-      *(defaults to: 1)*
-      See gfapy.Line#initialize
-    version : gfapy.VERSIONS, optional
-      GFA version, None if unknown.
-    """
-    sk = gfapy.Line.subclass(lst[0], version = version)
-    if sk == gfapy.line.CustomRecord:
-      return sk(lst, vlevel = vlevel, version = version)
-    else:
-      return sk(lst[1:], vlevel = vlevel, version = version)

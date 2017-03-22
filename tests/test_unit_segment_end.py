@@ -4,7 +4,7 @@ import gfapy
 class TestUnitSegmentEnd(unittest.TestCase):
 
   sym = "a"
-  ref = gfapy.Line.from_string("S\ta\t*\txx:Z:1.0")
+  ref = gfapy.Line("S\ta\t*\txx:Z:1.0")
   invalid_sym = "a\ta"
   invalid_ref = []
   se_s = gfapy.SegmentEnd(sym, "L")

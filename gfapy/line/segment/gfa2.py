@@ -7,6 +7,7 @@ from . import Segment
 class GFA2(WriterWoSequence, References, Coverage, GFA2ToGFA1, Segment):
   """A segment line of a GFA file"""
 
+  VERSION = "gfa2"
   RECORD_TYPE = "S"
   POSFIELDS = ["sid", "slen", "sequence"]
   PREDEFINED_TAGS = ["RC", "FC", "KC", "SH", "UR"]

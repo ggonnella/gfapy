@@ -11,6 +11,7 @@ class GFA1(WriterWoSequence, References, Coverage,
   A segment line of a GFA file
   """
 
+  VERSION = "gfa1"
   RECORD_TYPE = "S"
   POSFIELDS = ["name", "sequence"]
   PREDEFINED_TAGS = ["LN", "RC", "FC", "KC", "SH", "UR"]

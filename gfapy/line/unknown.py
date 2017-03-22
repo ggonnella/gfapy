@@ -6,7 +6,7 @@ class Unknown(Line):
   and has not been found yet (ie is always virtual)
   """
 
-  RECORD_TYPE = None
+  RECORD_TYPE = "\n"
   POSFIELDS = ["name"]
   DATATYPE = {"name": "identifier_gfa2"}
   NAME_FIELD = "name"

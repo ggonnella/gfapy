@@ -291,7 +291,7 @@ the fields of connected line, see the :ref:`references` chapter.
 .. doctest::
 
    >>> g = gfapy.Gfa()
-   >>> e = gfapy.Line.from_string("E\t*\tA+\tB-\t0\t10\t90\t100$\t*")
+   >>> e = gfapy.Line("E\t*\tA+\tB-\t0\t10\t90\t100$\t*")
    >>> e.sid1 = "C+"
    >>> g.add_line(e) #doctest: +ELLIPSIS
    >>> e.sid1 = "A+"

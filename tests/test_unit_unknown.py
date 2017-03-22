@@ -3,7 +3,7 @@ import gfapy
 
 class TestUnitUnknown(unittest.TestCase):
 
-  u = gfapy.line.Unknown(["a"])
+  u = gfapy.line.Unknown([None, "a"])
 
   def test_new(self):
     assert(isinstance(TestUnitUnknown.u, gfapy.line.Unknown))

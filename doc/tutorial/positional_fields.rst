@@ -143,7 +143,7 @@ Examples:
 
 .. doctest::
 
-    >>> p = gfapy.Line.from_string("P\tP1\ta+,b-\t*")
+    >>> p = gfapy.Line("P\tP1\ta+,b-\t*")
     >>> p.segment_names
     [gfapy.OrientedLine('a','+'), gfapy.OrientedLine('b','-')]
     >>> sn0 = p.segment_names[0]
@@ -158,12 +158,12 @@ Examples:
     gfapy.OrientedLine('a','-')
     >>> sn0.orient
     '-'
-    >>> sn0.line = gfapy.Line.from_string('S\tX\t*')
+    >>> sn0.line = gfapy.Line('S\tX\t*')
     >>> str(sn0)
     'X-'
     >>> sn0.name
     'X'
-    >>> sn0 = gfapy.OrientedLine(gfapy.Line.from_string('S\tY\t*'), '+')
+    >>> sn0 = gfapy.OrientedLine(gfapy.Line('S\tY\t*'), '+')
 
 Sequences
 ^^^^^^^^^
@@ -296,7 +296,7 @@ used.
 
 .. doctest::
 
-    >>> s_gfa1 = gfapy.Line.from_string("S\t1\t*")
+    >>> s_gfa1 = gfapy.Line("S\t1\t*")
     >>> s_gfa1.positional_fieldnames
     ['name', 'sequence']
     >>> s_gfa1.name
@@ -352,7 +352,7 @@ Gfa object (see the :ref:`references` chapter).
 .. doctest::
 
     >>> gfa = gfapy.Gfa(version='gfa1')
-    >>> l = gfapy.Line.from_string("L\ts1\t+\ts2\t-\t*")
+    >>> l = gfapy.Line("L\ts1\t+\ts2\t-\t*")
     >>> l.from_name
     's1'
     >>> l.from_segment = "s3"
@@ -399,7 +399,7 @@ name are also defined for each alias, see below).
     segment.sid == segment.name # True
     containment.from_segment == containment.container # True
 
-    s = gfapy.Line.from_string("S\t1\t*")
+    s = gfapy.Line("S\t1\t*")
     s.sid # => "1"
     s.name = "a"
     s.sid # => "a"

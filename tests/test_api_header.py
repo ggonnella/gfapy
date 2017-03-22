@@ -12,12 +12,12 @@ class TestApiHeader(unittest.TestCase):
 
   def test_gfa_header_line_connect(self):
     g = gfapy.Gfa()
-    line = gfapy.Line.from_string("H\txx:i:1")
+    line = gfapy.Line("H\txx:i:1")
     self.assertRaises(gfapy.RuntimeError, line.connect, g)
     g.add_line(line) # nothing raised
 
   def test_header_version_editing(self):
-    standalone = gfapy.Line.from_string("H\txx:i:1\tVN:Z:1.0")
+    standalone = gfapy.Line("H\txx:i:1\tVN:Z:1.0")
     standalone.VN = "2.0" # nothing raised
     g = gfapy.Gfa()
     g.add_line("H\txx:i:1\tVN:Z:1.0")

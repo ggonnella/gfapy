@@ -54,11 +54,11 @@ class Creators:
           "Only strings and gfapy.Line instances can be added")
     if rt == "#":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line.from_string(gfa_line)
+        gfa_line = gfapy.Line(gfa_line)
       gfa_line.connect(self)
     elif rt == "H":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
       self.header._merge(gfa_line)
       if gfa_line.VN:
         if gfa_line.VN == "1.0":
@@ -73,7 +73,7 @@ class Creators:
         self.process_line_queue()
     elif rt == "S":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
       self._version = gfa_line.version
       self._version_explatation = \
           "implied by: syntax of S {} line".format(gfa_line.name)
@@ -83,7 +83,7 @@ class Creators:
       self._version = "gfa2"
       self._version_explatation = "implied by: presence of a {} line".format(rt)
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
             version=self._version)
       self.process_line_queue()
       gfa_line.connect(self)
@@ -96,9 +96,9 @@ class Creators:
   def __add_line_GFA1(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
       else:
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
                                         version="gfa1")
     elif gfa_line.__class__ in gfapy.Lines.GFA2Specific:
       raise gfapy.VersionError(
@@ -127,9 +127,9 @@ class Creators:
   def __add_line_GFA2(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
       else:
-        gfa_line = gfapy.Line.from_string(gfa_line, vlevel=self._vlevel,
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
                                         version="gfa2")
     elif gfa_line.__class__ in gfapy.Lines.GFA1Specific:
       raise gfapy.VersionError(

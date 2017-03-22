@@ -28,7 +28,7 @@ class Finders:
     else:
       return seg
 
-  RECORDS_WITH_NAME = ["E", "S", "P", "U", "G", "O", None]
+  RECORDS_WITH_NAME = ["E", "S", "P", "U", "G", "O", "\n"]
 
   def line(self, l):
     """Search a line in a GFA.

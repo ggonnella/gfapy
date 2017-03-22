@@ -7,5 +7,4 @@ from .custom_record import CustomRecord
 from .fragment import Fragment
 from .header import Header
 from .segment import Segment
-from .segment import Factory
 from . import group
