@@ -1,3 +1,8 @@
+.. testsetup:: *
+
+    import gfapy
+    gfa = gfapy.Gfa()
+
 .. _tags:
 
 Tags
@@ -10,7 +15,7 @@ is a two-letter tag name, ``T`` is an one-letter datatype string and
 datatype. Tag names must be unique for each line, i.e. each line may
 only contain a tag once.
 
-.. code:: python
+::
 
     # Examples of GFA tags of different datatypes:
     "aa:i:-12"
@@ -33,14 +38,15 @@ the tags used by other users or programs. For this reasons, if you write
 scripts which employ custom tags, you should always check that the
 values are of the correct datatype and plausible.
 
-.. code:: python
+.. doctest::
 
-    if line.get_datatype("xx") != "i":
-      raise Exception("I expected the tag xx to contain an integer!")
-    myvalue = line.xx
-    if (myvalue > 120) or (myvalue % 2 == 1):
-      raise Exception("The value in the xx tag is not an even value <= 120")
-    # ... do something with myvalue
+    >>> line = gfapy.Line("H\txx:i:2")
+    >>> if line.get_datatype("xx") != "i":
+    ...   raise Exception("I expected the tag xx to contain an integer!")
+    >>> myvalue = line.xx
+    >>> if (myvalue > 120) or (myvalue % 2 == 1):
+    ...   raise Exception("The value in the xx tag is not an even value <= 120")
+    >>> # ... do something with myvalue
 
 Also it is good practice to allow the user of the script to change the
 name of the custom tags. For example, Gfapy employs the +or+ custom tag
@@ -120,7 +126,7 @@ except for the upper case tags indicated in the GFA1 specification, and
 the TS header tag, all other tags must contain at least one lower case
 letter.
 
-.. code:: python
+::
 
     "VN:i:1"  # => in header: allowed, elsewhere: error
     "TS:i:1"  # => allowed in headers and GFA2 Edges
@@ -143,12 +149,21 @@ The data must be a correctly formatted string for the specified datatype
 or a Python object whose string representation is a correctly formatted
 string.
 
-.. code:: python
+.. doctest::
 
     # current value: xx:i:2
-    line.xx = 1   # OK
-    line.xx = "1" # OK, value is set to 1
-    line.xx = "A" # error
+    >>> line = gfapy.Line("S\tA\t*\txx:i:2")
+    >>> line.xx = 1
+    >>> line.xx
+    1
+    >>> line.xx = "3"
+    >>> line.xx
+    3
+    >>> line.xx = "A"
+    >>> line.xx
+    Traceback (most recent call last):
+    ...
+    gfapy.error.FormatError: ...
 
 Depending on the validation level, more or less checks are done
 automatically (see :ref:`validation` chapter). Per default - validation level
@@ -159,12 +174,23 @@ trigger a manual validation, the user can call the method
 ``validate_field(fieldname)`` to validate a single tag, or
 ``validate()`` to validate the whole line, including all tags.
 
-.. code:: python
+.. doctest::
 
-    line.xx = "A"
-    line.validate_field("xx") # validates xx
-    # or, to validate the whole line, including tags:
-    line.validate()
+    >>> line = gfapy.Line("S\tA\t*\txx:i:2", vlevel = 0)
+    >>> line.validate_field("xx")
+    >>> line.validate()
+    >>> line.xx = "A"
+    >>> line.validate_field("xx")
+    Traceback (most recent call last):
+    ...
+    gfapy.error.FormatError: ...
+    >>> line.validate()
+    Traceback (most recent call last):
+    ...
+    gfapy.error.FormatError: ...
+    >>> line.xx = "3"
+    >>> line.validate_field("xx")
+    >>> line.validate()
 
 Reading and writing tags
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -178,46 +204,77 @@ a value to it the tag name method (e.g. ``line.TS = 120``). In
 alternative, the ``set(fieldname, value)``, ``get(fieldname)`` and
 ``try_get(fieldname)`` methods can also be used. To remove a tag from a
 line, use the ``delete(fieldname)`` method, or set its value to
-``None``.
+``None``. The ``tagnames`` property Line instances is a list of
+the names (as strings) of all defined tags for a line.
 
-.. code:: python
 
-    # line is "H xx:i:12"
-    line.xx  # => 1
-    line.xy  # => nil
-    line.try_get_xx    # => 1
-    line.try_get_xy    # => error: xy is not defined
-    line.get("xx")     # => 1
-    line.try_get("xy") # => error, xy is not defined
-    line.xx = 2        # => value of xx is changed to 2
-    line.xx = "a"      # => error: not compatible with existing type (i)
-    line.xy = 2        # => xy is created and set to 2, type is auto-set to i
-    line.set("xy", 2)  # => sets xy to 2
-    line.delete("xy")  # => tag is eliminated
-    line.xx = None     # => tag is eliminated
+.. doctest::
 
-The ``tagnames`` property of gfapy Line instances is a list of the names
-(as strings) of all defined tags for a line.
-
-.. code:: python
-
-    print("Line contains the following tags:")
-    for t in line.tagnames:
-      print(t)
-    if "VN" in line.tagnames:
-      # do something with line.VN value
+    >>> line = gfapy.Line("S\tA\t*\txx:i:1", vlevel = 0)
+    >>> line.xx
+    1
+    >>> line.xy is None
+    True
+    >>> line.try_get_xx()
+    1
+    >>> line.try_get_xy()
+    Traceback (most recent call last):
+    ...
+    gfapy.error.NotFoundError: ...
+    >>> line.get("xx")
+    1
+    >>> line.try_get("xy")
+    Traceback (most recent call last):
+    ...
+    gfapy.error.NotFoundError: ...
+    >>> line.xx = 2
+    >>> line.xx
+    2
+    >>> line.xx = "a"
+    >>> line.tagnames
+    ['xx']
+    >>> line.xy = 2
+    >>> line.xy
+    2
+    >>> line.set("xy", 3)
+    >>> line.get("xy")
+    3
+    >>> line.tagnames
+    ['xx', 'xy']
+    >>> line.delete("xy")
+    3
+    >>> line.xy is None
+    True
+    >>> line.xx = None
+    >>> line.xx is None
+    True
+    >>> line.try_get("xx")
+    Traceback (most recent call last):
+    ...
+    gfapy.error.NotFoundError: ...
+    >>> line.tagnames
+    []
 
 When a tag is read, the value is converted into an appropriate object
 (see Python classes in the datatype table above). When setting a value,
 the user can specify the value of a tag either as a Python object, or as
 the string representation of the value.
 
-.. code:: python
+.. doctest::
 
-    # line is: H xx:i:1 xy:Z:TEXT xz:J:["a","b"]
-    line.xx # => 1 (Integer)
-    line.xy # => "TEXT" (String)
-    line.xz # => ["a", "b"] (Array)
+    >>> line = gfapy.Line('H\txx:i:1\txy:Z:TEXT\txz:J:["a","b"]')
+    >>> line.xx
+    1
+    >>> isinstance(line.xx, int)
+    True
+    >>> line.xy
+    'TEXT'
+    >>> isinstance(line.xy, str)
+    True
+    >>> line.xz
+    ['a', 'b']
+    >>> isinstance(line.xz, list)
+    True
 
 The string representation of a tag can be read using the
 ``field_to_s(fieldname)`` method. The default is to only output the
@@ -225,12 +282,15 @@ content of the field. By setting \`\`tag: true\`\`\`, the entire tag is
 output (name, datatype, content, separated by colons). An exception is
 raised if the field does not exist.
 
-.. code:: python
+.. doctest::
 
-    # line is: H xx:i:1
-    line.xx # => 1
-    line.field_to_s("xx") # => "1"
-    line.field_to_s("xx", tag=True) # => "xx:i:1"
+    >>> line = gfapy.Line("H\txx:i:1")
+    >>> line.xx
+    1
+    >>> line.field_to_s("xx")
+    '1'
+    >>> line.field_to_s("xx", tag=True)
+    'xx:i:1'
 
 Datatype of custom tags
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,11 +300,14 @@ can be changed using the ``set_datatype(fieldname, datatype)`` method.
 The current datatype specification can be read using
 ``get_datatype(fieldname)``.
 
-.. code:: python
+.. doctest::
 
-    # line is: H xx:i:1
-    line.get_datatype("xx") # => "i"
-    line.set_datatype("xx", "Z")
+    >>> line = gfapy.Line("H\txx:i:1")
+    >>> line.get_datatype("xx")
+    'i'
+    >>> line.set_datatype("xx", "Z")
+    >>> line.get_datatype("xx")
+    'Z'
 
 If a new custom tag is specified, Gfapy selects the correct datatype for
 it: i/f for numeric values, J/B for arrays, J for hashes and Z for
@@ -253,14 +316,16 @@ he may do so by setting it with ``set_datatype()`` (this can be done
 also before assigning a value, which is necessary if full validation is
 active).
 
-.. code:: python
+.. doctest::
 
-    # line has not tags
-    line.xx = "1" # => "xx:Z:1" created
-    line.xx       # => "1"
-    line.set_datatype("xy", "i")
-    line.xy = "1" # => "xy:i:1" created
-    line.xy       # => 1
+    >>> line = gfapy.Line("H")
+    >>> line.xx = "1"
+    >>> line.xx
+    '1'
+    >>> line.set_datatype("xy", "i")
+    >>> line.xy = "1"
+    >>> line.xy
+    1
 
 Arrays of numerical values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -276,34 +341,49 @@ Both are subclasses of list. Object of the two classes can be created by
 passing an existing list or the string representation to the class
 constructor.
 
-.. code:: python
+.. doctest::
 
-    # create a byte array instance
-    gfapy.ByteArray([12,3,14])
-    gfapy.ByteArray("A012FF")
-    # create a numeric array instance
-    gfapy.NumericArray("c,12,3,14")
-    gfapy.NumericArray([12,3,14])
+    >>> # create a byte array instance
+    >>> gfapy.ByteArray([12,3,14])
+    b'\x0c\x03\x0e'
+    >>> gfapy.ByteArray("A012FF")
+    b'\xa0\x12\xff'
+    >>> # create a numeric array instance
+    >>> gfapy.NumericArray.from_string("c,12,3,14")
+    [12, 3, 14]
+    >>> gfapy.NumericArray([12,3,14])
+    [12, 3, 14]
 
 Instances of the classes behave as normal lists, except that they
 provide a #validate() method, which checks the constraints, and that
 their string representation is the GFA string representation of the
 field value.
 
-.. code:: python
+.. doctest::
 
-    gfapy.ByteArray([12,1,"1x"]).validate() # error: 1x is not a valid value
-    str(gfapy.ByteArray([12,3,14])) # => "c,12,3,14"
+    >>> gfapy.NumericArray([12,1,"1x"]).validate()
+    Traceback (most recent call last):
+    ...
+    gfapy.error.ValueError
+    >>> str(gfapy.NumericArray([12,3,14]))
+    'C,12,3,14'
+    >>> gfapy.ByteArray([12,1,"1x"]).validate()
+    Traceback (most recent call last):
+    ...
+    gfapy.error.ValueError
+    >>> str(gfapy.ByteArray([12,3,14]))
+    '0C030E'
 
-For numeric values, the ``compute_subtype()`` method allows to compute
+For numeric values, the `compute_subtype` method allows to compute
 the subtype which will be used for the string representation. Unsigned
 subtypes are used if all values are positive. The smallest possible
 subtype range is selected. The subtype may change when the range of the
 elements changes.
 
-.. code:: python
+.. doctest::
 
-    gfapy.NumericValue([12,13,14]).compute_subtype() # => "C"
+    >>> gfapy.NumericArray([12,13,14]).compute_subtype()
+    'C'
 
 Special cases: custom records, headers, comments and virtual lines.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -314,27 +394,27 @@ tags in custom records, and tries to interpret the rightmost fields as
 tags, until the first field from the right raises an error; all
 remaining fields are treated as positional fields.
 
-.. code:: python
+::
 
     "X a b c xx:i:12" # => xx is tag, a, b, c are positional fields
     "Y a b xx:i:12 c" # => all positional fields, as c is not a valid tag
 
 For easier access, the entire header of the GFA is summarized in a
-single line instance. A class (``gfapy.FieldArray``) has been defined to
+single line instance. A class (`FieldArray`) has been defined to
 handle the special case when multiple H lines define the same tag (see
 :ref:`header` chapter for details).
 
 Comment lines are represented by a subclass of the same class
-(``gfapy.Line``) as the records. However, they cannot contain tags: the
+(`Line`) as the records. However, they cannot contain tags: the
 entire line is taken as content of the comment. See the :ref:`comments`
 chapter for more information about comments.
 
-.. code:: python
+::
 
     "# this is not a tag: xx:i:1" # => xx is not a tag, xx:i:1 is part of the comment
 
-Virtual ``gfapy.Line`` instances (e.g. segment instances automatically
+Virtual instances of the `Line` class (e.g. segment instances automatically
 created because of not yet resolved references found in edges) cannot be
 modified by the user, and tags cannot be specified for them. This
-includes all instances of the ``gfapy::Line::Unknown`` class. See the
+includes all instances of the `Unknown` class. See the
 :ref:`references` chapter for more information about virtual lines.

@@ -88,12 +88,19 @@ The ``items`` field in unordered and ordered groups and the
 ``segment_names`` and ``overlaps`` fields in paths are lists of objects
 and are represented by list instances.
 
-.. code:: python
+.. doctest::
 
-    type(set.items) # => "list"
-    type(gfa2_path.items) # => "list"
-    type(gfa1_path.segment_names) # => "list"
-    type(gfa1_path.overlaps) # => "list"
+    >>> set = gfapy.Line("U\t*\t1 A 2")
+    >>> type(set.items)
+    <class 'list'>
+    >>> gfa2_path = gfapy.Line("O\t*\tA+ B-")
+    >>> type(gfa2_path.items)
+    <class 'list'>
+    >>> gfa1_path = gfapy.Line("P\tp1\tA+,B-\t10M,9M1D1M")
+    >>> type(gfa1_path.segment_names)
+    <class 'list'>
+    >>> type(gfa1_path.overlaps)
+    <class 'list'>
 
 Orientations
 ^^^^^^^^^^^^
@@ -379,10 +386,11 @@ using the ``validate_field(fieldname)`` method for a single field, or
 using ``validate``, which does a full validation on the whole line,
 including all positional fields.
 
-.. code:: python
+.. doctest::
 
-    line.validate_field("xx")
-    line.validate()
+    >>> line = gfapy.Line("H\txx:i:1")
+    >>> line.validate_field("xx")
+    >>> line.validate()
 
 Aliases
 ~~~~~~~
@@ -392,17 +400,25 @@ where the original field name is used (i.e. as parameter of a method,
 and the same setter and getter methods defined for the original field
 name are also defined for each alias, see below).
 
-.. code:: python
+.. doctest::
 
-    gfa1_path.name == gfa1_path.path_name # True
-    edge.eid == edge.name # True
-    segment.sid == segment.name # True
-    containment.from_segment == containment.container # True
-
-    s = gfapy.Line("S\t1\t*")
-    s.sid # => "1"
-    s.name = "a"
-    s.sid # => "a"
+    >>> gfa1_path = gfapy.Line("P\tX\t1-,2+,3+\t*")
+    >>> gfa1_path.name == gfa1_path.path_name
+    True
+    >>> edge = gfapy.Line("E\t*\tA+\tB-\t0\t10\t90\t100$\t*")
+    >>> edge.eid == edge.name
+    True
+    >>> containment = gfapy.Line("C\tA\t+\tB\t-\t10\t*")
+    >>> containment.from_segment == containment.container
+    True
+    >>> segment = gfapy.Line("S\t1\t*")
+    >>> segment.sid == segment.name
+    True
+    >>> segment.sid
+    '1'
+    >>> segment.name = '2'
+    >>> segment.sid
+    '2'
 
 Name
 ^^^^

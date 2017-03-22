@@ -1,3 +1,8 @@
+.. testsetup:: *
+
+    import gfapy
+    gfa = gfapy.Gfa()
+
 .. _references:
 
 References
@@ -25,15 +30,23 @@ objects. The method ``is_connected()`` allows to determine if a line is
 connected to an gfapy instance. The read-only property ``gfa`` contains
 the ``gfapy.Gfa`` instance to which the line is connected.
 
-.. code:: python
+.. doctest::
 
-    link.is_connected() # => False
-    link.gfa            # => None
-    link.from_segment   # => "A"
-    link.connect(gfa)   # or gfa.add_line(link); or gfa.append(link)
-    link.is_connected() # => True
-    link.gfa            # => gfapy.Gfa(...)
-    link.from_segment   # => gfapy.Segment("S\tA\t*", ...)
+    >>> gfa = gfapy.Gfa(version='gfa1')
+    >>> link = gfapy.Line("L\tA\t-\tB\t+\t20M")
+    >>> link.is_connected()
+    False
+    >>> link.gfa is None
+    True
+    >>> type(link.from_segment)
+    <class 'str'>
+    >>> gfa.append(link)
+    >>> link.is_connected()
+    True
+    >>> link.gfa #doctest: +ELLIPSIS
+    <gfapy.gfa.Gfa object at ...>
+    >>> type(link.from_segment)
+    <class 'gfapy.line.segment.gfa1.GFA1'>
 
 References for each record type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -157,32 +170,48 @@ Segment backreference convenience methods
 
 For segments, additional methods are available which combine in
 different way the backreferences information. The
-``dovetails_of_end(end)`` and ``gaps_of_end(end)`` methods take an
-argument "L" or "R" and return the dovetails overlaps (or gaps) of the
-left or, respectively, right end of the segment sequence are returned
-(equivalent to ``dovetails_L``/``dovetails_R`` and
+`dovetails_of_end` and `gaps_of_end` methods take an
+argument ``L`` or ``R`` and return the dovetails overlaps (or gaps) of the
+left or, respectively, right end of the segment sequence
+(equivalent to the segment properties ``dovetails_L``/``dovetails_R`` and
 ``gaps_L``/``gaps_R``).
 
-The segment ``containments`` methods returns both containments where the
+The segment ``containments`` property is a list of both containments where the
 segment is the container or the contained segment. The segment ``edges``
 property is a list of all edges (dovetails, containments and internals)
 with a reference to the segment.
 
 Other methods directly compute list of segments from the edges lists
 mentioned above. The ``neighbours_L``, ``neighbours_R`` properties and
-the
-\`\`neighbours(end)\ ``method computes the set of segment instances which are connected by dovetails to the segment. The segment``\ containers\ ``and``\ contained\`\`\`
+the `neighbours` method compute the set of segment instances which are
+connected by dovetails to the segment.
+The ``containers`` and ``contained``
 properties similarly compute the set of segment instances which,
 respectively, contains the segment, or are contained in the segment.
 
-.. code:: python
+.. doctest::
 
-    s.dovetails_of_end("L") # => [gfapy.line.edge.Link(...), ...]
-    s.dovetails_L == segment.dovetails_of_end("L") # => True
-    s.gaps_of_end("R") # => []
-    s.edges # => [gfapy.line.edge.Link(...), ...]
-    s.neighbours_L # => [gfapy.line.segment.GFA1(...), ...]
-    s.containers # => [gfapy.line.segment.GFA1(...), ...]
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.append('S\tA\t*')
+    >>> s = gfa.segment('A')
+    >>> gfa.append('S\tB\t*')
+    >>> gfa.append('S\tC\t*')
+    >>> gfa.append('L\tA\t-\tB\t+\t*')
+    >>> gfa.append('C\tA\t+\tC\t+\t10\t*')
+    >>> [str(l) for l in s.dovetails_of_end("L")]
+    ['L\tA\t-\tB\t+\t*']
+    >>> s.dovetails_L == s.dovetails_of_end("L")
+    True
+    >>> s.gaps_of_end("R")
+    []
+    >>> [str(e) for e in s.edges]
+    ['L\tA\t-\tB\t+\t*', 'C\tA\t+\tC\t+\t10\t*']
+    >>> [str(n) for n in s.neighbours_L]
+    ['S\tB\t*']
+    >>> s.containers
+    []
+    >>> [str(c) for c in s.contained]
+    ['S\tC\t*']
 
 Multiline group definitions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -191,8 +220,8 @@ The GFA2 specification opens the possibility (experimental) to define
 groups on multiple lines, by using the same ID for each line defining
 the group. This is supported by gfapy.
 
-This means that if multiple ``gfapy.line.group.Ordered`` or
-``gfapy.line.group.Unordered`` instances connected to a Gfa object have
+This means that if multiple `Ordered` or
+`Unordered` instances connected to a Gfa object have
 the same ``gid``, they are merged into a single instance (technically
 the last one getting added to the graph object). The items list are
 merged.
@@ -203,12 +232,15 @@ group all different, or, if the same tag is present on different lines,
 the value and datatype must be the same, in which case the multiple
 definition will be ignored).
 
-.. code:: python
+.. doctest::
 
-    gfa.add_line("U\tu1\ts1 s2 s3")
-    [s.name for s in gfa.sets[-1].items] # => ["s1","s2","s3"]
-    gfa.add_line("U\tu1\t4 5")
-    [s.name for s in gfa.sets[-1].items] # => ["s1","s2","s3","s4","s5"]
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.add_line("U\tu1\ts1 s2 s3")
+    >>> [s.name for s in gfa.sets[-1].items]
+    ['s1', 's2', 's3']
+    >>> gfa.add_line('U\tu1\t4 5')
+    >>> [s.name for s in gfa.sets[-1].items]
+    ['s1', 's2', 's3', '4', '5']
 
 Induced set and captured path
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -238,12 +270,21 @@ The methods ``induced_segments_set()``, ``induced_edges_set()``,
 ``captured_segments()`` and ``captured_edges()`` return, respectively,
 the list of only segments or edges, in ordered or unordered groups.
 
-.. code:: python
+.. doctest::
 
-    gfa.add_line("U\tu1\ts1 s2 s3")
-    u = gfa.sets[-1]
-    u.induced_edges_set # => [gfapy.line.edge.GFA2("E\te1\ts1+\ts2-...", ...)]
-    [l.name for l in u.induced_set ] # => ["s1", "s2", "s3", "e1"]
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.add_line("S\ts1\t100\t*")
+    >>> gfa.add_line("S\ts2\t100\t*")
+    >>> gfa.add_line("S\ts3\t100\t*")
+    >>> gfa.add_line("E\te1\ts1+\ts2-\t0\t10\t90\t100$\t*")
+    >>> gfa.add_line("U\tu1\ts1 s2 s3")
+    >>> u = gfa.sets[-1]
+    >>> [l.name for l in u.induced_edges_set]
+    ['e1']
+    >>> [l.name for l in u.induced_segments_set ]
+    ['s1', 's2', 's3']
+    >>> [l.name for l in u.induced_set ]
+    ['s1', 's2', 's3', 'e1']
 
 Disconnecting a line from a Gfa object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -252,12 +293,21 @@ Lines can be disconnected using the ``rm(line)`` method of the
 ``gfapy.Gfa`` object or the ``disconnect()`` method of the line
 instance.
 
-.. code:: python
+.. doctest::
 
-    line = gfa.segment("sA")
-    gfa.rm(line)
-    # or equivalent:
-    line.disconnect()
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.append('S\tsA\t*')
+    >>> gfa.append('S\tsB\t*')
+    >>> line = gfa.segment("sA")
+    >>> gfa.segment_names
+    ['sB', 'sA']
+    >>> gfa.rm(line)
+    >>> gfa.segment_names
+    ['sB']
+    >>> line = gfa.segment('sB')
+    >>> line.disconnect()
+    >>> gfa.segment_names
+    []
 
 Disconnecting a line affects other lines as well. Lines which are
 dependent on the disconnected line are disconnected as well. Any other
@@ -364,23 +414,30 @@ complete and valid GFA files.
 Virtual lines are similar to normal line instances, with some
 limitations (they contain only limited information and it is not allowed
 to add tags to them). To check if a line is a virtual line, one can use
-the ``is_virtual()`` method of the line.
+the ``virtual`` property of the line.
 
 As soon as the parser founds the real line corresponding to a previously
 introduced virtual line, the virtual line is exchanged with the real
 line and all references are corrected to point to the real line.
 
-.. code:: python
+.. doctest::
 
-    g = gfapy.Gfa()
-    g.add_line("S\t1\t*")
-    g.add_line("L\t\1\t+\t2\t+\t*")
-    l = g.dovetails[-1]
-    g.segment("1").is_virtual() # => False
-    g.segment("2").is_virtual() # => True
-    l.to_segment == g.segment("2") # => True
-    g.segment("2").dovetails = [l] # => True
-    g.add_line("S\t2\t*")
-    g.segment("2").is_virtual() # => False
-    l.to_segment == g.segment("2") # => True
-    g.segment("2").dovetails = [l] # => True
+    >>> g = gfapy.Gfa()
+    >>> g.add_line("S\t1\t*")
+    >>> g.add_line("L\t1\t+\t2\t+\t*")
+    >>> l = g.dovetails[0]
+    >>> g.segment("1").virtual
+    False
+    >>> g.segment("2").virtual
+    True
+    >>> l.to_segment == g.segment("2")
+    True
+    >>> g.segment("2").dovetails == [l]
+    True
+    >>> g.add_line("S\t2\t*")
+    >>> g.segment("2").virtual
+    False
+    >>> l.to_segment == g.segment("2")
+    True
+    >>> g.segment("2").dovetails == [l]
+    True

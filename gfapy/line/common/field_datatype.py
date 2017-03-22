@@ -39,11 +39,6 @@ class FieldDatatype:
     ------
     gfapy.ArgumentError
       If **datatype** is not a valid datatype for tags.
-
-    Returns
-    -------
-    gfapy.Field.FIELD_DATATYPE
-      The datatype.
     """
     if self._is_predefined_tag(fieldname):
       if self.get_datatype(fieldname) != datatype:
@@ -56,7 +51,6 @@ class FieldDatatype:
     if datatype not in gfapy.Field.TAG_DATATYPE:
       raise gfapy.ArgumentError("Unknown datatype: {}".format(datatype))
     self._datatype[fieldname] = datatype
-    return datatype
 
   def _field_datatype(self, fieldname):
     return self._datatype.get(fieldname,
