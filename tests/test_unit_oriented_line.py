@@ -11,12 +11,12 @@ class TestUnitOrientedLine(unittest.TestCase):
     gfapy.OrientedLine("a\ta","+")
     b = gfapy.OrientedLine("a+")
     self.assertEqual(a, b)
-    c = gfapy.OrientedLine.from_list(["a","+"])
+    c = gfapy.OrientedLine(["a","+"])
     self.assertEqual(a, c)
-    self.assertRaises(IndexError, gfapy.OrientedLine.from_list, [])
-    self.assertRaises(IndexError, gfapy.OrientedLine.from_list, ["a"])
+    self.assertRaises(IndexError, gfapy.OrientedLine, [])
+    self.assertRaises(IndexError, gfapy.OrientedLine, ["a"])
     # nothing raised, if too many args are provided (further are ignored)
-    gfapy.OrientedLine.from_list(["a", "+", 1])
+    gfapy.OrientedLine(["a", "+", 1])
 
   def test_properties(self):
     a = gfapy.OrientedLine("a", "+")

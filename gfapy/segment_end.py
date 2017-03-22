@@ -21,11 +21,14 @@ class SegmentEnd:
         self.__segment = args[0][0:-1]
         self.__end_type = args[0][-1]
       elif isinstance(args[0], list):
+        if len(args[0]) != 2:
+          raise gfapy.ArgumentError("Cannot create a SegmentEnd "+
+            " from a list of size {}".format(len(args[0])))
         self.__segment = args[0][0]
         self.__end_type = args[0][1]
       else:
-        raise gfapy.ArgumentError("Cannot create an SegmentEnd"+
-            " instance from an object of type {}".format(type(args[0])))
+        raise gfapy.ArgumentError("Cannot create an SegmentEnd "+
+            " from an object of type {}".format(type(args[0])))
     elif len(args) == 2:
       self.__segment = args[0]
       self.__end_type = args[1]
@@ -150,40 +153,12 @@ class SegmentEnd:
     bool
     """
     if isinstance(other, list):
-      other = SegmentEnd.from_list(other)
+      other = SegmentEnd(other)
     elif isinstance(other, str):
-      other = SegmentEnd.from_string(other)
+      other = SegmentEnd(other)
     elif not isinstance(other, gfapy.SegmentEnd):
       return False
     return (self.name == other.name) and (self.end_type == other.end_type)
 
   def __getattr__(self, name):
     return getattr(self.__segment, name)
-
-  @classmethod
-  def from_string(cls, string):
-    """
-    Create and validate a SegmentEnd from an list
-
-    Returns
-    -------
-    gfapy.SegmentEnd
-    """
-    return SegmentEnd(string[0:-1], string[-1])
-
-  @classmethod
-  def from_list(cls, lst, valid=True):
-    """
-    Create and validate a SegmentEnd from an list
-
-    Returns
-    -------
-    gfapy.SegmentEnd
-    """
-    if len(lst) != 2:
-      raise gfapy.ArgumentError("SegmentEnd.from_list requires a list of"+
-          " two elements as argument, {} found".format(repr(lst)))
-    se = SegmentEnd(lst[0], str(lst[1]))
-    if not valid:
-      se.validate()
-    return se

@@ -122,7 +122,7 @@ class OrientedLine:
     if isinstance(other, OrientedLine):
       pass
     elif isinstance(other, list):
-      other = OrientedLine.from_list(other)
+      other = OrientedLine(other)
     elif isinstance(other, str):
       other = OrientedLine(other)
     else:
@@ -156,11 +156,3 @@ class OrientedLine:
       raise gfapy.FormatError(
       "{} is not a valid GFA identifier\n".format(repr(string))+
       "(it contains spaces or non-printable characters)")
-
-  @staticmethod
-  def from_string(string):
-    return OrientedLine(string[0:-1], string[-1])
-
-  @staticmethod
-  def from_list(lst):
-    return OrientedLine(lst[0], str(lst[1]))

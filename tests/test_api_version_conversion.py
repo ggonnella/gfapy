@@ -199,5 +199,5 @@ class TestApiVersion(unittest.TestCase):
 ####E\ta_to_b\tA+\tB-\t100\t200$\t100\t200$\t100M
 ####E\t*\tA+\tC-\t20\t120\t0\t100$\t100M
 ####O\t1\tA+ a_to_b+ B-'''
-####    self.assertEqual(gfa2_str, gfapy.Gfa.from_string(gfa1_str).to_gfa2_s())
-####    self.assertEqual(gfa1_str, gfapy.Gfa.from_string(gfa2_str).to_gfa1_s())
+####    self.assertEqual(gfa2_str, gfapy.Gfa(gfa1_str).to_gfa2_s())
+####    self.assertEqual(gfa1_str, gfapy.Gfa(gfa2_str).to_gfa1_s())

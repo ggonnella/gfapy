@@ -35,9 +35,8 @@ class FromTo:
 
     .. note:: The result is meaningful only for links and dovetails edges.
     """
-    return gfapy.SegmentEnd.from_list([
-                                  self.from_segment,
-                                  "R" if self.from_orient == "+" else "L"])
+    return gfapy.SegmentEnd(self.from_segment,
+                            "R" if self.from_orient == "+" else "L")
 
   @property
   def to_end(self):
@@ -49,8 +48,8 @@ class FromTo:
 
     .. note:: The result is meaningful only for links and dovetails edges.
     """
-    return gfapy.SegmentEnd.from_list([self.to_segment,
-      "L" if self.to_orient == "+" else "R"])
+    return gfapy.SegmentEnd(self.to_segment,
+                            "L" if self.to_orient == "+" else "R")
 
   @property
   def segment_ends_s(self):

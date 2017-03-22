@@ -157,37 +157,6 @@ class NumericArray(list):
     return "B"
 
   @classmethod
-  def from_list(cls, array, valid = False):
-    """
-    Create a numeric array from an list
-
-    Parameters
-    ----------
-    array : iterable
-    valid : optional bool
-      *(default:* **False** *)*
-      If **False**, validate the range of the numeric values, according
-      to the array subtype.
-      If **True** the string is guaranteed to be valid.
-
-    Raises
-    ------
-    gfapy.ValueError
-      If any value is not compatible with the subtype.
-    gfapy.TypeError
-      If the subtype code is invalid.
-
-    Returns
-    -------
-    gfapy.NumericArray
-      The numeric array.
-    """
-    na = cls(array)
-    if not valid:
-      na.validate()
-    return na
-
-  @classmethod
   def from_string(cls, string, valid = False):
     """
     Create a numeric array from a string

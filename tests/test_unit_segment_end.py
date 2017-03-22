@@ -21,12 +21,12 @@ class TestUnitSegmentEnd(unittest.TestCase):
 
   def test_from_list(self):
     self.assertEqual(TestUnitSegmentEnd.se_s,
-        gfapy.SegmentEnd.from_list(["a", "L"]))
+        gfapy.SegmentEnd(["a", "L"]))
     self.assertEqual(gfapy.SegmentEnd,
-        gfapy.SegmentEnd.from_list(["a", "L"]).__class__)
-    self.assertRaises(gfapy.ArgumentError, gfapy.SegmentEnd.from_list,
+        gfapy.SegmentEnd(["a", "L"]).__class__)
+    self.assertRaises(gfapy.ArgumentError, gfapy.SegmentEnd,
       ["a", "L", "L"])
-    gfapy.SegmentEnd.from_list(["a", "X"]) # no validation
+    gfapy.SegmentEnd(["a", "X"]) # no validation
 
   def test_segment(self):
     self.assertEqual(TestUnitSegmentEnd.sym, TestUnitSegmentEnd.se_s.segment)

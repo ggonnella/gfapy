@@ -21,7 +21,7 @@ def unsafe_encode(obj):
   if isinstance(obj, gfapy.NumericArray):
     return str(obj)
   elif isinstance(obj, list):
-    return str(gfapy.NumericArray.from_list(obj))
+    return str(gfapy.NumericArray(obj))
   elif isinstance(obj, str):
     return obj
   else:
@@ -34,7 +34,7 @@ def encode(obj):
   if isinstance(obj, gfapy.NumericArray):
     return str(obj)
   elif isinstance(obj, list):
-    return str(gfapy.NumericArray.from_list(obj))
+    return str(gfapy.NumericArray(obj))
   elif isinstance(obj, str):
     validate_encoded(obj)
     return obj
