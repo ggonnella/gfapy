@@ -38,7 +38,7 @@ class Init:
     if isinstance(data, str):
       data = data.split("\t")
     if isinstance(data, list) and cls.RECORD_TYPE == None:
-      cls = gfapy.Line.subclass(data, version = version)
+      cls = gfapy.Line._subclass(data, version = version)
     return object.__new__(cls)
 
   def __init__(self, data, vlevel = 1, virtual = False, version = None):
@@ -221,42 +221,22 @@ class Init:
     self._init_field_value(n, t, s, errmsginfo = errmsginfo)
 
   @staticmethod
-  def subclass(data, version = None):
-    """
-    Select a subclass based on the record type.
-
-    Parameters
-    ----------
-    version : gfapy.VERSIONS, optional
-      GFA version, None if unknown.
-
-    Raises
-    ------
-    gfapy.TypeError
-      If the record_type is not valid.
-    gfapy.VersionError
-      If the version is unknown.
-
-    Returns
-    -------
-    Class
-      A subclass of gfapy.Line
-    """
+  def _subclass(data, version = None):
     record_type = data[0]
     if record_type and record_type[0] == "#":
       return gfapy.line.Comment
     elif version == "gfa1":
-      return gfapy.Line.subclass_GFA1(record_type)
+      return gfapy.Line._subclass_GFA1(record_type)
     elif version == "gfa2":
-      return gfapy.Line.subclass_GFA2(record_type)
+      return gfapy.Line._subclass_GFA2(record_type)
     elif version is None:
-      return gfapy.Line.subclass_unknown_version(data)
+      return gfapy.Line._subclass_unknown_version(data)
     else:
       raise gfapy.VersionError(
           "GFA specification version unknown ({})".format(version))
 
   @staticmethod
-  def subclass_GFA1(record_type):
+  def _subclass_GFA1(record_type):
     if record_type is None:
       raise gfapy.VersionError(
           "gfapy uses virtual records of unknown type for GFA2 only")
@@ -274,7 +254,7 @@ class Init:
   EXTENSIONS = {}
 
   @staticmethod
-  def subclass_GFA2(record_type):
+  def _subclass_GFA2(record_type):
     if record_type == "H": return gfapy.line.Header
     elif record_type == "S": return gfapy.line.segment.GFA2
     elif record_type == "#": return gfapy.line.Comment
@@ -288,10 +268,10 @@ class Init:
     else: return gfapy.line.CustomRecord
 
   @staticmethod
-  def subclass_unknown_version(data):
+  def _subclass_unknown_version(data):
     record_type = data[0]
     if record_type == "H": return gfapy.line.Header
-    elif record_type == "S": return gfapy.line.Segment.subclass(data)
+    elif record_type == "S": return gfapy.line.Segment._subclass(data)
     elif record_type == "#": return gfapy.line.Comment
     elif record_type == "L": return gfapy.line.edge.Link
     elif record_type == "C": return gfapy.line.edge.Containment

@@ -8,7 +8,7 @@ class Segment(Line):
   """
 
   @staticmethod
-  def subclass(data):
+  def _subclass(data):
     n_positionals = len(data)-1
     for i in range(len(data)-1, 0, -1):
       if not re.search(r"^..:.:.*$", data[i]):
