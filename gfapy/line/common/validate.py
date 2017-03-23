@@ -21,7 +21,7 @@ class Validate:
     fieldname = self.__class__.FIELD_ALIAS.get(fieldname, fieldname)
     v = self._data[fieldname]
     t = self._field_or_default_datatype(fieldname, v)
-    gfapy.Field.validate_gfa_field(v, t, fieldname)
+    gfapy.Field._validate_gfa_field(v, t, fieldname)
 
   def validate(self):
     """

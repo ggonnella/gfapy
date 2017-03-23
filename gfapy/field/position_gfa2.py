@@ -2,7 +2,7 @@ import gfapy
 import re
 
 def unsafe_decode(string):
-  return gfapy.LastPos.from_string(string)
+  return gfapy.LastPos(string)
 
 def decode(string):
   position = unsafe_decode(string)

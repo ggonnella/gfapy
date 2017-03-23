@@ -71,25 +71,25 @@ class TestUnitLineDynamicFields(unittest.TestCase):
     l = gfapy.line.Header(["H", "xx:i:13", "VN:Z:HI"])
     l.zz="1"
     self.assertEqual("1", l.zz)
-    self.assertEqual("Z", gfapy.Field.get_default_gfa_tag_datatype(l.zz))
+    self.assertEqual("Z", gfapy.Field._get_default_gfa_tag_datatype(l.zz))
     l.zi=1
     self.assertEqual(1, l.zi)
-    self.assertEqual("i", gfapy.Field.get_default_gfa_tag_datatype(l.zi))
+    self.assertEqual("i", gfapy.Field._get_default_gfa_tag_datatype(l.zi))
     l.zf=1.0
     self.assertEqual(1.0, l.zf)
-    self.assertEqual("f", gfapy.Field.get_default_gfa_tag_datatype(l.zf))
+    self.assertEqual("f", gfapy.Field._get_default_gfa_tag_datatype(l.zf))
     l.bf=[1.0, 1.0]
     self.assertEqual([1.0, 1.0], l.bf)
-    self.assertEqual("B", gfapy.Field.get_default_gfa_tag_datatype(l.bf))
+    self.assertEqual("B", gfapy.Field._get_default_gfa_tag_datatype(l.bf))
     l.bi=[1.0, 1.0]
     self.assertEqual([1, 1], l.bi)
-    self.assertEqual("B", gfapy.Field.get_default_gfa_tag_datatype(l.bi))
+    self.assertEqual("B", gfapy.Field._get_default_gfa_tag_datatype(l.bi))
     l.ba=[1.0, 1]
     self.assertEqual([1.0, 1], l.ba)
-    self.assertEqual("J", gfapy.Field.get_default_gfa_tag_datatype(l.ba))
+    self.assertEqual("J", gfapy.Field._get_default_gfa_tag_datatype(l.ba))
     l.bh={"a" : 1.0, "b" : 1}
     self.assertEqual({"a" : 1.0, "b" : 1}, gfapy.Line(str(l)).bh)
-    self.assertEqual("J", gfapy.Field.get_default_gfa_tag_datatype(l.bh))
+    self.assertEqual("J", gfapy.Field._get_default_gfa_tag_datatype(l.bh))
     #Assignement of new attributes possible in python.
     #with self.assertRaises(AttributeError):
     #  l.zzz="1"

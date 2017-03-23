@@ -72,7 +72,7 @@ class FieldArray:
     if not datatype:
       datatype = self._datatype
     for elem in self._data:
-      gfapy.Field.validate_gfa_field(elem, datatype, fieldname)
+      gfapy.Field._validate_gfa_field(elem, datatype, fieldname)
 
   def _default_gfa_tag_datatype(self):
     """
@@ -89,7 +89,7 @@ class FieldArray:
     if datatype is None:
       datatype = self._datatype
     return "\t".join(
-        [ gfapy.Field.to_gfa_field(x, datatype = self._datatype, \
+        [ gfapy.Field._to_gfa_field(x, datatype = self._datatype, \
              fieldname = fieldname) for x in self._data ])
 
   def _to_gfa_tag(self, fieldname, datatype = None):
@@ -97,7 +97,7 @@ class FieldArray:
     if datatype is None:
       datatype = self.datatype
     return "\t".join(
-        [ gfapy.Field.to_gfa_tag(x, fieldname, datatype) \
+        [ gfapy.Field._to_gfa_tag(x, fieldname, datatype) \
             for x in self._data ])
 
   def _vpush(self, value, datatype=None, fieldname=None):
@@ -123,7 +123,7 @@ class FieldArray:
     	The field name to use for error messages.
     """
     if datatype is None:
-      gfapy.Field.validate_gfa_field(value, self.datatype, fieldname)
+      gfapy.Field._validate_gfa_field(value, self.datatype, fieldname)
     elif datatype != self.datatype:
       raise gfapy.InconsistencyError(
         "Datadatatype mismatch error for field {}:\n".format(fieldname)+

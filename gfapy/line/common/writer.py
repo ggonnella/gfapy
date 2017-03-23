@@ -69,11 +69,14 @@ class Writer:
       raise gfapy.NotFoundError("Field {} not found".format(fieldname))
     t = self._field_or_default_datatype(fieldname, v)
     if not isinstance(v, str):
-      v = gfapy.Field.to_gfa_field(v, datatype = t, fieldname = fieldname,
+      v = gfapy.Field._to_gfa_field(v, datatype = t, fieldname = fieldname,
                                   line = self)
     if self.vlevel >= 2:
-      gfapy.Field.validate_gfa_field(v, t, fieldname)
-    return gfapy.Field.to_gfa_tag(v, fieldname, datatype = t, line = self) if tag else v
+      gfapy.Field._validate_gfa_field(v, t, fieldname)
+    if tag:
+      return gfapy.Field._to_gfa_tag(v, fieldname, datatype = t, line = self)
+    else:
+      return v
 
   def __repr__(self):
     try:

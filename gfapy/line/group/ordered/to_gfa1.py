@@ -12,12 +12,12 @@ class ToGFA1:
     a.append(self.name)
     segment_names = []
     for oline in self.captured_segments:
-      gfapy.Field.validate_gfa_field(oline.name, "segment_name_gfa1")
+      gfapy.Field._validate_gfa_field(oline.name, "segment_name_gfa1")
       segment_names.append(str(oline))
     a.append(",".join(segment_names))
     overlaps = []
     for oline in self.captured_edges:
-      gfapy.Field.validate_gfa_field(oline.line.overlap, "alignment_gfa1")
+      gfapy.Field._validate_gfa_field(oline.line.overlap, "alignment_gfa1")
       overlaps.append(str(oline.line.overlap))
     a.append(",".join(overlaps))
     return a

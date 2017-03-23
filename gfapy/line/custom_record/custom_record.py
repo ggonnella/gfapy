@@ -9,7 +9,7 @@ class CustomRecord(Init, Line):
 
   Parsing of custom lines is handled as follows:
   - divide content by tabs
-  - from the back, fields are parsed using parse_gfa_tag;
+  - from the back, fields are parsed as GFA tags (XX:Y:...);
   until an exception is thrown, they are all considered tags
   - from the first exception back to the first field, they are all considered
   positional fields with name field1, field2, etc

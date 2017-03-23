@@ -4,8 +4,8 @@ Decoding of the GFA string representations into python objects
 import gfapy
 import re
 
-
-def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None):
+def _parse_gfa_field(string, datatype, safe = True, fieldname = None,
+                    line = None):
   """
   Parse a GFA string representation and decodes it into a python object
 
@@ -68,10 +68,10 @@ def parse_gfa_field(string, datatype, safe = True, fieldname = None, line = None
           contentmsg +
           (err.message if hasattr(err, "message") else str(err))) from err
 
-def parse_gfa_tag(tag):
+def _parse_gfa_tag(tag):
   """
   Parses a GFA tag in the form **xx:d:content** into its components.
-  The **content** is not decoded (see :func:parse_gfa_field).
+  The **content** is not decoded (see :func:`_parse_gfa_field`).
 
   Parameters
   ----------

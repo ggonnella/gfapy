@@ -180,10 +180,10 @@ class Init:
 
   def _init_field_value(self, n ,t, s, errmsginfo = None):
     if self.vlevel >= 1:
-      s = gfapy.Field.parse_gfa_field(s, t, safe = True, fieldname = n,
+      s = gfapy.Field._parse_gfa_field(s, t, safe = True, fieldname = n,
                             line = errmsginfo)
     elif t not in self.DELAYED_PARSING_DATATYPES:
-      s = gfapy.Field.parse_gfa_field(s, t, safe = (self.vlevel >= 1),
+      s = gfapy.Field._parse_gfa_field(s, t, safe = (self.vlevel >= 1),
             fieldname = n, line = errmsginfo)
     self._data[n] = s
 
@@ -206,7 +206,7 @@ class Init:
 
   def _initialize_tags(self, strings):
     for i in range(len(self.POSFIELDS)+1, len(strings)):
-      self._initialize_tag(*(gfapy.Field.parse_gfa_tag(strings[i])),
+      self._initialize_tag(*(gfapy.Field._parse_gfa_tag(strings[i])),
           errmsginfo = strings)
 
   def _initialize_tag(self, n, t, s, errmsginfo = None):

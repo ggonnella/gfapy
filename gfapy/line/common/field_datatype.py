@@ -61,6 +61,6 @@ class FieldDatatype:
     if t is None:
       if value is None:
         return None
-      t = gfapy.Field.get_default_gfa_tag_datatype(value)
+      t = gfapy.Field._get_default_gfa_tag_datatype(value)
       self._datatype[fieldname] = t
     return t

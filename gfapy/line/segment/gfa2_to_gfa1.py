@@ -24,7 +24,7 @@ class GFA2ToGFA1:
       slen_tag = slen_tag_if_no_sequence
     else:
       slen_tag = slen_tag_if_sequence
-    a.append(gfapy.Field.to_gfa_tag(self.slen, slen_tag, datatype = "i"))
+    a.append(gfapy.Field._to_gfa_tag(self.slen, slen_tag, datatype = "i"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a

@@ -29,51 +29,37 @@ from . import sequence_gfa1                 as field_sequence_gfa1
 from . import sequence_gfa2                 as field_sequence_gfa2
 from . import string                        as field_string
 
-
 class Field:
+  """
+  Support for the decoding, validation and encoding of data in GFA fields.
 
-  # Decoding, validation and encoding of GFA fields.
-  #
-  # For each datatype a module under field/ exists, which defines
-  # the following methods as module functions:
-  #
-  # unsafe_decode => parses an ASSUMED VALID string representation to
-  #                  an appropriate Ruby object
-  #                  - faster or as fast as decode()
-  #                  - if the assumption is not met, sometimes it will
-  #                  raise an exception, sometimes it will return an
-  #                  invalid object
-  #
-  # decode => parses a string representation to an appropriate Ruby object
-  #           - if the string is invalid, an exception is raised
-  #           - the returned object is guaranteed to be valid
-  #
-  # validate_encoded => validates a string representation
-  #                     - raises FormatError if invalid
-  #
-  # validate_decoded => validates a non-string field content
-  #                     - raises exception if its state is invalid
-  #
-  # unsafe_encode => encodes an ASSUMED VALID field to the string representation;
-  #                  - faster or as fast as encode()
-  #                  - if the assumption is not met, sometimes it will
-  #                  raise an exception, sometimes it will return an
-  #                  invalid string representation
-  #
-  # encode => encodes a field to its string representation;
-  #           - raises an exception if the field content is invalid
-  #           - the string representation is guaranteed to be valid;
-  #
-  # Everything in the Field module is API private. The user will not call
-  # these methods directly, and use instead methods of Line.
-  # Also: code in line.rb should not call the functions of the submodules
-  # defined in the field/* files directly, but rather call the functions of
-  # the submodules defined in this file, ie Field Parser,
-  # Field Validator, Field Writer.
-  #
+  Classes are defined (and imported here) for each type of field (positional and
+  tags) defined in the GFA specifications. The field definition classes
+  implement the following methods:
 
-  # Default tags for built-in datatypes.
-  # Custom classes should implement the default_gfa_tag_datatype() function.
+  * ``decode(str)``: decodes the content of a GFA field into a Python object
+      which represents the value; the content of the field is validated and
+      the returned object is guaranteed to be valid
+  * ``unsafe_decode(str)``: an optional method, which decodes the content
+      of the string faster than decode(), but does not perform validations
+  * ``validate_encoded(str)``: validates the content of a GFA field, when this
+      is in its string form; it can be called by the decode() method
+  * ``validate_decoded(obj)``: validates the content of a GFA field, when this
+      is in a non-string form; it can be called by the encode() method
+  * ``encode(obj)``: takes a non-string content of a GFA field and converts it
+      in its string representation according to the GFA specification; the
+      returned string is guaranteed to be valid
+  * ``unsafe_encode(obj)``: an optional method, which encodes the content
+      of a non-string field faster than encode(), but does not perform
+      validations
+
+  Notes:
+    The library user does not call these methods directly, as the interaction
+    is done using the interface of the `~gfapy.line.Line` class.
+    However, an user may define classes for custom datatypes, to be used with
+    custom record types.
+  """
+
   _default_tag_datatypes = [
     (builtins.int , "i"),
     (builtins.float , "f"),
@@ -81,8 +67,12 @@ class Field:
     (builtins.list , "J"),
     (builtins.object , "Z")
   ]
+  """Default tag datatype to be used if the value is of a built-in class.
 
-  # Symbol representing a GFA1-specific datatype for positional fields
+  For non build-in classes, the _default_gfa_tag_datatype() method of the
+  class is called instead.
+  """
+
   GFA1_POSFIELD_DATATYPE = [
                              "alignment_gfa1",
                              "alignment_list_gfa1",
@@ -92,8 +82,8 @@ class Field:
                              "sequence_gfa1",
                              "path_name_gfa1",
                            ]
+  """The names of the GFA1-specific datatypes for positional fields."""
 
-  # Symbol representing a GFA2-specific datatype for positional fields
   GFA2_POSFIELD_DATATYPE = [
                              "alignment_gfa2",
                              "generic",
@@ -107,20 +97,21 @@ class Field:
                              "sequence_gfa2",
                              "optional_integer",
                            ]
+  """The names of the GFA2-specific datatypes for positional fields."""
 
-  # Symbol representing a datatype for positional fields common to GFA1 and GFA2
   GFAX_POSFIELD_DATATYPE = [ "comment", "orientation" ]
+  """The names of the non version-specific datatypes for positional fields."""
 
-  # Symbol representing a datatype for positional fields
   POSFIELD_DATATYPE = GFA1_POSFIELD_DATATYPE + \
                       GFA2_POSFIELD_DATATYPE + \
                       GFAX_POSFIELD_DATATYPE
+  """The names of all datatypes for positional fields."""
 
-  # A symbol representing a datatype for tags
   TAG_DATATYPE = ["A", "i", "f", "Z", "J", "H", "B"]
+  """The names of all datatypes for tags."""
 
-  # A symbol representing a valid datatype
   FIELD_DATATYPE = TAG_DATATYPE + POSFIELD_DATATYPE
+  """The names of all datatypes for positional fields and tags."""
 
   FIELD_MODULE = {
     "alignment_gfa1"                 : field_alignment_gfa1,
@@ -158,9 +149,27 @@ class Field:
     "B"    : field_numeric_array,
     "Z"    : field_string,
   }
+  """Assignment of a class for the parsing, validation and encoding of data.
+
+  The dictionary contains keys for each GFA datatype; the value is a class name,
+  which provides the encoding, decoding and validation methods.
+
+  For simplicity of use, tag datatypes are present twice, once with a
+  one-letter symbol (such as i) and once with a longer labe; (such as integer).
+  """
 
   # Returns the default GFA tag for the given object.
-  def get_default_gfa_tag_datatype(obj):
+  def _get_default_gfa_tag_datatype(obj):
+    """Default GFA tag datatype for a given object
+
+    Parameters:
+      obj : an object of any Python class
+
+    Returns:
+      str : the identifier of a datatype (one of the keys of FIELD_MODULE)
+        to be used for a tag with obj as value, if a datatype has not
+        been specified by the user
+    """
     if getattr(obj, "_default_gfa_tag_datatype",None):
       return obj._default_gfa_tag_datatype()
     else:
@@ -173,21 +182,24 @@ class Field:
           return v
       return "J"
 
-  from .parser import parse_gfa_field
-  from .parser import parse_gfa_tag
-  from .writer import to_gfa_field
-  from .writer import to_gfa_tag
-  from .validator.decoded import validate_decoded_gfa_field
-  from .validator.encoded import validate_encoded_gfa_field
-
-  def validate_gfa_field(obj, datatype, fieldname = None):
-    if isinstance(obj, str):
-      gfapy.Field.validate_encoded_gfa_field(obj, datatype, fieldname)
-    else:
-      gfapy.Field.validate_decoded_gfa_field(obj, datatype, fieldname)
+  from .parser import _parse_gfa_field
+  from .parser import _parse_gfa_tag
+  from .writer import _to_gfa_field
+  from .writer import _to_gfa_tag
+  from .validator import _validate_gfa_field
 
   @classmethod
   def register_datatype(cls, name, klass):
+    """Register a custom-defined datatype class
+
+    Parameters:
+      name (str) : the identifier to be used for the datatype. This is
+        to be used in the field datatype declaration of extensions
+        definining custom records, which use this custom datatype
+      klass (class) : the class which provide the decode, encode,
+        validate_encoded and validate_decoded methods for handling
+        data of the custom datatype
+    """
     cls.GFA2_POSFIELD_DATATYPE.append(name)
     cls.FIELD_MODULE[name] = klass
 
