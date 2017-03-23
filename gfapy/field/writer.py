@@ -18,8 +18,8 @@ def _to_gfa_field(obj, datatype = None, safe = True, fieldname = None,
   obj : object
     the python object to encode
   datatype : str
-    datatype to use (one of gfapy.Field.FIELD_DATATYPE); If none is
-    specified, the datatype is used, which is returned by the
+    datatype to use (one of `~gfapy.field.field.Field.FIELD_DATATYPE`);
+    If none is specified, the datatype is used, which is returned by the
     `gfapy.field.Field._get_default_gfa_tag_datatype` method.
   fieldname : str, optional
   	fieldname, for error messages

@@ -55,7 +55,7 @@ class Field:
 
   Notes:
     The library user does not call these methods directly, as the interaction
-    is done using the interface of the `~gfapy.line.Line` class.
+    is done using the interface of the `~gfapy.line.line.Line` class.
     However, an user may define classes for custom datatypes, to be used with
     custom record types.
   """

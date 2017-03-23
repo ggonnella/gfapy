@@ -16,7 +16,8 @@ similar interface to that for the predefined record types.
 Retrieving, adding and deleting custom records
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Gfa instances have the property :func:`~gfapy.lines.collections.Collections.custom_records`,
+Gfa instances have the property
+:func:`~gfapy.lines.collections.Collections.custom_records`,
 a list of all line instances with a non-standard record type. Among these,
 records of a specific record type are retrieved using the method
 :func:`Gfa.custom_records_of_type(record_type)
@@ -258,7 +259,8 @@ functions:
   form) and returns the string which codes it in the GFA file (also here
   references are validated but not converted into strings)
 
-Finally the datatype is registered calling `register_datatype`. The code for
+Finally the datatype is registered calling
+:func:`~gfapy.field.field.Field.register_datatype`. The code for
 the taxon ID extension is the following:
 
 .. code:: python

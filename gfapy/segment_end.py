@@ -4,10 +4,10 @@ import re
 class SegmentEnd:
   """A segment plus an end type (L or R).
 
-  The ``segment`` can be an instance of a segment subclass of `~gfapy.line.Line`
-  or a string (line identifier). The ``end_type`` symbol is a string, either
-  ``'L'`` or ``'R'``. Methods not defined in this class are delegated to the
-  segment element.
+  The ``segment`` can be an instance of a segment subclass of
+  `~gfapy.line.line.Line` or a string (line identifier). The ``end_type``
+  symbol is a string, either ``'L'`` or ``'R'``. Methods not defined in this
+  class are delegated to the segment element.
 
   Parameters:
     value (str, list, SegmentEnd) : a line identifier with a 1-letter
@@ -57,7 +57,7 @@ class SegmentEnd:
     Raises:
       gfapy.error.ValueError: if the orientation is invalid
       gfapy.error.TypeError: if the segment is not a string or
-        an instance of a segment subclass of `gfapy.line.Line`
+        an instance of a segment subclass of `gfapy.line.line.Line`
       gfapy.error.FormatError: if the segment is a string which is not a valid
         segment identifier, or it is a segment Line instance with an invalid
         name
@@ -131,7 +131,8 @@ class SegmentEnd:
     return "{}{}".format(self.name, self.end_type)
 
   def __repr__(self):
-    return "gfapy.SegmentEnd({},{})".format(repr(self.segment),repr(self.end_type))
+    return "gfapy.SegmentEnd({},{})".format(repr(self.segment),
+                                            repr(self.end_type))
 
   def __eq__(self, other):
     if isinstance(other, list):

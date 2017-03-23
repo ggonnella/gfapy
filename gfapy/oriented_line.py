@@ -4,7 +4,7 @@ import re
 class OrientedLine:
   """A line plus an orientation.
 
-  The line can be an instance of `~gfapy.line.Line` or a string (line
+  The line can be an instance of `~gfapy.line.line.Line` or a string (line
   identifier). The orientation is a string, either ``'+'`` or ``'-'``.
   Methods not defined in this class are delegated to the line element.
 
@@ -53,7 +53,7 @@ class OrientedLine:
     """The line.
 
     Returns:
-      str or `~gfapy.line.Line`
+      str or `~gfapy.line.line.Line`
     """
     return self.__line
 
@@ -100,7 +100,8 @@ class OrientedLine:
 
     Raises:
       gfapy.error.ValueError: if the orientation is invalid
-      gfapy.error.TypeError: if the line is not a string or a `gfapy.line.Line`
+      gfapy.error.TypeError: if the line is not a string or a
+        `gfapy.line.line.Line` instance
       gfapy.error.FormatError: if the line is a string which is not a valid
         line identifier, or it is a Line instance with an invalid name
     """
