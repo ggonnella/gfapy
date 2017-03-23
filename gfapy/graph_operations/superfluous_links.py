@@ -15,7 +15,7 @@ class SuperfluousLinks:
       if oe[:L] == oe[:R]:
         return
       for et in ["L", "R"]:
-        self.delete_other_links(oe[et], se[et],
+        self._delete_other_links(oe[et], se[et],
                                 conserve_components=conserve_components)
     else:
       if l[:L].size == 1:
@@ -25,7 +25,7 @@ class SuperfluousLinks:
       else:
         return
       oe = l[et][0].other_end(se[et])
-      self.delete_other_links(oe, se[et],
+      self._delete_other_links(oe, se[et],
                               conserve_components=conserve_components)
 
   def enforce_all_mandatory_links(self, conserve_components=True):

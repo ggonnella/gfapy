@@ -251,17 +251,15 @@ class Gfa(Lines,GraphOperations):
         raise gfapy.NotFoundError("Segment {} ".format(s.name)+
             "does not exist\nReferences to {} ".format(s.name)+
             "were found in some lines")
-        # TODO: output list of lines where references were found
     return None
 
   def __validate_path_links(self):
-    for pt in self.gfa1_paths:
+    for pt in self._gfa1_paths:
       for ol in pt.links:
         l = ol.line
         if l.virtual:
           raise gfapy.NotFoundError("Link {} ".format(str(l))+
             "does not exist, but is required by some paths")
-          # TODO: output list of lines where references were found
     return None
 
   def _validate_version(self):

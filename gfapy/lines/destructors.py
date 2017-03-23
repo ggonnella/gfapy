@@ -1,10 +1,22 @@
 import gfapy
 
 class Destructors:
+
   def rm(self, gfa_line):
+    """Remove a line from the Gfa instance.
+
+    Parameters:
+      gfa_line (Line, str): if a Line instance, then disconnect is called
+        on it; otherwise, it is assumed to be a line identifier, the
+        corresponding line is searched and then disconnected.
+
+    Raises:
+      gfapy.error.NotFoundError : is the line is specified using an identifier,
+        an no line exists in the Gfa instance, with that identifier
+    """
     self.try_get_line(gfa_line).disconnect()
 
-  def delete_other_links(self, segment_end, other_end,
+  def _delete_other_links(self, segment_end, other_end,
                          conserve_components = False):
     segment_end = gfapy.SegmentEnd(segment_end)
     other_end = gfapy.SegmentEnd(other_end)

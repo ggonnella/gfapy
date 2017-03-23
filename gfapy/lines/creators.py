@@ -1,7 +1,24 @@
 import gfapy
 
 class Creators:
+
   def add_line(self, gfa_line):
+    """Add a line to a GFA instance.
+
+    Note:
+      append() is an alias to this method
+
+    Parameters:
+      gfa_line (str, Line): a line instance or a string, containing a line
+        of a GFA file (if a string, a line instance is constructed using
+        the string)
+
+    Raises:
+      gfapy.error.VersionError : If a wrong line type is used, for the GFA
+        version
+      gfapy.error.FormatError : If the content of the line string is
+        not valid
+    """
     if gfa_line is None:
       return
     if self._version == "gfa1":
@@ -16,6 +33,15 @@ class Creators:
   append = add_line
 
   def process_line_queue(self):
+    """Process the lines kept by side while parsing GFA of unknown version.
+
+    This method is called after adding the lines, if the GFA version is
+    not specified, at soon as the GFA version becomes clear, from the
+    syntax or type of a line.
+
+    Sometimes it is necessary to call this method, when constructing manually
+    Gfa instances, which are not complete.
+    """
     if self._version is None:
       self._version = self._version_guess
     for i in range(0,len(self._line_queue)):

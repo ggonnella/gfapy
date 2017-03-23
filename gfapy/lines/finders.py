@@ -24,7 +24,6 @@ class Finders:
     seg = self.segment(s)
     if seg is None:
       raise gfapy.NotFoundError("No segment has name {}".format(s))
-      # TODO: output segment names list (shortened to 10 elements)
     else:
       return seg
 
