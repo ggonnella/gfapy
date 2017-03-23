@@ -1,7 +1,7 @@
 import gfapy
 import re
 
-class Init:
+class Construction:
 
   RECORD_TYPES = [ "H", "S", "L", "C", "P", "#", "G", "F", "E", "O", "U", None ]
   """List of allowed record_type values"""
@@ -142,9 +142,9 @@ class Init:
     return data
 
   def _compute_version(self, rt):
-    if rt in Init.RECORD_TYPE_VERSIONS["generic"]:
+    if rt in Construction.RECORD_TYPE_VERSIONS["generic"]:
       self._version = "generic"
-    elif rt in Init.RECORD_TYPE_VERSIONS["different"]:
+    elif rt in Construction.RECORD_TYPE_VERSIONS["different"]:
       if hasattr(self.__class__, "VERSION"):
         self._version = self.__class__.VERSION
       else:
@@ -153,7 +153,7 @@ class Init:
             "Records of type {} ".format(rt)+
             "have different syntax according to the version")
     else:
-      for k, v in Init.RECORD_TYPE_VERSIONS["specific"].items():
+      for k, v in Construction.RECORD_TYPE_VERSIONS["specific"].items():
         if rt in v:
           self._version = k
           break
@@ -166,7 +166,7 @@ class Init:
       raise gfapy.VersionError(
             "GFA specification version unknown ({})".format(self._version))
     else:
-      for k, v in Init.RECORD_TYPE_VERSIONS["specific"].items():
+      for k, v in Construction.RECORD_TYPE_VERSIONS["specific"].items():
         if rt in v:
           if self._version != k:
             raise gfapy.VersionError(

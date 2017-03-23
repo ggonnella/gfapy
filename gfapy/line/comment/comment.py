@@ -1,11 +1,11 @@
 import gfapy
 from ..line import Line
-from .init import Init
+from .construction import Construction
 from .tags import Tags
 from .writer import Writer
 from .version_conversion import VersionConversion
 
-class Comment(Writer, Tags, Init, VersionConversion, Line):
+class Comment(Writer, Tags, Construction, VersionConversion, Line):
   """
   A comment line of a GFA file
 

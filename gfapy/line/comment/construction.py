@@ -1,6 +1,6 @@
 import gfapy
 
-class Init:
+class Construction:
   def _initialize_positional_fields(self, strings):
     self._init_field_value("content", "comment", strings[1], errmsginfo = strings)
     sp = strings[2] if len(strings) > 2 else " "

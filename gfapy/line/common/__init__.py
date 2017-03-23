@@ -5,7 +5,7 @@ from .dynamic_fields import DynamicFields
 from .equivalence import Equivalence
 from .field_data import FieldData
 from .field_datatype import FieldDatatype
-from .init import Init
+from .construction import Construction
 from .update_references import UpdateReferences
 from .validate import Validate
 from .version_conversion import VersionConversion

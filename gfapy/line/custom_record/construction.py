@@ -1,6 +1,6 @@
 import gfapy
 
-class Init:
+class Construction:
 
   @property
   def positional_fieldnames(self):

@@ -1,4 +1,4 @@
-from .common.init import Init
+from .common.construction import Construction
 from .common.dynamic_fields import DynamicFields, DynamicField
 from .common.writer import Writer
 from .common.version_conversion import VersionConversion
@@ -24,9 +24,10 @@ except ImportError:
   def partialmethod(method, **kwargs):
     return lambda self: method(self, **kwargs)
 
-class Line(Init, DynamicFields, Writer, VersionConversion, FieldDatatype, FieldData,
-           Equivalence, Cloning, Connection, VirtualToReal, UpdateReferences,
-           Disconnection, Validate, DefaultRecordDefinition):
+class Line(Construction, DynamicFields, Writer, VersionConversion,
+           FieldDatatype, FieldData, Equivalence, Cloning, Connection,
+           VirtualToReal, UpdateReferences, Disconnection, Validate,
+           DefaultRecordDefinition):
   """
   Generic representation of a record of a GFA file.
 
