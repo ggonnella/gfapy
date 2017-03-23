@@ -4,13 +4,9 @@ class Equivalence:
 
   def __hash__(self):
     """
-    Computes an hash for including a link in an Hash tables,
+    Computes an hash for including the link in a dict,
     so that the hash of a link and its complement is the same.
     Thereby, tags are not considered.
-
-    See Also
-    --------
-    __eq__
     """
     hash(str(self.from_end)) + \
     hash(str(to_end)) + \

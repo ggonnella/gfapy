@@ -2,7 +2,7 @@ from ...line import Line
 
 class Edge(Line):
   """
-  An edge line is an E line of a GFA2 file
-  or a L/C line of a GFA1 file
+  Superclass for edge lines, i.e. E lines of GFA2 files
+  and L and C lines of GFA1 files.
   """
   pass

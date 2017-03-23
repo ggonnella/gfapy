@@ -2,15 +2,12 @@ import gfapy
 
 class ToGFA2:
   """
-  Methods for the access of / conversion from a GFA1 link/containment
-  as / to a GFA2 edge.
-
-  Requirements: **from**, **from_orient**, **to**, **to_orient**,
-  **from_coords**, **to_coords**.
+  Access of / conversion from a GFA1 link/containment as / to a GFA2 edge.
   """
 
   @property
   def eid(self):
+    """The content of the id tag, if any; a Placeholder, if none"""
     i = self.get("id")
     if i is None:
       return gfapy.Placeholder()
@@ -23,30 +20,37 @@ class ToGFA2:
 
   @property
   def sid1(self):
+    """The combination of the from_segment and from_orientation fields"""
     return self.oriented_from
 
   @property
   def sid2(self):
+    """The combination of the to_segment and to_orientation fields"""
     return self.oriented_to
 
   @property
   def beg1(self):
+    """The start coordinate of the alignment on the from segment"""
     return self.from_coords[0]
 
   @property
   def end1(self):
+    """The end coordinate of the alignment on the from segment"""
     return self.from_coords[1]
 
   @property
   def beg2(self):
+    """The start coordinate of the alignment on the to segment"""
     return self.to_coords[1]
 
   @property
   def end2(self):
+    """The end coordinate of the alignment on the to segment"""
     return self.to_coords[1]
 
   @property
   def alignment(self):
+    """The content of the overlap field (CIGAR or Placeholder)"""
     return self.overlap
 
   def _to_gfa2_a(self):

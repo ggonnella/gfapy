@@ -1,31 +1,39 @@
 class AlignmentType:
-  """
-  Requirements: **alignment_type**
-  """
 
   def is_internal(self):
+    """Does the edge represent an internal alignment?
+
+    Note:
+      only GFA2 E lines may represent internal alignments
+
+    Returns:
+      bool
     """
-    Returns
-    -------
-    bool
-      Does the line represent an internal
-      overlap (GFA2 edge, not representable in GFA1)?
-    """
-    return self.alignment_type == "I"
+    return self._alignment_type == "I"
 
   def is_containment(self):
+    """Does the edge represent a containment?
+
+    Note:
+      A containment is either a C line (GFA1) or an E line, for which the
+      coordinates of at least one of the two sequences go from 0 to the end of
+      the sequence (GFA2).
+
+    Returns:
+      bool
     """
-    Returns
-    -------
-    bool
-      Does the line represent a containment
-      (GFA1 containment or GFA2 edge equivalent to a GFA1 containment)?
-    """
-    return self.alignment_type == "C"
+    return self._alignment_type == "C"
 
   def is_dovetail(self):
+    """Does the edge represent a dovetail overlap?
+
+    Note:
+      A dovetail is either a L line (GFA1) or an E line (GFA2), for which the
+      coordinates of both sequences go from the beginning of the sequence
+      to some internal position, or from some internal position to the end of
+      the sequence.
+
+    Returns:
+      bool
     """
-    @return [Boolean] does the line represent a dovetail overlap?
-    (GFA1 link or GFA2 edge equivalent to a GFA1 link)?
-    """
-    return self.alignment_type == "L"
+    return self._alignment_type == "L"

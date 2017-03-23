@@ -4,10 +4,27 @@ class Construction:
 
   @property
   def positional_fieldnames(self):
+    """The names of the positional fields.
+
+    The property is implemented differently for CustomRecord
+    instances, as the positional fieldnames are unknown.
+
+    Returns:
+      list of str
+    """
     return self._positional_fieldnames
 
   @property
   def tagnames(self):
+    """The names of the tags defined in the line.
+
+    The property is implemented differently for CustomRecord
+    instances, as tags are identified heuristically (as the number
+    of positional fields is unknown).
+
+    Returns:
+      list of str
+    """
     return[x for x in self._data.keys() \
              if (not x in self.positional_fieldnames) \
                  and (x != "record_type")]

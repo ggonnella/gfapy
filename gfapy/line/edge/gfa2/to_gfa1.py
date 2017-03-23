@@ -5,7 +5,7 @@ class ToGFA1:
   def _to_gfa1_a(self):
     """List of the field content of the line in GFA1.
     """
-    at = self.alignment_type
+    at = self._alignment_type
     if at == "internal":
       raise gfapy.ValueError(
         "Line: {}\n".format(str(self))+
@@ -21,7 +21,7 @@ class ToGFA1:
     a.append(ol1.orient)
     a.append(ol2.name)
     a.append(ol2.orient)
-    if self.alignment_type == "C":
+    if self._alignment_type == "C":
       a.append(str(self.pos))
     a.append(str(self.overlap))
     if not gfapy.is_placeholder(self.eid):
@@ -151,13 +151,13 @@ class ToGFA1:
     Raises:
       gfapy.error.ValueError: If the edge is not a containment.
     """
-    if self.alignment_type == "I":
+    if self._alignment_type == "I":
       raise gfapy.ValueError("Line: {}\n".format(str(self)) +
                              "Internal alignment, pos is not defined")
-    elif self.alignment_type == "L":
+    elif self._alignment_type == "L":
       raise gfapy.ValueError("Line: {}\n".format(str(self)) +
                              "Dovetail alignment, pos is not defined")
-    elif self.alignment_type == "C":
+    elif self._alignment_type == "C":
       if gfapy.isfirstpos(self.beg1):
         return self.beg1 if (gfapy.isfirstpos(self.beg2) and
                              gfapy.islastpos(self.end2)) else self.beg2
@@ -203,5 +203,6 @@ class ToGFA1:
       raise gfapy.ValueError(
         "Line: {}\n".format(str(self))+
         "Internal overlap, 'from' is undefined\n"+
-        "Roles: segment1 is {} ({},{}), segment2 is {} ({},{})".format(sr1, self.beg1, self.end1, sr2, self.beg2, self.end2))
+        "Roles: segment1 is {} ({},{}), segment2 is {} ({},{})".format(sr1,
+          self.beg1, self.end1, sr2, self.beg2, self.end2))
 

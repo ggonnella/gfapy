@@ -13,9 +13,6 @@ except ImportError:
 
 class Construction:
 
-  RECORD_TYPES = [ "H", "S", "L", "C", "P", "#", "G", "F", "E", "O", "U", None ]
-  """List of allowed record_type values"""
-
   DELAYED_PARSING_DATATYPES = [
                                 "alignment_gfa1",
                                 "alignment_gfa2",
@@ -26,8 +23,9 @@ class Construction:
                                 "B",
                               ]
   """
-  List of data types which are parsed only on access;
-  all other are parsed when read.
+  List of datatypes which are parsed only on access.
+
+  All other are parsed when read.
   """
 
   RECORD_TYPE_VERSIONS = {
@@ -38,10 +36,11 @@ class Construction:
       "different" : ["S"]
     }
   """
-  Dependency of record type from version
-  - specific => only for a specific version
-  - generic => same syntax for all versions
-  - different => different syntax in different versions
+  Dependency of record type from version.
+
+  * specific: only for a specific version
+  * generic:  same syntax for all versions
+  * different: different syntax in different versions
   """
 
   def __new__(cls, data, vlevel = 1, virtual = False, version = None):
@@ -52,62 +51,6 @@ class Construction:
     return object.__new__(cls)
 
   def __init__(self, data, vlevel = 1, virtual = False, version = None):
-    """
-    Parameters
-    ----------
-    data : str list
-      The content of the line.
-      If data is a list of strings, this is interpreted as the splitted content
-      of a GFA file line.
-      Note: an hash is also allowed, but this is for internal usage
-            and shall be considered private!
-    vlevel : int
-      See paragraph *Validation*.
-    virtual : bool
-      *(default: ***False***)*
-      Mark the line as virtual, i.e. not yet found in the GFA file;
-      e.g. a link is allowed to refer to a segment which is not
-      yet created; in this case a segment marked as virtual is created,
-      which is replaced by a non-virtual segment, when the segment
-      line is later found
-    version : gfapy.VERSIONS
-      GFA version, None if unknown
-
-    **Constants defined by subclasses**
-
-    Subclasses of gfapy.Line _must_ define the following constants:
-    - RECORD_TYPE [gfapy.Line.RECORD_TYPES]
-    - POSFIELDS [str list] positional fields
-    - FIELD_ALIAS [dict{str -> str}] alternative names for positional
-    fields
-    - PREDEFINED_TAGS [str list] predefined tags
-    - DATATYPE [dict{str -> str}]:
-    datatypes for the positional fields and the tags
-
-    Raises
-    ------
-    gfapy.FormatError
-      If too less positional fields are specified.
-    gfapy.FormatError
-      If a non-predefined tag uses upcase letters.
-    gfapy.NotUniqueError
-      If a tag name is used more than once.
-    gfapy.TypeError
-      If the type of a predefined tag does not
-      respect the specified type.
-
-    Returns
-    -------
-    gfapy.Line
-
-    **Validation levels**
-
-    - 0: no validation (validate manually if needed)
-    - 1: (default) validation when parsing/accessing for the first time a field
-    - 2: validation when parsing/accessing for the first time as well as
-         when converting a field to string
-    - 3: validation on each field access
-    """
     self.vlevel = vlevel
     self._virtual = virtual
     self._datatype = {}
@@ -266,6 +209,7 @@ class Construction:
             record_type))
 
   EXTENSIONS = {}
+  """Extensions (definition of custom record types) registered by the user."""
 
   @staticmethod
   def _subclass_GFA2(record_type):

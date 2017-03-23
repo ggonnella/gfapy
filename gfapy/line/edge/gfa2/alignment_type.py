@@ -3,7 +3,7 @@ import gfapy
 class AlignmentType:
 
   @property
-  def alignment_type(self):
+  def _alignment_type(self):
     """The alignment type (C, L or I).
 
     Returns:
