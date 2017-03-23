@@ -3,6 +3,17 @@ import gfapy
 class Topology:
 
   def is_cut_link(self, link):
+    """Does the removal of a dovetail overlap split a connected component?
+
+    Note:
+      only dovetail overlaps are considered as connections
+
+    Parameters:
+      link (Line) : an edge instance, which represents a dovetail overlap
+
+    Returns:
+       bool
+    """
     if link.is_circular():
       return False
     if not link.get("from").dovetails_of_end(\
@@ -21,6 +32,17 @@ class Topology:
     return c["from"] != c["to"]
 
   def is_cut_segment(self, segment):
+    """Does the removal of a segment split a connected component?
+
+    Note:
+      only dovetail overlaps are considered as connections
+
+    Parameters:
+      segment (str, Line) : a segment name or instance
+
+    Returns:
+       bool
+    """
     if isinstance(segment, str):
       segment = self.try_get_segment(segment)
     if segment._connectivity() in [(0,0),(0,1),(1,0)]:
@@ -39,6 +61,17 @@ class Topology:
     return any(c != cc[0] for c in cc)
 
   def segment_connected_component(self, segment, visited = None):
+    """Compute the connected component to which a segment belong.
+
+    Note:
+      only dovetail overlaps are considered as connections
+
+    Parameters:
+      segment (str, Line) : a segment name or instance
+
+    Returns:
+       list : a list of segment instances
+    """
     if visited is None:
       visited = set()
     if isinstance(segment, gfapy.Line):
@@ -53,6 +86,15 @@ class Topology:
     return c
 
   def connected_components(self):
+    """Compute the connected components of the graph.
+
+    Note:
+      only dovetail overlaps are considered as connections
+
+    Returns:
+       list : a list of lists of segment instances; each sublist is
+         a connected component
+    """
     components = []
     visited = set()
     for sn in self.segment_names:
@@ -61,6 +103,14 @@ class Topology:
     return components
 
   def split_connected_components(self):
+    """Split the connected components of the graph.
+
+    Note:
+      only dovetail overlaps are considered as connections
+
+    Returns:
+      list of Gfa
+    """
     retval = []
     for cc in self.connected_components():
       gfa2 = self.clone
@@ -70,6 +120,13 @@ class Topology:
 
   @property
   def n_dead_ends(self):
+    """Number of dead ends in the graph.
+
+    A dead end is a segment end which has no dovetail overlaps.
+
+    Returns:
+      int
+    """
     n = 0
     for s in self.segments:
       if not s.dovetails_L: n+=1
@@ -78,6 +135,11 @@ class Topology:
 
   @property
   def n_dovetails(self):
+    """Number of dovetail overlaps in the graph.
+
+    Returns:
+      int
+    """
     n = 0
     for s in self.segments:
       n += len(s.dovetails_L)
@@ -86,6 +148,11 @@ class Topology:
 
   @property
   def n_internals(self):
+    """Number of non-dovetail non-containment overlaps in the graph.
+
+    Returns:
+      int
+    """
     n = 0
     for s in self.segments:
       n += len(s.internals)
@@ -93,6 +160,11 @@ class Topology:
 
   @property
   def n_containments(self):
+    """Number of containment overlaps in the graph.
+
+    Returns:
+      int
+    """
     n = 0
     for s in self.segments:
       n += len(s.edges_to_contained)

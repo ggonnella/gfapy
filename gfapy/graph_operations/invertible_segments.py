@@ -1,13 +1,17 @@
 class InvertibleSegments:
 
   def randomly_orient_invertibles(self):
-    ''' Selects a random orientation for all invertible segments'''
+    ''' Selects a random orientation for all invertible segments.
+
+    For the definition of invertible segment, see Gonnella and Kurtz (2016).'''
     for s in segment_names:
       if self._segment_same_links_both_ends(sn):
         self._randomly_orient_proven_invertible_segment(sn)
 
   def randomly_orient_invertible(self, segment):
-    '''Selects a random orientation for an invertible segment'''
+    '''Selects a random orientation for an invertible segment.
+
+    For the definition of invertible segment, see Gonnella and Kurtz (2016).'''
     if isinstance(segment, gfapy.Line):
       segment_name = segment.name
     else:
