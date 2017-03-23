@@ -8,6 +8,16 @@ except ImportError:
 
 class VersionConversion:
 
+  @property
+  def version(self):
+    """
+    Returns
+    -------
+    gfapy.VERSIONS, None
+      GFA specification version
+    """
+    return self._version
+
   def to_version_s(self, version):
     """
     Returns

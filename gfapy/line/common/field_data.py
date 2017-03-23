@@ -23,6 +23,18 @@ class FieldData:
     return [ x for x in self._data.keys() \
         if x not in self.positional_fieldnames ]
 
+  @property
+  def record_type(self):
+    """The record type.
+
+    The content of the first field of the line. In all predefined record types
+    this is a single-letter upper case string.
+
+    Returns:
+      str
+    """
+    return self.__class__.RECORD_TYPE
+
   def set(self, fieldname, value):
     """Set the value of a field.
 
