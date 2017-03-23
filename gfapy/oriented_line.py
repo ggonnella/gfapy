@@ -2,8 +2,23 @@ import gfapy
 import re
 
 class OrientedLine:
-  """
-  A line or line identifier plus an orientation.
+  """A line plus an orientation.
+
+  The line can be an instance of `~gfapy.line.Line` or a string (line
+  identifier). The orientation is a string, either ``'+'`` or ``'-'``.
+  Methods not defined in this class are delegated to the line element.
+
+  Parameters:
+    value (str, list, OrientedLine) : a line identifier with a 1-letter
+      orientation suffix + or -, or a list of two elements (identifier
+      or line instance and orientation string), or an OrientedLine instance
+
+  Returns:
+    OrientedLine: if value is an OrientedLine, then
+      it is returned; if it is a string, then an OrientedLine where line
+      is a string (the string without the last char, which is the orientation);
+      if it is a list, then an OrientedLine where line is the first element,
+      orientation the second
   """
 
   def __new__(cls, *args):
@@ -35,10 +50,20 @@ class OrientedLine:
 
   @property
   def line(self):
+    """The line.
+
+    Returns:
+      str or `~gfapy.line.Line`
+    """
     return self.__line
 
   @property
   def orient(self):
+    """The orientation.
+
+    Returns:
+      str : '+' or '-'
+    """
     return self.__orient
 
   @line.setter
@@ -59,11 +84,11 @@ class OrientedLine:
 
   @property
   def name(self):
-    """
-    Returns
-    -------
-    str
-      the line name
+    """The name of the line.
+
+    Returns:
+      str : if line is a string, then line; if it is a line instance,
+            then line.name
     """
     if isinstance(self.__line, str):
       return self.__line
@@ -71,33 +96,37 @@ class OrientedLine:
       return self.__line.name
 
   def validate(self):
-    """
-    Validates the content of the instance
+    """Validate the content of the instance
+
+    Raises:
+      gfapy.error.ValueError: if the orientation is invalid
+      gfapy.error.TypeError: if the line is not a string or a `gfapy.line.Line`
+      gfapy.error.FormatError: if the line is a string which is not a valid
+        line identifier, or it is a Line instance with an invalid name
     """
     self.__validate_line()
     self.__validate_orient()
     return None
 
   def inverted(self):
-    """
-    Returns:
-      an oriented line with the same line element, but inverted orientation.
+    """An oriented line with the same line element, but inverted orientation.
+
+    Note:
+      the inverted() method returns an OrientedLine with inverted orientation;
+      the invert() method inverts the orientation in place (and returns None)
     """
     return OrientedLine(self.line, gfapy.invert(self.orient))
 
   def invert(self):
-    """
-    Invert in place
+    """Invert the orientation of the OrientedLine instance.
+
+    Note:
+      the inverted() method returns an OrientedLine with inverted orientation;
+      the invert() method inverts the orientation in place (and returns None)
     """
     self.orient = gfapy.invert(self.orient)
 
   def __str__(self):
-    """
-    Returns
-    -------
-    str
-      line name and orientation
-    """
     if self.name:
       return "{}{}".format(self.name, self.orient)
     else:
@@ -107,18 +136,6 @@ class OrientedLine:
     return "gfapy.OrientedLine({},{})".format(repr(self.line),repr(self.orient))
 
   def __eq__(self, other):
-    """
-    Compare the segment names and orientations of two instances
-
-    Parameters
-    ----------
-    other : gfapy.OrientedLine or Array
-      the other instance
-
-    Returns
-    -------
-    bool
-    """
     if isinstance(other, OrientedLine):
       pass
     elif isinstance(other, list):

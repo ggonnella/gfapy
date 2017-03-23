@@ -4,8 +4,20 @@ import time
 
 class Logger:
   """
-  This class allows to output a message to the standard error or a logfile and
-  to keep track of the progress of long running methods.
+  Output messages to the standard error or a logfile and
+  keep track of the progress of long running methods.
+
+  Parameters:
+    verbose_level (int) : 0: no logging; >0: the higher, the more logging
+      (default: 1); messages output using the log() method can be provided
+      with a min_verbose_level, and are output only if that value is equal
+      or higher than verbose_level
+    channel : where to output (default: sys.stderr), it must provide a
+      write() method.
+    prefix (str) : output prefix (default: ```#```)
+
+  Returns:
+    gfapy.Logger
   """
 
   class ProgressData:
@@ -23,22 +35,6 @@ class Logger:
       self._strlen = strlen
 
   def __init__(self, verbose_level = 1, channel = sys.stderr, prefix = "#"):
-    """
-    Create a Logger instance
-
-    Parameters
-    ----------
-    verbose_level : int, optional
-      0: no logging; >0: the higher, the more logging
-    channel : optional
-      where to output (default: sys.stderr)
-    prefix : str, optional
-      output prefix (default: "#")
-
-    Returns
-    -------
-    gfapy.Logger
-    """
     self._progress = False
     if not isinstance(verbose_level, int):
       raise gfapy.ArgumentError("verbose_level must be an Integer")
@@ -50,29 +46,25 @@ class Logger:
     self._data = {}
 
   def log(self, msg, min_verbose_level=1):
-    """
-    Output a message
+    """Output a log message to the logger output channel.
 
-    Parameters
-    ----------
-    msg : String
-      message to output
-    min_verbose_level : Integer
+    Parameters:
+      msg (str) : message to output
+      min_verbose_level (int) : output the message only if the
+        verbose level of the logger is at least the specified one
+        (default: 1)
     """
     if self._verbose_level >= min_verbose_level:
       self._channel.write("{} {}\n".format(self._pfx, msg))
 
   def enable_progress(self, part = 0.1):
-    """
-    Enable output from the Logger instance
+    """Enable output of progress of long running methods.
 
     Parameters
-    ----------
-    part : float
-      if part = 0, output at every call of {gfapy.Logger.progress_log};
-      if 0 < part < 1, output once per part of the total progress
-      (e.g. 0.001 = log every 0.1% progress);
-      if part = 1, output only total elapsed time
+      part (float between 0 and 1) : if part = 0, output at every call of
+         progress_log(); if 0 < part < 1, output once per part of the total
+         progress (e.g. 0.001 = log every 0.1% progress); if part = 1, output
+         only total elapsed time at the end of the computation.
     """
     if part < 0 or part > 1:
       raise gfapy.ArgumentError("part must be in range [0..1]")
@@ -82,27 +74,21 @@ class Logger:
       self._channel.write("{} Progress logging enabled\n".format(self._pfx))
 
   def disable_progress(self):
-    """
-    Disable progress logging
-    """
+    """Disable output of progress of long running methods."""
     self._progress = False
     if self._verbose_level > 0:
       self._channel.write("{} Progress logging disabled\n".format(self._pfx))
 
   def progress_init(self, symbol, units, total, initmsg = None):
-    """
-    Initialize progress logging for a computation
+    """Initialize progress logging for a long running computation.
 
-    Parameters
-    ----------
-    symbol : string
-      a symbol assigned to the computation
-    units : str
-      a string with the name of the units, in plural
-    total : int
-      total number of units
-    initmsg : str
-      an optional message to output at the beginning
+    Parameters:
+      symbol (str) : an identifier assigned to the computation
+      units (str) : the name of the units of computation, in plural, for the
+                    output messages
+      total (int) : the total number of units of the computation
+      initmsg (str) : an optional message to output at the beginning of the
+                      computation
     """
     if not self._progress or total == 0:
       return
@@ -115,19 +101,19 @@ class Logger:
       self._channel.write(string)
 
   def progress_log(self, symbol, progress=1, **keyargs):
-    """
-    Updates progress logging for a computation
+    """Updates progress of a computation.
 
-    Parameters
-    ----------
-    symbol : str
-      the symbol assigned to the computation at
-      init time
-    keyargs : dict
-      additional units to display, with their current
-      value (e.g. segments_processed: 10000)
-    progress : int
-      how many units were processed
+    A logging message is output or not, depending on the part parameter
+    (see the `enable_progress` method).
+
+    Parameters:
+      symbol (str) : the identifier assigned to the computation when
+                    `progress_init` was called
+      progress (int) : how many units of computations were completed
+                       in the last interaction (default: 1)
+      **keyargs (dict) : additional units of computation to display (keys),
+                       together with their current progress value (values);
+                       (e.g. segments_processed: 10000)
     """
     if not self._progress or self._part == 1:
       return
@@ -166,8 +152,16 @@ class Logger:
       self._channel.flush()
 
   def progress_end(self, symbol, **keyargs):
-    """
-    Completes progress logging for a computation
+    """Completes progress logging for a computation.
+
+    A message is always output. The progress is set to 100%.
+
+    Parameters:
+      symbol (str) : the identifier assigned to the computation when
+                    `progress_init` was called
+      **keyargs (dict) : additional units of computation to display (keys),
+                       together with their final value (values);
+                       (e.g. segments_processed: 100000)
     """
     if not self._progress:
       return

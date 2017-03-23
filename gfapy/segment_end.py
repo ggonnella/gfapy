@@ -2,8 +2,24 @@ import gfapy
 import re
 
 class SegmentEnd:
-  """
-  A segment or segment name plus an end symbol (L or R)
+  """A segment plus an end type (L or R).
+
+  The ``segment`` can be an instance of a segment subclass of `~gfapy.line.Line`
+  or a string (line identifier). The ``end_type`` symbol is a string, either
+  ``'L'`` or ``'R'``. Methods not defined in this class are delegated to the
+  segment element.
+
+  Parameters:
+    value (str, list, SegmentEnd) : a line identifier with a 1-letter
+      end symbol L or R, or a list of two elements (identifier
+      or line instance and end symbol), or an SegmentEnd instance
+
+  Returns:
+    SegmentEnd: if value is an SegmentEnd, then
+      it is returned; if it is a string, then an SegmentEnd where line
+      is a string (the string without the last char, which is the end symbol);
+      if it is a list, then an SegmentEnd where line is the first element,
+      end symbol the second
   """
 
   def __new__(cls, *args):
@@ -36,14 +52,15 @@ class SegmentEnd:
       raise gfapy.ArgumentError("Wrong number of arguments for SegmentEnd()")
 
   def validate(self):
-    """
-    Check that the elements of the array are compatible with the definition.
+    """Validate the content of the instance
 
-    Raises
-    ------
-    gfapy.ValueError
-      if second element
-      is not a valid info
+    Raises:
+      gfapy.error.ValueError: if the orientation is invalid
+      gfapy.error.TypeError: if the segment is not a string or
+        an instance of a segment subclass of `gfapy.line.Line`
+      gfapy.error.FormatError: if the segment is a string which is not a valid
+        segment identifier, or it is a segment Line instance with an invalid
+        name
     """
     self.__validate_segment()
     self.__validate_end_type()
@@ -70,32 +87,24 @@ class SegmentEnd:
 
   @property
   def segment(self):
-    """
-    Returns
-    -------
-    gfapy.Symbol or gfapy.line.segment.GFA1 or gfapy.line.segment.GFA2
-      the segment instance or name
+    """The segment.
+
+    Returns:
+      str or `gfapy.line.segment.gfa1.GFA1` or `gfapy.line.segment.gfa2.GFA2`
     """
     return self.__segment
 
   @segment.setter
   def segment(self, value):
-    """
-    Set the segment
-    Parameters
-    ----------
-    value : gfapy.Symbol or gfapy.line.segment.GFA1 or gfapy.line.segment.GFA2
-      the segment instance or name
-    """
     self.__segment=value
 
   @property
   def name(self):
-    """
-    Returns
-    -------
-    str
-      the segment name
+    """The name of the segment.
+
+    Returns:
+      str : if segment is a string, then segment; if it is a segment instance,
+            then segment.name
     """
     if isinstance(self.__segment, gfapy.Line):
       return self.__segment.name
@@ -104,54 +113,27 @@ class SegmentEnd:
 
   @property
   def end_type(self):
-    """
-    Returns
-    -------
-    str
-      the attribute
+    """The end type.
+
+    Returns:
+      str : 'L' or 'R'
     """
     return self.__end_type
 
   @end_type.setter
   def end_type(self, value):
-    """
-    Set the attribute
-
-    Parameters
-    ----------
-    value : Symbol
-      the attribute
-    """
     self.__end_type = value
 
   def inverted(self):
     return SegmentEnd(self.__segment, gfapy.invert(self.end_type))
 
   def __str__(self):
-    """
-    Returns
-    -------
-    str
-      name of the segment and attribute
-    """
     return "{}{}".format(self.name, self.end_type)
 
   def __repr__(self):
     return "gfapy.SegmentEnd({},{})".format(repr(self.segment),repr(self.end_type))
 
   def __eq__(self, other):
-    """
-    Compare the segment names and attributes of two instances
-
-    Parameters
-    ----------
-    other : gfapy.SegmentEnd
-      the other instance
-
-    Returns
-    -------
-    bool
-    """
     if isinstance(other, list):
       other = SegmentEnd(other)
     elif isinstance(other, str):

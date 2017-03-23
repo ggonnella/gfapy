@@ -2,7 +2,7 @@ import gfapy
 
 class NumericArray(list):
   """
-  A numeric array representable using the data type B of the GFA specification
+  A numeric array representable using the data type B of the GFA specification.
   """
 
   SIGNED_INT_SUBTYPE = ["c", "s", "i"]
