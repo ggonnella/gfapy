@@ -15,7 +15,7 @@ class Validation:
           if gfapy.islastpos(pos):
             if pos != seqlen:
               raise gfapy.InconsistencyError(
-                  "Edge: {}\n".format(str(self))+
+                  "Fragment: {}\n".format(str(self))+
                   "Field {}: $ after ".format(str(fn))+
                   "non-last position ({})\n".format(str(pos))+
                   "Segment: {}".format(str(seg)))
