@@ -1,6 +1,9 @@
 import gfapy
 import builtins
 import re
+from .validator import Validator
+from .parser import Parser
+from .writer import Writer
 from . import alignment_gfa1                as field_alignment_gfa1
 from . import alignment_gfa2                as field_alignment_gfa2
 from . import alignment_list_gfa1           as field_alignment_list_gfa1
@@ -29,7 +32,7 @@ from . import sequence_gfa1                 as field_sequence_gfa1
 from . import sequence_gfa2                 as field_sequence_gfa2
 from . import string                        as field_string
 
-class Field:
+class Field(Validator, Parser, Writer):
   """
   Support for the decoding, validation and encoding of data in GFA fields.
 
@@ -159,6 +162,7 @@ class Field:
   """
 
   # Returns the default GFA tag for the given object.
+  @staticmethod
   def _get_default_gfa_tag_datatype(obj):
     """Default GFA tag datatype for a given object
 
@@ -181,12 +185,6 @@ class Field:
         if isinstance(obj, k):
           return v
       return "J"
-
-  from .parser import _parse_gfa_field
-  from .parser import _parse_gfa_tag
-  from .writer import _to_gfa_field
-  from .writer import _to_gfa_tag
-  from .validator import _validate_gfa_field
 
   @classmethod
   def register_datatype(cls, name, klass):
