@@ -61,6 +61,13 @@ class ToGFA2:
     a.append(str(self.sid2))
     a += [ str(x) for x in self.from_coords ]
     a += [ str(x) for x in self.to_coords ]
+    try:
+      self.overlap.validate(version = "gfa2")
+    except:
+      raise gfapy.RuntimeError(
+        "Conversion of edge line from GFA1 to GFA2 failed\n"+
+        "Overlap is invalid or not compatible with GFA2\n"+
+        "Edge line: {}\n".format(str(self)))
     a.append(self.field_to_s("overlap"))
     for fn in self.tagnames:
       if fn != "id":

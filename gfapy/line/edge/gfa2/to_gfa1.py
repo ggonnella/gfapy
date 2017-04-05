@@ -6,10 +6,11 @@ class ToGFA1:
     """List of the field content of the line in GFA1.
     """
     at = self._alignment_type
-    if at == "internal":
-      raise gfapy.ValueError(
-        "Line: {}\n".format(str(self))+
-        "Internal overlap, cannot convert to GFA1")
+    if at == "I":
+      raise gfapy.RuntimeError(
+        "Conversion of edge line from GFA2 to GFA1 failed\n"+
+        "Edge represents an internal overlap:\n"+
+        "Edge line: {}\n".format(str(self)))
     a = [ at ]
     if self._is_sid1_from():
       ol1 = self.get("sid1")
@@ -23,6 +24,13 @@ class ToGFA1:
     a.append(ol2.orient)
     if self._alignment_type == "C":
       a.append(str(self.pos))
+    try:
+      self.overlap.validate(version = "gfa1")
+    except:
+      raise gfapy.RuntimeError(
+        "Conversion of edge line from GFA2 to GFA1 failed\n"+
+        "Overlap is invalid or not compatible with GFA1\n"+
+        "Edge line: {}\n".format(str(self)))
     a.append(str(self.overlap))
     if not gfapy.is_placeholder(self.eid):
       a.append(gfapy.Field._to_gfa_tag(self.eid, "id", datatype = "Z"))
@@ -187,6 +195,9 @@ class ToGFA1:
           return "pfx"
       else:
         return "other"
+
+  def _check_GFA1_overlap_compatibility(self):
+    pass
 
   def _is_sid1_from(self):
     sr1 = self._segment_role(self.beg1, self.end1, self.sid1.orient)

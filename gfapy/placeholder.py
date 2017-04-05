@@ -30,7 +30,7 @@ class Placeholder:
     """
     return True
 
-  def validate(self):
+  def validate(self, *args, **keyargs):
     """
     A placeholder is always valid.
     """

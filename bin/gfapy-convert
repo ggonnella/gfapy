@@ -5,7 +5,7 @@ Convert a GFA file to the other specification version
 
 import sys
 import os
-from gfapy import Gfa
+import gfapy
 import argparse
 
 op = argparse.ArgumentParser(description=__doc__)
@@ -13,8 +13,13 @@ op.add_argument("filename")
 op.add_argument('--version', action='version', version='%(prog)s 1.0')
 opts = op.parse_args()
 
-gfa = Gfa.from_file(opts.filename)
-if gfa.version == "gfa1":
-  print(str(gfa.to_gfa2()))
-else:
-  print(str(gfa.to_gfa1()))
+gfa = gfapy.Gfa.from_file(opts.filename)
+try:
+  if gfa.version == "gfa1":
+    print(str(gfa.to_gfa2()))
+  else:
+    print(str(gfa.to_gfa1()))
+except gfapy.Error as err:
+  sys.stderr.write(str(err))
+  sys.exit(1)
+

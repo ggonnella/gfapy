@@ -26,17 +26,25 @@ class Trace(list):
     """
     return gfapy.AlignmentPlaceholder()
 
-  def validate(self, ts = None):
+  def validate(self, ts = None, version = "gfa2"):
     """Validates the trace alignment
 
     Parameters:
       ts (int): Trace Spacing. If specified, it will be checked that all values
         are < **ts** (default: **None**, no check).
+      version (str) : GFA version (must be 'gfa1' or 'gfa2')
 
     Raises:
       ~gfapy.error.TypeError: If the list contains non-integer values
-      ~gfapy.ValueError: If the list contains values < 0 or > **ts**
+      ~gfapy.error.ValueError: If the list contains values < 0 or > **ts**
+      ~gfapy.error.VersionError: If the version is 'gfa1' or an invalid version
+        string is provided
     """
+    if version != "gfa2":
+      if version == "gfa1":
+        raise gfapy.VersionError("Traces are not compatible with GFA1")
+      else:
+        raise gfapy.VersionError("Version unknown: {}".format(repr(version)))
     for e in self:
       if not isinstance(e, int):
         raise gfapy.TypeError(

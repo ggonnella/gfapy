@@ -31,14 +31,14 @@ class TestApiVersion(unittest.TestCase):
     self.assertEqual("S\tA\t4\tNNNN",str(gfapy.Line("S\tA\t4\tNNNN").to_gfa2()))
     # wrong sequence alphabet for GFA2->GFA1
     self.assertEqual("S\tA\t4\t[[]]",str(gfapy.Line("S\tA\t4\t[[]]").to_gfa2()))
-    self.assertRaises(gfapy.FormatError,gfapy.Line("S\tA\t4\t[[]]").to_gfa1)
+    self.assertRaises(gfapy.RuntimeError,gfapy.Line("S\tA\t4\t[[]]").to_gfa1)
     # wrong identifier for GFA2->GFA1
     self.assertEqual("S\tA+,\t3\tNNN", str(gfapy.Line("S\tA+,\t3\tNNN").to_gfa2()))
-    self.assertRaises(gfapy.FormatError,gfapy.Line("S\tA+,\t3\tNNN").to_gfa1)
+    self.assertRaises(gfapy.RuntimeError,gfapy.Line("S\tA+,\t3\tNNN").to_gfa1)
     # sequence not available but LN for GFA1->GFA2
     self.assertEqual("S\tA\t4\t*",str(gfapy.Line("S\tA\t*\tLN:i:4").to_gfa2()))
     # both sequence and LN not available for GFA1->GFA2
-    self.assertRaises(gfapy.NotFoundError,gfapy.Line("S\tA\t*").to_gfa2)
+    self.assertRaises(gfapy.RuntimeError,gfapy.Line("S\tA\t*").to_gfa2)
 
   def test_link_conversion(self):
     gfa1str = "L\tA\t+\tB\t-\t100M"
@@ -88,7 +88,7 @@ class TestApiVersion(unittest.TestCase):
     internal         = "E\t*\tA+\tB-\t20\t110\t10\t100$\t90M"
     self.assertEqual(dovetail_gfa1,str( gfapy.Line(dovetail).to_gfa1()))
     self.assertEqual(containment_gfa1,str( gfapy.Line(containment).to_gfa1()))
-    self.assertRaises(gfapy.ValueError,gfapy.Line(internal).to_gfa1)
+    self.assertRaises(gfapy.RuntimeError,gfapy.Line(internal).to_gfa1)
 
   def test_L_to_E(self):
     g = gfapy.Gfa(version="gfa1")
