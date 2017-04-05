@@ -16,7 +16,7 @@ def validate_encoded(string):
 
 def validate_decoded(obj):
   if isinstance(obj, gfapy.Line):
-    validate_encoded(obj.id)
+    validate_encoded(obj.name)
   elif isinstance(obj, str):
     validate_encoded(obj)
   else:
@@ -29,7 +29,7 @@ def unsafe_encode(obj):
   if isinstance(obj, str):
     return obj
   if isinstance(obj, gfapy.Line):
-    return str(obj.id)
+    return str(obj.name)
   else:
     raise gfapy.TypeError(
       "the class {} is incompatible with the datatype\n"
