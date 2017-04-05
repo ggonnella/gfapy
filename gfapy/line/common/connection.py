@@ -50,6 +50,18 @@ class Connection:
       self._gfa._register_line(self)
       return None
 
+  @property
+  def all_references(self):
+    """List of lines which contain references to the line instance
+
+    Returns
+    -------
+    list
+    """
+    if not self._refs:
+      self._refs = {}
+    return [x for y in self._refs.values() for x in y]
+
   def _add_reference(self, line, key, append = True):
     if not self._refs:
       self._refs = {}

@@ -11,8 +11,28 @@ class Writer:
     """
     return gfapy.Line.SEPARATOR.join(self.to_list())
 
-  def to_list(self):
+  def to_str(self, add_virtual_commentary=True):
     """
+    Parameters
+    ----------
+    add_virtual_commentary : bool
+      add a 'co' tag to virtual lines (default: True)
+
+    Returns
+    -------
+    str
+      A string representation of self.
+    """
+    return gfapy.Line.SEPARATOR.join(self.to_list(
+      add_virtual_commentary=add_virtual_commentary))
+
+  def to_list(self, add_virtual_commentary=True):
+    """
+    Parameters
+    ----------
+    add_virtual_commentary : bool
+      add a 'co' tag to virtual lines (default: True)
+
     Returns
     -------
     str list
@@ -34,7 +54,7 @@ class Writer:
         fstr = str(self.get(fn))
         errors.append(fn)
       a.append(fstr)
-    if self.virtual:
+    if self.virtual and add_virtual_commentary:
       a.append("co:Z:GFAPY_virtual_line")
     if errors:
       a.append("# INVALID; errors found in fields: "+
@@ -86,6 +106,28 @@ class Writer:
           [ repr(self.get(fn)) for fn in self.positional_fieldnames ] + \
           [ (fn + ":" + self.get_datatype(fn) + ":" + repr(self.get(fn))) for fn in self.tagnames ])
     return "gfapy.Line('{0}',version='{1}',vlevel={2})".format(s,self.version,self.vlevel)
+
+  def refstr(self, maxlen=10):
+    """String containing a list of lines referencing to this line.
+
+    Parameters
+    ----------
+    maxlen : int
+      Shorten lists longer than the specified value (default: 10)
+
+    Returns
+    -------
+    str
+    """
+    andmore = 0
+    references = self.all_references
+    if len(references) > maxlen:
+      andmore = len(references) - 10
+      references = references[:10]
+    lines_list = "\n".join([str(l) for l in references])
+    if andmore > 0:
+      lines_list += "\n... ({} more)".format(andmore)
+    return lines_list
 
   @property
   def _tags(self):

@@ -101,7 +101,7 @@ class Gfa(Lines,GraphOperations):
     """
     self.__validate_segment_references()
     self.__validate_path_links()
-    return None
+    self.__validate_group_references()
 
   def __str__(self):
     return "\n".join([str(line) for line in self.lines])
@@ -250,17 +250,30 @@ class Gfa(Lines,GraphOperations):
       if s.virtual:
         raise gfapy.NotFoundError("Segment {} ".format(s.name)+
             "does not exist\nReferences to {} ".format(s.name)+
-            "were found in some lines")
-    return None
+            "were found in the following lines:\n"+s.refstr())
 
   def __validate_path_links(self):
     for pt in self._gfa1_paths:
       for ol in pt.links:
         l = ol.line
         if l.virtual:
-          raise gfapy.NotFoundError("Link {} ".format(str(l))+
-            "does not exist, but is required by some paths")
-    return None
+          raise gfapy.NotFoundError("A link equivalent to:\n{}\n".format(\
+                  l.to_str(add_virtual_commentary=False))+
+              "does not exist, but is required by the following paths:\n"+
+              l.refstr())
+
+  def __validate_group_references(self):
+    if self.version == "gfa1":
+      return
+    for group in self.sets + self.paths:
+      for item in group.items:
+        if isinstance(item, gfapy.OrientedLine):
+          item = item.line
+        if item.virtual:
+          raise gfapy.NotFoundError("A line with identifier {}\n".format(\
+                  item.name)+
+              "does not exist, but is required by the following groups:\n"+
+              item.refstr())
 
   def _validate_version(self):
     if (self._version != None) and (self._version not in gfapy.VERSIONS):
