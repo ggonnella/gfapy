@@ -35,6 +35,9 @@ tests:
 cleanup:
 	rm -rf dist/ build/ gfapy.egg-info/
 
-upload:
-	twine register dist/*
-	for file in dist/*; do twine upload $$file; done
+upload: tests cleanup sdist wheel
+	cd dist; \
+  	for file in *; do \
+	   	twine register $$file; \
+		  twine upload $$file; \
+		done
