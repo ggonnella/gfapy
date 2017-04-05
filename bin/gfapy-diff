@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 Compare two GFA files
+
+Note: the current version is not yet functional and only checking segments.
+Work in progress.
 """
 
 import sys
@@ -9,6 +12,7 @@ import gfapy
 import argparse
 
 op = argparse.ArgumentParser(description=__doc__)
+op.add_argument('--version', action='version', version='%(prog)s 0.1')
 op.add_argument("filename1")
 op.add_argument("filename2")
 opts = op.parse_args()

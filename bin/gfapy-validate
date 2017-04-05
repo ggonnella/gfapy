@@ -10,6 +10,7 @@ import argparse
 
 op = argparse.ArgumentParser(description=__doc__)
 op.add_argument("filename")
+op.add_argument('--version', action='version', version='%(prog)s 1.0')
 opts = op.parse_args()
 
 gfa = Gfa.from_file(opts.filename)
