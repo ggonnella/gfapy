@@ -4,6 +4,10 @@ def readme():
   with open('README.rst') as f:
     return f.read()
 
+import sys
+if not sys.version_info[0] == 3:
+  sys.exit("Sorry, only Python 3 is supported")
+
 setup(name='gfapy',
       version='1.0.0rc5',
       description='Library for handling data in the GFA1 and GFA2 formats',
