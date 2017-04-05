@@ -1,7 +1,8 @@
 from .references import References
+from .validation import Validation
 from ..line import Line
 
-class Fragment(References, Line):
+class Fragment(References, Validation, Line):
   """
   A fragment line of a GFA2 file
   """

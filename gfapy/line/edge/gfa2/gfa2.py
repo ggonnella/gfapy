@@ -4,10 +4,11 @@ from ..gfa2.to_gfa1 import ToGFA1
 from ..gfa2.alignment_type import AlignmentType as GFA2_AlignmentType
 from ..gfa2.references import References
 from ..gfa2.other import Other
+from ..gfa2.validation import Validation
 from ..edge import Edge
 
 class GFA2(Other, References, GFA2_AlignmentType, AlignmentType, FromTo,
-           ToGFA1, Edge):
+           ToGFA1, Validation, Edge):
   """An edge line of a GFA2 file."""
 
   RECORD_TYPE = "E"

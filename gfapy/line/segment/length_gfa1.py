@@ -51,6 +51,7 @@ class LengthGFA1:
     if not gfapy.is_placeholder(self.sequence) and "LN" in self.tagnames:
       if self.LN != len(self.sequence):
         raise gfapy.InconsistencyError(
+          "Segment: {}\n".format(str(self))+
           "Length in LN tag ({}) ".format(self.LN)+
           "is different from length of sequence field ({})"
           .format(len(self.sequence)))

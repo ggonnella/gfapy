@@ -101,7 +101,8 @@ class Gfa(Lines,GraphOperations):
     """
     self.__validate_segment_references()
     self.__validate_path_links()
-    self.__validate_group_references()
+    self.__validate_group_items()
+    self.__validate_gfa2_positions()
 
   def __str__(self):
     return "\n".join([str(line) for line in self.lines])
@@ -262,7 +263,7 @@ class Gfa(Lines,GraphOperations):
               "does not exist, but is required by the following paths:\n"+
               l.refstr())
 
-  def __validate_group_references(self):
+  def __validate_group_items(self):
     if self.version == "gfa1":
       return
     for group in self.sets + self.paths:
@@ -274,6 +275,12 @@ class Gfa(Lines,GraphOperations):
                   item.name)+
               "does not exist, but is required by the following groups:\n"+
               item.refstr())
+
+  def __validate_gfa2_positions(self):
+    if self.version == "gfa1":
+      return
+    for line in self.edges + self.fragments:
+      line.validate_positions()
 
   def _validate_version(self):
     if (self._version != None) and (self._version not in gfapy.VERSIONS):
