@@ -101,13 +101,13 @@ class Creators:
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
       self._version = gfa_line.version
-      self._version_explatation = \
+      self._version_explanation = \
           "implied by: syntax of S {} line".format(gfa_line.name)
       self.process_line_queue()
       gfa_line.connect(self)
     elif rt in ["E", "F", "G", "U", "O"]:
       self._version = "gfa2"
-      self._version_explatation = "implied by: presence of a {} line".format(rt)
+      self._version_explanation = "implied by: presence of a {} line".format(rt)
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
             version=self._version)
