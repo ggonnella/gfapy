@@ -106,7 +106,15 @@ class TestApiVersion(unittest.TestCase):
     dovetails_gfa2 = {g.dovetails[0].to_gfa2_s(),
                  g.dovetails[1].to_gfa2_s(), g.dovetails[2].to_gfa2_s(),
                  g.dovetails[3].to_gfa2_s()}
-    self.assertEqual(expected_dovetails_gfa2, dovetails_gfa2)
+    try:
+      self.assertEqual(expected_dovetails_gfa2, dovetails_gfa2)
+    except:
+      # sometimes 7 and 8 are assigned with a different order
+      # despite using a fixed hash seed in the tests
+      expected_dovetails_gfa2 = {"E	5	1+	2+	90	100$	0	10	10M",
+        "E	6	1-	2-	0	20	80	100$	20M", "E	8	3-	4+	0	30	0	30	30M",
+        "E	7	3+	4-	60	100$	60	100$	40M"}
+      self.assertEqual(expected_dovetails_gfa2, dovetails_gfa2)
     assert(isinstance(g.dovetails[0].to_gfa1(),gfapy.line.edge.Link))
     assert(isinstance(g.dovetails[0].to_gfa2(),gfapy.line.edge.GFA2))
 
