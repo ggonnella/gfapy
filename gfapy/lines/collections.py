@@ -201,9 +201,17 @@ class Collections:
 
   @property
   def edge_names(self):
-    """List of the names of the edge (E) lines. The list is empty in GFA1.
+    """List of the names of the edge (E, L, C) lines.
+
+    For the L and C lines, the content of the custom tag id
+    is taken as name.
     """
-    return self._gfa2_edge_names
+    if self._version == "gfa1":
+      return self._link_names + self._containment_names
+    elif self._version == "gfa2":
+      return self._gfa2_edge_names
+    else:
+      return self._gfa2_edge_names + self._link_names + self._containment_names
 
   @property
   def path_names(self):
@@ -215,12 +223,30 @@ class Collections:
   def names(self):
     """All identifiers in the GFA identifiers namespace.
 
-    External sequence identifiers in F records are not included."""
+    Notes:
+      GFA1: in Gfapy the P and S namespaces are joined (i.e. paths with
+      the same name as segments are not accepted). Furthermore, to simplify
+      the conversion to/from GFA2, the id tag is used in L and C lines,
+      and their content is also included in the same namespace as the S/P
+      identifiers. GFA2: the namespace for identifiers is described in
+      the specification and includes all the S, E, G, U and O lines; the
+      external sequence identifiers in F lines are not included.
+    """
     return self.segment_names + \
       self.edge_names + \
       self.gap_names + \
       self.path_names + \
       self.set_names
+
+  def unused_name(self):
+    """Compute a GFA identifier not yet in use in the Gfa object."""
+    names = self.names
+    name = str(self._unused_name_cache)
+    while name in names:
+      self._unused_name_cache += 1
+      name = str(self._unused_name_cache)
+    self._unused_name_cache += 1
+    return name
 
   @property
   def external_names(self):
@@ -232,6 +258,16 @@ class Collections:
   @property
   def _gfa2_edge_names(self):
     d = self._records["E"]
+    return list([k for k in d.keys() if isinstance(k, str)])
+
+  @property
+  def _link_names(self):
+    d = self._records["L"]
+    return list([k for k in d.keys() if isinstance(k, str)])
+
+  @property
+  def _containment_names(self):
+    d = self._records["C"]
     return list([k for k in d.keys() if isinstance(k, str)])
 
   @property

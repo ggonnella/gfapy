@@ -43,7 +43,7 @@ class TestApiVersion(unittest.TestCase):
   def test_link_conversion(self):
     gfa1str = "L\tA\t+\tB\t-\t100M"
     gfa1str_noov = "L\tA\t+\tB\t+\t*"
-    gfa2str = "E\t*\tA+\tB-\t100\t200$\t100\t200$\t100M"
+    gfa2str = "E\t1\tA+\tB-\t100\t200$\t100\t200$\t100M"
     # not connected
     self.assertRaises(gfapy.RuntimeError,gfapy.Line(gfa1str).to_gfa2)
     # connected
@@ -55,7 +55,7 @@ class TestApiVersion(unittest.TestCase):
     gfa1line_noov = gfapy.Line(gfa1str_noov)
     g.add_line(gfa1line_noov)
     self.assertEqual(gfa2str,str(gfa1line.to_gfa2()))
-    self.assertEqual(gfa1str,str(gfa1line.to_gfa1()))
+    self.assertEqual(gfa1str+"\tid:Z:1",str(gfa1line.to_gfa1()))
     # placeholder overlap
     self.assertRaises(gfapy.ValueError,gfa1line_noov.to_gfa2)
     # TODO check if the alignment is compatible with the segment length
@@ -63,7 +63,7 @@ class TestApiVersion(unittest.TestCase):
   def test_containment_conversion(self):
     gfa1str = "C\tA\t+\tB\t-\t20\t100M"
     gfa1str_noov = "C\tA\t+\tB\t+\t20\t*"
-    gfa2str = "E\t*\tA+\tB-\t20\t120\t0\t100$\t100M"
+    gfa2str = "E\t1\tA+\tB-\t20\t120\t0\t100$\t100M"
     # not connected
     self.assertRaises(gfapy.RuntimeError,gfapy.Line(gfa1str).to_gfa2)
     # connected
@@ -74,8 +74,8 @@ class TestApiVersion(unittest.TestCase):
     g.add_line(gfa1line)
     gfa1line_noov = gfapy.Line(gfa1str_noov)
     g.add_line(gfa1line_noov)
-    self.assertEqual(gfa2str,str( gfa1line.to_gfa2()))
-    self.assertEqual(gfa1str,str( gfa1line.to_gfa1()))
+    self.assertEqual(gfa2str,str(gfa1line.to_gfa2()))
+    self.assertEqual(gfa1str+"\tid:Z:1",str(gfa1line.to_gfa1()))
     # placeholder overlap
     self.assertRaises(gfapy.ValueError,gfa1line_noov.to_gfa2)
     # TODO check if the alignment is compatible with the segment length
@@ -100,9 +100,9 @@ class TestApiVersion(unittest.TestCase):
     g.add_line("L\t1\t-\t2\t-\t20M")
     g.add_line("L\t3\t-\t4\t+\t30M")
     g.add_line("L\t3\t+\t4\t-\t40M")
-    expected_dovetails_gfa2 = {"E	*	1+	2+	90	100$	0	10	10M",
-      "E	*	1-	2-	0	20	80	100$	20M", "E	*	3-	4+	0	30	0	30	30M",
-      "E	*	3+	4-	60	100$	60	100$	40M"}
+    expected_dovetails_gfa2 = {"E	5	1+	2+	90	100$	0	10	10M",
+      "E	6	1-	2-	0	20	80	100$	20M", "E	7	3-	4+	0	30	0	30	30M",
+      "E	8	3+	4-	60	100$	60	100$	40M"}
     dovetails_gfa2 = {g.dovetails[0].to_gfa2_s(),
                  g.dovetails[1].to_gfa2_s(), g.dovetails[2].to_gfa2_s(),
                  g.dovetails[3].to_gfa2_s()}

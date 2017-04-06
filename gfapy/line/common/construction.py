@@ -256,7 +256,10 @@ class Construction:
   def _define_field_accessors(cls):
     if not cls.PREDEFINED_TAGS:
       cls.PREDEFINED_TAGS = list(set(cls.DATATYPE.keys()) - set(cls.POSFIELDS))
-    for fieldname in cls.POSFIELDS + cls.PREDEFINED_TAGS:
+    fieldnames = cls.POSFIELDS + cls.PREDEFINED_TAGS
+    if cls.NAME_FIELD and cls.NAME_FIELD not in fieldnames:
+      fieldnames.append(cls.NAME_FIELD)
+    for fieldname in fieldnames:
       def get_method(self, fieldname):
         return self.get(fieldname)
       def set_method(self, value, fieldname):

@@ -41,6 +41,7 @@ class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
     "FC" : "i",
     "KC" : "i",
   }
+  NAME_FIELD = "id"
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
   BACKREFERENCE_RELATED_FIELDS = ["to_orient", "from_orient", "overlap"]
   DEPENDENT_LINES = ["paths"]

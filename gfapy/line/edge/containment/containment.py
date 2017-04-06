@@ -36,6 +36,7 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other,
                  "container_orient" : "from_orient",
                  "contained_orient" : "to_orient"}
   PREDEFINED_TAGS = ["MQ", "NM"]
+  NAME_FIELD = "id"
   DATATYPE = {
      "from_segment" : "segment_name_gfa1",
      "from_orient" : "orientation",

@@ -7,13 +7,10 @@ class ToGFA2:
 
   @property
   def eid(self):
-    """The content of the id tag, if any; a Placeholder, if none"""
+    """The content of the id tag, if any, otherwise assign an unused id"""
     i = self.get("id")
     if i is None:
       return gfapy.Placeholder()
-      #i = "{}{} {}{} {}".format(self.from_name(), self.from_orient(),
-      #                          self.to_name(), self.to_orient(),
-      #                          self.overlap())
     return i
 
   name = eid
@@ -55,8 +52,12 @@ class ToGFA2:
 
   def _to_gfa2_a(self):
     a = ["E"]
-    i = self.get("id")
-    a.append(str(i) if i else "*")
+    if not self.get("id") and self.is_connected():
+      self.set("id", self._gfa.unused_name())
+    if self.get("id"):
+      a.append(str(self.get("id")))
+    else:
+      a.append("*")
     a.append(str(self.sid1))
     a.append(str(self.sid2))
     a += [ str(x) for x in self.from_coords ]

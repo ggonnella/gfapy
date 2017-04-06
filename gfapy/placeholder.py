@@ -93,6 +93,8 @@ class Placeholder:
 def is_placeholder(object):
   if object is Placeholder:
     return True
+  elif object is None:
+    return True
   elif object == "*":
     return True
   elif isinstance(object, list) and len(object) == 0:

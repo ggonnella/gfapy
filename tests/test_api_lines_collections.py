@@ -10,7 +10,7 @@ class TestAPILinesCollections(unittest.TestCase):
     self.assertRegex(gfa.comments[0].content, r'collections')
     # containments
     self.assertEqual(2, len(gfa.containments))
-    self.assertEqual(["2_to_6", "1_to_5"], [x.name for x in gfa.containments])
+    self.assertEqual({"2_to_6", "1_to_5"}, {x.name for x in gfa.containments})
     # dovetails
     self.assertEqual(4, len(gfa.dovetails))
     self.assertEqual(set(["1_to_2", "1_to_3", "11_to_12", "11_to_13"]),
@@ -31,8 +31,8 @@ class TestAPILinesCollections(unittest.TestCase):
     # path_names
     self.assertSetEqual(set(["14", "15"]), set(gfa.path_names))
     # names
-    self.assertSetEqual(set(gfa.segment_names + gfa.path_names),
-                 set(gfa.names))
+    self.assertSetEqual(set(gfa.segment_names + gfa.path_names +
+                        gfa.edge_names), set(gfa.names))
     # lines
     self.assertEqual(set([str(x) for x in gfa.comments + gfa.headers + gfa.segments + gfa.edges +
                  gfa.paths]), set([str(x) for x in gfa.lines]))
