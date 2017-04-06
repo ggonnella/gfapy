@@ -49,8 +49,8 @@ overwritten).
 .. doctest::
 
     >>> g1 = gfapy.Gfa()
-    >>> g1.append("H\tVN:Z:1.0") #doctest: +ELLIPSIS
-    >>> g1.append("S\ta\t*") #doctest: +ELLIPSIS
+    >>> g1.append("H\tVN:Z:1.0")
+    >>> g1.append("S\ta\t*")
     >>> g1.to_file("my.gfa") #doctest: +SKIP
     >>> g2 = gfapy.Gfa.from_file("my.gfa") #doctest: +SKIP
     >>> str(g1)
@@ -92,7 +92,7 @@ segment followed by a GFA2 segment).
     ...
     >>> g = gfapy.Gfa()
     >>> g.version
-    >>> g.add_line("S\t1\t*") # doctest: +ELLIPSIS
+    >>> g.add_line("S\t1\t*")
     >>> g.version
     'gfa1'
     >>> g.add_line("S\t1\t100\t*")
@@ -207,11 +207,12 @@ type can be retrieved by identifier, using the method
    >>> str(gfa1.line('1'))
    'S\t1\t*'
 
-The list of all identifier can be retrieved using the
-:attr:`~gfapy.lines.collections.Collections.names`
-property; for the identifiers of a single line type, a property is
-available, named after the record type in singular, with a ``_names``
-suffix:
+The GFA2 specification prescribes the exact namespace for the identifier
+(segments, paths, sets, edges and gaps identifier share the same namespace).
+The content of this namespace can be retrieved using the
+:attr:`~gfapy.lines.collections.Collections.names` property.
+The identifiers of single line types
+can be retrieved using the properties
 :attr:`~gfapy.lines.collections.Collections.segment_names`,
 :attr:`~gfapy.lines.collections.Collections.edge_names`,
 :attr:`~gfapy.lines.collections.Collections.gap_names`,
@@ -221,15 +222,58 @@ suffix:
 .. doctest::
 
    >>> g = gfapy.Gfa()
-   >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
+   >>> g.add_line("S\tA\t100\t*")
+   >>> g.add_line("S\tB\t100\t*")
+   >>> g.add_line("S\tC\t100\t*")
+   >>> g.add_line("E\tb_c\tB+\tC+\t0\t10\t90\t100$\t*")
+   >>> g.add_line("O\tp1\tB+ C+")
+   >>> g.add_line("U\ts1\tA b_c g")
+   >>> g.add_line("G\tg\tA+\tB-\t1000\t*")
    >>> g.names
-   ['A']
+   ['B', 'C', 'A', 'b_c', 'g', 'p1', 's1']
    >>> g.segment_names
-   ['A']
+   ['B', 'C', 'A']
    >>> g.path_names
-   []
+   ['p1']
    >>> g.edge_names
-   []
+   ['b_c']
+   >>> g.gap_names
+   ['g']
+   >>> g.set_names
+   ['s1']
+
+The GFA1 specification does not handle the question of the namespace of
+identifiers explicitely. However, gfapy assumes and enforces
+a single namespace for segment, path names and the values of the id custom tags
+of L and C lines. The content of this namespace can be found using
+:attr:`~gfapy.lines.collections.Collections.names` property.
+The identifiers of single line types
+can be retrieved using the properties
+:attr:`~gfapy.lines.collections.Collections.segment_names`,
+:attr:`~gfapy.lines.collections.Collections.edge_names`
+(id tags of of links and containments) and
+:attr:`~gfapy.lines.collections.Collections.path_names`.
+For GFA1, the properties
+:attr:`~gfapy.lines.collections.Collections.gap_names`,
+:attr:`~gfapy.lines.collections.Collections.set_names`
+contain always empty lists.
+
+.. doctest::
+
+   >>> g = gfapy.Gfa()
+   >>> g.add_line("S\tA\t*")
+   >>> g.add_line("S\tB\t*")
+   >>> g.add_line("S\tC\t*")
+   >>> g.add_line("L\tB\t+\tC\t+\t*\tid:Z:b_c")
+   >>> g.add_line("P\tp1\tB+,C+\t*")
+   >>> g.names
+   ['B', 'C', 'A', 'b_c', 'p1']
+   >>> g.segment_names
+   ['B', 'C', 'A']
+   >>> g.path_names
+   ['p1']
+   >>> g.edge_names
+   ['b_c']
    >>> g.gap_names
    []
    >>> g.set_names
@@ -247,12 +291,23 @@ property.
 
 .. doctest::
 
+   >>> g = gfapy.Gfa()
+   >>> g.add_line("S\tA\t100\t*")
+   >>> g.add_line("F\tA\tread1+\t10\t30\t0\t20$\t20M")
    >>> g.external_names
-   []
+   ['read1']
 
 The method
 :func:`Gfa.fragments_for_external(external_ID) <gfapy.lines.finders.Finders.fragments_for_external>`
 retrieves all F lines with a specified external sequence identifier.
+
+.. doctest::
+
+   >>> f = g.fragments_for_external('read1')
+   >>> len(f)
+   1
+   >>> str(f[0])
+   'F\tA\tread1+\t10\t30\t0\t20$\t20M'
 
 Adding new lines
 ~~~~~~~~~~~~~~~~
