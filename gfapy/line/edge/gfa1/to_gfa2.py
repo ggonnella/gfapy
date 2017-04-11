@@ -7,8 +7,8 @@ class ToGFA2:
 
   @property
   def eid(self):
-    """The content of the id tag, if any, otherwise assign an unused id"""
-    i = self.get("id")
+    """The content of the ID tag"""
+    i = self.get("ID")
     if i is None:
       return gfapy.Placeholder()
     return i
@@ -52,10 +52,10 @@ class ToGFA2:
 
   def _to_gfa2_a(self):
     a = ["E"]
-    if not self.get("id") and self.is_connected():
-      self.set("id", self._gfa.unused_name())
-    if self.get("id"):
-      a.append(str(self.get("id")))
+    if not self.get("ID") and self.is_connected():
+      self.set("ID", self._gfa.unused_name())
+    if self.get("ID"):
+      a.append(str(self.get("ID")))
     else:
       a.append("*")
     a.append(str(self.sid1))
@@ -71,7 +71,7 @@ class ToGFA2:
         "Edge line: {}\n".format(str(self)))
     a.append(self.field_to_s("overlap"))
     for fn in self.tagnames:
-      if fn != "id":
+      if fn != "ID":
         a.append(self.field_to_s(fn, tag = True))
     return a
 

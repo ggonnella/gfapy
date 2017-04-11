@@ -55,7 +55,7 @@ class TestApiVersion(unittest.TestCase):
     gfa1line_noov = gfapy.Line(gfa1str_noov)
     g.add_line(gfa1line_noov)
     self.assertEqual(gfa2str,str(gfa1line.to_gfa2()))
-    self.assertEqual(gfa1str+"\tid:Z:1",str(gfa1line.to_gfa1()))
+    self.assertEqual(gfa1str+"\tID:Z:1",str(gfa1line.to_gfa1()))
     # placeholder overlap
     self.assertRaises(gfapy.ValueError,gfa1line_noov.to_gfa2)
     # TODO check if the alignment is compatible with the segment length
@@ -75,7 +75,7 @@ class TestApiVersion(unittest.TestCase):
     gfa1line_noov = gfapy.Line(gfa1str_noov)
     g.add_line(gfa1line_noov)
     self.assertEqual(gfa2str,str(gfa1line.to_gfa2()))
-    self.assertEqual(gfa1str+"\tid:Z:1",str(gfa1line.to_gfa1()))
+    self.assertEqual(gfa1str+"\tID:Z:1",str(gfa1line.to_gfa1()))
     # placeholder overlap
     self.assertRaises(gfapy.ValueError,gfa1line_noov.to_gfa2)
     # TODO check if the alignment is compatible with the segment length
@@ -100,20 +100,26 @@ class TestApiVersion(unittest.TestCase):
     g.add_line("L\t1\t-\t2\t-\t20M")
     g.add_line("L\t3\t-\t4\t+\t30M")
     g.add_line("L\t3\t+\t4\t-\t40M")
-    expected_dovetails_gfa2 = {"E	5	1+	2+	90	100$	0	10	10M",
-      "E	6	1-	2-	0	20	80	100$	20M", "E	7	3-	4+	0	30	0	30	30M",
-      "E	8	3+	4-	60	100$	60	100$	40M"}
-    dovetails_gfa2 = {g.dovetails[0].to_gfa2_s(),
-                 g.dovetails[1].to_gfa2_s(), g.dovetails[2].to_gfa2_s(),
-                 g.dovetails[3].to_gfa2_s()}
+    dovetails_gfa1 = g.dovetails
+    dovetails_gfa2 = {dovetails_gfa1[0].to_gfa2_s(),
+                      dovetails_gfa1[1].to_gfa2_s(),
+                      dovetails_gfa1[2].to_gfa2_s(),
+                      dovetails_gfa1[3].to_gfa2_s()}
+    expected_dovetails_gfa2 = {
+        "E	5	1+	2+	90	100$	0	10	10M",
+        "E	6	1-	2-	0	20	80	100$	20M",
+        "E	7	3-	4+	0	30	0	30	30M",
+        "E	8	3+	4-	60	100$	60	100$	40M"}
     try:
       self.assertEqual(expected_dovetails_gfa2, dovetails_gfa2)
     except:
       # sometimes 7 and 8 are assigned with a different order
       # despite using a fixed hash seed in the tests
-      expected_dovetails_gfa2 = {"E	5	1+	2+	90	100$	0	10	10M",
-        "E	6	1-	2-	0	20	80	100$	20M", "E	8	3-	4+	0	30	0	30	30M",
-        "E	7	3+	4-	60	100$	60	100$	40M"}
+      expected_dovetails_gfa2 = {
+          "E	5	1+	2+	90	100$	0	10	10M",
+          "E	6	1-	2-	0	20	80	100$	20M",
+          "E	8	3-	4+	0	30	0	30	30M",
+          "E	7	3+	4-	60	100$	60	100$	40M"}
       self.assertEqual(expected_dovetails_gfa2, dovetails_gfa2)
     assert(isinstance(g.dovetails[0].to_gfa1(),gfapy.line.edge.Link))
     assert(isinstance(g.dovetails[0].to_gfa2(),gfapy.line.edge.GFA2))
@@ -136,7 +142,7 @@ class TestApiVersion(unittest.TestCase):
     path_gfa1 = "P\t1\ta+,b-\t100M"
     path_gfa2 = "O\t1\ta+ a_to_b+ b-"
     # gfa1 => gfa2
-    l1 = "L\ta\t+\tb\t-\t100M\tid:Z:a_to_b"
+    l1 = "L\ta\t+\tb\t-\t100M\tID:Z:a_to_b"
     g1 = gfapy.Gfa()
     path_gfa1_line = gfapy.Line(path_gfa1)
     g1.add_line(path_gfa1_line)
@@ -190,22 +196,22 @@ class TestApiVersion(unittest.TestCase):
     self.assertEqual(record, record.to_gfa2())
     self.assertRaises(gfapy.VersionError,record.to_gfa1)
 
-####  def test_gfa_conversion(self):
-####    gfa1_str ='''# comment
-####H\tVN:Z:1.0
-####S\tA\t*\tLN:i:200
-####S\tB\t*\tLN:i:200
-####S\tC\t*\tLN:i:100
-####C\tA\t+\tC\t-\t20\t100M
-####L\tA\t+\tB\t-\t100M\tid:Z:a_to_b
-####P\t1\tA+,B-\t100M'''
-####    gfa2_str ='''# comment
-####H\tVN:Z:2.0
-####S\tA\t200\t*
-####S\tB\t200\t*
-####S\tC\t100\t*
-####E\ta_to_b\tA+\tB-\t100\t200$\t100\t200$\t100M
-####E\t*\tA+\tC-\t20\t120\t0\t100$\t100M
-####O\t1\tA+ a_to_b+ B-'''
-####    self.assertEqual(gfa2_str, gfapy.Gfa(gfa1_str).to_gfa2_s())
-####    self.assertEqual(gfa1_str, gfapy.Gfa(gfa2_str).to_gfa1_s())
+  def test_gfa_conversion(self):
+    gfa1_str ='''# comment
+H\tVN:Z:1.0
+S\tB\t*\tLN:i:200
+S\tC\t*\tLN:i:100
+S\tA\t*\tLN:i:200
+L\tA\t+\tB\t-\t100M\tID:Z:a_to_b
+C\tA\t+\tC\t-\t20\t100M\tID:Z:2
+P\t1\tA+,B-\t100M'''
+    gfa2_str ='''# comment
+H\tVN:Z:2.0
+S\tB\t200\t*
+S\tC\t100\t*
+S\tA\t200\t*
+E\ta_to_b\tA+\tB-\t100\t200$\t100\t200$\t100M
+E\t2\tA+\tC-\t20\t120\t0\t100$\t100M
+O\t1\tA+ a_to_b+ B-'''
+    self.assertEqual(gfa2_str, str(gfapy.Gfa(gfa1_str).to_gfa2()))
+    self.assertEqual(gfa1_str, str(gfapy.Gfa(gfa2_str).to_gfa1()))

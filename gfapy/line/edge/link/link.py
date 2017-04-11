@@ -27,7 +27,7 @@ class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
   RECORD_TYPE = "L"
   POSFIELDS = ["from_segment", "from_orient", "to_segment", "to_orient",
                "overlap"]
-  PREDEFINED_TAGS = ["MQ", "NM", "RC", "FC", "KC"]
+  PREDEFINED_TAGS = ["MQ", "NM", "RC", "FC", "KC", "ID"]
   FIELD_ALIAS = {"from": "from_segment", "to": "to_segment"}
   DATATYPE = {
     "from_segment" : "segment_name_gfa1",
@@ -40,8 +40,9 @@ class Link(Link_ToGFA2, GFA1_ToGFA2, Link_References, Equivalence, Complement, \
     "RC" : "i",
     "FC" : "i",
     "KC" : "i",
+    "ID" : "Z",
   }
-  NAME_FIELD = "id"
+  NAME_FIELD = "ID"
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
   BACKREFERENCE_RELATED_FIELDS = ["to_orient", "from_orient", "overlap"]
   DEPENDENT_LINES = ["paths"]

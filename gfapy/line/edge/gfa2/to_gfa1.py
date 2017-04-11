@@ -33,7 +33,7 @@ class ToGFA1:
         "Edge line: {}\n".format(str(self)))
     a.append(str(self.overlap))
     if not gfapy.is_placeholder(self.eid):
-      a.append(gfapy.Field._to_gfa_tag(self.eid, "id", datatype = "Z"))
+      a.append(gfapy.Field._to_gfa_tag(self.eid, "ID", datatype = "Z"))
     for fn in self.tagnames:
       a.append(self.field_to_s(fn, tag = True))
     return a

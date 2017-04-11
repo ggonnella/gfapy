@@ -3,7 +3,7 @@ H	ul:Z:https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md#example
 S	11	ACCTT
 S	12	TCAAGG
 S	13	CTTGATT
-L	11	+	12	-	4M	id:Z:11+_12-
-L	12	-	13	+	5M	id:Z:12-_13+
-L	11	+	13	+	3M	id:Z:11+_13+
+L	11	+	12	-	4M	ID:Z:11+_12-
+L	12	-	13	+	5M	ID:Z:12-_13+
+L	11	+	13	+	3M	ID:Z:11+_13+
 P	14	11+,12-,13+	4M,5M

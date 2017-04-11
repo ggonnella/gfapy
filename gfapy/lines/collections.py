@@ -226,7 +226,7 @@ class Collections:
     Notes:
       GFA1: in Gfapy the P and S namespaces are joined (i.e. paths with
       the same name as segments are not accepted). Furthermore, to simplify
-      the conversion to/from GFA2, the id tag is used in L and C lines,
+      the conversion to/from GFA2, the ID tag is used in L and C lines,
       and their content is also included in the same namespace as the S/P
       identifiers. GFA2: the namespace for identifiers is described in
       the specification and includes all the S, E, G, U and O lines; the

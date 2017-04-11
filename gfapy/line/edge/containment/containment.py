@@ -35,8 +35,8 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other,
                  "to" : "to_segment",
                  "container_orient" : "from_orient",
                  "contained_orient" : "to_orient"}
-  PREDEFINED_TAGS = ["MQ", "NM"]
-  NAME_FIELD = "id"
+  PREDEFINED_TAGS = ["MQ", "NM", "ID"]
+  NAME_FIELD = "ID"
   DATATYPE = {
      "from_segment" : "segment_name_gfa1",
      "from_orient" : "orientation",
@@ -46,6 +46,7 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other,
      "overlap" : "alignment_gfa1",
      "MQ" : "i",
      "NM" : "i",
+     "ID" : "Z",
   }
   REFERENCE_FIELDS = ["from_segment", "to_segment"]
 

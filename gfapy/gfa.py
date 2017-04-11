@@ -122,7 +122,7 @@ class Gfa(Lines,GraphOperations):
         converted = line.to_gfa1_s()
         if converted:
           lines.append(converted)
-      return "\n".join(converted)
+      return "\n".join(lines)
 
   def to_gfa1(self):
     """Create a GFA1 Gfa instance for the GFA data
@@ -152,7 +152,7 @@ class Gfa(Lines,GraphOperations):
         converted = line.to_gfa2_s()
         if converted:
           lines.append(converted)
-      return "\n".join(converted)
+      return "\n".join(lines)
 
   def to_gfa2(self):
     """Create a GFA2 Gfa instance for the GFA data.

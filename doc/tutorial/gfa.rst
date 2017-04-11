@@ -244,14 +244,14 @@ can be retrieved using the properties
 
 The GFA1 specification does not handle the question of the namespace of
 identifiers explicitely. However, gfapy assumes and enforces
-a single namespace for segment, path names and the values of the id custom tags
+a single namespace for segment, path names and the values of the ID tags
 of L and C lines. The content of this namespace can be found using
 :attr:`~gfapy.lines.collections.Collections.names` property.
 The identifiers of single line types
 can be retrieved using the properties
 :attr:`~gfapy.lines.collections.Collections.segment_names`,
 :attr:`~gfapy.lines.collections.Collections.edge_names`
-(id tags of of links and containments) and
+(ID tags of of links and containments) and
 :attr:`~gfapy.lines.collections.Collections.path_names`.
 For GFA1, the properties
 :attr:`~gfapy.lines.collections.Collections.gap_names`,
@@ -264,7 +264,7 @@ contain always empty lists.
    >>> g.add_line("S\tA\t*")
    >>> g.add_line("S\tB\t*")
    >>> g.add_line("S\tC\t*")
-   >>> g.add_line("L\tB\t+\tC\t+\t*\tid:Z:b_c")
+   >>> g.add_line("L\tB\t+\tC\t+\t*\tID:Z:b_c")
    >>> g.add_line("P\tp1\tB+,C+\t*")
    >>> g.names
    ['B', 'C', 'A', 'b_c', 'p1']
