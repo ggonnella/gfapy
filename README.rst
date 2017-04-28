@@ -30,7 +30,7 @@ Installation
 ~~~~~~~~~~~~
 
 Gfapy is distributed as a Python package and can be installed using
-the python package manager pip.
+the Python package manager pip, as well as conda (in the Bioconda channel).
 
 The following command installs the current stable version from the Python
 Packages index::
@@ -41,6 +41,11 @@ If you would like to install the current development version from Github,
 use the following command::
 
   pip install -e git+https://github.com/ggonnella/gfapy.git#egg=gfapy
+
+Alternatively it is possible to install gfapy using conda. Gfapy is
+included in the Bioconda (https://bioconda.github.io/) channel::
+
+  conda install -c bioconda gfapy
 
 Usage
 ~~~~~
