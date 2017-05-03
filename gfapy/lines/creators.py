@@ -59,6 +59,10 @@ class Creators:
       key = gfa_line.name
       if gfapy.is_placeholder(key):
         key = id(gfa_line)
+      elif key.isdigit():
+        keynum = int(key)
+        if keynum > self._max_int_name:
+          self._max_int_name = keynum
       self._records[gfa_line.record_type][key] = gfa_line
     elif storage_key == "external":
       if gfa_line.external.line not in self._records[gfa_line.record_type]:

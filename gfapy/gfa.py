@@ -31,7 +31,7 @@ class Gfa(Lines,GraphOperations):
     if not version in ['gfa1', 'gfa2', None]:
       raise gfapy.VersionError("GFA version unknown ({})".format(version))
     self._vlevel = vlevel
-    self._unused_name_cache = 1
+    self._max_int_name = 0
     self._records = defaultdict(dict)
     self._records["H"] = gfapy.line.Header(["H"], vlevel = vlevel)
     self._records["H"].connect(self)

@@ -240,13 +240,8 @@ class Collections:
 
   def unused_name(self):
     """Compute a GFA identifier not yet in use in the Gfa object."""
-    names = self.names
-    name = str(self._unused_name_cache)
-    while name in names:
-      self._unused_name_cache += 1
-      name = str(self._unused_name_cache)
-    self._unused_name_cache += 1
-    return name
+    self._max_int_name += 1
+    return str(self._max_int_name)
 
   @property
   def external_names(self):
