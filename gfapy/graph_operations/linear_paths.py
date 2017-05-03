@@ -116,10 +116,9 @@ class LinearPaths:
       gaps) are removed from the Gfa instance.
 
     Parameters:
-      merged_name (str): if 'short', then a name is computed using the prefix
-        "merged" and adding the first unused integer starting from "merged1";
-        otherwise the name is computed using a combination of the names of
-        the merged segments, separated by an underscore
+      merged_name (str): if 'short', then a name is computed using an unused
+        integer; otherwise the name is computed using a combination of the
+        names of the merged segments, separated by an underscore
       cut_counts (bool): if True, the total count in merged segment m,
          composed of segments s of set S is multiplied by the factor
          ``Sum(|s in S|)/|m|``
@@ -254,15 +253,6 @@ class LinearPaths:
         else:
           merged.get("or").append(o)
 
-  def __get_short_merged_name(self):
-    forbidden = self.names
-    i = 1
-    merged_name = "merged1"
-    while merged_name in forbidden:
-      i += 1
-      merged_name = "merged{}".format(i)
-    return merged_name
-
   @staticmethod
   def _reverse_segment_name(name, separator):
     retval = []
@@ -302,7 +292,7 @@ class LinearPaths:
     first_reversed = (a.end_type == "L")
     last_reversed = None
     if merged_name == "short":
-      merged_name = self.__get_short_merged_name()
+      merged_name = self.unused_name()
     self._add_segment_to_merged(merged, self.segment(a.segment),
         first_reversed, 0, True, enable_tracking=enable_tracking,
         merged_name=merged_name)
