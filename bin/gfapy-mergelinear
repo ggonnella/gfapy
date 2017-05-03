@@ -10,15 +10,19 @@ import argparse
 
 op = argparse.ArgumentParser(description=__doc__)
 op.add_argument("filename")
-op.add_argument("--redundant", help="create redundant paths, "+
-    "similar to the contigs constructed by Readjoiner",
-    default=False, action="store_true", dest='redundant')
+op.add_argument("--redundant", '-r', help="create redundant paths, "+
+    "similar to the contigs constructed by Readjoiner", action="store_true")
+op.add_argument("--no-progress", '-p', help="do not show progress log",
+                action="store_false", dest="progress")
+op.add_argument("--quiet", '-q', help="suppress output", action="store_false",
+                dest="output")
+op.add_argument("--vlevel", help="validation level", default=0, type=int)
 op.add_argument('--version', action='version', version='%(prog)s 1.0')
 opts = op.parse_args()
 
-gfa = gfapy.Gfa()
-gfa.enable_progress_logging(part=0.01)
-gfa.vlevel = 0
+gfa = gfapy.Gfa(vlevel=opts.vlevel)
+if opts.progress:
+  gfa.enable_progress_logging(part=0.01)
 gfa.read_file(opts.filename)
 if opts.redundant:
   # remove isolated segments, as this mode is for comparison
@@ -29,5 +33,5 @@ if opts.redundant:
 gfa.merge_linear_paths(redundant_junctions=opts.redundant,
                        enable_tracking=False,
                        merged_name="short")
-print(gfa)
-
+if opts.output:
+  print(gfa)
