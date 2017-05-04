@@ -1,11 +1,4 @@
 #!/bin/bash
-#$ -clear
-#$ -q 16c.q
-#$ -cwd
-#$ -V
-#$ -S /bin/bash
-#$ -o jobs_out
-#$ -j y
 
 if [ $# -ne 6 ]; then
   echo "Usage: $0 <outfile> <operation> <version> <variable> <range> <nrepl>" > /dev/stderr
@@ -27,9 +20,9 @@ nrepl=$6
 
 if [ $variable == "segments" ]; then
   if [ $range == "fast" ]; then
-    nsegments="1000 2000 4000 8000 16000 32000 64000"
+    nsegments="1000 2000 4000"
   elif [ $range == "slow" ]; then
-    nsegments="128000 256000 512000 1024000 2048000"
+    nsegments="8000 16000 32000 64000 128000 256000 512000 1024000 2048000"
   elif [ $range == "all"]; then
     nsegments="1000 2000 4000 8000 16000 32000 64000 128000 256000 512000 1024000 2048000"
   fi
@@ -39,9 +32,9 @@ fi
 
 if [ $variable == "connectivity" ]; then
   if [ $range == "fast" ]; then
-    multipliers="2 4 8 16 32 64"
+    multipliers="2 4 8"
   elif [ $range == "slow" ]; then
-    multipliers="128 256"
+    multipliers="16 32 64 128 256"
   elif [ $range == "all"]; then
     multipliers="2 4 8 16 32 64 128 256"
   fi
@@ -49,23 +42,24 @@ else
   multipliers=2
 fi
 
+mkdir -p benchmark_results
 rm -f $outfile
 echo "# hostname: $HOSTNAME" > $outfile
-free >> $outfile
 echo "### benchmark data:" >> $outfile
 for ((replicate=1;replicate<=nrepl;++replicate)); do
   for i in $nsegments; do
     for m in $multipliers; do
-      fname="${i}_e${m}x.$replicate.${version}"
-      rm -f $fname.$operation.benchmark
+      fname="benchmark_results/${i}_e${m}x.$replicate.${version}"
+      bmout="$fname.$operation.benchmark"
+      rm -f $bmout
       if [ ! -e $fname ]; then
         ./gfapy-randomgraph --segments $i -g $version \
           --dovetails-per-segment $m  --with-sequence > $fname
       fi
       ./gfapy-benchmark-collectdata ../bin/gfapy-$operation $fname \
-                                    1> /dev/null 2> $fname.$operation.benchmark
-      elapsed=$(grep -P -o "(?<=) [^ ]*(?=elapsed)" $fname.$operation.benchmark)
-      memory=$(grep -P -o "(?<=VmHWM: ).*" $fname.$operation.benchmark)
+                                    1> /dev/null 2> $bmout
+      elapsed=$(grep -P -o "(?<=) [^ ]*(?=elapsed)" $bmout)
+      memory=$(grep -P -o "(?<=VmHWM: ).*" $bmout)
       filesize=( $(ls -ln $fname) );filesize=${filesize[4]}
       echo -e "gfapy-$operation\t$version\t$i\t$m\t$replicate\t$elapsed\t$memory\t$filesize" >> $outfile
     done

@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # (c) Giorgio Gonnella, ZBH, Uni Hamburg, 2017
 
-script.name = "./plot_data.R"
+script.name = "./gfapy-plot-benchmarkdata.R"
 args <- commandArgs(trailingOnly=TRUE)
 if (is.na(args[3])) {
   cat("Usage: ",script.name, " <inputfile> <outpfx> <variable>", "\n")
