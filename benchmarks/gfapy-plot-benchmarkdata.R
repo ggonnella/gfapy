@@ -106,14 +106,14 @@ outfname = paste0(outpfx,"_time.pdf")
 pdf(outfname)
 print(ggplot(time.data, aes_string(x=xvarname, y="time")) +
     geom_errorbar(aes(ymin=time-se, ymax=time+se), width=2) +
-        geom_line(size=0.2) + geom_point(size=1) +
+        geom_line(size=0.2) + geom_point(size=3) +
         ylab("Total elapsed time (s)") +
         xlab(xlab))
 outfname = paste0(outpfx,"_space.pdf")
 pdf(outfname)
 print(ggplot(space.data, aes_string(x=xvarname, y="space")) +
     geom_errorbar(aes(ymin=space-se, ymax=space+se), width=2) +
-        geom_line(size=0.2) + geom_point(size=1) +
+        geom_line(size=0.2) + geom_point(size=3) +
         ylab("Memory peak (MB)") +
         xlab(xlab))
 dev.off()
