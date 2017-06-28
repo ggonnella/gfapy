@@ -67,5 +67,6 @@ https://github.com/ggonnella/gfapy/blob/master/manual/gfapy-manual.pdf.
 References
 ~~~~~~~~~~
 
-The manuscript describing Gfapy has been submitted and is currently under
-review. This section will be updated, as soon as the publication is available.
+Giorgio Gonnella and Stefan Kurtz "GfaPy: a flexible and extensible software
+library for handling sequence graphs in Python", Bioinformatics (2017) btx398
+https://doi.org/10.1093/bioinformatics/btx398
