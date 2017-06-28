@@ -1,6 +1,6 @@
 default: tests
 
-.PHONY: manual tests
+.PHONY: manual tests cleanup upload conda sdist wheel install
 
 PYTHON=python3
 PIP=pip3
@@ -41,3 +41,9 @@ upload: tests cleanup sdist wheel
 	   	twine register $$file; \
 		  twine upload $$file; \
 		done
+
+conda:
+	mkdir -p conda
+	cd conda; \
+		conda skeleton pypi gfapy; \
+		conda build gfapy
