@@ -71,7 +71,7 @@ characters and spacing characters), except tabs and newlines (as they are
 structural elements of the line).  No further validation is performed.
 
 As Gfapy cannot know how many positional fields are present when parsing custom
-records, an heuristic approach is followed, to identify tags. A field resembles
+records, a heuristic approach is followed, to identify tags. A field resembles
 a tag if it starts with ``tn:d:`` where ``tn`` is a valid tag name and ``d`` a
 valid tag datatype (see :ref:`tags` chapter). The fields are parsed from the
 last to the first.
@@ -140,7 +140,7 @@ only requires to define some constants and to call the class method
 :func:`~gfapy.line.line.Line.register_extension`.
 
 The constants to define are ``RECORD TYPE``, which shall be the content
-of the record type field (e.g. ``M``); ``POSFIELDS`` shall contain a ordered
+of the record type field (e.g. ``M``); ``POSFIELDS`` shall contain an ordered
 dict, specifying the datatype for each positional field, in the order these
 fields are found in the line; ``TAGS_DATATYPE`` is a dict, specifying the
 datatype of the predefined optional tags; ``NAME_FIELD`` is a field name,

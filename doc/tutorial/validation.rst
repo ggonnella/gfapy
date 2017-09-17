@@ -15,10 +15,10 @@ value is 1.
 Manual validation
 ~~~~~~~~~~~~~~~~~
 
-Independently from the validation level choosen, the user can always check the
+Independently from the validation level chosen, the user can always check the
 value of a field calling
 :meth:`~gfapy.line.common.validate.Validate.validate_field` on the line
-instance. If no exeption is raised, the field content is valid.
+instance. If no exception is raised, the field content is valid.
 
 To check if the entire content of the line is valid, the user can call
 :meth:`~gfapy.line.common.validate.Validate.validate` on the line instance.

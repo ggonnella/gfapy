@@ -58,7 +58,7 @@ using the conventional Python syntax::
 Documentation
 ~~~~~~~~~~~~~
 
-The documentation, including this introduction to Gfapy, an user manual
+The documentation, including this introduction to Gfapy, a user manual
 and the API documentation is hosted on the ReadTheDocs server,
 at the URL http://gfapy.readthedocs.io/en/latest/ and it can be
 downloaded as PDF from the URL
