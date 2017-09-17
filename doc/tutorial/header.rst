@@ -139,16 +139,16 @@ on the header.
 String representation of the header
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For consinstency with other line types, the string representation of the header
+For consistency with other line types, the string representation of the header
 is a single-line string, eventually non standard-compliant, if it contains
 multiple instances of the tag. (and when calling
 :meth:`~gfapy.line.common.writer.Writer.field_to_s` for a tag present multiple
 times, the output string will contain the instances of the tag, separated by
 tabs).
 
-However, when the Gfa is output to file or string, the header is splitted into
+However, when the Gfa is output to file or string, the header is split into
 multiple H lines with single tags, so that standard-compliant GFA is output.
-The splitted header can be retrieved using the
+The split header can be retrieved using the
 :attr:`~gfapy.lines.headers.Headers.headers` property of the Gfa instance.
 
 .. doctest::

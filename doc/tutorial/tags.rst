@@ -10,7 +10,7 @@ Tags
 
 Each record in GFA can contain tags. Tags are fields which consist in a
 tag name, a datatype and data. The format is ``NN:T:DATA`` where ``NN``
-is a two-letter tag name, ``T`` is an one-letter datatype string and
+is a two-letter tag name, ``T`` is a one-letter datatype string and
 ``DATA`` is a string representing the data according to the specified
 datatype. Tag names must be unique for each line, i.e. each line may
 only contain a tag once.
@@ -29,7 +29,7 @@ only contain a tag once.
 Custom tags
 ~~~~~~~~~~~
 
-Some tags are explicitely defined in the specification (these are named
+Some tags are explicitly defined in the specification (these are named
 *predefined tags* in Gfapy), and the user or an application can define
 its own custom tags.
 
@@ -76,7 +76,7 @@ specification, different for each kind of line.
     "VN:Z:1.0" # VN is upcase => predefined tag
     "z5:Z:1.0" # z5 first char is downcase => custom tag
 
-    # not forbidden, but not reccomended:
+    # not forbidden, but not recommended:
     "zZ:Z:1.0" # => mixed case, first char downcase => custom tag
     "Zz:Z:1.0" # => mixed case, first char upcase => custom tag
     "vn:Z:1.0" # => same name as predefined tag, but downcase => custom tag
@@ -121,7 +121,7 @@ The following table summarizes the datatypes available for tags:
 Validation
 ~~~~~~~~~~
 
-The tag name is validated according the the rules described above:
+The tag name is validated according the rules described above:
 except for the upper case tags indicated in the GFA1 specification, and
 the TS header tag, all other tags must contain at least one lower case
 letter.

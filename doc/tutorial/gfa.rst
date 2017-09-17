@@ -59,7 +59,7 @@ overwritten).
 
 All methods for creating a Gfa (constructor and from_file) accept
 a ``vlevel`` parameter, the validation level,
-and can assume the values 0, 1, 2 and 3. An higher value means
+and can assume the values 0, 1, 2 and 3. A higher value means
 more validations are performed. The :ref:`validation` chapter explains
 the meaning of the different validation levels in detail.
 The default value is 1.
@@ -106,7 +106,7 @@ Collections of lines
 
 The property :attr:`~gfapy.lines.collections.Collections.lines`
 of the Gfa object is a list of all the lines
-in the GFA file (including the header, which is splitted into single-tag
+in the GFA file (including the header, which is split into single-tag
 lines). The list itself shall not be modified by the user directly (i.e.
 adding and removing lines is done using a different interface, see
 below). However the single elements of the list can be edited.
@@ -126,7 +126,7 @@ as a read-only property, which is named after the record type, in plural.
    []
 
 A particular case are edges; these are in GFA1 links and containments, while in
-GFA2 there is an unified edge record type, which also allows to represent
+GFA2 there is a unified edge record type, which also allows to represent
 internal alignments.  In Gfapy, the
 :attr:`~gfapy.lines.collections.Collections.edges` property retrieves all edges
 (i.e. all E lines in GFA2, and all L and C lines in GFA1). The
@@ -243,7 +243,7 @@ can be retrieved using the properties
    ['s1']
 
 The GFA1 specification does not handle the question of the namespace of
-identifiers explicitely. However, gfapy assumes and enforces
+identifiers explicitly. However, gfapy assumes and enforces
 a single namespace for segment, path names and the values of the ID tags
 of L and C lines. The content of this namespace can be found using
 :attr:`~gfapy.lines.collections.Collections.names` property.
@@ -251,7 +251,7 @@ The identifiers of single line types
 can be retrieved using the properties
 :attr:`~gfapy.lines.collections.Collections.segment_names`,
 :attr:`~gfapy.lines.collections.Collections.edge_names`
-(ID tags of of links and containments) and
+(ID tags of links and containments) and
 :attr:`~gfapy.lines.collections.Collections.path_names`.
 For GFA1, the properties
 :attr:`~gfapy.lines.collections.Collections.gap_names`,

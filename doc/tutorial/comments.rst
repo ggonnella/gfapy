@@ -22,7 +22,7 @@ comment line instances. The single elements can be modified, but the list
 itself is read-only.  To remove a comment from the Gfa, you need to find the
 instance in the list, and call
 :func:`~gfapy.line.common.disconnection.Disconnection.disconnect` on it.  To
-add a comment to a :class:`~gfapy.gfa.Gfa` instance is done similary to other
+add a comment to a :class:`~gfapy.gfa.Gfa` instance is done similarly to other
 lines, by using the :func:`Gfa.add_line(line)
 <gfapy.lines.creators.Creators.add_line>` method.
 

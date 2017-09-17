@@ -27,7 +27,7 @@ gfapy.Line instance, a line is added to a Gfa instance (this is done
 automatically when a GFA file is parsed). All strings expressing
 references are then changed into references to the corresponding line
 objects. The method ``is_connected()`` allows to determine if a line is
-connected to an gfapy instance. The read-only property ``gfa`` contains
+connected to a gfapy instance. The read-only property ``gfa`` contains
 the ``gfapy.Gfa`` instance to which the line is connected.
 
 .. doctest::
@@ -248,9 +248,9 @@ Induced set and captured path
 The item list in GFA2 sets and paths may not contain elements which are
 implicitly involved. For example a path may contain segments, without
 specifying the edges connecting them, if there is only one such edge.
-Alternatively a path may contain edges, without explitely indicating the
+Alternatively a path may contain edges, without explicitly indicating the
 segments. Similarly a set may contain edges, but not the segments
-refered to in them, or contain segments which are connected by edges,
+referred to in them, or contain segments which are connected by edges,
 without the edges themselves. Furthermore groups may refer to other
 groups (set to sets or paths, paths to paths only), which then
 indirectly contain references to segments and edges.
@@ -262,7 +262,7 @@ described in the specification. The computation can, therefore, only be
 applied to connected lines. For unordered groups, this computation is
 provided by the method ``induced_set()``, which returns an array of
 segment and edge instances. For ordered group, the computation is
-provided by the method ``captured_path()``, whcih returns a list of
+provided by the method ``captured_path()``, which returns a list of
 ``gfapy.OrientedLine`` instances, alternating segment and edge instances
 (and starting and ending in segments).
 

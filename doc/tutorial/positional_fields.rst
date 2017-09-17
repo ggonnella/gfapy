@@ -21,7 +21,7 @@ Field names
 ~~~~~~~~~~~
 
 The field names are derived from the specification. Lower case versions
-of the field names are used and spaces are subsituted with underscores.
+of the field names are used and spaces are substituted with underscores.
 In some cases, the field names were changed, as they represent keywords
 in common programming languages (``from``, ``send``).
 
@@ -442,7 +442,7 @@ for GFA2 segments.
 Crypical field names
 ^^^^^^^^^^^^^^^^^^^^
 
-The definition of from and to for containments is somewhat cryptical.
+The definition of from and to for containments is somewhat cryptic.
 Therefore following aliases have been defined for containments:
 container[\_orient] for from[\_\|segment\|orient]; contained[\_orient]
 for to[\_segment\|orient].

@@ -106,7 +106,7 @@ CIGARs are represented by specialized lists, instances of the class
 :class:`~gfapy.alignment.cigar.CIGAR`, whose elements are CIGAR operations
 CIGAR operations are represented by instance of the class
 :class:`~gfapy.alignment.cigar.CIGAR.Operation`,
-and provide the properties ``length`` (lenght of the operation, an integer)
+and provide the properties ``length`` (length of the operation, an integer)
 and ``code`` (one-letter string which specifies the type of operation).
 Note that not all operations allowed in SAM files (for which CIGAR strings
 were first defined) are also meaningful in GFA and thus GFA2 only allows
