@@ -1,4 +1,5 @@
 VERSIONS = ["gfa1", "gfa2"]
+DIALECTS = ["rgfa", "standard"]
 from gfapy.error import *
 from gfapy.placeholder import Placeholder
 from gfapy.placeholder import is_placeholder

@@ -14,15 +14,18 @@ class Gfa(Lines,GraphOperations):
     vlevel (int): validation level (default: 1)
     version (str): GFA version ('gfa1' or 'gfa2';
         default: automatic recognition)
+    dialect (str): dialect ('standard' or 'rgfa';
+        default: standard)
 
   Raises:
     ~gfapy.error.ArgumentError: if the vlevel or version are invalid
     ~gfapy.error.FormatError: if data is provided, which is invalid
     ~gfapy.error.VersionError: if an unknown version is specified, or data is
         provided, which is not compatible with the specified version
+    ~gfapy.error.VersionError: if an unknown dialect is specified
   """
 
-  def __init__(self, *args, vlevel = 1, version = None):
+  def __init__(self, *args, vlevel = 1, version = None, dialect = "standard"):
     if not isinstance(vlevel, int):
       raise gfapy.ArgumentError("vlevel is not an integer ({})".format(vlevel))
     if vlevel < 0:
@@ -30,6 +33,8 @@ class Gfa(Lines,GraphOperations):
           "vlevel is not a positive integer ({})".format(vlevel))
     if not version in ['gfa1', 'gfa2', None]:
       raise gfapy.VersionError("GFA version unknown ({})".format(version))
+    if not dialect in ['standard', 'rgfa', None]:
+      raise gfapy.VersionError("GFA dialect unknown ({})".format(dialect))
     self._vlevel = vlevel
     self._max_int_name = 0
     self._records = defaultdict(dict)
@@ -59,6 +64,7 @@ class Gfa(Lines,GraphOperations):
       self._version_explanation = "set during initialization"
       self._version_guess = version
       self._validate_version()
+    self._dialect = dialect
     if len(args) == 1:
       lst = None
       if isinstance(args[0], str):
@@ -84,7 +90,16 @@ class Gfa(Lines,GraphOperations):
 
   @version.setter
   def version(self,value):
-    self._vlevel=value
+    self._version=value
+
+  @property
+  def dialect(self):
+    """GFA dialect ('standard' or 'rgfa')"""
+    return self._dialect
+
+  @dialect.setter
+  def dialect(self,value):
+    self._dialect=value
 
   @property
   def vlevel(self):

@@ -50,7 +50,9 @@ class Construction:
       cls = gfapy.Line._subclass(data, version = version)
     return object.__new__(cls)
 
-  def __init__(self, data, vlevel = 1, virtual = False, version = None):
+  def __init__(self, data, vlevel = 1, virtual = False,
+               version = None, dialect = "generic"):
+    self._dialect = dialect
     self.vlevel = vlevel
     self._virtual = virtual
     self._datatype = {}
