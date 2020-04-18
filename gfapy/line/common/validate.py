@@ -62,7 +62,7 @@ class Validate:
   def _is_valid_custom_tagname(tagname, dialect):
     if dialect == "standard":
       return (re.match(r"^[a-z][a-z0-9]$", tagname))
-    elif dialect in ["rgfa", "generic"]:
+    elif dialect == "rgfa":
       return (re.match(r"^[A-Za-z][A-Za-z0-9]$", tagname))
 
   def _validate_record_type_specific_info(self):
