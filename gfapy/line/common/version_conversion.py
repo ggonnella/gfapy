@@ -18,6 +18,16 @@ class VersionConversion:
     """
     return self._version
 
+  @property
+  def dialect(self):
+    """
+    Returns
+    -------
+    gfapy.DIALECTS, None
+      GFA specification version
+    """
+    return self._dialect
+
   def to_version_s(self, version):
     """
     Returns
