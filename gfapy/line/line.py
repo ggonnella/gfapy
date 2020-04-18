@@ -36,9 +36,9 @@ class Line(Construction, DynamicFields, Writer, VersionConversion,
       then the version is guessed from the record type and syntax, or set
       to 'generic'
     dialect (str) : one of 'rgfa' and 'standard'; the GFA dialect; if not
-      specified then the dialect is set to 'generic'. This currently affects
+      specified then the dialect is set to 'standard'. This currently affects
       only the validation of custom tags. 'standard' does not allow application-
-      specific upper case tags; 'generic' and 'rgfa' allow them.
+      specific upper case tags; 'rgfa' allows them.
 
   Notes:
     The private interface to the Line constructor also allows to pass a

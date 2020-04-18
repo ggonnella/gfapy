@@ -65,7 +65,8 @@ class FieldData:
       return self.set(self.__class__.FIELD_ALIAS[fieldname], value)
     elif self.virtual:
       raise gfapy.RuntimeError("Virtual lines do not have tags")
-    elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname):
+    elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname,
+        self._dialect):
       self._define_field_methods(fieldname)
       if self._datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)

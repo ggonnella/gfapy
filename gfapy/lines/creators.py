@@ -84,11 +84,12 @@ class Creators:
           "Only strings and gfapy.Line instances can be added")
     if rt == "#":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line(gfa_line)
+        gfa_line = gfapy.Line(gfa_line, dialect=self._dialect)
       gfa_line.connect(self)
     elif rt == "H":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
+            dialect=self._dialect)
       self.header._merge(gfa_line)
       if gfa_line.VN:
         if gfa_line.VN == "1.0":
@@ -103,7 +104,8 @@ class Creators:
         self.process_line_queue()
     elif rt == "S":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
+            dialect=self._dialect)
       self._version = gfa_line.version
       self._version_explanation = \
           "implied by: syntax of S {} line".format(gfa_line.name)
@@ -114,7 +116,7 @@ class Creators:
       self._version_explanation = "implied by: presence of a {} line".format(rt)
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-            version=self._version)
+            version=self._version, dialect=self._dialect)
       self.process_line_queue()
       gfa_line.connect(self)
     elif rt in ["L", "C", "P"]:
@@ -126,10 +128,11 @@ class Creators:
   def __add_line_GFA1(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
+            dialect=self._dialect)
       else:
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-                                        version="gfa1")
+            dialect=self._dialect, version="gfa1")
     elif gfa_line.__class__ in gfapy.Lines.GFA2Specific:
       raise gfapy.VersionError(
         "Version: 1.0 ({})\n".format(self._version_explanation)+
@@ -157,10 +160,11 @@ class Creators:
   def __add_line_GFA2(self, gfa_line):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
-        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel)
+        gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
+            dialect=self._dialect)
       else:
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-                                        version="gfa2")
+                                        version="gfa2", dialect=self._dialect)
     elif gfa_line.__class__ in gfapy.Lines.GFA1Specific:
       raise gfapy.VersionError(
         "Version: 2.0 ({})\n".format(self._version_explanation)+

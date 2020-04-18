@@ -35,6 +35,7 @@ class DynamicFields:
       return self._set_dynamic_field(name, value)
 
   def _get_dynamic_field(self, name, err):
+    dialect = super().__getattribute__("_dialect")
     if self.virtual:
       raise err
     if name.startswith("try_get_"):
@@ -45,7 +46,7 @@ class DynamicFields:
     if name in self._data:
       return (lambda : self.try_get(name)) if try_get else self.get(name)
     if (name in self.__class__.PREDEFINED_TAGS or
-        self._is_valid_custom_tagname(name)):
+        self._is_valid_custom_tagname(name, dialect)):
       if not try_get:
         return None
       else:
@@ -58,12 +59,13 @@ class DynamicFields:
     try:
       virtual = super().__getattribute__("_virtual")
       data = super().__getattribute__("_data")
+      dialect = super().__getattribute__("_dialect")
       if virtual:
         super().__setattr__(name, value)
       if name in data:
         self._set_existing_field(name, value)
       if (name in self.__class__.PREDEFINED_TAGS or
-            self._is_valid_custom_tagname(name)):
+            self._is_valid_custom_tagname(name, dialect)):
         self.set(name, value)
       else:
         super().__setattr__(name, value)
