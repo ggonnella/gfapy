@@ -30,7 +30,7 @@ class TestAPIrGfa(unittest.TestCase):
   def test_stable_sequence_names(self):
     g = gfapy.Gfa.from_file("tests/testdata/rgfa_example.2.gfa", dialect="rgfa")
     self.assertEqual(['smpl-Ref.Bd4', 'smpl-Bd21_3_r.pseudomolecule_4'],
-        g.stable_sequence_names())
+        g.stable_sequence_names)
     g = gfapy.Gfa.from_file("tests/testdata/rgfa_example.1.gfa", dialect="rgfa")
     self.assertEqual(['bar', 'foo', 'chr1'],
-        g.stable_sequence_names())
+        g.stable_sequence_names)

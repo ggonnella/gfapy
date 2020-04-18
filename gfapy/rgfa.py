@@ -13,6 +13,7 @@ class RGFA():
     """
     self._dialect = "rgfa"
 
+  @property
   def stable_sequence_names(self):
     """Stable sequence names from rGFA SN tags"""
     if self._dialect != "rgfa":
