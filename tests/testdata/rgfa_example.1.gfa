@@ -1,0 +1,15 @@
+S	s1	CTGAA	SN:Z:chr1	SO:i:0	SR:i:0
+S	s2	ACG	SN:Z:chr1	SO:i:5	SR:i:0
+S	s3	TGGC	SN:Z:chr1	SO:i:8	SR:i:0
+S	s4	TGTGA	SN:Z:chr1	SO:i:12	SR:i:0
+S	s5	TTTC	SN:Z:foo	SO:i:8	SR:i:1
+S	s6	CTGA	SN:Z:foo	SO:i:12	SR:i:1
+S	s7	GTTAC	SN:Z:bar	SO:i:5	SR:i:2
+L	s1	+	s2	+	0M
+L	s2	+	s3	+	0M
+L	s3	+	s4	+	0M
+L	s2	+	s5	+	0M
+L	s5	+	s6	+	0M
+L	s6	+	s4	+	0M
+L	s1	+	s7	-	0M
+L	s7	-	s6	+	0M
