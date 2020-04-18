@@ -300,7 +300,7 @@ instance.
     >>> gfa.append('S\tsB\t*')
     >>> line = gfa.segment("sA")
     >>> gfa.segment_names
-    ['sB', 'sA']
+    ['sA', 'sB']
     >>> gfa.rm(line)
     >>> gfa.segment_names
     ['sB']

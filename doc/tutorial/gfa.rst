@@ -121,7 +121,7 @@ as a read-only property, which is named after the record type, in plural.
 .. doctest::
 
    >>> [str(line) for line in gfa1.segments]
-   ['S\t1\t*', 'S\t3\t*', 'S\t2\t*']
+   ['S\t1\t*', 'S\t2\t*', 'S\t3\t*']
    >>> [str(line) for line in gfa2.fragments]
    []
 
@@ -188,9 +188,9 @@ functionality (see the :ref:`custom_records` chapter).
 .. doctest::
 
    >>> [str(line) for line in gfa2.custom_records]
-   ['Y\tcustom line', 'X\tcustom line']
+   ['X\tcustom line', 'Y\tcustom line']
    >>> gfa2.custom_record_keys
-   ['Y', 'X']
+   ['X', 'Y']
    >>> [str(line) for line in gfa2.custom_records_of_type('X')]
    ['X\tcustom line']
 
@@ -230,9 +230,9 @@ can be retrieved using the properties
    >>> g.add_line("U\ts1\tA b_c g")
    >>> g.add_line("G\tg\tA+\tB-\t1000\t*")
    >>> g.names
-   ['B', 'C', 'A', 'b_c', 'g', 'p1', 's1']
+   ['A', 'B', 'C', 'b_c', 'g', 'p1', 's1']
    >>> g.segment_names
-   ['B', 'C', 'A']
+   ['A', 'B', 'C']
    >>> g.path_names
    ['p1']
    >>> g.edge_names
@@ -267,9 +267,9 @@ contain always empty lists.
    >>> g.add_line("L\tB\t+\tC\t+\t*\tID:Z:b_c")
    >>> g.add_line("P\tp1\tB+,C+\t*")
    >>> g.names
-   ['B', 'C', 'A', 'b_c', 'p1']
+   ['A', 'B', 'C', 'b_c', 'p1']
    >>> g.segment_names
-   ['B', 'C', 'A']
+   ['A', 'B', 'C']
    >>> g.path_names
    ['p1']
    >>> g.edge_names
@@ -329,7 +329,7 @@ then added.
    ['A']
    >>> g.append("S\tB\t*") #doctest: +ELLIPSIS
    >>> g.segment_names
-   ['B', 'A']
+   ['A', 'B']
 
 Editing the lines
 ~~~~~~~~~~~~~~~~~
@@ -399,7 +399,7 @@ representation will use the new name.
    >>> g.add_line("S\tA\t*") #doctest: +ELLIPSIS
    >>> g.add_line("L\tA\t+\tB\t-\t*") #doctest: +ELLIPSIS
    >>> g.segment_names
-   ['B', 'A']
+   ['A', 'B']
    >>> g.dovetails[0].from_name
    'A'
    >>> g.segment('A').name = 'C'
