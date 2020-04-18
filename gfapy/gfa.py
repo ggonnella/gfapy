@@ -2,9 +2,10 @@ import gfapy
 from .lines import Lines
 from .graph_operations import GraphOperations
 from collections import defaultdict
+from .rgfa import RGFA
 import sys
 
-class Gfa(Lines,GraphOperations):
+class Gfa(Lines,GraphOperations,RGFA):
   """Representation of the data in a GFA file.
 
   Parameters:
@@ -119,6 +120,8 @@ class Gfa(Lines,GraphOperations):
     self.__validate_path_links()
     self.__validate_group_items()
     self.__validate_gfa2_positions()
+    if self._dialect == "rgfa":
+      self.validate_rgfa()
 
   def __str__(self):
     return "\n".join([str(line) for line in self.lines])
