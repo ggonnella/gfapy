@@ -53,7 +53,7 @@ class Construction:
 
   def __init__(self, data, vlevel = 1, virtual = False,
                version = None, dialect = "standard"):
-    self._dialect = dialect
+    self._dialect = dialect.lower()
     self.vlevel = vlevel
     self._virtual = virtual
     self._datatype = {}
