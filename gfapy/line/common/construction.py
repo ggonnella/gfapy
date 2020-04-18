@@ -43,7 +43,8 @@ class Construction:
   * different: different syntax in different versions
   """
 
-  def __new__(cls, data, vlevel = 1, virtual = False, version = None):
+  def __new__(cls, data, vlevel = 1, virtual = False, dialect = "standard",
+      version = None):
     if isinstance(data, str):
       data = data.split("\t")
     if isinstance(data, list) and cls.RECORD_TYPE == None:
@@ -51,7 +52,7 @@ class Construction:
     return object.__new__(cls)
 
   def __init__(self, data, vlevel = 1, virtual = False,
-               version = None, dialect = "generic"):
+               version = None, dialect = "standard"):
     self._dialect = dialect
     self.vlevel = vlevel
     self._virtual = virtual
