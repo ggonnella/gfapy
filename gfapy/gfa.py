@@ -218,7 +218,7 @@ class Gfa(Lines,GraphOperations,RGFA):
     return self
 
   @classmethod
-  def from_file(cls, filename, vlevel = 1, version = None):
+  def from_file(cls, filename, vlevel = 1, version = None, dialect="standard"):
     """Create a Gfa instance from the contents of a GFA file.
 
     Parameters:
@@ -230,7 +230,7 @@ class Gfa(Lines,GraphOperations,RGFA):
     Returns:
       gfapy.Gfa
     """
-    gfa = cls(vlevel = vlevel, version = version)
+    gfa = cls(vlevel = vlevel, version = version, dialect = dialect)
     gfa.read_file(filename)
     return gfa
 
