@@ -26,6 +26,7 @@ Gfapy documentation
    tutorial/comments
    tutorial/errors
    tutorial/graph_operations
+   tutorial/rgfa
 
 Indices and tables
 ==================
