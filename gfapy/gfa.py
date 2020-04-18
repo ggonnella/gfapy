@@ -65,7 +65,7 @@ class Gfa(Lines,GraphOperations,RGFA):
       self._version_explanation = "set during initialization"
       self._version_guess = version
       self._validate_version()
-    self._dialect = dialect
+    self._dialect = dialect.lower()
     if len(args) == 1:
       lst = None
       if isinstance(args[0], str):
@@ -99,8 +99,8 @@ class Gfa(Lines,GraphOperations,RGFA):
     return self._dialect
 
   @dialect.setter
-  def dialect(self,value):
-    self._dialect=value
+  def dialect(self, value):
+    self._dialect = value.lower()
 
   @property
   def vlevel(self):
