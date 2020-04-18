@@ -11,7 +11,7 @@ class RGFA():
     """
     Indicate that rGFA dialect of GFA1 shall be used
     """
-    self._dialect = "rgfa"
+    return self._dialect == "rgfa"
 
   @property
   def stable_sequence_names(self):
