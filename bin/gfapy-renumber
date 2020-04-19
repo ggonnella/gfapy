@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""
+Renumber the segments of a GFA assembly graph.
+The largest segment is renamed 01, down to the smallest segment 99.
+The amount of zero-padding required is determined automatically.
+"""
+
+from gfapy import Gfa
+import argparse
+import math
+
+argparser = argparse.ArgumentParser(description = __doc__)
+argparser.add_argument("-o", "--out", action="store", default="/dev/stdout", help="output GFA file [/dev/stdout]")
+argparser.add_argument("--version", action="version", version="gfapy-renumber 0.1.0")
+argparser.add_argument("gfa", help="input GFA file")
+args = argparser.parse_args()
+
+g = Gfa.from_file(args.gfa)
+names = g.segment_names
+width = math.ceil(math.log10(len(names)))
+names.sort(key = lambda u: g.segment(u).length, reverse = True)
+for i, name in enumerate(names):
+	g.segment(name).name = str(1 + i).rjust(width, "0")
+g.to_file(args.out)
