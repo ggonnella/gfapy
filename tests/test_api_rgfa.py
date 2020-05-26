@@ -20,11 +20,7 @@ class TestAPIrGfa(unittest.TestCase):
     with self.assertRaises(gfapy.NotFoundError): gfa.validate()
 
   def test_loading_examples(self):
-    with self.assertRaises(gfapy.FormatError):
-      gfapy.Gfa.from_file("tests/testdata/rgfa_example.1.gfa")
     gfapy.Gfa.from_file("tests/testdata/rgfa_example.1.gfa", dialect="rgfa")
-    with self.assertRaises(gfapy.FormatError):
-      gfapy.Gfa.from_file("tests/testdata/rgfa_example.2.gfa")
     gfapy.Gfa.from_file("tests/testdata/rgfa_example.2.gfa", dialect="rgfa")
 
   def test_stable_sequence_names(self):

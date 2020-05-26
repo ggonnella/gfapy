@@ -31,7 +31,7 @@ Custom tags
 
 Some tags are explicitly defined in the specification (these are named
 *predefined tags* in Gfapy), and the user or an application can define
-its own custom tags.
+its own custom tags. These may contain lower case letters.
 
 Custom tags are user or program specific and may of course collide with
 the tags used by other users or programs. For this reasons, if you write
@@ -63,37 +63,57 @@ name collides with the custom tag of another program.
       myvalue = line.get(mytag)
       # ...
 
-Tag names in GFA1
-~~~~~~~~~~~~~~~~~
+Predefined tags
+~~~~~~~~~~~~~~~
 
-According to the GFA1 specification, custom tags are lower case, while
-predefined tags are upper case (in both cases the second character in
-the name can be a number). There is a number of predefined tags in the
-specification, different for each kind of line.
+According to the GFA specifications, predefined tag names consist of either
+two upper case letters, or an upper case letter followed by a digit.
+The GFA1 specification predefines tags for each line type, while GFA2
+only predefines tags for the header and edges.
+
+While tags with the predefined names are allowed to be added to any line,
+when they are used in the lines mentiones in the specification (e.g. `VN`
+in the header) gfapy checks that the datatype is the one prescribed by
+the specification (e.g. `VN` must be of type `Z`). It is not forbidden
+to use the same tags in other contexts, but in this case, the datatype
+restriction is not enforced.
+
++------------+------------+-----------------------+
+| Tag | Type | Line types | GFA version           |
++============+============+=======================+
+| VN  | Z    | H          | 1,2                   |
++-----+------+------------+-----------------------+
+| TS  | i    | H,S        | 2                     |
++-----+------+------------+-----------------------+
+| LN  | i    | S          | 1                     |
++-----+------+------------+-----------------------+
+| RC  | i    | S,L,C      | 1                     |
++-----+------+------------+-----------------------+
+| FC  | i    | S,L        | 1                     |
++-----+------+------------+-----------------------+
+| KC  | i    | S,L        | 1                     |
++-----+------+------------+-----------------------+
+| SH  | H    | S          | 1                     |
++-----+------+------------+-----------------------+
+| UR  | Z    | S          | 1                     |
++-----+------+------------+-----------------------+
+| MQ  | i    | L          | 1                     |
++-----+------+------------+-----------------------+
+| NM  | i    | L,i        | 1                     |
++-----+------+------------+-----------------------+
+| ID  | Z    | L,C        | 1                     |
++-----+------+------------+-----------------------+
 
 ::
 
-    "VN:Z:1.0" # VN is upcase => predefined tag
+    "VN:Z:1.0" # VN => predefined tag
     "z5:Z:1.0" # z5 first char is downcase => custom tag
+    "XX:Z:aaa" # XX upper case, but not predefined => custom tag
 
     # not forbidden, but not recommended:
     "zZ:Z:1.0" # => mixed case, first char downcase => custom tag
     "Zz:Z:1.0" # => mixed case, first char upcase => custom tag
     "vn:Z:1.0" # => same name as predefined tag, but downcase => custom tag
-
-Besides the tags described in the specification, in GFA1 headers, the TS
-tag is allowed, in order to simplify the translation of GFA2 files.
-
-Tag names in GFA2
-~~~~~~~~~~~~~~~~~
-
-The GFA2 specification is currently not as strict regarding tags: anyone
-can use both upper and lower case tags, and no tags are predefined
-except for VN and TS.
-
-However, Gfapy follows the same conventions as for GFA1: i.e. it allows
-the tags specified as predefined tags in GFA1 to be used also in GFA2.
-No other upper case tag is allowed in GFA2.
 
 Datatypes
 ~~~~~~~~~

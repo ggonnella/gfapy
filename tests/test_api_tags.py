@@ -16,23 +16,12 @@ class TestApiTags(unittest.TestCase):
 
   def test_custom_tags(self):
     for version in ["gfa1","gfa2"]:
-      # upper case
-      gfapy.line.Header(["H", "ZZ:Z:1"], version=version, vlevel=0) # nothing raised
-      gfapy.line.Header("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
-      gfapy.line.Header("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
-      gfapy.Gfa("H\tZZ:Z:1", version=version, vlevel=0) # nothing raised
-      for level in [1,2,3]:
-        self.assertRaises(gfapy.FormatError,
-          gfapy.line.Header,["H", "ZZ:Z:1"], version=version, vlevel=level)
-        self.assertRaises(gfapy.FormatError,
-          gfapy.Line, "H\tZZ:Z:1", version=version, vlevel=level)
-        self.assertRaises(gfapy.FormatError,
-          gfapy.Gfa, "H\tZZ:Z:1", version=version, vlevel=level)
-      # lower case
-      for level in [0,1,2,3]:
-        gfapy.line.Header(["H", "zz:Z:1"], version=version, vlevel=0) # nothing raised
-        gfapy.Line("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
-        gfapy.Gfa("H\tzz:Z:1", version=version, vlevel=0) # nothing raised
+      for tagname in ["ZZ","Z1","Zz","zz"]:
+        for level in [0,1,2,3]:
+          tag = "{}:Z:1".format(tagname)
+          gfapy.line.Header(["H", tag], version=version, vlevel=level) # nothing raised
+          gfapy.Line("H\t"+tag, version=version, vlevel=level) # nothing raised
+          gfapy.Gfa("H\t"+tag, version=version, vlevel=level) # nothing raised
 
   def test_wrong_tag_format(self):
     self.assertRaises(gfapy.FormatError, gfapy.line.Header, ["H", "VN i:1"])
@@ -93,9 +82,9 @@ class TestApiTags(unittest.TestCase):
   # test tags for get/set tests:
   # - KC -> predefined, set
   # - RC -> predefined, not set;
-  # - XX -> custom, invalid (upper case)
   # - xx -> custom set
   # - zz -> custom not set
+  # - XX -> custom, not set, upper case
 
   def test_get_tag_content(self):
     for version in ["gfa1","gfa2"]:
@@ -106,13 +95,13 @@ class TestApiTags(unittest.TestCase):
         # test presence of tag
         assert(l.KC)
         assert(not l.RC)
-        with self.assertRaises(AttributeError): l.XX
+        assert(not l.XX)
         assert(l.xx)
         assert(not l.zz)
         # get tag content, fieldname methods
         self.assertEqual(10, l.KC)
         self.assertEqual(None, l.RC)
-        with self.assertRaises(AttributeError): l.XX
+        self.assertEqual(None, l.XX)
         self.assertEqual(1.3, l.xx)
         self.assertEqual(None, l.zz)
         # get tag content, get()
@@ -124,7 +113,7 @@ class TestApiTags(unittest.TestCase):
         # banged version, fieldname methods
         self.assertEqual(10, l.try_get_KC())
         self.assertRaises(gfapy.NotFoundError, l.try_get_RC)
-        with self.assertRaises(AttributeError): l.try_get_XX()
+        self.assertRaises(gfapy.NotFoundError, l.try_get_XX)
         self.assertEqual(1.3, l.try_get_xx())
         with self.assertRaises(gfapy.NotFoundError):
           l.try_get_zz()
@@ -149,18 +138,6 @@ class TestApiTags(unittest.TestCase):
         # as string: complete
         self.assertEqual("KC:i:10", l.field_to_s("KC", tag=True))
         self.assertEqual("xx:f:1.3", l.field_to_s("xx", tag=True))
-        ## # respond_to? normal version
-        ## assert(l.respond_to?("KC"))
-        ## assert(l.respond_to?("RC"))
-        ## assert(not l.respond_to?("XX"))
-        ## assert(l.respond_to?("xx"))
-        ## assert(l.respond_to?("zz"))
-        ## # respond_to? banged version
-        ## assert(l.respond_to?("KC"!))
-        ## assert(l.respond_to?("RC"!))
-        ## assert(not l.respond_to?("XX"!))
-        ## assert(l.respond_to?("xx"!))
-        ## assert(l.respond_to?("zz"!))
 
   def test_set_tag_content(self):
     for version in ["gfa1","gfa2"]:
@@ -176,21 +153,12 @@ class TestApiTags(unittest.TestCase):
         l.set("RC", 14) # nothing raised; self.assertEqual(14, l.RC)
         l.set("xx", 1.4) # nothing raised; self.assertEqual(1.4, l.xx)
         l.set("zz", 1.4) # nothing raised; self.assertEqual(1.4, l.zz)
-        # check respond_to method
-        ### assert(l.has_attr("KC"))
-        ### assert(l.has_attr("RC"))
-        ### assert(not l.respond_to?("XX"=))
-        ### assert(l.respond_to?("xx"=))
-        ### assert(l.respond_to?("zz"=))
         # set datatype for predefined field
-        self.assertRaises(gfapy.RuntimeError, l.set_datatype, "KC", "Z")
+        self.assertRaises(gfapy.RuntimeError, l.set_datatype, "KC","Z")
         self.assertRaises(gfapy.RuntimeError, l.set_datatype, "RC","Z")
         # set datatype for non-existing custom tag
         l.set_datatype("zz", "i") # nothing raised
-        if level == 0:
-          l.set_datatype("XX", "Z") # nothing raised
-        elif level >= 1:
-          self.assertRaises(gfapy.FormatError, l.set_datatype, "XX", "Z")
+        l.set_datatype("XX", "Z") # nothing raised
         # change datatype for existing custom tag
         l.xx = 1.1 # nothing raised
         l.xx = "1.1" # nothing raised
@@ -224,10 +192,7 @@ class TestApiTags(unittest.TestCase):
         self.assertEqual(None, l.KC)
         self.assertEqual(["xx"], l.tagnames)
         l.set("RC",None)  # nothing raised
-        if level == 0:
-          l.set("XX",None)  # nothing raised
-        else:
-          self.assertRaises(gfapy.FormatError,l.set,"XX",None)
+        l.set("XX",None)  # nothing raised
         l.set("xx",None)  # nothing raised
         self.assertEqual([], l.tagnames)
         l.set("zz",None)  # nothing raised
