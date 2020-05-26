@@ -40,7 +40,6 @@ cleanup:
 upload: tests cleanup sdist wheel
 	cd dist; \
   	for file in *; do \
-	   	twine register $$file; \
 		  twine upload $$file; \
 		done
 
