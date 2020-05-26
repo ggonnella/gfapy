@@ -23,13 +23,15 @@ manual:
 	mkdir -p manual
 	cp doc/_build/latex/Gfapy.pdf manual/gfapy-manual.pdf
 
-
-# Run unit tests
-tests:
+doctest:
 	cd doc && make doctest
+
+unittests:
 	@echo
 	@echo "Running unit test suite..."
 	@PYTHONHASHSEED=0 ${PYTHON} -m unittest discover
+
+tests: doctest unittests
 
 # Remove distribution files
 cleanup:

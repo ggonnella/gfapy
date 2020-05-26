@@ -40,10 +40,15 @@ class Parser:
     """
     mod = gfapy.Field.FIELD_MODULE.get(datatype)
     if mod is None:
+      linemsg = ""
       try:
-        linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+        if line is not None and not line.__error__:
+          line.__error__ = True # avoids infinite recursion
+          linemsg = ["Line content:"]
+          linemsg.append(str(line))
+          linemsg.append("\n")
       except:
-        linemsg = ""
+        pass
       fieldnamemsg = "Field: {}\n".format(fieldname) if fieldname else ""
       contentmsg = "Content: {}\n".format(string)
       raise gfapy.TypeError(
@@ -57,19 +62,25 @@ class Parser:
       else:
         return mod.unsafe_decode(string)
     except Exception as err:
+      linemsg = ""
       try:
-        linemsg = ("Line content: " + str(line) + "\n") if line is not None else ""
+        if line is not None and not line.__error__:
+          line.__error__ = True # avoids infinite recursion
+          linemsg = ["Line content:"]
+          linemsg.append(str(line))
+          linemsg.append("\n")
       except:
-        linemsg = ""
+        pass
       fieldnamemsg = "Field: {}\n".format(fieldname) if fieldname else ""
       contentmsg = "Content: {}\n".format(string)
       datatypemsg = "Datatype: {}\n".format(datatype)
+      errmsg = err.message if hasattr(err, "message") else str(err)
       raise err.__class__(
             linemsg +
             fieldnamemsg +
             datatypemsg +
             contentmsg +
-            (err.message if hasattr(err, "message") else str(err))) from err
+            errmsg) from err
 
   @staticmethod
   def _parse_gfa_tag(tag):

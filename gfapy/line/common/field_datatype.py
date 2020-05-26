@@ -45,8 +45,7 @@ class FieldDatatype:
         raise gfapy.RuntimeError(
           "Cannot set the datatype of {} to {}\n".format(fieldname, datatype)+
           "The datatype of a predefined tag cannot be changed")
-    elif not self._is_valid_custom_tagname(fieldname, self._dialect) \
-        and self.vlevel > 0:
+    elif not self._is_valid_custom_tagname(fieldname) and self.vlevel > 0:
       raise gfapy.FormatError(
         "{} is not a valid custom tag name".format(fieldname))
     if datatype not in gfapy.Field.TAG_DATATYPE:

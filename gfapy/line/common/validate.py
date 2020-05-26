@@ -43,9 +43,9 @@ class Validate:
     for n in self.tagnames:
       if self._is_predefined_tag(n):
         self._validate_predefined_tag_type(n, self._field_datatype(n))
-      elif not self._is_valid_custom_tagname(n, self._dialect):
-        raise gfapy.FormatError("Custom tags must be lower case\n"+
-            "Found: {}".format(n))
+      elif not self._is_valid_custom_tagname(n):
+        raise gfapy.FormatError("Custom tag names must consist in a letter "+
+            "and a digit or two letters\nFound: {}".format(tagname))
 
   def _validate_predefined_tag_type(self, tagname, datatype):
     if datatype != self.__class__.DATATYPE[tagname]:
@@ -54,16 +54,13 @@ class Validate:
         "{}, {} found".format(self.__class__.DATATYPE[tagname], datatype))
 
   def _validate_custom_tagname(self, tagname):
-    if not self._is_valid_custom_tagname(tagname, self._dialect):
-      raise gfapy.FormatError("Custom tags must be lower case\n"+
-          "Found: {}".format(tagname))
+    if not self._is_valid_custom_tagname(tagname):
+      raise gfapy.FormatError("Custom tag names must consist in a letter "+
+          "and a digit or two letters\nFound: {}".format(tagname))
 
   @staticmethod
-  def _is_valid_custom_tagname(tagname, dialect):
-    if dialect == "standard":
-      return (re.match(r"^[a-z][a-z0-9]$", tagname))
-    elif dialect == "rgfa":
-      return (re.match(r"^[A-Za-z][A-Za-z0-9]$", tagname))
+  def _is_valid_custom_tagname(tagname):
+    return (re.match(r"^[A-Za-z][A-Za-z0-9]$", tagname))
 
   def _validate_record_type_specific_info(self):
     pass

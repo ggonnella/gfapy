@@ -36,9 +36,8 @@ class Line(Construction, DynamicFields, Writer, VersionConversion,
       then the version is guessed from the record type and syntax, or set
       to 'generic'
     dialect (str) : one of 'rgfa' and 'standard'; the GFA dialect; if not
-      specified then the dialect is set to 'standard'. This currently affects
-      only the validation of custom tags. 'standard' does not allow application-
-      specific upper case tags; 'rgfa' allows them.
+      specified then the dialect is set to 'standard'; 'rgfa' is only valid
+      when version is 'gfa1'
 
   Notes:
     The private interface to the Line constructor also allows to pass a
@@ -48,8 +47,7 @@ class Line(Construction, DynamicFields, Writer, VersionConversion,
 
   Raises:
     gfapy.error.FormatError: If the line contains a wrong number of positional
-      fields, if non-predefined tags use upcase letters, or if the content of a
-      field has a wrong format.
+      fields, or if the content of a field has a wrong format.
     gfapy.error.NotUniqueError: If a tag name is used more than once.
     gfapy.error.TypeError: If the value of a predefined tag does not
       respect the datatype specified in the tag.

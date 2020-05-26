@@ -141,17 +141,13 @@ The following table summarizes the datatypes available for tags:
 Validation
 ~~~~~~~~~~
 
-The tag name is validated according the rules described above:
-except for the upper case tags indicated in the GFA1 specification, and
-the TS header tag, all other tags must contain at least one lower case
-letter.
+The tag names must consist of a letter and a digit or two letters.
 
 ::
 
-    "VN:i:1"  # => in header: allowed, elsewhere: error
-    "TS:i:1"  # => allowed in headers and GFA2 Edges
-    "KC:i:1"  # => allowed in links, containments, GFA1/GFA2 segments
-    "xx:i:1"  # => custom tag, always allowed
+    "KC:i:1"  # => OK
+    "xx:i:1"  # => OK
+    "x1:i:1"  # => OK
     "xxx:i:1" # => error: name is too long
     "x:i:1"   # => error: name is too short
     "11:i:1"  # => error: at least one letter must be present

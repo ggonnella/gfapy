@@ -38,8 +38,14 @@ class Writer:
     str list
       A list of string representations of the fields.
     """
-    a = [self.record_type]
+    a = []
     errors = []
+    try:
+      rt = self.record_type
+    except:
+      rt = "<error>"
+      errors.append("record_type")
+    a.append(rt)
     for fn in self.positional_fieldnames:
       try:
         fstr = self.field_to_s(fn, tag = False)
@@ -102,9 +108,22 @@ class Writer:
     try:
       s = str(self)
     except:
-      s = "\t".join([ self.record_type + "(error!)" ] + \
-          [ repr(self.get(fn)) for fn in self.positional_fieldnames ] + \
-          [ (fn + ":" + self.get_datatype(fn) + ":" + repr(self.get(fn))) for fn in self.tagnames ])
+      rt = self.record_type + "(error!)"
+      s = [ rt ]
+      for fn in self.positional_fieldnames:
+        try:
+          field_s = repr(self.get(fn))
+        except:
+          field_s = "<error>"
+        s.append(field_s)
+      for tn in self.tagnames:
+        dt = self.get_datatype(tn)
+        try:
+          tv = repr(self.get(tn))
+        except:
+          tv = "<ERROR>"
+        s.append("{}:{}:{}".format(tn,dt,tv))
+      s = "\t".join(s)
     return "gfapy.Line('{0}',version='{1}',vlevel={2})".format(s,self.version,self.vlevel)
 
   def refstr(self, maxlen=10):

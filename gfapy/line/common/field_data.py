@@ -46,7 +46,7 @@ class FieldData:
     ----------
     fieldname : str
       The name of the field to set.
-      (positional field, predefined tag (uppercase) or custom tag (lowercase))
+      (positional field, predefined or custom tag)
 
     Raises
     ------
@@ -65,13 +65,13 @@ class FieldData:
       return self.set(self.__class__.FIELD_ALIAS[fieldname], value)
     elif self.virtual:
       raise gfapy.RuntimeError("Virtual lines do not have tags")
-    elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname,
-        self._dialect):
+    elif (self.vlevel == 0) or self._is_valid_custom_tagname(fieldname):
       self._define_field_methods(fieldname)
       if self._datatype.get(fieldname, None) is not None:
         return self._set_existing_field(fieldname, value)
       elif value is not None:
-        self._datatype[fieldname] = gfapy.Field._get_default_gfa_tag_datatype(value)
+        self._datatype[fieldname] = \
+            gfapy.Field._get_default_gfa_tag_datatype(value)
         self._data[fieldname] = value
         return self._data[fieldname]
     else:

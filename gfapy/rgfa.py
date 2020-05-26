@@ -3,8 +3,8 @@ import gfapy
 class RGFA():
   """
   Add support of rGFA format.
-  Upper case non-standard tags are allowed
-  and a validation method is added.
+  A dialect-specific validation method is added, as well as convenience
+  methods to handle the stable sequence names.
   """
 
   def is_rgfa(self):

@@ -72,9 +72,6 @@ class TestApiTags(unittest.TestCase):
     l = gfapy.line.Header(["H", "zz:i:1", "VN:Z:1.0"], version="gfa1", vlevel=0)
     l.zz = "x"
     self.assertRaises(gfapy.FormatError, l.validate)
-    # wrong predefined tag name
-    l = gfapy.line.Header(["H", "zz:i:1", "VZ:Z:1.0"], version="gfa1", vlevel=0)
-    self.assertRaises(gfapy.FormatError, l.validate)
     # wrong predefined tag datatype
     l = gfapy.line.Header(["H", "zz:i:1", "VN:i:1"], version="gfa1", vlevel=0)
     self.assertRaises(gfapy.TypeError, l.validate)
@@ -98,44 +95,45 @@ class TestApiTags(unittest.TestCase):
         assert(not l.XX)
         assert(l.xx)
         assert(not l.zz)
-        # get tag content, fieldname methods
+        # tagname as attribute
         self.assertEqual(10, l.KC)
         self.assertEqual(None, l.RC)
         self.assertEqual(None, l.XX)
         self.assertEqual(1.3, l.xx)
         self.assertEqual(None, l.zz)
-        # get tag content, get()
+        # get(tagname)
         self.assertEqual(10, l.get("KC"))
         self.assertEqual(None, l.get("RC"))
         self.assertEqual(None, l.get("XX"))
         self.assertEqual(1.3, l.get("xx"))
         self.assertEqual(None, l.get("zz"))
-        # banged version, fieldname methods
+        # try_get_<tagname>()
         self.assertEqual(10, l.try_get_KC())
         self.assertRaises(gfapy.NotFoundError, l.try_get_RC)
-        self.assertRaises(gfapy.NotFoundError, l.try_get_XX)
+        with self.assertRaises(gfapy.NotFoundError):
+          l.try_get_XX()
         self.assertEqual(1.3, l.try_get_xx())
         with self.assertRaises(gfapy.NotFoundError):
           l.try_get_zz()
-        # banged version, get()
+        # try_get(tagname)
         self.assertEqual(10, l.try_get("KC"))
         self.assertRaises(gfapy.NotFoundError, l.try_get, "RC")
         self.assertRaises(gfapy.NotFoundError, l.try_get, "XX")
         self.assertEqual(1.3, l.try_get("xx"))
         self.assertRaises(gfapy.NotFoundError, l.try_get, "zz")
-        # get tag datatype
+        # get_datatype(tagname)
         self.assertEqual("i", l.get_datatype("KC"))
         self.assertEqual("i", l.get_datatype("RC"))
         self.assertEqual(None, l.get_datatype("XX"))
         self.assertEqual("f", l.get_datatype("xx"))
         self.assertEqual(None, l.get_datatype("zz"))
-        # as string: content only
+        # field_to_s(tagname, tag=False)
         self.assertEqual("10", l.field_to_s("KC"))
         self.assertRaises(gfapy.NotFoundError, l.field_to_s, "RC")
         self.assertRaises(gfapy.NotFoundError, l.field_to_s, "XX")
         self.assertEqual("1.3", l.field_to_s("xx"))
         self.assertRaises(gfapy.NotFoundError, l.field_to_s, "zz")
-        # as string: complete
+        # field_to_s(tagname, tag=True)
         self.assertEqual("KC:i:10", l.field_to_s("KC", tag=True))
         self.assertEqual("xx:f:1.3", l.field_to_s("xx", tag=True))
 
@@ -164,7 +162,7 @@ class TestApiTags(unittest.TestCase):
         l.xx = "1.1" # nothing raised
         if level == 2:
           l.xx = "1A" # nothing raised
-          with self.assertRaises(gfapy.Error):
+          with self.assertRaises(gfapy.FormatError):
             str(l)
         elif level == 3:
           with self.assertRaises(gfapy.FormatError):

@@ -36,8 +36,7 @@ class TestUnitLine(unittest.TestCase):
       gfapy.line.Header(["H", "zz:i:1", "VN:Z:1", "zz:i:2"])
 
   def test_initialize_custom_tag(self):
-    with self.assertRaises(gfapy.FormatError):
-      gfapy.line.Header(["H", "ZZ:Z:1"])
+    gfapy.line.Header(["H", "ZZ:Z:1"]) # nothing raised
 
   def test_record_type(self):
     l = gfapy.line.Header(["H", "xx:i:13", "VN:Z:HI"])
