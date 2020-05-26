@@ -1,3 +1,8 @@
+== 1.1.0 ==
+
+- fix: custom tags are not necessarily lower case
+- additional support for rGFA subset of GFA1 by setting option dialect="rgfa"
+
 == 1.0.0 ==
 
 - initial release
