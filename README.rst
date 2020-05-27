@@ -1,7 +1,7 @@
 Gfapy
 ~~~~~
 
-|readthedocs| |bioconda| |pypi|
+|license| |readthedocs| |bioconda| |pypi| |debian| |ubuntu|
 
 .. sphinx-begin
 
@@ -94,3 +94,16 @@ https://doi.org/10.1093/bioinformatics/btx398
    image:: https://img.shields.io/pypi/v/gfapy
    :target: https://pypi.org/project/gfapy/
    :alt: PyPI
+
+.. |debian|
+   image:: https://img.shields.io/debian/v/gfapy
+   :alt: Debian
+
+.. |ubuntu|
+   image:: https://img.shields.io/ubuntu/v/gfapy
+   :alt: Ubuntu
+
+.. |license|
+   image:: image:: https://img.shields.io/pypi/l/gfapy
+   :target: https://github.com/ggonnella/gfapy/blob/master/LICENSE.txt
+   :alt: ISC License
