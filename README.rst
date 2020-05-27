@@ -81,7 +81,7 @@ https://doi.org/10.1093/bioinformatics/btx398
 .. sphinx-end
 
 .. |latesttag|
-   image:: .. https://img.shields.io/github/v/tag/ggonnella/gfapy
+   image:: https://img.shields.io/github/v/tag/ggonnella/gfapy
    :target: https://github.com/ggonnella/gfapy/tags
    :alt: Latest GitHub tag
 
