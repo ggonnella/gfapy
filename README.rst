@@ -2,6 +2,7 @@ Gfapy
 ~~~~~
 
 |travis| |readthedocs| |latesttag| |license|
+
 |bioconda| |pypi| |debian| |ubuntu|
 
 .. sphinx-begin
