@@ -1,7 +1,8 @@
 Gfapy
 ~~~~~
 
-|latesttag| |license| |readthedocs| |bioconda| |pypi| |debian| |ubuntu|
+|travis| |readthedocs| |latesttag| |license|
+|bioconda| |pypi| |debian| |ubuntu|
 
 .. sphinx-begin
 
@@ -79,6 +80,11 @@ library for handling sequence graphs in Python", Bioinformatics (2017) btx398
 https://doi.org/10.1093/bioinformatics/btx398
 
 .. sphinx-end
+
+.. |travis|
+   image:: https://travis-ci.org/ggonnella/gfapy.svg?branch=master
+   :target: https://travis-ci.org/ggonnella/gfapy
+   :alt: Travis
 
 .. |latesttag|
    image:: https://img.shields.io/github/v/tag/ggonnella/gfapy
