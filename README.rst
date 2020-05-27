@@ -1,8 +1,9 @@
-.. github display
-   Gfapy
-   ~~~~~
+Gfapy
+~~~~~
 
-   |docs|
+|docs|
+
+.. sphinx-begin
 
 The Graphical Fragment Assembly (GFA) are formats for the representation
 of sequence graphs, including assembly, variation and splicing graphs.
@@ -76,6 +77,8 @@ References
 Giorgio Gonnella and Stefan Kurtz "GfaPy: a flexible and extensible software
 library for handling sequence graphs in Python", Bioinformatics (2017) btx398
 https://doi.org/10.1093/bioinformatics/btx398
+
+.. sphinx-end
 
 .. |docs|
    image:: https://readthedocs.org/projects/pip/badge/?version=stable
