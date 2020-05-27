@@ -1,7 +1,7 @@
 Gfapy
 ~~~~~
 
-|docs| |conda|
+|readthedocs| |bioconda|
 
 .. sphinx-begin
 
@@ -80,7 +80,7 @@ https://doi.org/10.1093/bioinformatics/btx398
 
 .. sphinx-end
 
-.. |docs|
+.. |readthedocs|
    image:: https://readthedocs.org/projects/pip/badge/?version=stable
    :target: https://pip.pypa.io/en/stable/?badge=stable
    :alt: ReadTheDocs
