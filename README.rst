@@ -1,7 +1,7 @@
 Gfapy
 ~~~~~
 
-|readthedocs| |bioconda|
+|readthedocs| |bioconda| |pypi|
 
 .. sphinx-begin
 
@@ -89,3 +89,8 @@ https://doi.org/10.1093/bioinformatics/btx398
    image:: https://img.shields.io/conda/vn/bioconda/gfapy
    :target: https://bioconda.github.io/recipes/gfapy/README.html
    :alt: Bioconda
+
+.. |pypi|
+   image:: https://img.shields.io/pypi/v/gfapy
+   :target: https://pypi.org/project/gfapy/
+   :alt: PyPI
