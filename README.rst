@@ -1,8 +1,8 @@
-..only:: notsphinx
-  Gfapy
-  ~~~~~
+.. only:: notsphinx
+        Gfapy
+        ~~~~~
 
-  |docs|
+        |docs|
 
 The Graphical Fragment Assembly (GFA) are formats for the representation
 of sequence graphs, including assembly, variation and splicing graphs.
