@@ -97,10 +97,12 @@ https://doi.org/10.1093/bioinformatics/btx398
 
 .. |debian|
    image:: https://img.shields.io/debian/v/gfapy
+   :target: https://packages.debian.org/search?keywords=gfapy
    :alt: Debian
 
 .. |ubuntu|
    image:: https://img.shields.io/ubuntu/v/gfapy
+   :target: https://packages.ubuntu.com/search?keywords=gfapy
    :alt: Ubuntu
 
 .. |license|
