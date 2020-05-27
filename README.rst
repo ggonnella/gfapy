@@ -104,6 +104,6 @@ https://doi.org/10.1093/bioinformatics/btx398
    :alt: Ubuntu
 
 .. |license|
-   image:: image:: https://img.shields.io/pypi/l/gfapy
+   image:: https://img.shields.io/pypi/l/gfapy
    :target: https://github.com/ggonnella/gfapy/blob/master/LICENSE.txt
    :alt: ISC License
