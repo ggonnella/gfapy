@@ -77,7 +77,6 @@ library for handling sequence graphs in Python", Bioinformatics (2017) btx398
 https://doi.org/10.1093/bioinformatics/btx398
 
 .. |docs|
-    image:: https://readthedocs.org/projects/docs/gfapy/?version=latest
-    :alt: Documentation Status
-    :scale: 100%
-    :target: https://docs.readthedocs.io/en/latest/?gfapy=latest
+   image:: https://readthedocs.org/projects/pip/badge/?version=stable
+   :target: https://pip.pypa.io/en/stable/?badge=stable
+   :alt: Documentation Status
