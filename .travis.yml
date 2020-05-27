@@ -8,3 +8,6 @@ install:
   - pip install nose
   - pip install Sphinx
 script: "make tests"
+os:
+- linux
+- osx
