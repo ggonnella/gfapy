@@ -40,6 +40,7 @@ Installation
 
 Gfapy is distributed as a Python package and can be installed using
 the Python package manager pip, as well as conda (in the Bioconda channel).
+It is also available as a package in some Linux distributions (Debian, Ubuntu).
 
 The following command installs the current stable version from the Python
 Packages index::
