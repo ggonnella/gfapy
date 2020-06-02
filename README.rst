@@ -32,7 +32,7 @@ references, to each other and to lines of the standard record types.
 Requirements
 ~~~~~~~~~~~~
 
-Gfapy has been written for Python 3 and tested using Python version 3.3.
+Gfapy has been written for Python 3 and tested using Python version 3.7.
 It does not require any additional Python packages or other software.
 
 Installation
