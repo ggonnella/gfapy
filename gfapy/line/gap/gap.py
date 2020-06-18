@@ -1,4 +1,3 @@
-import gfapy
 from .references import References
 from ..line import Line
 

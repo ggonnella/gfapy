@@ -1,4 +1,3 @@
-import gfapy
 import json
 from copy import deepcopy
 

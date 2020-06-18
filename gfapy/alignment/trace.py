@@ -1,5 +1,4 @@
 import gfapy
-from .alignment import Alignment
 
 class Trace(list):
   """Trace alignment.

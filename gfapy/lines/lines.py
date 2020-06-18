@@ -2,7 +2,6 @@ import gfapy
 import gfapy.line
 from .collections import Collections
 from .headers import Headers
-from .collections import Collections
 from .creators import Creators
 from .destructors import Destructors
 from .finders import Finders

@@ -1,5 +1,3 @@
-import gfapy
-
 class Collections:
   @property
   def comments(self):

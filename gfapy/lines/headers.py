@@ -1,5 +1,3 @@
-import gfapy
-
 class Headers:
   @property
   def header(self):

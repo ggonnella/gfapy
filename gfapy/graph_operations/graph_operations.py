@@ -1,4 +1,3 @@
-import gfapy
 from .artifacts import Artifacts
 from .copy_number import CopyNumber
 from .invertible_segments import InvertibleSegments

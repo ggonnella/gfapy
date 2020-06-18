@@ -1,4 +1,3 @@
-import gfapy
 from ..line import Line
 from .construction import Construction
 from .tags import Tags

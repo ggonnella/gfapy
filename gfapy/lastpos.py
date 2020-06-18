@@ -1,5 +1,4 @@
 import gfapy
-import copy
 from functools import total_ordering
 
 @total_ordering

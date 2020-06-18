@@ -1,5 +1,3 @@
-import gfapy
-
 class CopyNumber:
 
   def set_default_count_tag(self, tag):

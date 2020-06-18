@@ -1,5 +1,3 @@
-import gfapy
-
 class DefaultRecordDefinition:
   """
   Provides default values for the constants for the definition of record types.

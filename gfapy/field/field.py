@@ -1,6 +1,5 @@
 import gfapy
 import builtins
-import re
 from .validator import Validator
 from .parser import Parser
 from .writer import Writer

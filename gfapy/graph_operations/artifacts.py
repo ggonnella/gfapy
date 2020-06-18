@@ -1,5 +1,3 @@
-import gfapy
-
 class Artifacts:
 
   def remove_small_components(self, minlen):

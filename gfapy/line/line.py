@@ -1,5 +1,5 @@
 from .common.construction import Construction
-from .common.dynamic_fields import DynamicFields, DynamicField
+from .common.dynamic_fields import DynamicFields
 from .common.writer import Writer
 from .common.version_conversion import VersionConversion
 from .common.field_datatype import FieldDatatype
@@ -12,8 +12,6 @@ from .common.update_references import UpdateReferences
 from .common.disconnection import Disconnection
 from .common.validate import Validate
 from .common.default_record_definition import DefaultRecordDefinition
-
-import gfapy
 
 class Line(Construction, DynamicFields, Writer, VersionConversion,
            FieldDatatype, FieldData, Equivalence, Cloning, Connection,

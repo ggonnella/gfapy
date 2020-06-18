@@ -1,6 +1,5 @@
 import re
 import gfapy
-from .alignment import Alignment
 
 class CIGAR(list):
   """
