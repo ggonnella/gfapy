@@ -1,7 +1,7 @@
 Gfapy
 ~~~~~
 
-|travis| |readthedocs| |latesttag| |license|
+|travis| |readthedocs| |latesttag| |license| |requiresio|
 
 |bioconda| |pypi| |debian| |ubuntu|
 
@@ -122,3 +122,8 @@ https://doi.org/10.1093/bioinformatics/btx398
    image:: https://img.shields.io/pypi/l/gfapy
    :target: https://github.com/ggonnella/gfapy/blob/master/LICENSE.txt
    :alt: ISC License
+   
+.. |requiresio|
+   image:: https://requires.io/github/ggonnella/gfapy/requirements.svg?branch=master
+   :target: https://requires.io/github/ggonnella/gfapy/requirements/?branch=master
+   :alt: Requirements Status
