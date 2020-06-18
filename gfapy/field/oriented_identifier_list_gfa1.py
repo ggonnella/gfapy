@@ -25,7 +25,7 @@ def validate_decoded(iterable):
     elem.validate()
     if not re.match(r"^[!-)+-<>-~][!-~]*$", elem.name):
       raise gfapy.FormatError(
-        "#{elem.name} is not a valid GFA1 segment name\n".format(elem.name)+
+        "{} is not a valid GFA1 segment name\n".format(elem.name)+
         "(it does not match [!-)+-<>-~][!-~]*)")
 
 def unsafe_encode(obj):

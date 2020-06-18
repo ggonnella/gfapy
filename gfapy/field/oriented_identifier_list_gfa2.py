@@ -24,7 +24,7 @@ def validate_decoded(iterable):
     elem.validate()
     if not re.match(r"^[!-~]+$", elem.name):
       raise gfapy.FormatError(
-        "the list contains an invalid GFA2 identifier\n".format(elem.name)+
+        "the list contains an invalid GFA2 identifier {}\n".format(elem.name)+
         "(it contains spaces and/or non-printable characters)")
     if not elem.orient in ["+", "-"]:
       raise gfapy.FormatError(

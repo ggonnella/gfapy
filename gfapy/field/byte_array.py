@@ -20,7 +20,7 @@ def unsafe_encode(obj):
   if isinstance(obj, gfapy.ByteArray):
     return str(obj)
   if isinstance(obj, list):
-    return str(ByteArray(obj))
+    return str(gfapy.ByteArray(obj))
   elif isinstance(obj, str):
     return obj
   else:
@@ -33,7 +33,7 @@ def encode(obj):
   if isinstance(obj, gfapy.ByteArray):
     return str(obj)
   elif isinstance(obj, list):
-    return str(ByteArray(obj))
+    return str(gfapy.ByteArray(obj))
   elif isinstance(obj, str):
     validate_encoded(obj)
     return obj

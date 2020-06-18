@@ -299,7 +299,7 @@ class Construction:
           DynamicField(partial(get_method, k = k),
                        partial(set_method, k = k)))
     def all_references(self):
-      return [ item for item in values for values in self._refs ]
+      return [ item for item in [ values for values in self._refs ] ]
 
   @classmethod
   def register_extension(cls, references=[]):

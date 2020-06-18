@@ -18,5 +18,5 @@ class Validation:
                 raise gfapy.InconsistencyError(
                     "Edge: {}\n".format(str(self))+
                     "Field {}: $ after ".format(fn)+
-                    "non-last position\n".format(str(pos))+
+                    "non-last position {}\n".format(str(pos))+
                     "Segment: {}".format(str(seg)))

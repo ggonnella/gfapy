@@ -25,7 +25,7 @@ def validate_decoded(obj):
     pass
   elif isinstance(obj, gfapy.Line):
     validate_encoded(obj.name)
-  elif isinstance(obj, String):
+  elif isinstance(obj, str):
     validate_encoded(obj)
   else:
     raise gfapy.TypeError(
@@ -49,7 +49,7 @@ def unsafe_encode(obj):
 def encode(obj):
   if isinstance(obj, gfapy.Placeholder):
     return str(obj)
-  elif isinstance(obj, String):
+  elif isinstance(obj, str):
     obj = str(obj)
   elif isinstance(obj, gfapy.Line):
     obj = str(obj.name)

@@ -24,10 +24,10 @@ class PBubbles:
       count_tag=self.default["count_tag"]
     if unit_length is None:
       unit_length=self.default["unit_length"]
-    s1 = segment(segment_end1.segment)
-    s2 = segment(segment_end2.segment)
-    et1 = segment(segment_end1.end_type)
-    et2 = segment(segment_end2.end_type)
+    s1 = self.try_get_segment(segment_end1.segment)
+    s2 = self.try_get_segment(segment_end2.segment)
+    et1 = segment_end1.end_type
+    et2 = segment_end2.end_type
     n1 = sorted(s1.neighbours(et1), key=lambda s:s.name)
     n2 = sorted(s2.neighbours(et2), key=lambda s:s.name)
     assert list(n1) == [os.inverted() for os in n2]
@@ -45,4 +45,4 @@ class PBubbles:
                  unit_length=unit_length) for s in alternatives]
     alternatives.pop(coverages.index(max(coverages)))
     for s in alternatives:
-      segment(s[0]).disconnect()
+      self.try_get_segment(s[0]).disconnect()

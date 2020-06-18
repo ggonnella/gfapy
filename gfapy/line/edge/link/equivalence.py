@@ -9,9 +9,9 @@ class Equivalence:
     Thereby, tags are not considered.
     """
     hash(str(self.from_end)) + \
-    hash(str(to_end)) + \
-    hash(str(overlap)) + \
-    hash(str(overlap.complement()))
+    hash(str(self.to_end)) + \
+    hash(str(self.overlap)) + \
+    hash(str(self.overlap.complement()))
 
   def is_eql(self, other):
     """

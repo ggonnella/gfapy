@@ -1,3 +1,5 @@
+import gfapy
+
 class References:
 
   def append_item(self, item):
@@ -43,7 +45,7 @@ class References:
       self.items = self.items[1:]
     else:
       self.items[0].update_reference(self, "paths")
-      self._delete_reference(items[0], "items")
+      self._delete_reference(self.items[0], "items")
       self.compute_induced_set() # check contiguity
 
   def rm_last_item(self):
@@ -66,9 +68,9 @@ class References:
     if isinstance(item.line, gfapy.Line):
       item.line = item.name
     if append:
-      items.append(item)
+      self.items.append(item)
     else:
-      items.insert(0, item)
+      self.items.insert(0, item)
 
   def _add_item_to_connected_group(self, item, append = True):
     item.line = self.prepare_and_check_ref(item.line)

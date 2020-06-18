@@ -51,7 +51,7 @@ class Multiplication:
       raise gfapy.ArgumentError("Mulitiplication factor must be >= 0"+
           " ({} found)".format(factor))
     elif factor == 0:
-      if conserve_components and factor == 1 and is_cut_segment(segment):
+      if conserve_components and factor == 1 and self.is_cut_segment(segment):
         return self
       else:
         self.rm(segment)
@@ -98,9 +98,9 @@ class Multiplication:
     processed_circulars = set()
     for l in segment.dovetails + segment.containments:
       if l.is_circular():
-        if l not in processed_circular:
+        if l not in processed_circulars:
           self.__divide_counts(l, factor)
-          processed_circular.append(l)
+          processed_circulars.append(l)
       else:
         self.__divide_counts(l, factor)
 
@@ -122,7 +122,7 @@ class Multiplication:
   def _select_distribute_end(self, links_distribution_policy,
                              segment_name, factor):
     if links_distribution_policy not in self.LINKS_DISTRIBUTION_POLICY:
-      raise gfa.ArgumentError("Unknown links distribution policy {}\n".format(\
+      raise gfapy.ArgumentError("Unknown links distribution policy {}\n".format(\
           links_distribution_policy)+"accepted values are: {}".format(\
           ", ".join(self.LINKS_DISTRIBUTION_POLICY)))
     if links_distribution_policy == "off":

@@ -1,10 +1,13 @@
+from itertools import groupby
+import gfapy
+
 class InvertibleSegments:
 
   def randomly_orient_invertibles(self):
     ''' Selects a random orientation for all invertible segments.
 
     For the definition of invertible segment, see Gonnella and Kurtz (2016).'''
-    for s in segment_names:
+    for sn in self.segment_names:
       if self._segment_same_links_both_ends(sn):
         self._randomly_orient_proven_invertible_segment(sn)
 
@@ -66,7 +69,7 @@ class InvertibleSegments:
     return [list(v) for k,v in groupby(sorted(links,key=sig),key=sig)]
 
   def _annotate_random_orientation(self, segment_name):
-    s = self.try_get_segment(segment_name)
+    segment = self.try_get_segment(segment_name)
     n = segment.name.split("_")
     pairs = 0
     pos = [1, segment.LN]

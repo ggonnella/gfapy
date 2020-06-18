@@ -1,3 +1,5 @@
+import gfapy
+
 class ToGFA2:
 
   @property

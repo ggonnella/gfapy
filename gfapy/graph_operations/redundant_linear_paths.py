@@ -77,7 +77,7 @@ class RedundantLinearPaths:
     elif self._version == "gfa2":
       mln = len(merged.sequence)
       tmp_link = gfapy.line.edge.GFA2(["*",merged.name+"+", \
-        last_name+("-" if is_reversed else "+"),
+        last.name+("-" if is_reversed else "+"),
         str(mln - ln), "{}$".format(mln),
         str(ln-1) if is_reversed else "0", # on purpose fake
         "{}$".format(ln) if is_reversed else "1", # on purpose fake

@@ -1,3 +1,5 @@
+import gfapy
+
 class SameID:
 
   def _process_not_unique(self, previous):

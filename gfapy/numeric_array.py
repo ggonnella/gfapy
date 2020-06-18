@@ -208,7 +208,7 @@ class NumericArray(list):
                     "Value: {1}\n"+
                     "Range: {2}\n"+
                     "Content: {3}").format(subtype, e,
-                      repr(range), repr(array)))
+                      repr(range), repr(elems)))
           yield e
         else:
           yield float(e)

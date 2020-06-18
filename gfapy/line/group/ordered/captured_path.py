@@ -105,12 +105,12 @@ class CapturedPath:
         # if oss_of_next have no element in common with oss an error will be
         # raised in the next iteration, so does not need to be handled here
       elif isinstance(nextitem.line, gfapy.line.group.Ordered):
-        subpath = item.line.captured_path
+        subpath = nextitem.line.captured_path
         if not subpath: return# does not need to be further handled here
-        if item.orient == "+":
-          firstsubpathsegment = supath[0]
+        if nextitem.orient == "+":
+          firstsubpathsegment = subpath[0]
         else:
-          firstsubpathsegment = supath[-1].inverted()
+          firstsubpathsegment = subpath[-1].inverted()
         if firstsubpathsegment == oss[0]:
           oss.reverse()
         # if oss does not include in firstsubpathsegment
@@ -167,7 +167,7 @@ class CapturedPath:
         "Expected element:\n"+
         "  {} ({})\n".format(path[-1], path[-1].line)+
         "Current element:\n"+
-        "  {} ({})\n".format(segment, segment.line))
+        "  {} ({})\n".format(oriented_segment, oriented_segment.line))
 
   def _check_s_to_e_contiguity(self, path, oriented_segment):
     # check that segment is an extremity of path[-1]

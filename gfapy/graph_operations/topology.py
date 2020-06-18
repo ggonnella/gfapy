@@ -51,13 +51,13 @@ class Topology:
     for et in ["L", "R"]:
       for l in segment.dovetails_of_end(et):
         start_points.append(l.other_end(\
-            gfapy.SegmentEnd(segment_name, et)).inverted())
+            gfapy.SegmentEnd(segment.name, et)).inverted())
     cc = []
     for start_point in start_points:
       cc.append(set())
       visited = set()
-      visited.append(segment_name)
-      traverse_component(start_point, cc[-1], visited)
+      visited.append(segment.name)
+      self.__traverse_component(start_point, cc[-1], visited)
     return any(c != cc[0] for c in cc)
 
   def segment_connected_component(self, segment, visited = None):

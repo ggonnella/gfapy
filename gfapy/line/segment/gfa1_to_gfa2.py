@@ -17,7 +17,7 @@ class GFA1ToGFA2:
           "GFA2 requires to specify a length\n"+
           "No length information available in the GFA1 segment:\n"+
           "Segment line: {}".format(str(self)))
-    a = ["S", self.field_to_s("name", tag = False), str(self.try_get_length()),
+    a = ["S", self.field_to_s("name", tag = False), str(length),
               self.field_to_s("sequence", tag = False)]
     for fn in self.tagnames:
       if fn != "LN":

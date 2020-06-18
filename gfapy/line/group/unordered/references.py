@@ -1,3 +1,5 @@
+import gfapy
+
 class References:
 
   def add_item(self, item):
@@ -39,8 +41,8 @@ class References:
     if isinstance(item, str):
       item = self._gfa.line(item)
     self._check_item_included(item)
-    line._delete_reference(self, "sets")
-    self._delete_reference(line, "items")
+    item._delete_reference(self, "sets")
+    self._delete_reference(item, "items")
     return None
 
   def _check_item_included(self, item):

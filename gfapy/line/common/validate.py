@@ -45,7 +45,7 @@ class Validate:
         self._validate_predefined_tag_type(n, self._field_datatype(n))
       elif not self._is_valid_custom_tagname(n):
         raise gfapy.FormatError("Custom tag names must consist in a letter "+
-            "and a digit or two letters\nFound: {}".format(tagname))
+            "and a digit or two letters\nFound: {}".format(n))
 
   def _validate_predefined_tag_type(self, tagname, datatype):
     if datatype != self.__class__.DATATYPE[tagname]:

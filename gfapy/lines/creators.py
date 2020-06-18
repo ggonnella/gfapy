@@ -154,6 +154,7 @@ class Creators:
     elif gfa_line.record_type in ["L", "P", "C", "#"]:
       gfa_line.connect(self)
     else:
+      rt = gfa_line.record_type
       raise gfapy.AssertionError(
         "Invalid record type {}. This should never happen".format(rt))
 

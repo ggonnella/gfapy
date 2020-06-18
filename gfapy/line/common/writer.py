@@ -159,6 +159,6 @@ class Writer:
     (str, str, object) list
     """
     retval = []
-    for of in tagnames:
+    for of in self.tagnames:
       retval.append([of, self.get_datatype(of), self.get(of)])
     return retval

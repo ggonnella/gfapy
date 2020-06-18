@@ -31,7 +31,7 @@ class DynamicFields:
         return super().__setattr__(name, value)
       else:
         attr.set(self, value)
-    except AttributeError as err:
+    except AttributeError:
       return self._set_dynamic_field(name, value)
 
   def _get_dynamic_field(self, name, err):

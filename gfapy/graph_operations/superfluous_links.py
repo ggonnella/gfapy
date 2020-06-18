@@ -24,15 +24,15 @@ class SuperfluousLinks:
       oe = {}
       for et in ["L", "R"]:
         oe[et] = l[et][0].other_end(se[et])
-      if oe[:L] == oe[:R]:
+      if oe["L"] == oe["R"]:
         return
       for et in ["L", "R"]:
         self._delete_other_links(oe[et], se[et],
                                 conserve_components=conserve_components)
     else:
-      if l[:L].size == 1:
+      if l["L"].size == 1:
         et = "L"
-      elif l[:R].size == 1:
+      elif l["R"].size == 1:
         et = "R"
       else:
         return
@@ -52,7 +52,7 @@ class SuperfluousLinks:
         removed, if their removal does not split connected components
         of the graph (considering as connections only dovetail overlaps)
     """
-    for sn in segment_names:
+    for sn in self.segment_names:
       self.enforce_segment_mandatory_links(sn, conserve_components=
                                                conserve_components)
 
@@ -64,7 +64,7 @@ class SuperfluousLinks:
     Parameters:
       segment (str, Line): the segment
     """
-    if not isinstance(segment, gfa.Line):
+    if not isinstance(segment, gfapy.Line):
       segment = self.try_get_segment(segment)
     for e in segment.dovetails:
       if e.from_segment == e.to_segment:
@@ -72,5 +72,5 @@ class SuperfluousLinks:
 
   def remove_self_links(self):
     """Remove all dovetail overlap of segments to themselves, if any."""
-    for sn in segment_names:
+    for sn in self.segment_names:
       self.remove_self_link(sn)

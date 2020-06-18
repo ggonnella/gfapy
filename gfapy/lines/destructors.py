@@ -22,8 +22,8 @@ class Destructors:
     other_end = gfapy.SegmentEnd(other_end)
     s = self.try_get_segment(segment_end.segment)
     for d in s.dovetails_of_end(segment_end.end_type):
-      if not conserve_components or not self.is_cut_link(l):
-        l.disconnect()
+      if not conserve_components or not self.is_cut_link(d):
+        d.disconnect()
 
   def _unregister_line(self, gfa_line):
     self._api_private_check_gfa_line(gfa_line, "unregister_line")
@@ -32,8 +32,6 @@ class Destructors:
       raise gfapy.AssertionError("Bug found, please report\n"+
         "gfa_line: {}".format(gfa_line))
     collection = self._records[rt]
-    key = gfa_line
-    delete_if_empty = None
     storage_key = gfa_line.__class__.STORAGE_KEY
     if storage_key == "name":
       name = gfa_line.name
