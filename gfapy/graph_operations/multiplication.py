@@ -100,7 +100,7 @@ class Multiplication:
       if l.is_circular():
         if l not in processed_circulars:
           self.__divide_counts(l, factor)
-          processed_circulars.append(l)
+          processed_circulars.add(l)
       else:
         self.__divide_counts(l, factor)
 

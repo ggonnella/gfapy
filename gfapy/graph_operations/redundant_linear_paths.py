@@ -4,7 +4,7 @@ class RedundantLinearPaths:
 
   def _junction_junction_paths(self, sn, exclude):
     retval = []
-    exclude.append(sn)
+    exclude.add(sn)
     s = self.segment(sn)
     for dL in s.dovetails_L:
       eL = dL.other_end(gfapy.SegmentEnd(s, "L"))

@@ -26,8 +26,8 @@ class Topology:
       c[et] = set()
       visited = set()
       segend = link.get("from") if et == "from" else link.to
-      visited.append(segend.name)
-      visited.append(link.other_end(segend).name)
+      visited.add(segend.name)
+      visited.add(link.other_end(segend).name)
       self.__traverse_component(segend, c[et], visited)
     return c["from"] != c["to"]
 
@@ -50,13 +50,13 @@ class Topology:
     start_points = set()
     for et in ["L", "R"]:
       for l in segment.dovetails_of_end(et):
-        start_points.append(l.other_end(\
+        start_points.add(l.other_end(\
             gfapy.SegmentEnd(segment.name, et)).inverted())
     cc = []
     for start_point in start_points:
       cc.append(set())
       visited = set()
-      visited.append(segment.name)
+      visited.add(segment.name)
       self.__traverse_component(start_point, cc[-1], visited)
     return any(c != cc[0] for c in cc)
 
@@ -80,10 +80,11 @@ class Topology:
       segment_name = segment
       segment = self.segment(segment)
     visited.add(segment_name)
-    c = [segment]
+    c = set()
+    c.add(segment)
     for e in ["L", "R"]:
       self.__traverse_component(gfapy.SegmentEnd(segment, e), c, visited)
-    return c
+    return list(c)
 
   def connected_components(self):
     """Compute the connected components of the graph.
@@ -184,6 +185,6 @@ class Topology:
       if sn in visited:
         continue
       visited.add(sn)
-      c.append(s)
+      c.add(s)
       for e in ["L","R"]:
         self.__traverse_component(gfapy.SegmentEnd(s, e), c, visited)
