@@ -87,7 +87,7 @@ class CapturedPath:
     oss = [oriented_edge.line.sid1, oriented_edge.line.sid2]
     if oriented_edge.orient == "-":
       for i in range(len(oss)):
-        oss[i].invert()
+        oss[i] = oss[i].inverted()
     if len(items) > 1:
       nextitem = items[1]
       if isinstance(nextitem.line, gfapy.line.segment.GFA2):
@@ -99,7 +99,7 @@ class CapturedPath:
         oss_of_next = [nextitem.line.sid1, nextitem.line.sid2]
         if oriented_edge.orient == "-":
           for i in range(len(oss_of_next)):
-            oss_of_next[i].invert()
+            oss_of_next[i] = oss_of_next[i].inverted()
         if oss[0] in oss_of_next:
           oss.reverse()
         # if oss_of_next have no element in common with oss an error will be
@@ -129,7 +129,7 @@ class CapturedPath:
     possible_prev = [oriented_edge.line.sid1, oriented_edge.line.sid2]
     if oriented_edge.orient == "-":
       for i, v in enumerate(possible_prev):
-        possible_prev[i].invert()
+        possible_prev[i] = possible_prev[i].inverted()
     if prev_os == possible_prev[0]:
       path.append(possible_prev[1])
     elif prev_os == possible_prev[1]:
