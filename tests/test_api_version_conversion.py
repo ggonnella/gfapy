@@ -200,18 +200,18 @@ class TestApiVersion(unittest.TestCase):
     gfa1_str ='''# comment
 H\tVN:Z:1.0
 S\tB\t*\tLN:i:200
-S\tC\t*\tLN:i:100
+S\tC\t*\tLN:i:100\txy:i:1
 S\tA\t*\tLN:i:200
 L\tA\t+\tB\t-\t100M\tID:Z:a_to_b
 C\tA\t+\tC\t-\t20\t100M\tID:Z:2
-P\t1\tA+,B-\t100M'''
+P\t1\tA+,B-\t100M\txx:Z:valid\txy:i:1'''
     gfa2_str ='''# comment
 H\tVN:Z:2.0
 S\tB\t200\t*
-S\tC\t100\t*
+S\tC\t100\t*\txy:i:1
 S\tA\t200\t*
 E\ta_to_b\tA+\tB-\t100\t200$\t100\t200$\t100M
 E\t2\tA+\tC-\t20\t120\t0\t100$\t100M
-O\t1\tA+ a_to_b+ B-'''
+O\t1\tA+ a_to_b+ B-\txx:Z:valid\txy:i:1'''
     self.assertEqual(gfa2_str, str(gfapy.Gfa(gfa1_str).to_gfa2()))
     self.assertEqual(gfa1_str, str(gfapy.Gfa(gfa2_str).to_gfa1()))

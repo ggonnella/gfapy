@@ -20,4 +20,6 @@ class ToGFA1:
       gfapy.Field._validate_gfa_field(oline.line.overlap, "alignment_gfa1")
       overlaps.append(str(oline.line.overlap))
     a.append(",".join(overlaps))
+    for tn in self.tagnames:
+      a.append(self.field_to_s(tn, tag=True))
     return a

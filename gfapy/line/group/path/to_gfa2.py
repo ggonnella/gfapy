@@ -12,4 +12,6 @@ class ToGFA2:
     a = ["O"]
     a.append(self.field_to_s("path_name"))
     a.append(" ".join(items))
+    for tn in self.tagnames:
+      a.append(self.field_to_s(tn, tag=True))
     return a
