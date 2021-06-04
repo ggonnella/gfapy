@@ -6,8 +6,6 @@ python:
   - "3.7"
 env:
   - PYTHONHASHSEED=0
-before_install:
-  - sudo chown -Rvf $USER:$GROUP ~/.cache/pip/wheels
 install:
   - pip install .
   - pip install nose
