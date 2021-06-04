@@ -3,7 +3,7 @@ import gfapy
 class LinearPaths:
 
   def linear_path(self, segment, exclude = None):
-    """Finnd a linear path which contains the specified segment
+    """Find a linear path which contains the specified segment
 
     Parameters:
       segment (str, Line): the segment to analyse

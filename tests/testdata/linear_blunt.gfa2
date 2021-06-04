@@ -1,0 +1,7 @@
+S	s1	5	CTGAA
+S	s2	3	ACG
+S	s3	4	TGGC
+S	s4	5	TGTGA
+E	1	s1+	s2+	5$	5$	0	0	0M
+E	2	s2+	s3+	3$	3$	0	0	0M
+E	3	s3+	s4-	4$	4$	5$	5$	0M
