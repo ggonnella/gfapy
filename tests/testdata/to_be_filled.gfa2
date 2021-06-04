@@ -1,0 +1,10 @@
+H	VN:Z:2.0
+S	s1	44	*
+S	s2	33	*
+S	s3	75	*
+S	s4	80	*
+S	s5	90	*	xx:Z:not in the Fasta, should accept and warn
+E	1	s1+	s2+	37	44$	0	8	5M1I2M
+E	2	s2+	s3+	21	33$	0	11	8M1D3M
+E	3	s3+	s4+	50	75$	0	26	16M1I9M
+E	4	s4-	s1+	0	24	0	25	8M1I16M

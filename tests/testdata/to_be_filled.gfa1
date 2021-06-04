@@ -1,0 +1,10 @@
+H	VN:Z:1.0
+S	s1	*	LN:i:44
+S	s2	*	LN:i:33
+S	s3	*	LN:i:75
+S	s4	*	LN:i:80
+S	s5	*	LN:i:90	xx:Z:not in the Fasta, should accept and warn
+L	s1	+	s2	+	5M1I2M
+L	s2	+	s3	+	8M1D3M
+L	s3	+	s4	+	16M1I9M
+L	s4	-	s1	+	8M1I16M
