@@ -334,7 +334,7 @@ class LinearPaths:
           merged.LN = len(merged.sequence)
         elif self._vlevel > 0 and merged.LN != len(merged.sequence):
           raise gfapy.InconsistencyError(
-              "Computed sequence length {} ".format(merged.sequence.length)+
+              "Computed sequence length {} ".format(len(merged.sequence))+
               "and computed LN {} differ".format(merged.LN))
     if merged.length is not None:
       for count_tag in ["KC", "RC", "FC"]:
