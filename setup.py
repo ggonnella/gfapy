@@ -9,7 +9,7 @@ if not sys.version_info[0] == 3:
   sys.exit("Sorry, only Python 3 is supported")
 
 setup(name='gfapy',
-      version='1.1.0',
+      version='1.2.0',
       description='Library for handling data in the GFA1 and GFA2 formats',
       long_description=readme(),
       url='https://github.com/ggonnella/gfapy',

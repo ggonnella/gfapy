@@ -84,8 +84,8 @@ https://doi.org/10.1093/bioinformatics/btx398
 .. sphinx-end
 
 .. |travis|
-   image:: https://travis-ci.org/ggonnella/gfapy.svg?branch=master
-   :target: https://travis-ci.org/ggonnella/gfapy
+   image:: https://travis-ci.com/ggonnella/gfapy.svg?branch=master
+   :target: https://travis-ci.com/ggonnella/gfapy
    :alt: Travis
 
 .. |latesttag|
