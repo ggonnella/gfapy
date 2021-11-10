@@ -48,3 +48,5 @@ class Canonical:
     """
     if not self.is_canonical():
       return self.complement()
+    else:
+      return self()
