@@ -16,6 +16,8 @@ op.add_argument("--no-progress", '-p', help="do not show progress log",
                 action="store_false", dest="progress")
 op.add_argument("--quiet", '-q', help="suppress output", action="store_false",
                 dest="output")
+op.add_argument("--short", help="use short names for merged segments",
+                action="store_true")
 op.add_argument("--vlevel", help="validation level", default=0, type=int)
 op.add_argument('--version', action='version', version='%(prog)s 1.0')
 opts = op.parse_args()
@@ -30,8 +32,12 @@ if opts.redundant:
   for cc in gfa.connected_components():
     if len(cc) == 1:
       gfa.segment(cc[0]).disconnect()
+if opts.short:
+  merged_name="short"
+else:
+  merged_name=None
 gfa.merge_linear_paths(redundant_junctions=opts.redundant,
                        enable_tracking=False,
-                       merged_name="short")
+                       merged_name=merged_name)
 if opts.output:
   print(gfa)
