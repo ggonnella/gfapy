@@ -13,6 +13,8 @@ class References:
       An array, which elements are 3-tuples
       (from oriented segment, to oriented segment, cigar)
     """
+    if len(self.segment_names) == 1:
+      return []
     has_undef_overlaps = self._undef_overlaps()
     retval = []
     is_circular = self.is_circular()

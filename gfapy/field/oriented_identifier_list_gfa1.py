@@ -10,14 +10,14 @@ def decode(string):
   return unsafe_decode(string)
 
 def validate_encoded(string):
-  if not re.match(r"^[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])+$", string):
+  if not re.match(r"^[!-)+-<>-~][!-~]*[+-](,[!-)+-<>-~][!-~]*[+-])*$", string):
     raise gfapy.FormatError(
       "{} is not a valid list of GFA1 segment names ".format(repr(string))+
       "and orientations\n"+
       "(the segment names must match [!-)+-<>-~][!-~]*;\n"+
       " the orientations must be + or -;\n"+
       " the list must be comma-separated "+
-      "NameOrient,NameOrient[,NameOrient...])")
+      "NameOrient[,NameOrient...])")
 
 def validate_decoded(iterable):
   for elem in iterable:
