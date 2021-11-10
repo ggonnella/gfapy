@@ -1,3 +1,8 @@
+== 1.2.1 ==
+
+- fixed an issue with linear path merging (issue 21)
+- GFA1 paths can contain a single segment only (issue 22)
+
 == 1.2.0 ==
 
 - fixed all open issues
