@@ -1,7 +1,7 @@
 Gfapy
 ~~~~~
 
-|travis| |readthedocs| |latesttag| |license| |requiresio|
+|travis| |readthedocs| |latesttag| |license|
 
 |bioconda| |pypi| |debian| |ubuntu|
 
