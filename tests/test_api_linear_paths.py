@@ -47,6 +47,15 @@ class TestAPILinearPaths(unittest.TestCase):
         lps.add(" ".join([s.name for s in lp]))
       self.assertEqual({"1 19 18", "11 9 12", "22 16 20 21 23"}, lps)
 
+  def test_linear_path_merge_6(self):
+    gfa = gfapy.Gfa.from_file("tests/testdata/linear_merging.6.gfa")
+    expected = gfapy.Gfa.from_file("tests/testdata/linear_merging.6.merged.gfa")
+    gfa.merge_linear_paths()
+    self.assertEqual(set(gfa.segment_names), set(expected.segment_names))
+    dovetails_gfa = [str(l) for l in gfa.dovetails].sort()
+    dovetails_expected = [str(l) for l in expected.dovetails].sort()
+    self.assertEqual(dovetails_gfa, dovetails_expected)
+
   def test_linear_path_blunt_ends(self):
     for sfx in ["gfa1", "gfa2"]:
       gfa = gfapy.Gfa.from_file("tests/testdata/linear_blunt."+"{}".format(sfx))
