@@ -348,8 +348,10 @@ class LinearPaths:
     return merged, first_reversed, last_reversed
 
   def __link_merged(self, merged_name, segment_end, is_reversed):
-    for l in self.segment(segment_end.segment).dovetails_of_end(
-                                                 segment_end.end_type):
+    to_disconnect = self.segment(segment_end.segment).dovetails_of_end(
+                                                 segment_end.end_type)
+    to_add = []
+    for l in to_disconnect:
       l2 = l.clone()
       if l2.to_segment == segment_end.segment:
         l2.to_segment = merged_name
@@ -359,6 +361,10 @@ class LinearPaths:
         l2.from_segment = merged_name
         if is_reversed:
           l2.from_orient = gfapy.invert(l2.from_orient)
+      to_add.append(l2)
+    for l in to_disconnect:
       l.disconnect()
-      self.add_line(l2)
+    for l in to_add:
+      self.add_line(l)
+
 
