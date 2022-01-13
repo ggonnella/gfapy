@@ -112,20 +112,22 @@ class TestAPILinesFinders(unittest.TestCase):
                                                 "name":"1"}))
     # search links
     self.assertEqual(TestAPILinesFinders.l_gfa1[4:5], TestAPILinesFinders.gfa1.select({"record_type":"L",
-                                                "from":"1",
+                                                "from_segment":"1",
                                                 "from_orient":"+"}))
     # search containments
     self.assertEqual(TestAPILinesFinders.l_gfa1[6:7], TestAPILinesFinders.gfa1.select({"record_type":"C",
-                                                "from":"1",
+                                                "from_segment":"1",
                                                 "pos":1}))
     # search paths
     self.assertEqual(TestAPILinesFinders.l_gfa1[7:8], TestAPILinesFinders.gfa1.select({"record_type":"P",
                                                 "segment_names":"1+,2+"}))
     # no record type specified
     self.assertEqual(TestAPILinesFinders.l_gfa1[0:1], TestAPILinesFinders.gfa1.select({"name":"1"}))
-    self.assertEqual(TestAPILinesFinders.l_gfa1[4:7], TestAPILinesFinders.gfa1.select({"from":"1"}))
+    self.assertEqual(TestAPILinesFinders.l_gfa1[4:7],
+        TestAPILinesFinders.gfa1.select({"from_segment":"1"}))
     # reference as value
-    self.assertEqual(TestAPILinesFinders.l_gfa1[4:7], TestAPILinesFinders.gfa1.select({"from":TestAPILinesFinders.l_gfa1[0]}))
+    self.assertEqual(TestAPILinesFinders.l_gfa1[4:7],
+        TestAPILinesFinders.gfa1.select({"from_segment":TestAPILinesFinders.l_gfa1[0]}))
     # placeholder is equal to any value
     self.assertEqual(set(TestAPILinesFinders.l_gfa1_a[0:3]),
         set([str(x) for x in TestAPILinesFinders.gfa1.select({"sequence":"ACC"})]))

@@ -29,7 +29,7 @@ all library errors.
 | `InconsistencyError`  | Pieces of information collide | length of sequence and LN tag   |
 |                       | with each other               | do not match                    |
 +-----------------------+-------------------------------+---------------------------------+
-| `RuntimeError`        | The user tried to do          | editing from/to field in        |
+| `RuntimeError`        | The user tried to do          | editing from_segment field in   |
 |                       | something which is not        | connected links                 |
 |                       | allowed                       |                                 |
 +-----------------------+-------------------------------+---------------------------------+

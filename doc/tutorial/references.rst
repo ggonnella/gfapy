@@ -60,9 +60,9 @@ GFA1
 +---------------+-------------------+---------------------------+
 | Record type   | Fields            | Type of reference         |
 +===============+===================+===========================+
-| Link          | from, to          | Segment                   |
+| Link          | from_segment, to_segment | Segment            |
 +---------------+-------------------+---------------------------+
-| Containment   | from, to          | Segment                   |
+| Containment   | from_segment, to_segment | Segment            |
 +---------------+-------------------+---------------------------+
 | Path          | segment\_names,   | [OrientedLine(Segment)]   |
 +---------------+-------------------+---------------------------+
@@ -361,7 +361,8 @@ Renaming an element
 
 The name field of a line (e.g. segment ``name``/``sid``) is not a
 reference and thus can be edited also in connected lines. When the name
-of the line is changed, no manual editing of references (e.g. from/to
+of the line is changed, no manual editing of references (e.g.
+``from_segment``/``to_segment``
 fields in links) is necessary, as all lines which refer to the line will
 still refer to the same instance. The references to the instance in the
 Gfa lines collections will be automatically updated. Also, the new name

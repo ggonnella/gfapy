@@ -2,7 +2,7 @@ import gfapy
 
 class References:
   def _initialize_references(self):
-    for d in ["from", "to"]:
+    for d in ["from_segment", "to_segment"]:
       s = self._gfa.segment(self.get(d))
       if s is None:
         if self._gfa._segments_first_order:
@@ -12,13 +12,14 @@ class References:
                                     version = "gfa1",
                                     virtual = True)
         s.connect(self._gfa)
-      self._set_existing_field(d+"_segment", s, set_reference = True)
+      self._set_existing_field(d, s, set_reference = True)
       if self.record_type == "L":
-        et = self.from_end.end_type if d == "from" else self.to_end.end_type
+        et = self.from_end.end_type \
+            if d == "from_segment" else self.to_end.end_type
         key = "dovetails_{}".format(et)
       else:
-        key = \
-          "edges_to_contained" if (d == "from") else "edges_to_containers"
+        key = "edges_to_contained" if (d == "from_segment") \
+              else "edges_to_containers"
       s._add_reference(self, key)
 
   def _import_field_references(self, previous):

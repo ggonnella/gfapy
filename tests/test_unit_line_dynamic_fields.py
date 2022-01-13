@@ -8,8 +8,8 @@ class TestUnitLineDynamicFields(unittest.TestCase):
     # record_type
     self.assertTrue(hasattr(l, "record_type"))
     # reqfields
-    self.assertTrue(hasattr(l, "from"))
-    self.assertIsInstance(object.__getattribute__(l, "from"),
+    self.assertTrue(hasattr(l, "from_segment"))
+    self.assertIsInstance(object.__getattribute__(l, "from_segment"),
                           gfapy.line.common.dynamic_fields.DynamicField)
     # predefined tags
     self.assertTrue(hasattr(l, "KC"))

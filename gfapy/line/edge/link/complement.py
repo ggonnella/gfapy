@@ -20,7 +20,7 @@ class Complement:
         gfapy.line.edge.Link: The inverted link.
     """
     l = self.clone()
-    l.from_segment = self.to
+    l.from_segment = self.to_segment
     l.from_orient = gfapy.invert(self.to_orient)
     l.to_segment = self.from_segment
     l.to_orient = gfapy.invert(self.from_orient)

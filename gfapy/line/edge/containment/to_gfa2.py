@@ -21,7 +21,7 @@ class ToGFA2:
     """
     self._check_overlap()
     rpos = self.pos + self.overlap.length_on_reference()
-    if rpos == self._lastpos_of("from"):
+    if rpos == self._lastpos_of("from_segment"):
       rpos = gfapy.LastPos(rpos)
     return [self.pos, rpos]
 
@@ -30,4 +30,4 @@ class ToGFA2:
     """
     GFA2 positions of the alignment on the **to** segment
     """
-    return [0, self._lastpos_of("to")]
+    return [0, self._lastpos_of("to_segment")]

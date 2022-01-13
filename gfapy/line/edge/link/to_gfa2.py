@@ -2,7 +2,7 @@ class ToGFA2:
 
   @property
   def from_coords(self):
-    """GFA2 positions of the alignment on the from segment.
+    """GFA2 positions of the alignment on the **from** segment.
 
     Returns
     -------
@@ -20,7 +20,7 @@ class ToGFA2:
     """
     self._check_overlap()
     if self.from_orient == "+":
-      from_l = self._lastpos_of("from")
+      from_l = self._lastpos_of("from_segment")
       return [from_l - self.overlap.length_on_reference(), from_l]
     else:
       return [0, self.overlap.length_on_reference()]
@@ -32,5 +32,5 @@ class ToGFA2:
     if self.to_orient == "+":
       return [0, self.overlap.length_on_query()]
     else:
-      to_l = self._lastpos_of("to")
+      to_l = self._lastpos_of("to_segment")
       return [to_l - self.overlap.length_on_query(), to_l]

@@ -52,7 +52,7 @@ class Other:
     """
     segment_name = str(segment)
     if segment_name == str(self.from_segment):
-      return self.to
+      return self.to_segment
     elif segment_name == str(self.to_segment):
       return self.from_segment
     elif tolerant:

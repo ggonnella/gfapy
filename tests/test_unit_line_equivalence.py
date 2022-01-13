@@ -94,7 +94,8 @@ class TestUnitLineEquivalence(unittest.TestCase):
     assert(TestUnitLineEquivalence.a._has_eql_fields(TestUnitLineEquivalence.a.clone()))
     # positional field difference
     assert(not TestUnitLineEquivalence.l._has_eql_fields(TestUnitLineEquivalence.l_from))
-    assert(TestUnitLineEquivalence.l._has_eql_fields(TestUnitLineEquivalence.l_from, ["from"]))
+    assert(TestUnitLineEquivalence.l._has_eql_fields(TestUnitLineEquivalence.l_from,
+      ["from_segment"]))
     # positional field difference: name alias
     assert(not TestUnitLineEquivalence.e._has_eql_fields(TestUnitLineEquivalence.e_name))
     assert(TestUnitLineEquivalence.e._has_eql_fields(TestUnitLineEquivalence.e_name, ["eid"]))

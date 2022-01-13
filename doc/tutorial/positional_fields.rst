@@ -23,7 +23,8 @@ Field names
 The field names are derived from the specification. Lower case versions
 of the field names are used and spaces are substituted with underscores.
 In some cases, the field names were changed, as they represent keywords
-in common programming languages (``from``, ``send``).
+in common programming languages or clash with potential tag names
+(``from``, ``to``, ``send``).
 
 The following tables shows the field names used in Gfapy, for each kind
 of line. Headers have no positional fields. Comments and custom records

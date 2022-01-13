@@ -96,7 +96,8 @@ class ToGFA1:
 
   @from_orient.setter
   def from_orient(self, value):
-    """Set the orientation of the field which will be returned by calling from
+    """Set the orientation of the field which will be returned by calling
+    from_segment
 
     Parameters:
       value (str): one of ["+", "-"]
@@ -119,7 +120,7 @@ class ToGFA1:
 
   @to_segment.setter
   def to_segment(self, value):
-    """Set the field which will be returned by calling ``to``.
+    """Set the field which will be returned by calling ``to_segment``.
 
     Parameters:
       value (str or gfapy.line.segment.GFA2)
@@ -142,7 +143,8 @@ class ToGFA1:
 
   @to_orient.setter
   def to_orient(self, value):
-    """Set the orientation of the field which will be returned by calling ``to``.
+    """Set the orientation of the field which will be returned by calling
+    ``to_segment``.
 
     Parameters:
       value (str): one of ["+", "-"]

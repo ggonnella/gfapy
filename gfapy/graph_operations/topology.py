@@ -16,16 +16,16 @@ class Topology:
     """
     if link.is_circular():
       return False
-    if not link.get("from").dovetails_of_end(\
+    if not link.get("from_segment").dovetails_of_end(\
              gfapy.invert(link.from_end.end_type)):
       return True
-    if not link.to.dovetails_of_end(gfapy.invert(link.to_end.end_type)):
+    if not link.to_segment.dovetails_of_end(gfapy.invert(link.to_end.end_type)):
       return True
     c = {}
     for et in ["from", "to"]:
       c[et] = set()
       visited = set()
-      segend = link.get("from") if et == "from" else link.to
+      segend = link.get("from_segment") if et == "from" else link.to_segment
       visited.add(segend.name)
       visited.add(link.other_end(segend).name)
       self.__traverse_component(segend, c[et], visited)

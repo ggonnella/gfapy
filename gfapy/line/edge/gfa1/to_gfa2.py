@@ -83,7 +83,7 @@ class ToGFA2:
     length = line.length
     if length is None:
       raise gfapy.ValueError(
-        "Length of segment {} unknown".format(self.to.name))
+        "Length of segment {} unknown".format(self.to_segment.name))
     return gfapy.LastPos(length)
 
   def _check_overlap(self):

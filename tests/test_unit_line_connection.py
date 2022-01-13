@@ -62,10 +62,10 @@ class TestUnitLineConnection(unittest.TestCase):
     g = gfapy.Gfa()
     g.append(s1)
     g.append(l)
-    assert(l.get("from") is s1)
+    assert(l.get("from_segment") is s1)
     l.disconnect()
-    assert(not l.get("from") is s1)
-    self.assertEqual("1", l.get("from"))
+    assert(not l.get("from_segment") is s1)
+    self.assertEqual("1", l.get("from_segment"))
 
   def test_disconnect_disconnects_depent_lines(self):
     s1 = gfapy.Line("S\t1\tACCAT")

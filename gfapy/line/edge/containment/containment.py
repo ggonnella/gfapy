@@ -17,9 +17,8 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other,
 
   Note:
     from_segment and to_segment are used instead of from/to
-    as from is not a valid method name in Python. However, when not
-    used as method name (e.g. as argument of get()), from and to can
-    be used, as an alias has been defined.
+    as from is not a valid method name in Python and "to" alone
+    potentially clashes with the tag namespace.
 
   Note:
     The from segment is considered the container, the to segment the contained
@@ -31,8 +30,6 @@ class Containment(Containment_ToGFA2, Pos, Canonical, Other,
                "to_orient", "pos", "overlap"]
   FIELD_ALIAS = {"container" : "from_segment",
                  "contained" : "to_segment",
-                 "from" : "from_segment",
-                 "to" : "to_segment",
                  "container_orient" : "from_orient",
                  "contained_orient" : "to_orient"}
   PREDEFINED_TAGS = ["MQ", "NM", "ID"]

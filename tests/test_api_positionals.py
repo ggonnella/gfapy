@@ -86,7 +86,6 @@ class TestAPIPositionals(unittest.TestCase):
       "S1":{"name":"sid"}, "P":{"path_name":"name"},
       "S2":{"sid":"name"}, "E":{"eid":"name"}, "G":{"gid":"name"},
       "U":{"pid":"name"}, "O":{"pid":"name"},
-      "L":{"from_segment": "from", "to_segment": "to"},
       "C":{"from_segment":"container", "from_orient":"container_orient",
              "to_segment":"contained", "to_orient":"contained_orient"}
   }
