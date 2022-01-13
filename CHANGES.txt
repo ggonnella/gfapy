@@ -1,3 +1,8 @@
+== 1.2.2 ==
+
+- remove to/from aliases for GFA1 containment/link fields
+  since `to` potentially clashes with a tag name
+
 == 1.2.1 ==
 
 - fixed an issue with linear path merging (issue 21)
