@@ -1,3 +1,7 @@
+== 1.2.3 ==
+
+- make it possible to count input header lines correctly
+
 == 1.2.2 ==
 
 - remove to/from aliases for GFA1 containment/link fields

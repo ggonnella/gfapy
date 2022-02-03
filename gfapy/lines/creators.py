@@ -87,6 +87,7 @@ class Creators:
         gfa_line = gfapy.Line(gfa_line, dialect=self._dialect)
       gfa_line.connect(self)
     elif rt == "H":
+      self._n_input_header_lines += 1
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
             dialect=self._dialect)
@@ -139,6 +140,7 @@ class Creators:
         "Cannot add instance of incompatible line type "+
         str(type(gfa_line)))
     if gfa_line.record_type == "H":
+      self._n_input_header_lines += 1
       if self._vlevel > 0 and gfa_line.VN and gfa_line.VN != "1.0":
         raise gfapy.VersionError(
           "Header line specified wrong version ({})\n".format(gfa_line.VN)+
@@ -172,6 +174,7 @@ class Creators:
         "Cannot add instance of incompatible line type "+
         str(type(gfa_line)))
     if gfa_line.record_type == "H":
+      self._n_input_header_lines += 1
       if self._vlevel > 0 and gfa_line.VN and gfa_line.VN != "2.0":
         raise gfapy.VersionError(
           "Header line specified wrong version ({})\n".format(gfa_line.VN)+

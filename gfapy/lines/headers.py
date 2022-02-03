@@ -10,6 +10,10 @@ class Headers:
     return self._records["H"]
 
   @property
+  def n_input_header_lines(self):
+    return self._n_input_header_lines
+
+  @property
   def headers(self):
     """The splitted header of the Gfa instance.
 

@@ -41,6 +41,7 @@ class Gfa(Lines,GraphOperations,RGFA):
     self._records = defaultdict(dict)
     self._records["H"] = gfapy.line.Header(["H"], vlevel = vlevel)
     self._records["H"].connect(self)
+    self._n_input_header_lines = 0
     self._records["S"] = {}
     self._records["P"] = {}
     self._records["F"] = {}

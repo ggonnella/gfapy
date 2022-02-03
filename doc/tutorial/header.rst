@@ -167,3 +167,23 @@ The split header can be retrieved using the
     >>> str(gfa)
     'H\tVN:Z:1.0\nH\txx:i:1\nH\txx:i:2'
 
+Count the input header lines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Due to the different way header lines are stored, the number of header elements
+is not equal to the number of header lines in the input. This is annoying if an
+application wants to count the number of input lines in a file. In order to make
+that possible, the number of input header lines are counted and can be
+retrieved using the :attr:`~gfapy.lines.headers.Headers.n_input_header_lines`
+property of the Gfa instance.
+
+.. doctest::
+
+    >>> gfa = gfapy.Gfa()
+    >>> gfa.add_line("H\txx:i:1\tyy:Z:ABC") #doctest: +ELLIPSIS
+    >>> gfa.add_line("H\txy:i:2") #doctest: +ELLIPSIS
+    >>> gfa.add_line("H\tyz:i:3\tab:A:A") #doctest: +ELLIPSIS
+    >>> len(gfa.headers)
+    5
+    >>> gfa.n_input_header_lines
+    3
