@@ -37,8 +37,8 @@ class AlignmentType:
     if gfapy.posvalue(begpos) > gfapy.posvalue(endpos):
       raise gfapy.ValueError(
         "Line: {}\n".format(str(self))+
-        "begin > end: {}$ > {}".format(gfapy.posvalue(begpos),
-                                       gfapy.posvalue(endpos)))
+        "begin > end: {} > {}".format(gfapy.posvalue(begpos),
+                                      gfapy.posvalue(endpos)))
     if gfapy.isfirstpos(begpos):
       if gfapy.isfirstpos(endpos):
         return ("pfx", True)
