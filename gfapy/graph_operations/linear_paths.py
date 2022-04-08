@@ -326,6 +326,7 @@ class LinearPaths:
       merged.name = "_".join(merged.name)
     ortag = merged.get("or")
     if isinstance(ortag, list):
+      merged.set_datatype("or", "Z")
       merged.set("or", ",".join(ortag))
     if not gfapy.is_placeholder(merged.sequence):
       merged.sequence = "".join(merged.sequence)
