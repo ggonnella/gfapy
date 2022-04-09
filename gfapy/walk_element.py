@@ -175,4 +175,4 @@ class WalkElement:
     if not re.match(r"^[!-;=?-~]+$", string):
       raise gfapy.FormatError(
       "{} is not a valid GFA identifier\n".format(repr(string))+
-      "(it contains spaces or non-printable characters)")
+      "(it contains spaces, >, < or non-printable characters)")

@@ -37,7 +37,7 @@ def validate_decoded(iterable):
     if not re.match(r"^[!-;=?-~]+$", elem.name):
       raise gfapy.FormatError(
         "the list contains an invalid GFA1.1 identifier {}\n".format(elem.name)+
-        "(it contains spaces and/or non-printable characters)")
+        "(it contains spaces, >, < and/or non-printable characters)")
 
 def unsafe_encode(obj):
   if isinstance(obj, str):
