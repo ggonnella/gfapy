@@ -5,7 +5,7 @@ def invert(symbol):
 
   Parameters:
     symbol (str) : a one-character string, symbolizing an orientation (+ or -)
-      or an end-type (L or R)
+      a walk direction (> or <), or an end-type (L or R)
 
   Returns:
     str : the other one character string of the same category (e.g. - for +)
@@ -17,6 +17,10 @@ def invert(symbol):
     return "-"
   elif symbol == "-":
     return "+"
+  elif symbol == ">":
+    return "<"
+  elif symbol == "<":
+    return ">"
   elif symbol == "L":
     return "R"
   elif symbol == "R":
