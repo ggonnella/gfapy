@@ -2,7 +2,7 @@ import gfapy
 
 class Creators:
 
-  def add_line(self, gfa_line):
+  def add_line(self, gfa_line, ignore_sequences = False):
     """Add a line to a GFA instance.
 
     Note:
@@ -12,6 +12,8 @@ class Creators:
       gfa_line (str, Line): a line instance or a string, containing a line
         of a GFA file (if a string, a line instance is constructed using
         the string)
+      ignore_sequences (bool, default: False): replace sequences in S lines
+        with the placeholder ('*')
 
     Raises:
       gfapy.error.VersionError : If a wrong line type is used, for the GFA
@@ -22,11 +24,12 @@ class Creators:
     if gfa_line is None:
       return
     if self._version == "gfa1":
-      self.__add_line_GFA1(gfa_line)
+      self.__add_line_GFA1(gfa_line, ignore_sequences = ignore_sequences)
     elif self._version == "gfa2":
-      self.__add_line_GFA2(gfa_line)
+      self.__add_line_GFA2(gfa_line, ignore_sequences = ignore_sequences)
     elif self._version is None:
-      self.__add_line_unknown_version(gfa_line)
+      self.__add_line_unknown_version(gfa_line, ignore_sequences =
+          ignore_sequences)
     else:
       raise gfapy.AssertionError("This point should never be reached")
 
@@ -74,7 +77,7 @@ class Creators:
         self._records[gfa_line.record_type] = {}
       self._records[gfa_line.record_type][id(gfa_line)] = gfa_line
 
-  def __add_line_unknown_version(self, gfa_line):
+  def __add_line_unknown_version(self, gfa_line, ignore_sequences = False):
     if isinstance(gfa_line, str):
       rt = gfa_line[0]
     elif isinstance(gfa_line, gfapy.Line):
@@ -84,7 +87,8 @@ class Creators:
           "Only strings and gfapy.Line instances can be added")
     if rt == "#":
       if isinstance(gfa_line, str):
-        gfa_line = gfapy.Line(gfa_line, dialect=self._dialect)
+        gfa_line = gfapy.Line(gfa_line, dialect=self._dialect,
+            ignore_sequences = ignore_sequences)
       gfa_line.connect(self)
     elif rt == "H":
       self._n_input_header_lines += 1
@@ -106,7 +110,7 @@ class Creators:
     elif rt == "S":
       if isinstance(gfa_line, str):
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-            dialect=self._dialect)
+            dialect=self._dialect, ignore_sequences = ignore_sequences)
       self._version = gfa_line.version
       self._version_explanation = \
           "implied by: syntax of S {} line".format(gfa_line.name)
@@ -126,11 +130,11 @@ class Creators:
     else:
       self._line_queue.append(gfa_line)
 
-  def __add_line_GFA1(self, gfa_line):
+  def __add_line_GFA1(self, gfa_line, ignore_sequences = False):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-            dialect=self._dialect)
+            dialect=self._dialect, ignore_sequences = ignore_sequences)
       else:
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
             dialect=self._dialect, version="gfa1")
@@ -160,11 +164,11 @@ class Creators:
       raise gfapy.AssertionError(
         "Invalid record type {}. This should never happen".format(rt))
 
-  def __add_line_GFA2(self, gfa_line):
+  def __add_line_GFA2(self, gfa_line, ignore_sequences = False):
     if isinstance(gfa_line, str):
       if gfa_line[0] == "S":
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
-            dialect=self._dialect)
+            dialect=self._dialect, ignore_sequences = ignore_sequences)
       else:
         gfa_line = gfapy.Line(gfa_line, vlevel=self._vlevel,
                                         version="gfa2", dialect=self._dialect)

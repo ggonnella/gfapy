@@ -44,7 +44,7 @@ class Construction:
   """
 
   def __new__(cls, data, vlevel = 1, virtual = False, dialect = "standard",
-      version = None):
+      version = None, ignore_sequences = False):
     if isinstance(data, str):
       data = data.split("\t")
     if isinstance(data, list) and cls.RECORD_TYPE == None:
@@ -52,7 +52,7 @@ class Construction:
     return object.__new__(cls)
 
   def __init__(self, data, vlevel = 1, virtual = False,
-               version = None, dialect = "standard"):
+               version = None, dialect = "standard", ignore_sequences = False):
     self._dialect = dialect.lower()
     self.vlevel = vlevel
     self._virtual = virtual
@@ -76,7 +76,8 @@ class Construction:
         self._compute_version(data[0])
       else:
         self._validate_version()
-      self._initialize_positional_fields(data)
+      self._initialize_positional_fields(data, ignore_sequences =
+          ignore_sequences)
       self._initialize_tags(data)
       if self.vlevel >= 1:
         self._validate_record_type_specific_info()
@@ -143,7 +144,7 @@ class Construction:
             fieldname = n, line = errmsginfo)
     self._data[n] = s
 
-  def _initialize_positional_fields(self, strings):
+  def _initialize_positional_fields(self, strings, ignore_sequences = False):
     if strings[0] != self.RECORD_TYPE and self.RECORD_TYPE != "\n":
       raise gfapy.FormatError("Record type of records of "+
           "class {} must be {} ({} found)".format(self.__class__,
@@ -156,6 +157,8 @@ class Construction:
       raise gfapy.FormatError(
         "{} positional fields expected, ".format(self._n_positional_fields) +
         "{} found\n{}".format(len(strings)-1, repr(strings)))
+    if self.RECORD_TYPE == 'S' and ignore_sequences:
+      strings[self.POSFIELDS.index('sequence')+1] = '*'
     for i, n in enumerate(self.POSFIELDS):
       self._init_field_value(n, self.__class__.DATATYPE[n], strings[i+1],
                        errmsginfo = strings)

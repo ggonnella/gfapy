@@ -101,6 +101,12 @@ segment followed by a GFA2 segment).
     gfapy.error.VersionError: Version: 1.0 (None)
     ...
 
+Finally, when creating a Gfa from file, a boolean argument ``ignore_sequences``
+is accepted, whose default value is ``False``. If set to ``True``, sequences in
+segment lines are replaced by the placeholder (i.e. are not loaded). This is
+useful for very large files.
+
+
 Collections of lines
 ~~~~~~~~~~~~~~~~~~~~
 

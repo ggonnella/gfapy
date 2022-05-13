@@ -37,6 +37,15 @@ class TestLineSegment(unittest.TestCase):
     f=["S","2","*","LN:i:3"]
     gfapy.Line("\t".join(f))
 
+  def test_from_string_ignore_sequences(self):
+    fields = ["S","1","ACGTCACANNN","RC:i:1232","LN:i:11","ab:Z:abcd",
+            "FC:i:2321","KC:i:1212"]
+    string = "\t".join(fields)
+    l = gfapy.Line(string)
+    self.assertEqual("ACGTCACANNN", l.sequence)
+    l = gfapy.Line(string, ignore_sequences = True)
+    self.assertEqual(gfapy.is_placeholder(l.sequence), True)
+
   def test_forbidden_segment_names(self):
     gfapy.Line("S\tA+B\t*")
     gfapy.Line("S\tA-B\t*")

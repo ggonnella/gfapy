@@ -39,21 +39,38 @@ class TestAPIGfaBasics(unittest.TestCase):
     for l in lines: gfa.append(l)
     self.assertEqual(set(lines), set(str(gfa).split("\n")))
 
-  ## def test_from_file(self):
-  ##   filename = "tests/testdata/example1.gfa"
-  ##   gfa = gfapy.Gfa.from_file(filename)
-  ##   assert(gfa)
-  ##   with open(filename) as f:
-  ##     txt = f.read()
-  ##   self.assertEqual(txt, str(gfa))
+  def test_from_file(self):
+    filename = "tests/testdata/example1.gfa"
+    gfa = gfapy.Gfa.from_file(filename)
+    assert(gfa)
+    gfa_lines = str(gfa).split("\n")
+    line_no = 0
+    with open(filename) as f:
+      for line in f:
+        line = line.rstrip()
+        self.assertEqual(gfa_lines[line_no], line)
+        line_no += 1
 
-  ## def test_to_file(self):
-  ##   filename = "tests/testdata/example1.gfa"
-  ##   gfa = gfapy.Gfa.from_file(filename)
-  ##   tmp = Tempfile("example1")
-  ##   gfa.to_file(tmp.path)
-  ##   tmp.rewind
-  ##   self.assertEqual(IO.read(filename), IO.read(tmp))
+  def test_from_file_ignore_sequences(self):
+    filename1 = "tests/testdata/sample.gfa"
+    filename2 = "tests/testdata/sample_wo_seqs.gfa"
+    gfa = gfapy.Gfa.from_file(filename1, ignore_sequences = True)
+    assert(gfa)
+    gfa_lines = str(gfa).split("\n")
+    line_no = 0
+    with open(filename2) as f:
+      for line in f:
+        line = line.rstrip()
+        self.assertEqual(gfa_lines[line_no], line)
+        line_no += 1
+
+  #def test_to_file(self):
+  #  filename = "tests/testdata/example1.gfa"
+  #  gfa = gfapy.Gfa.from_file(filename)
+  #  tmp = Tempfile("example1")
+  #  gfa.to_file(tmp.path)
+  #  tmp.rewind
+  #  self.assertEqual(IO.read(filename), IO.read(tmp))
 
   def test_from_string(self):
     lines = ["H\tVN:Z:1.0","S\t1\t*","S\t2\t*","S\t3\t*",

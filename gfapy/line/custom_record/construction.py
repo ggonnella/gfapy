@@ -29,7 +29,7 @@ class Construction:
              if (not x in self.positional_fieldnames) \
                  and (x != "record_type")]
 
-  def _initialize_positional_fields(self, strings):
+  def _initialize_positional_fields(self, strings, **kwargs):
     """delayed, see #delayed_inizialize_positional_fields"""
     pass
 

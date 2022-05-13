@@ -1,3 +1,7 @@
+== 1.2.4 ==
+
+- implement option 'ignore_sequences' when reading a GFA file
+
 == 1.2.3 ==
 
 - make it possible to count input header lines correctly

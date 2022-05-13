@@ -189,11 +189,13 @@ class Gfa(Lines,GraphOperations,RGFA):
 
   # TODO: implement clone (see how clone for lines was implemented)
 
-  def read_file(self, filename):
+  def read_file(self, filename, ignore_sequences = False):
     """Read GFA data from a file and load it into the Gfa instance.
 
     Parameters:
       filename (str)
+      ignore_sequences (bool, default: False): replace sequences in S lines
+        with a placeholder ('*')
     """
     if self._progress:
       linecount = 0
@@ -206,7 +208,7 @@ class Gfa(Lines,GraphOperations,RGFA):
                               " containing {} lines".format(linecount))
     with open(filename) as f:
       for line in f:
-        self.add_line(line.rstrip('\r\n'))
+        self.add_line(line.rstrip('\r\n'), ignore_sequences=ignore_sequences)
         if self._progress:
           self._progress_log("read_file")
     if self._line_queue:
@@ -219,7 +221,8 @@ class Gfa(Lines,GraphOperations,RGFA):
     return self
 
   @classmethod
-  def from_file(cls, filename, vlevel = 1, version = None, dialect="standard"):
+  def from_file(cls, filename, vlevel = 1, version = None, dialect="standard",
+                ignore_sequences = False):
     """Create a Gfa instance from the contents of a GFA file.
 
     Parameters:
@@ -227,12 +230,14 @@ class Gfa(Lines,GraphOperations,RGFA):
       vlevel (int) : the validation level
       version (str) : the GFA version ('gfa1' or 'gfa2'; default:
           determine version automatically)
+      ignore_sequences (bool, default: False): replace sequences in S lines
+        with a placeholder ('*')
 
     Returns:
       gfapy.Gfa
     """
     gfa = cls(vlevel = vlevel, version = version, dialect = dialect)
-    gfa.read_file(filename)
+    gfa.read_file(filename, ignore_sequences = ignore_sequences)
     return gfa
 
   def to_file(self, filename):
