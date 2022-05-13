@@ -189,6 +189,62 @@ class Gfa(Lines,GraphOperations,RGFA):
 
   # TODO: implement clone (see how clone for lines was implemented)
 
+  BUFSIZE = 1024 * 1024
+
+  def gfa_lines_reader(self, file, ignore_sequences):
+    if ignore_sequences:
+      gfa1_seq_posfield = \
+        gfapy.line.segment.GFA1.POSFIELDS.index("sequence") + 1
+      gfa2_seq_posfield = \
+        gfapy.line.segment.GFA2.POSFIELDS.index("sequence") + 1
+      placeholder = str(gfapy.Placeholder())
+      separator = '\t'
+      seq_posfield = -1 # set to an undef value, GFA until version is known
+      segment_rt = gfapy.line.segment.GFA1.RECORD_TYPE
+      buffer = bytearray(Gfa.BUFSIZE)
+      line_chunks = []
+      field_num = 0
+      is_segment = False
+      rt = ""
+      while True:
+        nbytesread = file.readinto(buffer)
+        if nbytesread == 0:
+          break
+        chunk_start = 0
+        for i in range(nbytesread):
+          c = buffer[i]
+          if c == ord("\n"):
+            if is_segment and field_num == seq_posfield:
+              line_chunks.append(placeholder + "\n")
+            else:
+              line_chunks.append(buffer[chunk_start:i+1])
+            yield "".join([l.decode("utf-8") for l in line_chunks])
+            line_chunks = []
+            field_num = 0
+            is_segment = False
+            chunk_start = i+1
+            if self._version == "gfa1":
+              seq_posfield = gfa1_seq_posfield
+            elif self._version == "gfa2":
+              seq_posfield = gfa2_seq_posfield
+          elif c == ord(separator):
+            is_segment = field_num == 0 and \
+                  buffer[chunk_start:i].decode("utf-8") == segment_rt
+            if is_segment and field_num == seq_posfield:
+              line_chunks.append(placeholder + separator)
+            else:
+              line_chunks.append(buffer[chunk_start:i+1])
+            field_num += 1
+            chunk_start = i+1
+          elif i == nbytesread - 1:
+            if (not is_segment) or (field_num != seq_posfield):
+              line_chunks.append(buffer[chunk_start:nbytesread])
+      if line_chunks:
+        yield "".join([l.decode("utf-8") for l in line_chunks])
+    else:
+      for line in file:
+        yield line.decode("utf-8")
+
   def read_file(self, filename, ignore_sequences = False):
     """Read GFA data from a file and load it into the Gfa instance.
 
@@ -197,17 +253,19 @@ class Gfa(Lines,GraphOperations,RGFA):
       ignore_sequences (bool, default: False): replace sequences in S lines
         with a placeholder ('*')
     """
+    # count lines in file:
+
     if self._progress:
       linecount = 0
-      with open(filename) as f:
+      with open(filename, "r") as f:
         for line in f:
           linecount += 1
       # TODO: better implementation of linecount
       self._progress_log_init("read_file", "lines", linecount,
                               "Parsing file {}".format(filename)+
                               " containing {} lines".format(linecount))
-    with open(filename) as f:
-      for line in f:
+    with open(filename, "rb") as f:
+      for line in self.gfa_lines_reader(f, ignore_sequences):
         self.add_line(line.rstrip('\r\n'), ignore_sequences=ignore_sequences)
         if self._progress:
           self._progress_log("read_file")
