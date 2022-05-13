@@ -199,7 +199,7 @@ class Gfa(Lines,GraphOperations,RGFA):
         gfapy.line.segment.GFA2.POSFIELDS.index("sequence") + 1
       placeholder = str(gfapy.Placeholder())
       separator = '\t'
-      seq_posfield = -1 # set to an undef value, GFA until version is known
+      seq_posfield = -1 # set to an undef value, until GFA version is known
       segment_rt = gfapy.line.segment.GFA1.RECORD_TYPE
       buffer = bytearray(Gfa.BUFSIZE)
       line_chunks = []
