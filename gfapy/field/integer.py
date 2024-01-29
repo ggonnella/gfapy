@@ -3,7 +3,7 @@ import re
 
 def decode(string):
   try:
-    return int(string)
+    return int(float(string))
   except:
     raise gfapy.FormatError("the string does not represent a valid integer")
 
