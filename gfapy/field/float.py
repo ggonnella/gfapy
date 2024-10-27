@@ -17,7 +17,7 @@ def validate_encoded(string):
   if not re.match(r"^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$", string):
     raise gfapy.FormatError(
       "{} does not represent a valid float\n".format(repr(string)) +
-      "(it does not match [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)")
+      r"(it does not match [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)")
 
 def unsafe_encode(obj):
   return str(obj)
