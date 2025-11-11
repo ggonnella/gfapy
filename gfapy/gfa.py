@@ -5,6 +5,8 @@ from collections import defaultdict
 from .rgfa import RGFA
 import sys
 
+from gzip import open as gzopen
+
 class Gfa(Lines,GraphOperations,RGFA):
   """Representation of the data in a GFA file.
 
@@ -189,22 +191,38 @@ class Gfa(Lines,GraphOperations,RGFA):
 
   # TODO: implement clone (see how clone for lines was implemented)
 
-  def read_file(self, filename):
+  def read_file(self, filename, gzipped="auto"):
     """Read GFA data from a file and load it into the Gfa instance.
+    By default, tries to automatically determine if the file is gzipped or uncompressed.
+    This can be overridden by setting gzipped to `True` or `False`, forcing the file to be treated as compressed resp. uncompressed.
 
     Parameters:
-      filename (str)
+      filename: str
+      gzipped: "auto" (default)/True/False
     """
+    ## determine if the file is gzipped
+    # I'm not aware of a prettier way to robustly do this in python, unfortunately
+    if gzipped == "auto":
+        with gzopen(f, 'rb') as fin:
+            try:
+                fin.read(1)
+                gzipped = True
+            except BadGzipFile:
+                gzipped = False
+
+    # prepare appropriate opening call
+    openfn = lambda x: open(x, "rt") if gzipped else gzopen(x, "rt")
+
     if self._progress:
       linecount = 0
-      with open(filename) as f:
+      with openfn(filename) as f:
         for line in f:
           linecount += 1
       # TODO: better implementation of linecount
       self._progress_log_init("read_file", "lines", linecount,
                               "Parsing file {}".format(filename)+
                               " containing {} lines".format(linecount))
-    with open(filename) as f:
+    with openfn(filename) as f:
       for line in f:
         self.add_line(line.rstrip('\r\n'))
         if self._progress:
