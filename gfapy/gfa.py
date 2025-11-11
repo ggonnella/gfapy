@@ -6,6 +6,7 @@ from .rgfa import RGFA
 import sys
 
 from gzip import open as gzopen
+from gzip import BadGzipFile
 
 class Gfa(Lines,GraphOperations,RGFA):
   """Representation of the data in a GFA file.
@@ -203,7 +204,7 @@ class Gfa(Lines,GraphOperations,RGFA):
     ## determine if the file is gzipped
     # I'm not aware of a prettier way to robustly do this in python, unfortunately
     if gzipped == "auto":
-        with gzopen(f, 'rb') as fin:
+        with gzopen(filename, 'rb') as fin:
             try:
                 fin.read(1)
                 gzipped = True
@@ -211,12 +212,12 @@ class Gfa(Lines,GraphOperations,RGFA):
                 gzipped = False
 
     # prepare appropriate opening call
-    openfn = lambda x: open(x, "rt") if gzipped else gzopen(x, "rt")
+    openfn = lambda f: gzopen(f, "rt") if gzipped else open(f, "rt")
 
     if self._progress:
       linecount = 0
       with openfn(filename) as f:
-        for line in f:
+        for _ in f:
           linecount += 1
       # TODO: better implementation of linecount
       self._progress_log_init("read_file", "lines", linecount,
