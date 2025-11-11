@@ -1,6 +1,9 @@
 import gfapy
 import unittest
 
+from gzip import open as gzopen
+from tempfile import NamedTemporaryFile
+
 class TestAPIGfaBasics(unittest.TestCase):
 
   def test_initialize(self):
@@ -38,6 +41,27 @@ class TestAPIGfaBasics(unittest.TestCase):
     gfa = gfapy.Gfa()
     for l in lines: gfa.append(l)
     self.assertEqual(set(lines), set(str(gfa).split("\n")))
+
+  def test_from_gz(self):
+    filenamegz = "tests/testdata/example1.gfa.gz"
+    gfagz = gfapy.Gfa.from_file(filenamegz)
+    assert(gfagz)
+
+    filename = "tests/testdata/example1.gfa"
+    gfa = gfapy.Gfa.from_file(filename)
+    assert(gfa)
+
+    self.assertEqual(str(gfa), str(gfagz))
+
+  def test_to_gzip(self):
+     filename = "tests/testdata/example1.gfa"
+     gfa = gfapy.Gfa.from_file(filename)
+     tmp = NamedTemporaryFile("wb")#("example1.gz")
+     gfa.to_file(tmp.name, gzipped=True)
+
+     # check if reading again is equal
+     gfagz = gfapy.Gfa.from_file(tmp.name) # should auto-detect the gz regardless of filename
+     self.assertEqual(str(gfa), str(gfagz))
 
   ## def test_from_file(self):
   ##   filename = "tests/testdata/example1.gfa"
