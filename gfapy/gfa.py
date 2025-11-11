@@ -253,13 +253,23 @@ class Gfa(Lines,GraphOperations,RGFA):
     gfa.read_file(filename)
     return gfa
 
-  def to_file(self, filename):
+  def to_file(self, filename, gzipped="auto"):
     """Write the content of the instance to a GFA file
+    By default, uses the filename ending to determine if the file should be gz-compressed or not.
+    This can be overridden by setting gzipped to `True` or `False`, forcing the output to be written compressed/uncompressed.
 
     Parameters:
-      filename (str)
+      filename: str
+      gzipped: "auto" (default)/True/False
     """
-    with open(filename, "w") as f:
+    # determine if gzipped based on file ending
+    if gzipped=="auto":
+        gzipped = filename.endswitz(".gz")
+
+    # prepare appropriate opening call
+    openfn = lambda x: open(x, "wt") if gzipped else gzopen(x, "wt")
+
+    with openfn(filename) as f:
       for line in self.lines:
         f.write(str(line)+"\n")
 
