@@ -2,9 +2,9 @@ name: run-test
 
 on:
   push:
-    branches: [master, CI]
+    branches: [master]
   pull_request:
-    branches: [master, CI]
+    branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
