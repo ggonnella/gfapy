@@ -265,7 +265,7 @@ class Gfa(Lines,GraphOperations,RGFA):
     """
     # determine if gzipped based on file ending
     if gzipped=="auto":
-        gzipped = filename.endswitz(".gz")
+        gzipped = filename.endswith(".gz")
 
     # prepare appropriate opening call
     openfn = lambda x: open(x, "wt") if gzipped else gzopen(x, "wt")
