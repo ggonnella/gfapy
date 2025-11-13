@@ -3,4 +3,11 @@ gonnella@zbh.uni-hamburg.de if I left someone out or missed something.
 
 - Tim Weber (translation of parts of the code from Ruby to Python)
 - Stefan Kurtz (advises)
+- Leon Rauschning (support of gzipped files)
+- Sascha Steinbiss (fixes)
+- Mattia Sgro (fixes)
+- ujjwalsh (CI ppc64le support)
+- Shaun Jackman (segments renumbering)
+- Jakub Wilk (typos)
+
 
